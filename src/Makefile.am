@@ -1,16 +1,16 @@
-AM_CXXFLAGS =               \
-        $(SDL_CFLAGS)       \
-        $(SDL_image_CFLAGS) \
-        $(opengl_CFLAGS)    \
-        $(glew_CFLAGS)      \
-        $(glm_CFLAGS)       
+AM_CXXFLAGS =                \
+        $(SDL2_CFLAGS)       \
+        $(SDL2_image_CFLAGS) \
+        $(GL_CFLAGS)         \
+        $(GLEW_CFLAGS)       \
+        $(GLM_CFLAGS)       
 
 bin_PROGRAMS = silverwaffle
 
 silverwaffle_LDADD =       \
-        $(SDL_LIBS)        \
-        $(SDL_image_LIBS)  \
-        $(opengl_LIBS)     \
-        $(glew_LIBS)       
+        $(SDL2_LIBS)       \
+        $(SDL2_image_LIBS) \
+        $(GL_LIBS)         \
+        $(GLEW_LIBS)       
 
-silverwaffle_SOURCES = main.cc
+silverwaffle_SOURCES = main.cc Object.cc GameLevel.cc glm.cc Mesh.cc MeshCube.cc Shader.cc ShaderProgram.cc OpenGL.cc Camera.cc
