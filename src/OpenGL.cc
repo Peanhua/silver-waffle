@@ -27,8 +27,11 @@ namespace OpenGL
   Singleton::Singleton()
   {
 #ifndef NDEBUG
-    glEnable(GL_DEBUG_OUTPUT);
-    glDebugMessageCallback(MessageCallback, 0);
+    if(GLEW_VERSION_4_3)
+      {
+        glEnable(GL_DEBUG_OUTPUT);
+        glDebugMessageCallback(MessageCallback, 0);
+      }
 #endif
   }
 
