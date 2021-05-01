@@ -4,11 +4,14 @@
 #include <chrono>
 #include <thread>
 #include <cassert>
+#include <SDL_keyboard.h>
 
 #include "GameLevel.hh"
 #include "OpenGL.hh"
 #include "ShaderProgram.hh"
 #include "Camera.hh"
+#include "InputManager.hh"
+
 
 int main(int argc, char *argv[])
 {
@@ -27,7 +30,6 @@ int main(int argc, char *argv[])
 
           if(window)
             {
-
               SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
               SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
               SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 0);
@@ -37,35 +39,41 @@ int main(int argc, char *argv[])
 
               if(glewInit() == GLEW_OK)
                 {
-                  if(GLEW_VERSION_3_0)
+                  if(GLEW_VERSION_3_2)
                     {
                       rv = EXIT_SUCCESS;
 
                       OpenGL::singleton = new OpenGL::Singleton();
 
+                      glViewport(0, 0, 1024, 768);
 
+
+                      auto inp = new InputManager();
+                      assert(inp);
+
+                      GLuint vao;
+                      glGenVertexArrays(1, &vao);
+                      glBindVertexArray(vao);
+                      
                       std::string vs(R"(
-#version 130
-#extension GL_ARB_explicit_attrib_location : require
+#version 330 core
 
-in vec3 in_vertex;
-in vec3 in_color;
 uniform mat4 in_mvp;
+
+layout (location = 0) in vec3 in_vertex;
+layout (location = 1) in vec3 in_color;
 
 out vec3 diffuse_color;
 
 void main()
 {
   diffuse_color = in_color;
-
-  //gl_Position = ftransform();
-  //gl_Position = gl_ModelViewProjectionMatrix * vec4(in_vertex, 1.0f);
   gl_Position = in_mvp * vec4(in_vertex, 1.0f);
 }
 )");
 
                       std::string fs(R"(
-#version 130
+#version 330 core
 
 in vec3 diffuse_color;
 out vec4 final_colour;
@@ -83,16 +91,61 @@ void main()
                       glUseProgram(p->GetProgram());
 
                       auto camera = new Camera();
-                      camera->SetPosition(glm::dvec3(1, 1, 1));
+                      camera->SetPosition(glm::dvec3(0, -3, 0));
                       camera->SetTargetPosition(glm::dvec3(0, 0, 0));
-                      
-                      glClearColor(0, 0, 0, 1);
 
+                      glClearColor(0, 0, 0, 1);
+                      glEnable(GL_DEPTH_TEST);
+                      glDisable(GL_CULL_FACE);
+                      //glCullFace(GL_BACK);
+                      
                       glm::vec3 pos(0, 0, 0);
                       auto level = new GameLevel(pos);
                       level->Initialize(1.0);
+
+                      double fov = 60.0;
                       
-                      while(true)
+                      inp->SetOnKeyboard([camera, &fov](bool pressed, SDL_Keycode key, SDL_Keymod mod)
+                      {
+                        if(!pressed)
+                          return;
+
+                        double speed = 0.5;
+                        switch(key)
+                          {
+                          case SDLK_LEFT:
+                            camera->MoveRight(-speed);
+                            break;
+                          case SDLK_RIGHT:
+                            camera->MoveRight(speed);
+                            break;
+                          case SDLK_UP:
+                            camera->MoveForward(speed);
+                            break;
+                          case SDLK_DOWN:
+                            camera->MoveForward(-speed);
+                            break;
+                          case SDLK_PAGEUP:
+                            camera->MoveUp(speed);
+                            break;
+                          case SDLK_PAGEDOWN:
+                            camera->MoveUp(-speed);
+                            break;
+                          case SDLK_PLUS:
+                            fov++;
+                            std::cout << "fov:" << fov << std::endl;
+                            camera->SetFOV(fov);
+                            break;
+                          case SDLK_MINUS:
+                            fov--;
+                            std::cout << "fov:" << fov << std::endl;
+                            camera->SetFOV(fov);
+                            break;
+                          }
+                      });
+
+                      
+                      while(inp->IsRunning())
                         {
                           glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
                           level->Draw(*camera, *p);
@@ -101,6 +154,7 @@ void main()
                           double deltatime = 1.0 / 60.0;
                           double sleeptime = deltatime * 1000.0;
                           std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(sleeptime)));
+                          inp->Tick(deltatime);
                           level->Tick(deltatime);
                         }
 

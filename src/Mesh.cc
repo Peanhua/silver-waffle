@@ -60,5 +60,5 @@ void Mesh::Update()
 
   glBindBuffer(GL_ARRAY_BUFFER, this->_color_vbo);
   glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(this->_colors.size() * sizeof(GLfloat)), this->_colors.data(), GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 }
