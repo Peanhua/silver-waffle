@@ -3,11 +3,17 @@
 
 Camera::Camera()
   : _up(0, 0, 1),
-    _position(0, -1, 0),
+    _position(0, -9, 0),
     _target_position(0, 0, 0),
     _view_projection(1)
 {
   SetFOV(60.0);
+  UpdateViewProjection();
+}
+
+
+Camera::~Camera()
+{
 }
 
 
@@ -15,21 +21,24 @@ void Camera::SetFOV(double fov)
 {
   _fov = fov;
   _projection = glm::perspective(glm::radians(_fov), 1024.0 / 768.0, 0.001, 1000.0);
-  UpdateViewProjection();
+}
+
+
+void Camera::SetUp(const glm::vec3 & up)
+{
+  _up = up;
 }
 
 
 void Camera::SetPosition(const glm::vec3 & position)
 {
   _position = position;
-  UpdateViewProjection();
 }
 
 
 void Camera::SetTargetPosition(const glm::vec3 & position)
 {
   _target_position = position;
-  UpdateViewProjection();
 }
 
 

@@ -10,6 +10,7 @@
 #include "OpenGL.hh"
 #include "ShaderProgram.hh"
 #include "Camera.hh"
+#include "Camera2.hh"
 #include "InputManager.hh"
 
 
@@ -56,12 +57,12 @@ int main(int argc, char *argv[])
                       glBindVertexArray(vao);
                       
                       std::string vs(R"(
-#version 330 core
+#version 130
 
 uniform mat4 in_mvp;
 
-layout (location = 0) in vec3 in_vertex;
-layout (location = 1) in vec3 in_color;
+in vec3 in_vertex;
+in vec3 in_color;
 
 out vec3 diffuse_color;
 
@@ -73,7 +74,7 @@ void main()
 )");
 
                       std::string fs(R"(
-#version 330 core
+#version 130
 
 in vec3 diffuse_color;
 out vec4 final_colour;
@@ -90,9 +91,13 @@ void main()
                       auto p = new ShaderProgram(vss, fss);
                       glUseProgram(p->GetProgram());
 
+#if 1
                       auto camera = new Camera();
-                      camera->SetPosition(glm::dvec3(0, -3, 0));
-                      camera->SetTargetPosition(glm::dvec3(0, 0, 0));
+# define CAMERA_SPEED 0.5
+#else
+                      auto camera = new Camera2();
+# define CAMERA_SPEED 2
+#endif
 
                       glClearColor(0, 0, 0, 1);
                       glEnable(GL_DEPTH_TEST);
@@ -107,29 +112,30 @@ void main()
                       
                       inp->SetOnKeyboard([camera, &fov](bool pressed, SDL_Keycode key, SDL_Keymod mod)
                       {
+                        assert(mod == mod);
+                        
                         if(!pressed)
                           return;
 
-                        double speed = 0.5;
                         switch(key)
                           {
                           case SDLK_LEFT:
-                            camera->MoveRight(-speed);
+                            camera->MoveRight(-CAMERA_SPEED);
                             break;
                           case SDLK_RIGHT:
-                            camera->MoveRight(speed);
+                            camera->MoveRight(CAMERA_SPEED);
                             break;
                           case SDLK_UP:
-                            camera->MoveForward(speed);
+                            camera->MoveForward(CAMERA_SPEED);
                             break;
                           case SDLK_DOWN:
-                            camera->MoveForward(-speed);
+                            camera->MoveForward(-CAMERA_SPEED);
                             break;
                           case SDLK_PAGEUP:
-                            camera->MoveUp(speed);
+                            camera->MoveUp(CAMERA_SPEED);
                             break;
                           case SDLK_PAGEDOWN:
-                            camera->MoveUp(-speed);
+                            camera->MoveUp(-CAMERA_SPEED);
                             break;
                           case SDLK_PLUS:
                             fov++;
