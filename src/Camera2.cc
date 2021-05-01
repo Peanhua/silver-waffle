@@ -4,7 +4,7 @@
 Camera2::Camera2()
   : Camera()
 {
-  _distance = 9.0;
+  _distance = 3.0;
   _angle = 0.0;
   _tilt = 0.0;
 

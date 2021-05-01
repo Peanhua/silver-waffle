@@ -23,7 +23,7 @@ public:
   const glm::mat4 & GetProjection() const;
   void              GetDirection(glm::vec3 & direction) const;
 
-  virtual void UpdateViewProjection(); 
+  virtual void      UpdateViewProjection(); 
 
 private:
   double    _fov;

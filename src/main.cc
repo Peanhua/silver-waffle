@@ -91,24 +91,29 @@ void main()
                       auto p = new ShaderProgram(vss, fss);
                       glUseProgram(p->GetProgram());
 
-#if 1
+                      glm::vec3 pos(0, 0, 0);
+#if 0
                       auto camera = new Camera();
+                      auto level = new GameLevel(pos);
+                      auto fov = 60.0;
 # define CAMERA_SPEED 0.5
 #else
                       auto camera = new Camera2();
-# define CAMERA_SPEED 2
+                      auto level = new GameLevel2(pos);
+                      auto fov = 120.0;
+# define CAMERA_SPEED 1
 #endif
 
+                      camera->SetFOV(fov);
+                      camera->UpdateViewProjection();
+                      
                       glClearColor(0, 0, 0, 1);
                       glEnable(GL_DEPTH_TEST);
                       glDisable(GL_CULL_FACE);
                       //glCullFace(GL_BACK);
                       
-                      glm::vec3 pos(0, 0, 0);
-                      auto level = new GameLevel(pos);
                       level->Initialize(1.0);
 
-                      double fov = 60.0;
                       
                       inp->SetOnKeyboard([camera, &fov](bool pressed, SDL_Keycode key, SDL_Keymod mod)
                       {
@@ -120,10 +125,10 @@ void main()
                         switch(key)
                           {
                           case SDLK_LEFT:
-                            camera->MoveRight(-CAMERA_SPEED);
+                            camera->MoveRight(-CAMERA_SPEED * 2.0);
                             break;
                           case SDLK_RIGHT:
-                            camera->MoveRight(CAMERA_SPEED);
+                            camera->MoveRight(CAMERA_SPEED * 2.0);
                             break;
                           case SDLK_UP:
                             camera->MoveForward(CAMERA_SPEED);
@@ -141,11 +146,13 @@ void main()
                             fov++;
                             std::cout << "fov:" << fov << std::endl;
                             camera->SetFOV(fov);
+                            camera->UpdateViewProjection();
                             break;
                           case SDLK_MINUS:
                             fov--;
                             std::cout << "fov:" << fov << std::endl;
                             camera->SetFOV(fov);
+                            camera->UpdateViewProjection();
                             break;
                           }
                       });

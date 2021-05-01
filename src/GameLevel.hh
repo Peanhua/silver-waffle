@@ -8,9 +8,18 @@ class GameLevel : public Object
 public:
   using Object::Object;
   
-  void Initialize(double difficulty);
+  virtual void Initialize(double difficulty);
   
 private:
+};
+
+
+class GameLevel2 : public GameLevel
+{
+public:
+  using GameLevel::GameLevel;
+
+  void Initialize(double difficulty) override;
 };
 
 #endif
