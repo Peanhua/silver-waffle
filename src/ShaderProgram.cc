@@ -45,3 +45,12 @@ void ShaderProgram::SetMatrix(const std::string & name, const glm::mat4 & matrix
   assert(loc >= 0);
   glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
 }
+
+
+void ShaderProgram::Use() const
+{
+  assert(_program);
+  glUseProgram(_program);
+}
+
+

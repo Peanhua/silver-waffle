@@ -6,15 +6,8 @@
 GameStateGame::GameStateGame()
   : GameState()
 {
-  auto vs = AssetLoader->LoadText("x.vert");
-  auto fs = AssetLoader->LoadText("x.frag");
-  std::vector<std::string> vss({vs});
-  std::vector<std::string> fss({fs});
-  _shaderprog = new ShaderProgram(vss, fss);
-  glUseProgram(_shaderprog->GetProgram());
-
   glm::vec3 pos(0, 0, 0);
-#if 0
+#if 1
   _camera = new Camera();
   _level = new GameLevel(pos);
   _fov = 60.0;
@@ -38,14 +31,13 @@ GameStateGame::~GameStateGame()
 {
   delete _level;
   delete _camera;
-  delete _shaderprog;
 }
 
 
 void GameStateGame::Tick(double deltatime)
 {
   assert(deltatime == deltatime);
-  _level->Draw(*_camera, *_shaderprog);
+  _level->Draw(_camera->GetViewProjection());
 }
 
 

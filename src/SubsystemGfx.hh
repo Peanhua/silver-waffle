@@ -9,9 +9,9 @@ class SubsystemGfx : public Subsystem
 public:
   SubsystemGfx();
   
-  bool Start() override;
-  void Stop() override;
-  void PreTick() override;
+  bool Start()    override;
+  void Stop()     override;
+  void PreTick()  override;
   void PostTick() override;
 
 private:

@@ -12,7 +12,10 @@ void GameLevel::Initialize(double difficulty)
     for(int x = 0; x < 12; x++)
       {
         auto invader = new Object(topleft + glm::vec3(x, 0, -y));
-        invader->SetMesh(new MeshCube());
+        if((x + y) % 3 == 0)
+          invader->SetMesh(new MeshCube2());
+        else
+          invader->SetMesh(new MeshCube());
         this->AddChild(invader);
       }
 }
@@ -30,7 +33,10 @@ void GameLevel2::Initialize(double difficulty)
         glm::vec3 pos = glm::rotateY(zeropos, static_cast<float>(glm::radians(360.0 / 12.0 * static_cast<double>(x))));
         pos.y = y;
         auto invader = new Object(pos);
-        invader->SetMesh(new MeshCube());
+        if((x + y) % 3 == 0)
+          invader->SetMesh(new MeshCube2());
+        else
+          invader->SetMesh(new MeshCube());
         this->AddChild(invader);
       }
 }

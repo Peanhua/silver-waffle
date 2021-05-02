@@ -12,6 +12,7 @@ public:
   ShaderProgram(const std::vector<std::string> & vertex_shaders, const std::vector<std::string> & fragment_shaders);
   ~ShaderProgram();
 
+  void Use() const;
   GLuint GetProgram() const;
   /*
   // GLint  GetUniformLocation(const std::string & name) const;

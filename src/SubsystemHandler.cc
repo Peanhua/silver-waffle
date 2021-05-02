@@ -10,8 +10,10 @@ bool SubsystemHandler::StartAll()
   for(auto it = _subsystems.begin(); rv == true && it != _subsystems.end(); it++)
     {
       assert(*it);
-      std::cout << "Starting " << (*it)->GetName() << std::endl;
+      std::cout << "Starting subsystem: " << (*it)->GetName() << std::endl;
       rv = (*it)->Start();
+      if(!rv)
+        std::cout << "Failed to start subsystem " << (*it)->GetName() << std::endl;
     }
   
   return rv;

@@ -2,7 +2,6 @@
 #define GAME_STATE_GAME_HH_
 
 #include "GameState.hh"
-#include "ShaderProgram.hh"
 #include "Camera.hh"
 #include "GameLevel.hh"
 
@@ -17,7 +16,6 @@ public:
 
 private:
   double          _fov;
-  ShaderProgram * _shaderprog;
   Camera *        _camera;
   GameLevel *     _level;
 };

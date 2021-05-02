@@ -9,4 +9,10 @@ public:
   MeshCube();
 };
 
+class MeshCube2 : public Mesh
+{
+public:
+  MeshCube2();
+};
+
 #endif

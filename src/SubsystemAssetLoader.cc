@@ -66,3 +66,19 @@ const std::string & SubsystemAssetLoader::LoadText(const std::string & filename)
   assert(false);
 }
 
+
+ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name)
+{
+  auto it = _shader_programs.find(name);
+  if(it != _shader_programs.end())
+    return (*it).second;
+
+  auto vs = AssetLoader->LoadText(name + ".vert");
+  auto fs = AssetLoader->LoadText(name + ".frag");
+  std::vector<std::string> vss({vs});
+  std::vector<std::string> fss({fs});
+  auto sp = new ShaderProgram(vss, fss);
+  assert(sp);
+  _shader_programs[name] = sp;
+  return sp;
+}
