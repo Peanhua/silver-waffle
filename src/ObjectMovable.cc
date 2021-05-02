@@ -35,3 +35,9 @@ void ObjectMovable::SetVelocity(const glm::vec3 & velocity)
 {
   _velocity = velocity;
 }
+
+
+const glm::vec3 & ObjectMovable::GetVelocity() const
+{
+  return _velocity;
+}

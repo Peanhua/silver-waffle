@@ -51,7 +51,8 @@ void SubsystemInput::Tick(double deltatime)
 
         case SDL_KEYDOWN:
         case SDL_KEYUP:
-          gamestate->OnKeyboard(event.type == SDL_KEYDOWN, event.key.keysym.sym, static_cast<SDL_Keymod>(event.key.keysym.mod));
+          if(!event.key.repeat)
+            gamestate->OnKeyboard(event.type == SDL_KEYDOWN, event.key.keysym.sym, static_cast<SDL_Keymod>(event.key.keysym.mod));
           break;
         }
     }

@@ -13,6 +13,7 @@ public:
   void AddImpulse(const glm::vec3 & impulse);
   void SetMaxVelocity(double max_velocity);
   void SetVelocity(const glm::vec3 & velocity);
+  const glm::vec3 & GetVelocity() const;
 
 private:
   glm::vec3 _velocity;

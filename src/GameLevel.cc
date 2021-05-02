@@ -1,5 +1,6 @@
 #include "GameLevel.hh"
 #include "MeshCube.hh"
+#include "ObjectInvader.hh"
 #include <iostream>
 
 void GameLevel::Initialize(double difficulty)
@@ -8,7 +9,7 @@ void GameLevel::Initialize(double difficulty)
   
   glm::vec3 topleft(-6, 0, 3);
 
-  _player = new ObjectMovable(topleft + glm::vec3(0, 0, -10));
+  _player = new ObjectMovable(topleft + glm::vec3(0, 0, -15));
   _player->SetMesh(new MeshCube3());
   AddChild(_player);
   
@@ -16,7 +17,7 @@ void GameLevel::Initialize(double difficulty)
   for(int y = 0; y < 8; y++)
     for(int x = 0; x < 12; x++)
       {
-        auto invader = new ObjectMovable(topleft + glm::vec3(x, 0, -y));
+        auto invader = new ObjectInvader(topleft + glm::vec3(x, 0, -y));
         if((x + y) % 3 == 0)
           invader->SetMesh(new MeshCube2());
         else
