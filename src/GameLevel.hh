@@ -2,6 +2,7 @@
 #define GAMELEVEL_HH_
 
 #include "Object.hh"
+#include "ObjectMovable.hh"
 
 class GameLevel : public Object
 {
@@ -9,8 +10,12 @@ public:
   using Object::Object;
   
   virtual void Initialize(double difficulty);
+
+  ObjectMovable * GetPlayer() const;
   
 private:
+  ObjectMovable *              _player;
+  std::vector<ObjectMovable *> _invaders;
 };
 
 

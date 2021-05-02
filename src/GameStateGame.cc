@@ -4,7 +4,9 @@
 #include <iostream>
 
 GameStateGame::GameStateGame()
-  : GameState()
+  : GameState(),
+    _player_control_left(false),
+    _player_control_right(false)
 {
   glm::vec3 pos(0, 0, 0);
 #if 1
@@ -36,7 +38,12 @@ GameStateGame::~GameStateGame()
 
 void GameStateGame::Tick(double deltatime)
 {
-  assert(deltatime == deltatime);
+  if(_player_control_left)
+    _level->GetPlayer()->AddImpulse(glm::vec3(-20.0 * deltatime, 0, 0));
+  if(_player_control_right)
+    _level->GetPlayer()->AddImpulse(glm::vec3(20.0 * deltatime, 0, 0));
+
+  _level->Tick(deltatime);
   _level->Draw(_camera->GetViewProjection());
 }
 
@@ -44,41 +51,69 @@ void GameStateGame::Tick(double deltatime)
 void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 {
   assert(mod == mod);
-    
-  if(!pressed)
-    return;
-    
+
   switch(key)
     {
+#if 0
     case SDLK_LEFT:
-      _camera->MoveRight(-CAMERA_SPEED * 2.0);
+      if(!pressed)
+        _camera->MoveRight(-CAMERA_SPEED * 2.0);
       break;
+      
     case SDLK_RIGHT:
-      _camera->MoveRight(CAMERA_SPEED * 2.0);
+      if(!pressed)
+        _camera->MoveRight(CAMERA_SPEED * 2.0);
       break;
+      
+#else
+    case SDLK_LEFT:
+      _player_control_left = pressed;
+      break;
+      
+    case SDLK_RIGHT:
+      _player_control_right = pressed;
+      break;
+#endif
+      
     case SDLK_UP:
-      _camera->MoveForward(CAMERA_SPEED);
+      if(!pressed)
+        _camera->MoveForward(CAMERA_SPEED);
       break;
+      
     case SDLK_DOWN:
-      _camera->MoveForward(-CAMERA_SPEED);
+      if(!pressed)
+        _camera->MoveForward(-CAMERA_SPEED);
       break;
+      
     case SDLK_PAGEUP:
-      _camera->MoveUp(CAMERA_SPEED);
+      if(!pressed)
+        _camera->MoveUp(CAMERA_SPEED);
       break;
+      
     case SDLK_PAGEDOWN:
-      _camera->MoveUp(-CAMERA_SPEED);
+      if(!pressed)
+        _camera->MoveUp(-CAMERA_SPEED);
       break;
+      
     case SDLK_PLUS:
-      _fov++;
-      std::cout << "fov:" << _fov << std::endl;
-      _camera->SetFOV(_fov);
-      _camera->UpdateViewProjection();
+      if(!pressed)
+        {
+          _fov++;
+          std::cout << "fov:" << _fov << std::endl;
+          _camera->SetFOV(_fov);
+          _camera->UpdateViewProjection();
+        }
       break;
+      
     case SDLK_MINUS:
-      _fov--;
-      std::cout << "fov:" << _fov << std::endl;
-      _camera->SetFOV(_fov);
-      _camera->UpdateViewProjection();
+      if(!pressed)
+        {
+          _fov--;
+          std::cout << "fov:" << _fov << std::endl;
+          _camera->SetFOV(_fov);
+          _camera->UpdateViewProjection();
+        }
       break;
     }
+
 }

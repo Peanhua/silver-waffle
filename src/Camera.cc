@@ -3,7 +3,7 @@
 
 Camera::Camera()
   : _up(0, 0, 1),
-    _position(0, -9, 0),
+    _position(0, -15, 0),
     _target_position(0, 0, 0),
     _view_projection(1)
 {
