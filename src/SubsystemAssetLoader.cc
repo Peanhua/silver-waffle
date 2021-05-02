@@ -1,0 +1,68 @@
+#include "SubsystemAssetLoader.hh"
+#include <cassert>
+
+
+SubsystemAssetLoader * AssetLoader = nullptr;
+
+
+SubsystemAssetLoader::SubsystemAssetLoader()
+  : Subsystem("AssetLoader")
+{
+}
+
+
+bool SubsystemAssetLoader::Start()
+{
+  _text_assets["x.vert"] = R"(
+#version 130
+
+uniform mat4 in_mvp;
+
+in vec3 in_vertex;
+in vec3 in_color;
+
+out vec3 diffuse_color;
+
+void main()
+{
+  diffuse_color = in_color;
+  gl_Position = in_mvp * vec4(in_vertex, 1.0f);
+}
+)";
+
+
+  _text_assets["x.frag"] = R"(
+#version 130
+
+in vec3 diffuse_color;
+out vec4 final_colour;
+
+void main()
+{
+  final_colour = vec4(diffuse_color, 1);
+}
+)";
+
+  assert(!AssetLoader);
+  AssetLoader = this;
+
+  return true;
+}
+
+
+void SubsystemAssetLoader::Stop()
+{
+  if(AssetLoader == this)
+    AssetLoader = nullptr;
+}
+
+
+const std::string & SubsystemAssetLoader::LoadText(const std::string & filename)
+{
+  auto it = _text_assets.find(filename);
+  if(it != _text_assets.end())
+    return (*it).second;
+
+  assert(false);
+}
+
