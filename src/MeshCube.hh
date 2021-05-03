@@ -23,4 +23,11 @@ public:
   MeshCube3();
 };
 
+
+class MeshCube4 : public Mesh
+{
+public:
+  MeshCube4();
+};
+
 #endif

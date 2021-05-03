@@ -11,7 +11,8 @@ class Mesh
 public:
   Mesh();
 
-  void Draw(const glm::mat4 & mvp) const;
+  void   Draw(const glm::mat4 & mvp) const;
+  double GetBoundingSphereRadius()   const;
   
 protected:
   void AddVertex(const glm::vec3 & position);
@@ -32,6 +33,10 @@ private:
   std::vector<GLfloat> _colors;
 
   ShaderProgram * _shader_program;
+
+  double _bounding_sphere_radius;
+
+  void CalculateBoundingSphereRadius();
 };
 
 #endif

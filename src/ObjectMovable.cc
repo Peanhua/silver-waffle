@@ -16,6 +16,13 @@ void ObjectMovable::Tick(double deltatime)
 }
 
 
+void ObjectMovable::Hit(double damage, const glm::vec3 & impulse)
+{
+  Object::Hit(damage, impulse);
+  AddImpulse(impulse);
+}
+
+
 void ObjectMovable::AddImpulse(const glm::vec3 & impulse)
 {
   _velocity += impulse;

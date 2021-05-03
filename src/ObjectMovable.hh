@@ -9,6 +9,7 @@ public:
   ObjectMovable(const glm::vec3 & position);
 
   void Tick(double deltatime) override;
+  void Hit(double damage, const glm::vec3 & impulse) override;
 
   void AddImpulse(const glm::vec3 & impulse);
   void SetMaxVelocity(double max_velocity);

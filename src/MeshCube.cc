@@ -8,33 +8,33 @@ MeshCube::MeshCube()
     {
 #if 1
       // bottom
-      glm::vec3(0, 0, 0),
-      glm::vec3(0, 1, 0),
-      glm::vec3(1, 1, 0),
-      glm::vec3(1, 0, 0),
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3(-0.5,  0.5, -0.5),
+      glm::vec3( 0.5,  0.5, -0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
 
       // top
-      glm::vec3(0, 0, 1),
-      glm::vec3(1, 0, 1),
-      glm::vec3(1, 1, 1),
-      glm::vec3(0, 1, 1),
+      glm::vec3(-0.5, -0.5, 0.5),
+      glm::vec3( 0.5, -0.5, 0.5),
+      glm::vec3( 0.5,  0.5, 0.5),
+      glm::vec3(-0.5,  0.5, 0.5),
 
       // back
-      glm::vec3(0, 0, 0),
-      glm::vec3(1, 0, 0),
-      glm::vec3(1, 0, 1),
-      glm::vec3(0, 0, 1),
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
+      glm::vec3( 0.5, -0.5,  0.5),
+      glm::vec3(-0.5, -0.5,  0.5),
 
       // front
-      glm::vec3(0, 1, 0),
-      glm::vec3(0, 1, 1),
-      glm::vec3(1, 1, 1),
-      glm::vec3(1, 1, 0),
+      glm::vec3(-0.5, 0.5, -0.5),
+      glm::vec3(-0.5, 0.5,  0.5),
+      glm::vec3( 0.5, 0.5,  0.5),
+      glm::vec3( 0.5, 0.5, -0.5),
 #else
-      glm::vec3(0, 0, 0),
-      glm::vec3(0, 0, 1),
-      glm::vec3(1, 0, 1),
-      glm::vec3(1, 0, 0),
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3(-0.5, -0.5,  0.5),
+      glm::vec3( 0.5, -0.5,  0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
 #endif
     };
   glm::vec3 colors[] =
@@ -89,28 +89,28 @@ MeshCube2::MeshCube2()
   glm::vec3 vertices[] =
     {
       // bottom
-      glm::vec3(0, 0, 0),
-      glm::vec3(0, 1, 0),
-      glm::vec3(1, 1, 0),
-      glm::vec3(1, 0, 0),
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3(-0.5,  0.5, -0.5),
+      glm::vec3( 0.5,  0.5, -0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
 
       // top
-      glm::vec3(0, 0, 1),
-      glm::vec3(1, 0, 1),
-      glm::vec3(1, 1, 1),
-      glm::vec3(0, 1, 1),
+      glm::vec3(-0.5, -0.5, 0.5),
+      glm::vec3( 0.5, -0.5, 0.5),
+      glm::vec3( 0.5,  0.5, 0.5),
+      glm::vec3(-0.5,  0.5, 0.5),
 
       // back
-      glm::vec3(0, 0, 0),
-      glm::vec3(1, 0, 0),
-      glm::vec3(1, 0, 1),
-      glm::vec3(0, 0, 1),
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
+      glm::vec3( 0.5, -0.5,  0.5),
+      glm::vec3(-0.5, -0.5,  0.5),
 
       // front
-      glm::vec3(0, 1, 0),
-      glm::vec3(0, 1, 1),
-      glm::vec3(1, 1, 1),
-      glm::vec3(1, 1, 0),
+      glm::vec3(-0.5, 0.5, -0.5),
+      glm::vec3(-0.5, 0.5,  0.5),
+      glm::vec3( 0.5, 0.5,  0.5),
+      glm::vec3( 0.5, 0.5, -0.5),
     };
   glm::vec3 colors[] =
     {
@@ -156,28 +156,28 @@ MeshCube3::MeshCube3()
   glm::vec3 vertices[] =
     {
       // bottom
-      glm::vec3(0, 0, 0),
-      glm::vec3(0, 1, 0),
-      glm::vec3(1, 1, 0),
-      glm::vec3(1, 0, 0),
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3(-0.5,  0.5, -0.5),
+      glm::vec3( 0.5,  0.5, -0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
 
       // top
-      glm::vec3(0, 0, 1),
-      glm::vec3(1, 0, 1),
-      glm::vec3(1, 1, 1),
-      glm::vec3(0, 1, 1),
+      glm::vec3(-0.5, -0.5, 0.5),
+      glm::vec3( 0.5, -0.5, 0.5),
+      glm::vec3( 0.5,  0.5, 0.5),
+      glm::vec3(-0.5,  0.5, 0.5),
 
       // back
-      glm::vec3(0, 0, 0),
-      glm::vec3(1, 0, 0),
-      glm::vec3(1, 0, 1),
-      glm::vec3(0, 0, 1),
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
+      glm::vec3( 0.5, -0.5,  0.5),
+      glm::vec3(-0.5, -0.5,  0.5),
 
       // front
-      glm::vec3(0, 1, 0),
-      glm::vec3(0, 1, 1),
-      glm::vec3(1, 1, 1),
-      glm::vec3(1, 1, 0),
+      glm::vec3(-0.5, 0.5, -0.5),
+      glm::vec3(-0.5, 0.5,  0.5),
+      glm::vec3( 0.5, 0.5,  0.5),
+      glm::vec3( 0.5, 0.5, -0.5),
     };
   glm::vec3 colors[] =
     {
@@ -207,6 +207,69 @@ MeshCube3::MeshCube3()
     };
   for(auto v : vertices)
     this->AddVertex(v * 0.9f);
+  for(auto c : colors)
+    this->AddColor(c);
+  
+  this->SetPrimitiveType(GL_QUADS);
+  this->Update();
+
+  this->SetShaderProgram(AssetLoader->LoadShaderProgram("x"));
+}
+
+
+MeshCube4::MeshCube4()
+  : Mesh()
+{
+  glm::vec3 vertices[] =
+    {
+      // bottom
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3(-0.5,  0.5, -0.5),
+      glm::vec3( 0.5,  0.5, -0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
+
+      // top
+      glm::vec3(-0.5, -0.5, 0.5),
+      glm::vec3( 0.5, -0.5, 0.5),
+      glm::vec3( 0.5,  0.5, 0.5),
+      glm::vec3(-0.5,  0.5, 0.5),
+
+      // back
+      glm::vec3(-0.5, -0.5, -0.5),
+      glm::vec3( 0.5, -0.5, -0.5),
+      glm::vec3( 0.5, -0.5,  0.5),
+      glm::vec3(-0.5, -0.5,  0.5),
+
+      // front
+      glm::vec3(-0.5, 0.5, -0.5),
+      glm::vec3(-0.5, 0.5,  0.5),
+      glm::vec3( 0.5, 0.5,  0.5),
+      glm::vec3( 0.5, 0.5, -0.5),
+    };
+  glm::vec3 colors[] =
+    {
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+      glm::vec3(1, 1, 1),
+    };
+  for(auto v : vertices)
+    this->AddVertex(v * 0.1f);
   for(auto c : colors)
     this->AddColor(c);
   

@@ -5,7 +5,8 @@ Mesh::Mesh()
   : _vertex_vbo(0),
     _color_vbo(0),
     _primitive_type(GL_TRIANGLES),
-    _shader_program(nullptr)
+    _shader_program(nullptr),
+    _bounding_sphere_radius(0)
 {
 }
 
@@ -66,6 +67,8 @@ void Mesh::Update()
   glBindBuffer(GL_ARRAY_BUFFER, this->_color_vbo);
   glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(this->_colors.size() * sizeof(GLfloat)), this->_colors.data(), GL_STATIC_DRAW);
   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+
+  CalculateBoundingSphereRadius();
 }
 
 
@@ -79,3 +82,22 @@ ShaderProgram * Mesh::GetShaderProgram() const
 {
   return _shader_program;
 }
+
+
+void Mesh::CalculateBoundingSphereRadius()
+{
+  _bounding_sphere_radius = 0.0;
+  for(auto v : _vertices)
+    {
+      auto distance = glm::length(v);
+      if(distance > _bounding_sphere_radius)
+        _bounding_sphere_radius = distance;
+    }
+}
+
+
+double Mesh::GetBoundingSphereRadius() const
+{
+  return _bounding_sphere_radius;
+}
+

@@ -8,15 +8,14 @@ GameStateGame::GameStateGame()
     _player_control_left(false),
     _player_control_right(false)
 {
-  glm::vec3 pos(0, 0, 0);
 #if 1
   _camera = new Camera();
-  _level = new GameLevel(pos);
+  _level = new GameLevel();
   _fov = 60.0;
 # define CAMERA_SPEED 0.5
 #else
   _camera = new Camera2();
-  _level = new GameLevel2(pos);
+  _level = new GameLevel2();
   _fov = 120.0;
 # define CAMERA_SPEED 1
 #endif
@@ -84,6 +83,10 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       
     case SDLK_RIGHT:
       _player_control_right = pressed;
+      break;
+
+    case SDLK_SPACE:
+      _level->AddPlayerBullet(glm::vec3(0, 0, 10), 10.0);
       break;
 #endif
       
