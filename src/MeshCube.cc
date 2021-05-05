@@ -2,7 +2,7 @@
 #include "SubsystemAssetLoader.hh"
 
 MeshCube::MeshCube()
-  : Mesh(Option::COLOR)
+  : Mesh(OPTION_COLOR | OPTION_ELEMENT)
 {
   glm::vec3 vertices[] =
     {
@@ -37,6 +37,15 @@ MeshCube::MeshCube()
       glm::vec3( 0.5, -0.5, -0.5),
 #endif
     };
+
+  int indices[] =
+    {
+      0,   1,  2,  3,
+      4,   5,  6,  7,
+      8,   9, 10, 11,
+      12, 13, 14, 15,
+    };
+  
   glm::vec3 colors[] =
     {
 #if 1
@@ -72,6 +81,8 @@ MeshCube::MeshCube()
     };
   for(auto v : vertices)
     this->AddVertex(v * 0.9f);
+  for(auto i : indices)
+    this->AddElement(i);
   for(auto c : colors)
     this->AddColor(c);
   
@@ -84,7 +95,7 @@ MeshCube::MeshCube()
 
 
 MeshCube2::MeshCube2()
-  : Mesh(Option::COLOR)
+  : Mesh(OPTION_COLOR)
 {
   glm::vec3 vertices[] =
     {
@@ -151,7 +162,7 @@ MeshCube2::MeshCube2()
 
 
 MeshCube3::MeshCube3()
-  : Mesh(Option::COLOR)
+  : Mesh(OPTION_COLOR)
 {
   glm::vec3 vertices[] =
     {
@@ -218,7 +229,7 @@ MeshCube3::MeshCube3()
 
 
 MeshCube4::MeshCube4()
-  : Mesh(Option::COLOR)
+  : Mesh(OPTION_COLOR)
 {
   glm::vec3 vertices[] =
     {
