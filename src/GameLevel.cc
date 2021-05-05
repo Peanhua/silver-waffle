@@ -67,7 +67,7 @@ ObjectMovable * GameLevel::GetPlayer() const
 void GameLevel::AddPlayerBullet(const glm::vec3 & velocity, double lifetime)
 {
   bool done = false;
-  for(int i = 0; !done && i < _bullets.size(); i++)
+  for(unsigned int i = 0; !done && i < _bullets.size(); i++)
     {
       if(!_bullets[_bulletpos]->IsAlive())
         {
@@ -111,7 +111,7 @@ void GameLevel2::Initialize(double difficulty)
     for(int x = 0; x < 12; x++)
       {
         glm::vec3 pos = glm::rotateY(zeropos, static_cast<float>(glm::radians(360.0 / 12.0 * static_cast<double>(x))));
-        pos.y = y;
+        pos.y = static_cast<float>(y);
         auto invader = new Object(pos);
         if((x + y) % 3 == 0)
           invader->SetMesh(new MeshCube2());

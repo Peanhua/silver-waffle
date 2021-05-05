@@ -17,19 +17,19 @@ void ObjectInvader::Tick(double deltatime)
       glm::vec3 imp(0, 0, 0);
       bool doimp = false;
       
-      if(vel.z > -2)
+      if(vel.z > -2.0f)
         {
-          imp.z = -0.5;
+          imp.z = -0.5f;
           doimp = true;
         }
-      if(vel.x < 0)
+      if(vel.x < 0.0f)
         {
-          imp.x = 0.1;
+          imp.x = 0.1f;
           doimp = true;
         }
-      else if(vel.x > 0)
+      else if(vel.x > 0.0f)
         {
-          imp.x = -0.1;
+          imp.x = -0.1f;
           doimp = true;
         }
       if(doimp)

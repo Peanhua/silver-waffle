@@ -1,8 +1,10 @@
 #include <cassert>
 #include "Mesh.hh"
 
-Mesh::Mesh()
-  : _vertex_vbo(0),
+Mesh::Mesh(Option options)
+  : _options(options),
+    _vao(0),
+    _vertex_vbo(0),
     _color_vbo(0),
     _primitive_type(GL_TRIANGLES),
     _shader_program(nullptr),
@@ -17,56 +19,65 @@ void Mesh::Draw(const glm::mat4 & mvp) const
   _shader_program->Use();
   _shader_program->SetMatrix("in_mvp", mvp);
   
-  glBindBuffer(GL_ARRAY_BUFFER, this->_vertex_vbo);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-
-  glBindBuffer(GL_ARRAY_BUFFER, this->_color_vbo);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
-  
-  glEnableVertexAttribArray(0);
-  glEnableVertexAttribArray(1);
-  glDrawArrays(this->_primitive_type, 0, static_cast<GLsizei>(this->_vertices.size()));
-  glDisableVertexAttribArray(0);
-  glDisableVertexAttribArray(1);
+  glBindVertexArray(_vao);
+  glDrawArrays(_primitive_type, 0, static_cast<GLsizei>(_vertices.size()));
 }
 
 
 void Mesh::AddVertex(const glm::vec3 & position)
 {
-  this->_vertices.push_back(position.x);
-  this->_vertices.push_back(position.y);
-  this->_vertices.push_back(position.z);
+  _vertices.push_back(position.x);
+  _vertices.push_back(position.y);
+  _vertices.push_back(position.z);
 }
 
 
 void Mesh::AddColor(const glm::vec3 & color)
 {
-  this->_colors.push_back(color.x);
-  this->_colors.push_back(color.y);
-  this->_colors.push_back(color.z);
+  _colors.push_back(color.x);
+  _colors.push_back(color.y);
+  _colors.push_back(color.z);
 }
 
 
 void Mesh::SetPrimitiveType(const GLenum primitive_type)
 {
-  this->_primitive_type = primitive_type;
+  _primitive_type = primitive_type;
 }
 
 
 void Mesh::Update()
 {
-  if(this->_vertex_vbo == 0)
-    glGenBuffers(1, &this->_vertex_vbo);
-  if(this->_color_vbo == 0)
-    glGenBuffers(1, &this->_color_vbo);
+  if(_vao == 0)
+    glGenVertexArrays(1, &_vao);
+  assert(_vao != 0);
+  
+  if(_vertex_vbo == 0)
+    glGenBuffers(1, &_vertex_vbo);
+  assert(_vertex_vbo != 0);
 
-  glBindBuffer(GL_ARRAY_BUFFER, this->_vertex_vbo);
-  glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(this->_vertices.size() * sizeof(GLfloat)), this->_vertices.data(), GL_STATIC_DRAW);
+  if(_options & Option::COLOR)
+    {
+      if(_color_vbo == 0)
+        glGenBuffers(1, &_color_vbo);
+      assert(_color_vbo != 0);
+    }
+
+  
+  glBindVertexArray(_vao);
+  
+  glBindBuffer(GL_ARRAY_BUFFER, _vertex_vbo);
+  glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_vertices.size() * sizeof(GLfloat)), _vertices.data(), GL_STATIC_DRAW);
+  glEnableVertexAttribArray(0);
   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
 
-  glBindBuffer(GL_ARRAY_BUFFER, this->_color_vbo);
-  glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(this->_colors.size() * sizeof(GLfloat)), this->_colors.data(), GL_STATIC_DRAW);
-  glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+  if(_options & Option::COLOR)
+    {
+      glBindBuffer(GL_ARRAY_BUFFER, _color_vbo);
+      glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_colors.size() * sizeof(GLfloat)), _colors.data(), GL_STATIC_DRAW);
+      glEnableVertexAttribArray(1);
+      glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
 
   CalculateBoundingSphereRadius();
 }
@@ -89,7 +100,7 @@ void Mesh::CalculateBoundingSphereRadius()
   _bounding_sphere_radius = 0.0;
   for(auto v : _vertices)
     {
-      auto distance = glm::length(v);
+      double distance = glm::length(v);
       if(distance > _bounding_sphere_radius)
         _bounding_sphere_radius = distance;
     }

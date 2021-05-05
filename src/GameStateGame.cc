@@ -45,11 +45,11 @@ void GameStateGame::Tick(double deltatime)
   if(!_player_control_left && !_player_control_right)
     {
       const glm::vec3 vel = _level->GetPlayer()->GetVelocity();
-      if(std::abs(vel.x) < 0.1)
+      if(std::abs(vel.x) < 0.1f)
         _level->GetPlayer()->SetVelocity(glm::vec3(0, vel.y, vel.z));
-      else if(vel.x < 0.0)
+      else if(vel.x < 0.0f)
         _level->GetPlayer()->AddImpulse(glm::vec3(10.0 * deltatime, 0, 0));
-      else if(vel.x > 0.0)
+      else if(vel.x > 0.0f)
         _level->GetPlayer()->AddImpulse(glm::vec3(-10.0 * deltatime, 0, 0));
     }
 

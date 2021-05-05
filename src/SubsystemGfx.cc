@@ -43,10 +43,6 @@ bool SubsystemGfx::Start()
                   glDisable(GL_CULL_FACE);
                   //glCullFace(GL_BACK);
 
-                  GLuint vao;
-                  glGenVertexArrays(1, &vao);
-                  glBindVertexArray(vao);
-                      
                   rv = true;
                   
 

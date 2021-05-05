@@ -70,7 +70,7 @@ void Object::SetMesh(Mesh * mesh)
 bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction) const
 {
   auto distance = glm::distance(GetPosition(), other.GetPosition());
-  if(distance > GetMesh()->GetBoundingSphereRadius() + other.GetMesh()->GetBoundingSphereRadius())
+  if(distance > static_cast<float>(GetMesh()->GetBoundingSphereRadius() + other.GetMesh()->GetBoundingSphereRadius()))
     return false;
 
   out_hit_direction = glm::normalize(other.GetPosition() - GetPosition());
@@ -80,6 +80,7 @@ bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction)
 
 void Object::Hit(double damage, const glm::vec3 & impulse)
 {
+  assert(impulse == impulse);
   _health -= damage;
 }
 

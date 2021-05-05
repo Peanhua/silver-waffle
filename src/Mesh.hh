@@ -9,7 +9,12 @@
 class Mesh
 {
 public:
-  Mesh();
+  enum Option
+    {
+      COLOR = 1
+    };
+  
+  Mesh(const Option options);
 
   void   Draw(const glm::mat4 & mvp) const;
   double GetBoundingSphereRadius()   const;
@@ -25,6 +30,9 @@ protected:
 
   
 private:
+  Option _options;
+  
+  GLuint _vao;
   GLuint _vertex_vbo;
   GLuint _color_vbo;
   GLenum _primitive_type;
