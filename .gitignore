@@ -34,6 +34,8 @@ src/silverwaffle
 
 # Temporary files
 *~
+\#*\#
+*.blend1
 
 # Autotools generated files
 .deps
@@ -53,3 +55,7 @@ depcomp
 install-sh
 missing
 stamp-h1
+
+
+# Other
+.bash_history

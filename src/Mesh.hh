@@ -5,6 +5,7 @@
 #include "ShaderProgram.hh"
 #include <GL/glew.h>
 #include <vector>
+#include <assimp/scene.h>
 
 class Mesh
 {
@@ -17,8 +18,13 @@ public:
 
   Mesh(const unsigned int options);
 
+  bool   LoadFromFile(const std::string & filename);
+  void   UpdateGPU();
+  void   CalculateBoundingSphereRadius();
+  
   void   Draw(const glm::mat4 & mvp) const;
   double GetBoundingSphereRadius()   const;
+
   
 protected:
   void AddVertex(const glm::vec3 & position);
@@ -28,7 +34,6 @@ protected:
   void AddElement(unsigned int index1, unsigned int index2, unsigned int index3);
   void AddElement(unsigned int index1, unsigned int index2, unsigned int index3, unsigned int index4);
   void SetPrimitiveType(const GLenum primitive_type);
-  void Update();
   
   void            SetShaderProgram(ShaderProgram * shader_program);
   ShaderProgram * GetShaderProgram() const;
@@ -42,6 +47,8 @@ private:
     };
   
   unsigned int _options;
+
+  glm::mat4 _transform;
   
   GLuint _vao;
   GLuint _vertex_vbo;
@@ -57,7 +64,9 @@ private:
 
   double _bounding_sphere_radius;
 
-  void CalculateBoundingSphereRadius();
+  std::vector<Mesh *> _children;
+
+  bool LoadFromAssimpNode(const aiScene * scene, aiNode * node);
 };
 
 #endif

@@ -10,3 +10,18 @@ std::ostream & operator<<(std::ostream & out, const glm::vec3 & v)
 
   return out;
 }
+
+
+std::ostream & operator<<(std::ostream & out, const glm::mat4 & m)
+{
+  int version = 1;
+  char delimiter = ' ';
+
+  out << version << delimiter;
+  
+  for(int y = 0; y < 4; y++)
+    for(int x = 0; x < 4; x++)
+      out << m[y][x] << delimiter;
+  
+  return out;
+}

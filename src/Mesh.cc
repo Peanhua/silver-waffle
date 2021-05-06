@@ -1,8 +1,10 @@
-#include <cassert>
 #include "Mesh.hh"
+#include <cassert>
+#include <iostream>
 
 Mesh::Mesh(const unsigned int options)
   : _options(options),
+    _transform(1),
     _vao(0),
     _vertex_vbo(0),
     _element_vbo(0),
@@ -16,15 +18,24 @@ Mesh::Mesh(const unsigned int options)
 
 void Mesh::Draw(const glm::mat4 & mvp) const
 {
-  assert(_shader_program);
-  _shader_program->Use();
-  _shader_program->SetMatrix("in_mvp", mvp);
-  
-  glBindVertexArray(_vao);
-  if(_options & OPTION_ELEMENT)
-    glDrawElements(_primitive_type, static_cast<GLsizei>(_indices.size()), GL_UNSIGNED_INT, nullptr);
-  else
-    glDrawArrays(_primitive_type, 0, static_cast<GLsizei>(_vertices.size()));
+  const glm::mat4 transform(mvp * _transform);
+
+  if(_vertices.size() > 0)
+    {
+      assert(_shader_program);
+      _shader_program->Use();
+
+      _shader_program->SetMatrix("in_mvp", transform);
+      
+      glBindVertexArray(_vao);
+      if(_options & OPTION_ELEMENT)
+        glDrawElements(_primitive_type, static_cast<GLsizei>(_indices.size()), GL_UNSIGNED_INT, nullptr);
+      else
+        glDrawArrays(_primitive_type, 0, static_cast<GLsizei>(_vertices.size()));
+    }
+
+  for(auto c : _children)
+    c->Draw(transform);
 }
 
 
@@ -79,7 +90,7 @@ void Mesh::SetPrimitiveType(const GLenum primitive_type)
 }
 
 
-void Mesh::Update()
+void Mesh::UpdateGPU()
 {
   {
     if(_vao == 0)
@@ -121,7 +132,8 @@ void Mesh::Update()
       glVertexAttribPointer(ALOC_COLOR, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
-  CalculateBoundingSphereRadius();
+  for(auto c : _children)
+    c->UpdateGPU();
 }
 
 
@@ -140,12 +152,14 @@ ShaderProgram * Mesh::GetShaderProgram() const
 void Mesh::CalculateBoundingSphereRadius()
 {
   _bounding_sphere_radius = 0.0;
-  for(auto v : _vertices)
+  for(auto c : _children)
     {
-      double distance = glm::length(v);
-      if(distance > _bounding_sphere_radius)
-        _bounding_sphere_radius = distance;
+      c->CalculateBoundingSphereRadius();
+      _bounding_sphere_radius = std::max(_bounding_sphere_radius, c->GetBoundingSphereRadius());
     }
+  
+  for(auto v : _vertices)
+    _bounding_sphere_radius = std::max(_bounding_sphere_radius, static_cast<double>(glm::length(v)));
 }
 
 

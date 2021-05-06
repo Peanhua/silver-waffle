@@ -19,6 +19,8 @@ PKG_CHECK_MODULES([GLEW], [glew], [],
 
 PKG_CHECK_MODULES([GLM], [glm])
 
+PKG_CHECK_MODULES([ASSIMP], [assimp >= 3.3.1])
+
 AX_CHECK_GL
 
 

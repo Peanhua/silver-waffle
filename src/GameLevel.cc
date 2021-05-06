@@ -26,10 +26,13 @@ void GameLevel::Draw(const glm::mat4 & mvp) const
     GetMesh()->Draw(mymvp);
 
   _player->Draw(mymvp);
+
   for(auto i : _invaders)
     i->Draw(mymvp);
+
   for(auto b : _bullets)
     b->Draw(mymvp);
+
 }
 
 
@@ -48,10 +51,12 @@ void GameLevel::Initialize(double difficulty)
     for(int x = 0; x < 20; x++)
       {
         auto invader = new ObjectInvader(topleft + glm::vec3(x, 0, -y));
-        if((x + y) % 3 == 0)
-          invader->SetMesh(new MeshCube2());
-        else
-          invader->SetMesh(new MeshCube());
+
+        auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT);
+        mesh->LoadFromFile("3d-models/Invader1.dae");
+        mesh->UpdateGPU();
+        mesh->CalculateBoundingSphereRadius();
+        invader->SetMesh(mesh);
         AddChild(invader);
         _invaders.push_back(invader);
       }

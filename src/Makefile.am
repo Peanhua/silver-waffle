@@ -3,7 +3,8 @@ AM_CXXFLAGS =                \
         $(SDL2_image_CFLAGS) \
         $(GL_CFLAGS)         \
         $(GLEW_CFLAGS)       \
-        $(GLM_CFLAGS)       
+        $(GLM_CFLAGS)        \
+	$(ASSIMP_CFLAGS)
 
 bin_PROGRAMS = silverwaffle
 
@@ -11,6 +12,29 @@ silverwaffle_LDADD =       \
         $(SDL2_LIBS)       \
         $(SDL2_image_LIBS) \
         $(GL_LIBS)         \
-        $(GLEW_LIBS)       
+        $(GLEW_LIBS)       \
+	$(ASSIMP_LIBS)
 
-silverwaffle_SOURCES = main.cc Object.cc ObjectMovable.cc ObjectInvader.cc ObjectBullet.cc GameLevel.cc glm.cc Mesh.cc MeshCube.cc Shader.cc ShaderProgram.cc Camera.cc Subsystem.cc SubsystemHandler.cc SubsystemAssetLoader.cc SubsystemGfx.cc SubsystemInput.cc SubsystemGameState.cc GameState.cc GameStateGame.cc Camera2.cc
+silverwaffle_SOURCES =		\
+	Camera.cc		\
+	Camera2.cc		\
+	GameLevel.cc		\
+	GameState.cc		\
+	GameStateGame.cc	\
+	Mesh.cc			\
+	MeshCube.cc		\
+	Mesh_LoadFromFile.cc	\
+	Object.cc		\
+	ObjectBullet.cc		\
+	ObjectInvader.cc	\
+	ObjectMovable.cc	\
+	Shader.cc		\
+	ShaderProgram.cc	\
+	Subsystem.cc		\
+	SubsystemAssetLoader.cc	\
+	SubsystemGameState.cc	\
+	SubsystemGfx.cc		\
+	SubsystemHandler.cc	\
+	SubsystemInput.cc	\
+	glm.cc			\
+	main.cc
