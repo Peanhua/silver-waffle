@@ -1,5 +1,8 @@
 #include "SubsystemAssetLoader.hh"
 #include <cassert>
+#include <json11.hpp>
+#include <iostream>
+#include <fstream>
 
 
 SubsystemAssetLoader * AssetLoader = nullptr;
@@ -14,7 +17,7 @@ SubsystemAssetLoader::SubsystemAssetLoader()
 bool SubsystemAssetLoader::Start()
 {
   _text_assets["x.vert"] = R"(
-#version 130
+#version 150
 
 uniform mat4 in_mvp;
 
@@ -32,7 +35,7 @@ void main()
 
 
   _text_assets["x.frag"] = R"(
-#version 130
+#version 150
 
 in vec3 diffuse_color;
 out vec4 final_colour;
@@ -99,5 +102,44 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
       _meshes[name] = mesh;
     }
 
+  const std::string filename("3d-models/" + name + ".json");
+  std::ifstream fp(filename);
+  if(fp)
+    {
+      std::string json_string;
+      std::string tmp;
+      while(std::getline(fp, tmp))
+        {
+          json_string += tmp + '\n';
+        }
+      if(fp.eof())
+        {
+          std::string err;
+          auto config = json11::Json::parse(json_string, err);
+          if(config.is_object())
+            {
+              if(config["rotate-x"].is_number())
+                {
+                  auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-x"].number_value())), glm::vec3(1, 0, 0));
+                  mesh->ApplyTransform(transform);
+                }
+              if(config["rotate-y"].is_number())
+                {
+                  auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-y"].number_value())), glm::vec3(0, 1, 0));
+                  mesh->ApplyTransform(transform);
+                }
+              if(config["rotate-z"].is_number())
+                {
+                  auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-z"].number_value())), glm::vec3(0, 0, 1));
+                  mesh->ApplyTransform(transform);
+                }
+            }
+          else
+            std::cerr << "Error while parsing '" << filename << "': " << err << std::endl;
+        }
+      else
+        std::cerr << "Failed to read '" << filename << "'" << std::endl;
+    }
+  
   return mesh;
 }

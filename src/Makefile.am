@@ -4,7 +4,8 @@ AM_CXXFLAGS =                \
         $(GL_CFLAGS)         \
         $(GLEW_CFLAGS)       \
         $(GLM_CFLAGS)        \
-	$(ASSIMP_CFLAGS)
+	$(ASSIMP_CFLAGS)     \
+	$(JSON11_CFLAGS)
 
 bin_PROGRAMS = silverwaffle
 
@@ -13,7 +14,8 @@ silverwaffle_LDADD =       \
         $(SDL2_image_LIBS) \
         $(GL_LIBS)         \
         $(GLEW_LIBS)       \
-	$(ASSIMP_LIBS)
+	$(ASSIMP_LIBS)     \
+	$(JSON11_LIBS)
 
 silverwaffle_SOURCES =		\
 	Camera.cc		\
@@ -22,7 +24,6 @@ silverwaffle_SOURCES =		\
 	GameState.cc		\
 	GameStateGame.cc	\
 	Mesh.cc			\
-	MeshCube.cc		\
 	Mesh_LoadFromFile.cc	\
 	Object.cc		\
 	ObjectBullet.cc		\

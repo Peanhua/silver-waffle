@@ -1,10 +1,10 @@
 #include "ObjectBullet.hh"
-#include "MeshCube.hh"
+#include "SubsystemAssetLoader.hh"
 
 ObjectBullet::ObjectBullet()
   : ObjectMovable(glm::vec3(0, 0, 0))
 {
-  SetMesh(new MeshCube4());
+  SetMesh(AssetLoader->LoadMesh("PlayerBullet"));
   SetHealth(0);
 }
 

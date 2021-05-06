@@ -21,6 +21,8 @@ PKG_CHECK_MODULES([GLM], [glm])
 
 PKG_CHECK_MODULES([ASSIMP], [assimp >= 3.3.1])
 
+PKG_CHECK_MODULES([JSON11], [json11 >= 1])
+
 AX_CHECK_GL
 
 

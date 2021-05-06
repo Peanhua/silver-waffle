@@ -1,5 +1,4 @@
 #include "GameLevel.hh"
-#include "MeshCube.hh"
 #include "ObjectInvader.hh"
 #include "ObjectBullet.hh"
 #include "SubsystemAssetLoader.hh"
@@ -44,7 +43,11 @@ void GameLevel::Initialize(double difficulty)
   glm::vec3 topleft(-10, 0, 40);
 
   _player = new ObjectMovable(topleft + glm::vec3(0, 0, -50));
-  _player->SetMesh(new MeshCube3());
+  {
+    auto mesh = AssetLoader->LoadMesh("Player");
+    assert(mesh);
+    _player->SetMesh(mesh);
+  }
   AddChild(_player);
   
   _invaders.clear();
@@ -109,7 +112,7 @@ void GameLevel::Tick(double deltatime)
 void GameLevel2::Initialize(double difficulty)
 {
   assert(difficulty == difficulty);
-  
+  #if 0
   glm::vec3 zeropos(0, 0, 4);
 
   for(int y = 0; y < 8; y++)
@@ -124,5 +127,6 @@ void GameLevel2::Initialize(double difficulty)
           invader->SetMesh(new MeshCube());
         AddChild(invader);
       }
+  #endif
 }
 

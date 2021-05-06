@@ -175,3 +175,9 @@ double Mesh::GetBoundingSphereRadius() const
   return _bounding_sphere_radius;
 }
 
+
+void Mesh::ApplyTransform(const glm::mat4 & transform)
+{
+  _transform *= transform;
+}
+
