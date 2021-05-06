@@ -20,7 +20,7 @@ public:
 
   bool   LoadFromFile(const std::string & filename);
   void   UpdateGPU();
-  void   CalculateBoundingSphereRadius();
+  void   CalculateBoundingSphereRadius(const glm::mat4 & transform = glm::mat4(1));
   
   void   Draw(const glm::mat4 & mvp) const;
   double GetBoundingSphereRadius()   const;

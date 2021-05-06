@@ -149,17 +149,24 @@ ShaderProgram * Mesh::GetShaderProgram() const
 }
 
 
-void Mesh::CalculateBoundingSphereRadius()
+void Mesh::CalculateBoundingSphereRadius(const glm::mat4 & transform)
 {
+  const glm::mat4 mytransform(transform * _transform);
+  
   _bounding_sphere_radius = 0.0;
   for(auto c : _children)
     {
-      c->CalculateBoundingSphereRadius();
+      c->CalculateBoundingSphereRadius(mytransform);
       _bounding_sphere_radius = std::max(_bounding_sphere_radius, c->GetBoundingSphereRadius());
     }
-  
-  for(auto v : _vertices)
-    _bounding_sphere_radius = std::max(_bounding_sphere_radius, static_cast<double>(glm::length(v)));
+
+  for(unsigned int i = 0; i < _vertices.size() / 3; i++)
+    {
+      glm::vec4 v(_vertices[i * 3 + 0], _vertices[i * 3 + 1], _vertices[i * 3 + 2], 1);
+      v = v * mytransform;
+      v = v / v.w;
+      _bounding_sphere_radius = std::max(_bounding_sphere_radius, static_cast<double>(glm::length(v.xyz())));
+    }
 }
 
 

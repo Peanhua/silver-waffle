@@ -1,6 +1,8 @@
 #ifndef GLM_HH_
 #define GLM_HH_
 
+#define GLM_FORCE_SWIZZLE
+
 #include <glm/glm.hpp>
 #include <glm/ext.hpp>
 #include <glm/gtx/rotate_vector.hpp>
