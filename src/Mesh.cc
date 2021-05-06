@@ -163,7 +163,7 @@ void Mesh::CalculateBoundingSphereRadius(const glm::mat4 & transform)
   for(unsigned int i = 0; i < _vertices.size() / 3; i++)
     {
       glm::vec4 v(_vertices[i * 3 + 0], _vertices[i * 3 + 1], _vertices[i * 3 + 2], 1);
-      v = v * mytransform;
+      v = mytransform * v;
       v = v / v.w;
       _bounding_sphere_radius = std::max(_bounding_sphere_radius, static_cast<double>(glm::length(v.xyz())));
     }
