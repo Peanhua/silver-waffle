@@ -2,6 +2,7 @@
 #include "MeshCube.hh"
 #include "ObjectInvader.hh"
 #include "ObjectBullet.hh"
+#include "SubsystemAssetLoader.hh"
 #include <iostream>
 
 
@@ -52,11 +53,10 @@ void GameLevel::Initialize(double difficulty)
       {
         auto invader = new ObjectInvader(topleft + glm::vec3(x, 0, -y));
 
-        auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT);
-        mesh->LoadFromFile("3d-models/Invader1.dae");
-        mesh->UpdateGPU();
-        mesh->CalculateBoundingSphereRadius();
+        auto mesh = AssetLoader->LoadMesh("Invader1");
+        assert(mesh);
         invader->SetMesh(mesh);
+        
         AddChild(invader);
         _invaders.push_back(invader);
       }

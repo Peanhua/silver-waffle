@@ -82,3 +82,22 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   _shader_programs[name] = sp;
   return sp;
 }
+
+
+Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
+{
+  auto it = _meshes.find(name);
+  if(it != _meshes.end())
+    return (*it).second;
+
+  auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT);
+  assert(mesh);
+  if(mesh->LoadFromFile("3d-models/" + name + ".dae"))
+    {
+      mesh->UpdateGPU();
+      mesh->CalculateBoundingSphereRadius();
+      _meshes[name] = mesh;
+    }
+
+  return mesh;
+}

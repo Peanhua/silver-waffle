@@ -60,8 +60,9 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node)
           auto face = &mesh->mFaces[fi];
           assert(face->mNumIndices == 3);
 
+          assert(startpos < 0xffffffff);
           for(unsigned int ii = 0; ii < face->mNumIndices; ii++)
-            AddElement(face->mIndices[ii] + startpos);
+            AddElement(face->mIndices[ii] + static_cast<unsigned int>(startpos));
         }
     }
 
