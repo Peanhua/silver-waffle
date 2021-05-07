@@ -7,13 +7,14 @@
 #include <iostream>
 #include <chrono>
 #include <thread>
-#include <cassert>
 
 
 int main(int argc, char *argv[])
 {
-  assert(argc == argc);
-  assert(argv == argv);
+  bool unlimited_fps = false;
+  if(argc > 1)
+    if(std::string(argv[1]) == "--fps")
+      unlimited_fps = true;
   
   int rv = EXIT_FAILURE;
 
@@ -37,15 +38,41 @@ int main(int argc, char *argv[])
           {
             rv = EXIT_SUCCESS;
             
+            std::chrono::steady_clock clock;
+            std::chrono::duration<double> deltatime(1.0 / 60.0);
+
+            auto last_fps_time = clock.now();
+            unsigned int framecounter = 0;
+            
             while(ssh.IsRunning())
               {
-                double deltatime = 1.0 / 60.0;
+                auto frame_start = clock.now();
                 ssh.PreTickAll();
-                ssh.TickAll(deltatime);
+                ssh.TickAll(deltatime.count());
                 ssh.PostTickAll();
-                
-                double sleeptime = deltatime * 1000.0;
-                std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(sleeptime)));
+                auto frame_end = clock.now();
+
+                auto frame_time = std::chrono::duration<double>(frame_end - frame_start);
+                if(unlimited_fps)
+                  {
+                    deltatime = frame_time;
+                  }
+                else
+                  {
+                    auto sleeptime = deltatime - frame_time;
+                    if(sleeptime.count() > 0.0)
+                      std::this_thread::sleep_for(sleeptime);
+                  }
+
+                framecounter++;
+
+                auto since_last_fps = std::chrono::duration<double>(frame_end - last_fps_time);
+                if(since_last_fps.count() > 5.0)
+                  {
+                    std::cout << "fps: " << (static_cast<double>(framecounter) / since_last_fps.count()) << std::endl;
+                    framecounter = 0;
+                    last_fps_time = frame_end;
+                  }
               }
           }
         else
