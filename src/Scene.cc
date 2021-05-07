@@ -1,11 +1,11 @@
-#include "GameLevel.hh"
+#include "Scene.hh"
 #include "ObjectInvader.hh"
 #include "ObjectBullet.hh"
 #include "SubsystemAssetLoader.hh"
 #include <iostream>
 
 
-GameLevel::GameLevel()
+Scene::Scene()
   : Object(glm::vec3(0, 0, 0)),
     _bulletpos(0)
 {
@@ -18,7 +18,7 @@ GameLevel::GameLevel()
 }
 
 
-void GameLevel::Draw(const glm::mat4 & mvp) const
+void Scene::Draw(const glm::mat4 & mvp) const
 {
   const glm::mat4 mymvp(mvp * glm::translate(glm::mat4(1.0f), GetPosition()));
 
@@ -36,7 +36,7 @@ void GameLevel::Draw(const glm::mat4 & mvp) const
 }
 
 
-void GameLevel::Initialize(double difficulty)
+void Scene::Initialize(double difficulty)
 {
   assert(difficulty == difficulty);
   
@@ -66,20 +66,20 @@ void GameLevel::Initialize(double difficulty)
 }
 
 
-ObjectMovable * GameLevel::GetPlayer() const
+ObjectMovable * Scene::GetPlayer() const
 {
   return _player;
 }
 
 
-void GameLevel::AddPlayerBullet(const glm::vec3 & velocity, double lifetime)
+void Scene::AddPlayerBullet(const glm::vec3 & velocity, double lifetime)
 {
   bool done = false;
   for(unsigned int i = 0; !done && i < _bullets.size(); i++)
     {
       if(!_bullets[_bulletpos]->IsAlive())
         {
-          _bullets[_bulletpos]->Activate(_player->GetPosition(), _player->GetVelocity() * 0.0f + velocity, lifetime);
+          _bullets[_bulletpos]->Activate(_player->GetPosition(), _player->GetVelocity() * 0.5f + velocity, lifetime);
           done = true;
         }
 
@@ -90,7 +90,7 @@ void GameLevel::AddPlayerBullet(const glm::vec3 & velocity, double lifetime)
 }
 
 
-void GameLevel::Tick(double deltatime)
+void Scene::Tick(double deltatime)
 {
   Object::Tick(deltatime);
 
@@ -102,14 +102,15 @@ void GameLevel::Tick(double deltatime)
             glm::vec3 hitdir;
             if(b->CheckCollision(*i, hitdir))
               {
+                //hitdir = glm::normalize(hitdir + b->GetVelocity() /* + i->GetVelocity() */);
                 i->Hit(34, hitdir * 2.0f);
                 b->Hit(34, -hitdir * 2.0f);
               }
           }
 }
 
-
-void GameLevel2::Initialize(double difficulty)
+#if 0
+void Scene2::Initialize(double difficulty)
 {
   assert(difficulty == difficulty);
   #if 0
@@ -129,4 +130,5 @@ void GameLevel2::Initialize(double difficulty)
       }
   #endif
 }
+#endif
 

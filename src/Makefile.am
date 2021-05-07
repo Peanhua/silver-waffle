@@ -20,7 +20,6 @@ silverwaffle_LDADD =       \
 silverwaffle_SOURCES =		\
 	Camera.cc		\
 	Camera2.cc		\
-	GameLevel.cc		\
 	GameState.cc		\
 	GameStateGame.cc	\
 	Mesh.cc			\
@@ -29,6 +28,7 @@ silverwaffle_SOURCES =		\
 	ObjectBullet.cc		\
 	ObjectInvader.cc	\
 	ObjectMovable.cc	\
+	Scene.cc		\
 	Shader.cc		\
 	ShaderProgram.cc	\
 	Subsystem.cc		\

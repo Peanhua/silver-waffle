@@ -3,7 +3,7 @@
 
 #include "GameState.hh"
 #include "Camera.hh"
-#include "GameLevel.hh"
+#include "Scene.hh"
 
 class GameStateGame : public GameState
 {
@@ -15,11 +15,11 @@ public:
   void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod) override;
 
 private:
-  double          _fov;
-  Camera *        _camera;
-  GameLevel *     _level;
-  bool            _player_control_left;
-  bool            _player_control_right;
+  double   _fov;
+  Camera * _camera;
+  Scene *  _scene;
+  bool     _player_control_left;
+  bool     _player_control_right;
 };
 
 #endif

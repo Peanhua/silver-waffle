@@ -10,12 +10,12 @@ GameStateGame::GameStateGame()
 {
 #if 1
   _camera = new Camera();
-  _level = new GameLevel();
+  _scene = new Scene();
   _fov = 60.0;
 # define CAMERA_SPEED 0.5
 #else
   _camera = new Camera2();
-  _level = new GameLevel2();
+  _scene = new Scene2();
   _fov = 120.0;
 # define CAMERA_SPEED 1
 #endif
@@ -23,14 +23,13 @@ GameStateGame::GameStateGame()
   _camera->SetFOV(_fov);
   _camera->UpdateViewProjection();
   
-  _level->Initialize(1.0);
-
+  _scene->Initialize(1.0);
 }
 
 
 GameStateGame::~GameStateGame()
 {
-  delete _level;
+  delete _scene;
   delete _camera;
 }
 
@@ -38,24 +37,24 @@ GameStateGame::~GameStateGame()
 void GameStateGame::Tick(double deltatime)
 {
   if(_player_control_left)
-    _level->GetPlayer()->AddImpulse(glm::vec3(-20.0 * deltatime, 0, 0));
+    _scene->GetPlayer()->AddImpulse(glm::vec3(-20.0 * deltatime, 0, 0));
   if(_player_control_right)
-    _level->GetPlayer()->AddImpulse(glm::vec3(20.0 * deltatime, 0, 0));
+    _scene->GetPlayer()->AddImpulse(glm::vec3(20.0 * deltatime, 0, 0));
 
   if(!_player_control_left && !_player_control_right)
     {
-      const glm::vec3 vel = _level->GetPlayer()->GetVelocity();
+      const glm::vec3 vel = _scene->GetPlayer()->GetVelocity();
       if(std::abs(vel.x) < 0.1f)
-        _level->GetPlayer()->SetVelocity(glm::vec3(0, vel.y, vel.z));
+        _scene->GetPlayer()->SetVelocity(glm::vec3(0, vel.y, vel.z));
       else if(vel.x < 0.0f)
-        _level->GetPlayer()->AddImpulse(glm::vec3(10.0 * deltatime, 0, 0));
+        _scene->GetPlayer()->AddImpulse(glm::vec3(10.0 * deltatime, 0, 0));
       else if(vel.x > 0.0f)
-        _level->GetPlayer()->AddImpulse(glm::vec3(-10.0 * deltatime, 0, 0));
+        _scene->GetPlayer()->AddImpulse(glm::vec3(-10.0 * deltatime, 0, 0));
     }
 
   
-  _level->Tick(deltatime);
-  _level->Draw(_camera->GetViewProjection());
+  _scene->Tick(deltatime);
+  _scene->Draw(_camera->GetViewProjection());
 }
 
 
@@ -86,7 +85,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       break;
 
     case SDLK_SPACE:
-      _level->AddPlayerBullet(glm::vec3(0, 0, 10), 10.0);
+      _scene->AddPlayerBullet(glm::vec3(0, 0, 10), 10.0);
       break;
 #endif
       
@@ -134,7 +133,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       if(pressed)
         {
           auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(1, 0, 0));
-          _level->GetPlayer()->GetMesh()->ApplyTransform(transform);
+          _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
         }
       break;
 
@@ -142,7 +141,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       if(pressed)
         {
           auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(0, 1, 0));
-          _level->GetPlayer()->GetMesh()->ApplyTransform(transform);
+          _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
         }
       break;
       
@@ -150,7 +149,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       if(pressed)
         {
           auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(0, 0, 1));
-          _level->GetPlayer()->GetMesh()->ApplyTransform(transform);
+          _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
         }
       break;
     }

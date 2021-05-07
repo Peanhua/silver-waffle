@@ -1,14 +1,14 @@
-#ifndef GAMELEVEL_HH_
-#define GAMELEVEL_HH_
+#ifndef SCENE_HH_
+#define SCENE_HH_
 
 #include "Object.hh"
 #include "ObjectMovable.hh"
 #include "ObjectBullet.hh"
 
-class GameLevel : public Object
+class Scene : public Object
 {
 public:
-  GameLevel();
+  Scene();
   
   void            Draw(const glm::mat4 & mvp) const override;
   void            Tick(double deltatime) override;
@@ -25,13 +25,5 @@ private:
   unsigned int                 _bulletpos;
 };
 
-
-class GameLevel2 : public GameLevel
-{
-public:
-  using GameLevel::GameLevel;
-
-  void Initialize(double difficulty) override;
-};
 
 #endif
