@@ -1,8 +1,8 @@
 #include "ObjectMovable.hh"
 #include <iostream>
 
-ObjectMovable::ObjectMovable(const glm::vec3 & position)
-  : Object(position),
+ObjectMovable::ObjectMovable(Scene * scene)
+  : Object(scene),
     _velocity(glm::vec3(0, 0, 0)),
     _max_velocity(10)
 {

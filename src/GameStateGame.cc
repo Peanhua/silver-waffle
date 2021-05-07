@@ -1,12 +1,11 @@
 #include "GameStateGame.hh"
 #include "SubsystemAssetLoader.hh"
 #include "Camera2.hh"
+#include "ObjectSpaceship.hh"
 #include <iostream>
 
 GameStateGame::GameStateGame()
-  : GameState(),
-    _player_control_left(false),
-    _player_control_right(false)
+  : GameState()
 {
 #if 1
   _camera = new Camera();
@@ -36,23 +35,6 @@ GameStateGame::~GameStateGame()
 
 void GameStateGame::Tick(double deltatime)
 {
-  if(_player_control_left)
-    _scene->GetPlayer()->AddImpulse(glm::vec3(-20.0 * deltatime, 0, 0));
-  if(_player_control_right)
-    _scene->GetPlayer()->AddImpulse(glm::vec3(20.0 * deltatime, 0, 0));
-
-  if(!_player_control_left && !_player_control_right)
-    {
-      const glm::vec3 vel = _scene->GetPlayer()->GetVelocity();
-      if(std::abs(vel.x) < 0.1f)
-        _scene->GetPlayer()->SetVelocity(glm::vec3(0, vel.y, vel.z));
-      else if(vel.x < 0.0f)
-        _scene->GetPlayer()->AddImpulse(glm::vec3(10.0 * deltatime, 0, 0));
-      else if(vel.x > 0.0f)
-        _scene->GetPlayer()->AddImpulse(glm::vec3(-10.0 * deltatime, 0, 0));
-    }
-
-  
   _scene->Tick(deltatime);
   _scene->Draw(_camera->GetViewProjection());
 }
@@ -77,15 +59,15 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       
 #else
     case SDLK_LEFT:
-      _player_control_left = pressed;
+      _scene->GetPlayer()->SetEnginePower(0, pressed ? 1.0 : 0.0);
       break;
       
     case SDLK_RIGHT:
-      _player_control_right = pressed;
+      _scene->GetPlayer()->SetEnginePower(1, pressed ? 1.0 : 0.0);
       break;
 
     case SDLK_SPACE:
-      _scene->AddPlayerBullet(glm::vec3(0, 0, 10), 10.0);
+      _scene->GetPlayer()->FireWeapon(0);
       break;
 #endif
       

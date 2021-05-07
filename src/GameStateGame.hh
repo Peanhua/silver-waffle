@@ -18,8 +18,6 @@ private:
   double   _fov;
   Camera * _camera;
   Scene *  _scene;
-  bool     _player_control_left;
-  bool     _player_control_right;
 };
 
 #endif

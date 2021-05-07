@@ -28,6 +28,7 @@ silverwaffle_SOURCES =		\
 	ObjectBullet.cc		\
 	ObjectInvader.cc	\
 	ObjectMovable.cc	\
+	ObjectSpaceship.cc	\
 	Scene.cc		\
 	Shader.cc		\
 	ShaderProgram.cc	\

@@ -5,10 +5,12 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 
+class Scene;
+
 class Object
 {
 public:
-  Object(const glm::vec3 & position);
+  Object(Scene * scene);
   virtual ~Object();
   
   virtual void Draw(const glm::mat4 & mvp) const;
@@ -17,19 +19,21 @@ public:
 
   Mesh * GetMesh() const;
   void   SetMesh(Mesh * mesh);
-  void   AddChild(Object * child);
+
   bool   CheckCollision(const Object & other, glm::vec3 & out_hit_direction) const;
   bool   IsAlive() const;
   void   SetHealth(double health);
 
   void              SetPosition(const glm::vec3 & position);
   const glm::vec3 & GetPosition() const;
+
+protected:
+  Scene *   _scene;
   
 private:
-  glm::vec3             _position;
-  std::vector<Object *> _children;
-  Mesh *                _mesh;
-  double                _health;
+  glm::vec3 _position;
+  Mesh *    _mesh;
+  double    _health;
 };
 
 #endif

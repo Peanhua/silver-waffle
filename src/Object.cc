@@ -1,18 +1,19 @@
 #include "Object.hh"
 #include <iostream>
 
-Object::Object(const glm::vec3 & position)
-  : _position(position),
+Object::Object(Scene * scene)
+  : _scene(scene),
+    _position(0, 0, 0),
     _mesh(nullptr),
     _health(100.0)
 {
 }
 
+
 Object::~Object()
 {
-  for(auto child : _children)
-    delete child;
 }
+
 
 void Object::Draw(const glm::mat4 & mvp) const
 {
@@ -23,23 +24,11 @@ void Object::Draw(const glm::mat4 & mvp) const
 
   if(_mesh)
     _mesh->Draw(mymvp);
-  
-  for(auto child : _children)
-    child->Draw(mymvp);
 }
+
 
 void Object::Tick(double deltatime)
 {
-  if(!IsAlive())
-    return;
-  
-  for(auto child : _children)
-    child->Tick(deltatime);
-}
-
-void Object::AddChild(Object * child)
-{
-  _children.push_back(child);
 }
 
 

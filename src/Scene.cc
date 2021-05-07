@@ -2,37 +2,30 @@
 #include "ObjectInvader.hh"
 #include "ObjectBullet.hh"
 #include "SubsystemAssetLoader.hh"
+#include "ObjectSpaceship.hh"
 #include <iostream>
 
 
 Scene::Scene()
-  : Object(glm::vec3(0, 0, 0)),
-    _bulletpos(0)
+  : _bulletpos(0)
 {
   for(int i = 0; i < 1000; i++)
     {
-      auto b = new ObjectBullet();
+      auto b = new ObjectBullet(this);
       _bullets.push_back(b);
-      AddChild(b);
     }
 }
 
 
 void Scene::Draw(const glm::mat4 & mvp) const
 {
-  const glm::mat4 mymvp(mvp * glm::translate(glm::mat4(1.0f), GetPosition()));
-
-  if(GetMesh())
-    GetMesh()->Draw(mymvp);
-
-  _player->Draw(mymvp);
+  _player->Draw(mvp);
 
   for(auto i : _invaders)
-    i->Draw(mymvp);
+    i->Draw(mvp);
 
   for(auto b : _bullets)
-    b->Draw(mymvp);
-
+    b->Draw(mvp);
 }
 
 
@@ -42,44 +35,51 @@ void Scene::Initialize(double difficulty)
   
   glm::vec3 topleft(-10, 0, 40);
 
-  _player = new ObjectMovable(topleft + glm::vec3(0, 0, -50));
+  _player = new ObjectSpaceship(this);
+  _player->SetPosition(topleft + glm::vec3(0, 0, -50));
   {
     auto mesh = AssetLoader->LoadMesh("Player");
     assert(mesh);
     _player->SetMesh(mesh);
   }
-  AddChild(_player);
+  _player->AddWeapon(glm::vec3(0, 0, 1),
+                     AssetLoader->LoadMesh("PlayerBullet"),
+                     glm::vec3(0, 0, 1),
+                     10.0,
+                     34.0);
+  _player->AddEngine(glm::vec3(-1, 0, 0), 20.0);
+  _player->AddEngine(glm::vec3( 1, 0, 0), 20.0);
   
   _invaders.clear();
   for(int y = 0; y < 10; y++)
     for(int x = 0; x < 20; x++)
       {
-        auto invader = new ObjectInvader(topleft + glm::vec3(x, 0, -y));
+        auto invader = new ObjectInvader(this);
+        invader->SetPosition(topleft + glm::vec3(x, 0, -y));
 
         auto mesh = AssetLoader->LoadMesh("Invader1");
         assert(mesh);
         invader->SetMesh(mesh);
         
-        AddChild(invader);
         _invaders.push_back(invader);
       }
 }
 
 
-ObjectMovable * Scene::GetPlayer() const
+ObjectSpaceship * Scene::GetPlayer() const
 {
   return _player;
 }
 
 
-void Scene::AddPlayerBullet(const glm::vec3 & velocity, double lifetime)
+void Scene::AddBullet(const glm::vec3 & position, const glm::vec3 & velocity, double lifetime)
 {
   bool done = false;
   for(unsigned int i = 0; !done && i < _bullets.size(); i++)
     {
       if(!_bullets[_bulletpos]->IsAlive())
         {
-          _bullets[_bulletpos]->Activate(_player->GetPosition(), _player->GetVelocity() * 0.5f + velocity, lifetime);
+          _bullets[_bulletpos]->Activate(position, velocity, lifetime);
           done = true;
         }
 
@@ -90,23 +90,32 @@ void Scene::AddPlayerBullet(const glm::vec3 & velocity, double lifetime)
 }
 
 
+
 void Scene::Tick(double deltatime)
 {
-  Object::Tick(deltatime);
-
+  if(_player->IsAlive())
+    _player->Tick(deltatime);
+  
+  for(auto i : _invaders)
+    if(i->IsAlive())
+      i->Tick(deltatime);
+  
   for(auto b : _bullets)
     if(b->IsAlive())
-      for(auto i : _invaders)
-        if(i->IsAlive())
-          {
-            glm::vec3 hitdir;
-            if(b->CheckCollision(*i, hitdir))
-              {
-                //hitdir = glm::normalize(hitdir + b->GetVelocity() /* + i->GetVelocity() */);
-                i->Hit(34, hitdir * 2.0f);
-                b->Hit(34, -hitdir * 2.0f);
-              }
-          }
+      {
+        b->Tick(deltatime);
+        for(auto i : _invaders)
+          if(i->IsAlive())
+            {
+              glm::vec3 hitdir;
+              if(b->CheckCollision(*i, hitdir))
+                {
+                  //hitdir = glm::normalize(hitdir + b->GetVelocity() /* + i->GetVelocity() */);
+                  i->Hit(34, hitdir * 2.0f);
+                  b->Hit(34, -hitdir * 2.0f);
+                }
+            }
+      }
 }
 
 #if 0

@@ -6,7 +6,7 @@
 class ObjectBullet : public ObjectMovable
 {
 public:
-  ObjectBullet();
+  ObjectBullet(Scene * scene);
 
   void Tick(double deltatime) override;
 

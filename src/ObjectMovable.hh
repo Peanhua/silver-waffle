@@ -6,7 +6,7 @@
 class ObjectMovable : public Object
 {
 public:
-  ObjectMovable(const glm::vec3 & position);
+  ObjectMovable(Scene * scene);
 
   void Tick(double deltatime) override;
   void Hit(double damage, const glm::vec3 & impulse) override;

@@ -1,7 +1,7 @@
 #include "ObjectInvader.hh"
 
-ObjectInvader::ObjectInvader(const glm::vec3 & position)
-  : ObjectMovable(position),
+ObjectInvader::ObjectInvader(Scene * scene)
+  : ObjectSpaceship(scene),
     _time_to_think(0.1),
     _next_thinking(0)
 {
@@ -36,6 +36,6 @@ void ObjectInvader::Tick(double deltatime)
         AddImpulse(imp);
     }
 
-  ObjectMovable::Tick(deltatime);
+  ObjectSpaceship::Tick(deltatime);
 }
 

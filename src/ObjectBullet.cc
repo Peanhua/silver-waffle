@@ -1,8 +1,8 @@
 #include "ObjectBullet.hh"
 #include "SubsystemAssetLoader.hh"
 
-ObjectBullet::ObjectBullet()
-  : ObjectMovable(glm::vec3(0, 0, 0))
+ObjectBullet::ObjectBullet(Scene * scene)
+  : ObjectMovable(scene)
 {
   SetMesh(AssetLoader->LoadMesh("PlayerBullet"));
   SetHealth(0);
