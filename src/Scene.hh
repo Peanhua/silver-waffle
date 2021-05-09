@@ -3,7 +3,8 @@
 
 #include "Object.hh"
 #include "ObjectMovable.hh"
-#include "ObjectBullet.hh"
+#include "ObjectProjectile.hh"
+#include <random>
 
 class ObjectSpaceship;
 class ObjectInvader;
@@ -19,13 +20,14 @@ public:
   void              Initialize(double difficulty);
 
   ObjectSpaceship * GetPlayer() const;
-  void              AddBullet(const glm::vec3 & position, const glm::vec3 & velocity, double lifetime);
+  void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   
 private:
-  ObjectSpaceship *              _player;
-  std::vector<ObjectInvader *>   _invaders;
-  std::vector<ObjectBullet *>    _bullets;
-  unsigned int                   _bulletpos;
+  std::mt19937_64                 _random_generator;
+  ObjectSpaceship *               _player;
+  std::vector<ObjectInvader *>    _invaders;
+  std::vector<ObjectProjectile *> _projectiles;
+  unsigned int                    _projectilepos;
 };
 
 

@@ -37,6 +37,8 @@ void GameStateGame::Tick(double deltatime)
 {
   _scene->Tick(deltatime);
   _scene->Draw(_camera->GetViewProjection());
+  if(!_scene->GetPlayer()->IsAlive())
+    Quit();
 }
 
 
@@ -133,6 +135,11 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
           auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(0, 0, 1));
           _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
         }
+      break;
+
+    case SDLK_q:
+      if(pressed)
+        std::cout << _scene->GetPlayer()->GetPosition() << std::endl;
       break;
     }
 

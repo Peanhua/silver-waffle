@@ -1,11 +1,14 @@
 #include "ObjectInvader.hh"
 
-ObjectInvader::ObjectInvader(Scene * scene)
+
+ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed)
   : ObjectSpaceship(scene),
-    _time_to_think(0.1),
+    _random_generator(random_seed),
+    _time_to_think(0.334),
     _next_thinking(0)
 {
 }
+
 
 void ObjectInvader::Tick(double deltatime)
 {
@@ -34,6 +37,10 @@ void ObjectInvader::Tick(double deltatime)
         }
       if(doimp)
         AddImpulse(imp);
+
+      double r = static_cast<double>(_random_generator() - _random_generator.min()) / static_cast<double>(_random_generator.max());
+      if(r < 0.01 * _time_to_think)
+        FireWeapon(0);
     }
 
   ObjectSpaceship::Tick(deltatime);

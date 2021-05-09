@@ -25,9 +25,9 @@ silverwaffle_SOURCES =		\
 	Mesh.cc			\
 	Mesh_LoadFromFile.cc	\
 	Object.cc		\
-	ObjectBullet.cc		\
 	ObjectInvader.cc	\
 	ObjectMovable.cc	\
+	ObjectProjectile.cc	\
 	ObjectSpaceship.cc	\
 	Scene.cc		\
 	Shader.cc		\

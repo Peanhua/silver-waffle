@@ -19,9 +19,25 @@ void ObjectSpaceship::Tick(double deltatime)
       if(std::abs(vel.x) < 0.1f)
         SetVelocity(glm::vec3(0, vel.y, vel.z));
       else if(vel.x < 0.0f)
-        AddImpulse(glm::vec3(10.0 * deltatime, 0, 0));
+        AddImpulse(glm::vec3(5.0 * deltatime, 0, 0));
       else if(vel.x > 0.0f)
-        AddImpulse(glm::vec3(-10.0 * deltatime, 0, 0));
+        AddImpulse(glm::vec3(-5.0 * deltatime, 0, 0));
+    }
+
+  const auto max_x = 10.3f;
+  const auto pos = GetPosition();
+  const auto vel = GetVelocity();
+  if(pos.x < -max_x)
+    {
+      SetPosition(glm::vec3(-max_x, pos.yz()));
+      if(vel.x < 0.0f)
+        SetVelocity(glm::vec3(0.0f, vel.yz()));
+    }
+  else if(pos.x > max_x)
+    {
+      SetPosition(glm::vec3(max_x, pos.yz()));
+      if(vel.x > 0.0f)
+        SetVelocity(glm::vec3(0.0f, vel.yz()));
     }
 }
 
@@ -54,9 +70,11 @@ void ObjectSpaceship::FireWeapon(unsigned int weapon_id)
 {
   assert(weapon_id < _weapons.size());
   auto weapon = _weapons[weapon_id];
-  _scene->AddBullet(GetPosition() + weapon->_location,
-                    GetVelocity() * 0.5f + weapon->_projectile_direction * static_cast<float>(weapon->_projectile_initial_velocity),
-                    10.0);
+  _scene->AddProjectile(this,
+                        GetPosition() + weapon->_location,
+                        GetVelocity() * 0.5f + weapon->_projectile_direction * static_cast<float>(weapon->_projectile_initial_velocity),
+                        weapon->_projectile_damage,
+                        10.0);
 }
 
 
