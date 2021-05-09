@@ -37,6 +37,9 @@ int main(int argc, char *argv[])
         if(ssh.StartAll())
           {
             rv = EXIT_SUCCESS;
+
+            if(unlimited_fps)
+              SDL_GL_SetSwapInterval(0);
             
             std::chrono::steady_clock clock;
             std::chrono::duration<double> deltatime(1.0 / 60.0);
