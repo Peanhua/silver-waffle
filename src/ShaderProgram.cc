@@ -1,6 +1,7 @@
 #include <cassert>
 #include "ShaderProgram.hh"
 #include "Shader.hh"
+#include "Mesh.hh"
 
 
 ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, const std::vector<std::string> & fragment_shaders)
@@ -20,8 +21,9 @@ ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, co
       glAttachShader(_program, shader->GetShader());
     }
 
-  glBindAttribLocation(_program, 0, "in_vertex");
-  glBindAttribLocation(_program, 1, "in_color");
+  glBindAttribLocation(_program, Mesh::ALOC_VERTEX,   "in_vertex");
+  glBindAttribLocation(_program, Mesh::ALOC_COLOR,    "in_color");
+  glBindAttribLocation(_program, Mesh::ALOC_TEXCOORD, "in_texcoord");
 
   glLinkProgram(_program);
 }

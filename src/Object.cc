@@ -29,6 +29,7 @@ void Object::Draw(const glm::mat4 & mvp) const
 
 void Object::Tick(double deltatime)
 {
+  assert(deltatime == deltatime);
 }
 
 

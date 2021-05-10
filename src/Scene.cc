@@ -3,8 +3,11 @@
 #include "ObjectProjectile.hh"
 #include "SubsystemAssetLoader.hh"
 #include "ObjectSpaceship.hh"
+#include "MeshOverlay.hh"
 #include <iostream>
 
+
+static Mesh * overlay = nullptr;
 
 Scene::Scene()
   : _random_generator(0),
@@ -15,6 +18,9 @@ Scene::Scene()
       auto b = new ObjectProjectile(this);
       _projectiles.push_back(b);
     }
+
+  overlay = new MeshOverlay();
+  overlay->UpdateGPU();
 }
 
 
@@ -27,6 +33,8 @@ void Scene::Draw(const glm::mat4 & mvp) const
 
   for(auto b : _projectiles)
     b->Draw(mvp);
+
+  overlay->Draw(glm::mat4(1));
 }
 
 

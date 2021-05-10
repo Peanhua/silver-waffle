@@ -40,9 +40,10 @@ bool SubsystemGfx::Start()
                   glViewport(0, 0, 1024, 768);
                   glClearColor(0, 0, 0, 1);
                   glEnable(GL_DEPTH_TEST);
-                  glDisable(GL_CULL_FACE);
-                  //glCullFace(GL_BACK);
-
+                  glEnable(GL_CULL_FACE);
+                  glCullFace(GL_BACK);
+                  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+                  
                   rv = true;
                   
 

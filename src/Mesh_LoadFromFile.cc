@@ -28,7 +28,7 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node)
   
   _transform = ToGLM(node->mTransformation);
  
-  SetShaderProgram(AssetLoader->LoadShaderProgram("x"));
+  SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
  
   for(unsigned int mi = 0; mi < node->mNumMeshes; mi++)
     {

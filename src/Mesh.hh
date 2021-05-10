@@ -2,19 +2,31 @@
 #define MESH_HH_
 
 #include "glm.hh"
-#include "ShaderProgram.hh"
 #include <GL/glew.h>
 #include <vector>
 #include <assimp/scene.h>
+
+class ShaderProgram;
+class Image;
 
 class Mesh
 {
 public:
   enum Option
     {
-      OPTION_COLOR   = 1,
-      OPTION_ELEMENT = 2
+      OPTION_COLOR         = 1<<0,
+      OPTION_ELEMENT       = 1<<1,
+      OPTION_TEXTURE       = 1<<2,
+      OPTION_BLEND         = 1<<3,
+      OPTION_BLEND_DISCARD = 1<<4,
     };
+  enum AttribLocation
+    {
+      ALOC_VERTEX   = 0,
+      ALOC_COLOR    = 1,
+      ALOC_TEXCOORD = 2
+    };
+  
 
   Mesh(const unsigned int options);
 
@@ -30,6 +42,7 @@ public:
 protected:
   void AddVertex(const glm::vec3 & position);
   void AddColor(const glm::vec3 & color);
+  void AddTexCoord(const glm::vec2 & coord);
   void AddElement(unsigned int index);
   void AddElement(unsigned int index1, unsigned int index2);
   void AddElement(unsigned int index1, unsigned int index2, unsigned int index3);
@@ -39,14 +52,11 @@ protected:
   void            SetShaderProgram(ShaderProgram * shader_program);
   ShaderProgram * GetShaderProgram() const;
 
+  void            SetTexture(Image * texture_image);
+  Image *         GetTexture() const;
+
   
 private:
-  enum AttribLocation
-    {
-      ALOC_VERTEX = 0,
-      ALOC_COLOR  = 1
-    };
-  
   unsigned int _options;
 
   glm::mat4 _transform;
@@ -55,13 +65,16 @@ private:
   GLuint _vertex_vbo;
   GLuint _element_vbo;
   GLuint _color_vbo;
+  GLuint _texcoord_vbo;
   GLenum _primitive_type;
 
   std::vector<GLfloat> _vertices;
   std::vector<GLuint>  _indices;
   std::vector<GLfloat> _colors;
+  std::vector<GLfloat> _texcoords;
 
   ShaderProgram * _shader_program;
+  Image *         _texture;
 
   double _bounding_sphere_radius;
 

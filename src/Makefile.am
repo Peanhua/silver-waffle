@@ -22,8 +22,10 @@ silverwaffle_SOURCES =		\
 	Camera2.cc		\
 	GameState.cc		\
 	GameStateGame.cc	\
+	Image.cc		\
 	Mesh.cc			\
 	Mesh_LoadFromFile.cc	\
+	MeshOverlay.cc		\
 	Object.cc		\
 	ObjectInvader.cc	\
 	ObjectMovable.cc	\

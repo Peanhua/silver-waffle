@@ -16,36 +16,6 @@ SubsystemAssetLoader::SubsystemAssetLoader()
 
 bool SubsystemAssetLoader::Start()
 {
-  _text_assets["x.vert"] = R"(
-#version 150
-
-uniform mat4 in_mvp;
-
-in vec3 in_vertex;
-in vec3 in_color;
-
-out vec3 diffuse_color;
-
-void main()
-{
-  diffuse_color = in_color;
-  gl_Position = in_mvp * vec4(in_vertex, 1.0f);
-}
-)";
-
-
-  _text_assets["x.frag"] = R"(
-#version 150
-
-in vec3 diffuse_color;
-out vec4 final_colour;
-
-void main()
-{
-  final_colour = vec4(diffuse_color, 1);
-}
-)";
-
   assert(!AssetLoader);
   AssetLoader = this;
 
@@ -66,7 +36,25 @@ const std::string & SubsystemAssetLoader::LoadText(const std::string & filename)
   if(it != _text_assets.end())
     return (*it).second;
 
-  assert(false);
+  std::ifstream fp(filename);
+  if(fp)
+    {
+      std::string text;
+      std::string tmp;
+      while(std::getline(fp, tmp))
+        text += tmp + '\n';
+
+      if(fp.eof())
+        {
+          _text_assets[filename] = text;
+          return _text_assets[filename];
+        }
+      else
+        std::cerr << "Failed to read '" << filename << "'" << std::endl;
+    }
+
+  static std::string nothing;
+  return nothing;
 }
 
 
@@ -76,8 +64,8 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   if(it != _shader_programs.end())
     return (*it).second;
 
-  auto vs = AssetLoader->LoadText(name + ".vert");
-  auto fs = AssetLoader->LoadText(name + ".frag");
+  auto vs = LoadText("Shaders/" + name + ".vert");
+  auto fs = LoadText("Shaders/" + name + ".frag");
   std::vector<std::string> vss({vs});
   std::vector<std::string> fss({fs});
   auto sp = new ShaderProgram(vss, fss);
@@ -103,42 +91,31 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
     }
 
   const std::string filename("3d-models/" + name + ".json");
-  std::ifstream fp(filename);
-  if(fp)
+  std::string json_string = LoadText(filename);
+  if(json_string.size() > 0)
     {
-      std::string json_string;
-      std::string tmp;
-      while(std::getline(fp, tmp))
+      std::string err;
+      auto config = json11::Json::parse(json_string, err);
+      if(config.is_object())
         {
-          json_string += tmp + '\n';
-        }
-      if(fp.eof())
-        {
-          std::string err;
-          auto config = json11::Json::parse(json_string, err);
-          if(config.is_object())
+          if(config["rotate-x"].is_number())
             {
-              if(config["rotate-x"].is_number())
-                {
-                  auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-x"].number_value())), glm::vec3(1, 0, 0));
-                  mesh->ApplyTransform(transform);
-                }
-              if(config["rotate-y"].is_number())
-                {
-                  auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-y"].number_value())), glm::vec3(0, 1, 0));
-                  mesh->ApplyTransform(transform);
-                }
-              if(config["rotate-z"].is_number())
-                {
-                  auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-z"].number_value())), glm::vec3(0, 0, 1));
-                  mesh->ApplyTransform(transform);
-                }
+              auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-x"].number_value())), glm::vec3(1, 0, 0));
+              mesh->ApplyTransform(transform);
             }
-          else
-            std::cerr << "Error while parsing '" << filename << "': " << err << std::endl;
+          if(config["rotate-y"].is_number())
+            {
+              auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-y"].number_value())), glm::vec3(0, 1, 0));
+              mesh->ApplyTransform(transform);
+            }
+          if(config["rotate-z"].is_number())
+            {
+              auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-z"].number_value())), glm::vec3(0, 0, 1));
+              mesh->ApplyTransform(transform);
+            }
         }
       else
-        std::cerr << "Failed to read '" << filename << "'" << std::endl;
+        std::cerr << "Error while parsing '" << filename << "': " << err << std::endl;
     }
   
   return mesh;

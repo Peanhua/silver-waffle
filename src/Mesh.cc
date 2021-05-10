@@ -1,4 +1,6 @@
 #include "Mesh.hh"
+#include "ShaderProgram.hh"
+#include "Image.hh"
 #include <cassert>
 #include <iostream>
 
@@ -9,8 +11,10 @@ Mesh::Mesh(const unsigned int options)
     _vertex_vbo(0),
     _element_vbo(0),
     _color_vbo(0),
+    _texcoord_vbo(0),
     _primitive_type(GL_TRIANGLES),
     _shader_program(nullptr),
+    _texture(nullptr),
     _bounding_sphere_radius(0)
 {
 }
@@ -25,6 +29,16 @@ void Mesh::Draw(const glm::mat4 & mvp) const
       assert(_shader_program);
       _shader_program->Use();
 
+      if(_options & OPTION_TEXTURE)
+        {
+          assert(_texture);
+          glActiveTexture(GL_TEXTURE0);
+          glBindTexture(GL_TEXTURE_2D, _texture->GetTextureId());
+        }
+
+      if(_options & OPTION_BLEND)
+        glEnable(GL_BLEND);
+
       _shader_program->SetMatrix("in_mvp", transform);
       
       glBindVertexArray(_vao);
@@ -32,6 +46,9 @@ void Mesh::Draw(const glm::mat4 & mvp) const
         glDrawElements(_primitive_type, static_cast<GLsizei>(_indices.size()), GL_UNSIGNED_INT, nullptr);
       else
         glDrawArrays(_primitive_type, 0, static_cast<GLsizei>(_vertices.size()));
+
+      if(_options & OPTION_BLEND)
+        glDisable(GL_BLEND);
     }
 
   for(auto c : _children)
@@ -53,6 +70,14 @@ void Mesh::AddColor(const glm::vec3 & color)
   _colors.push_back(color.x);
   _colors.push_back(color.y);
   _colors.push_back(color.z);
+}
+
+
+void Mesh::AddTexCoord(const glm::vec2 & coord)
+{
+  assert(_options & OPTION_TEXTURE);
+  _texcoords.push_back(coord.x);
+  _texcoords.push_back(coord.y);
 }
 
 
@@ -132,6 +157,18 @@ void Mesh::UpdateGPU()
       glVertexAttribPointer(ALOC_COLOR, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
+  if(_options & OPTION_TEXTURE)
+    {
+      if(_texcoord_vbo == 0)
+        glGenBuffers(1, &_texcoord_vbo);
+      assert(_texcoord_vbo != 0);
+
+      glBindBuffer(GL_ARRAY_BUFFER, _texcoord_vbo);
+      glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_texcoords.size() * sizeof(GLfloat)), _texcoords.data(), GL_STATIC_DRAW);
+      glEnableVertexAttribArray(ALOC_TEXCOORD);
+      glVertexAttribPointer(ALOC_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
+
   for(auto c : _children)
     c->UpdateGPU();
 }
@@ -181,3 +218,15 @@ void Mesh::ApplyTransform(const glm::mat4 & transform)
   _transform *= transform;
 }
 
+
+void Mesh::SetTexture(Image * texture_image)
+{
+  assert(texture_image);
+  _texture = texture_image;
+}
+
+
+Image * Mesh::GetTexture() const
+{
+  return _texture;
+}
