@@ -7,6 +7,7 @@
 #include <glm/ext.hpp>
 #include <glm/gtx/rotate_vector.hpp>
 #include <glm/ext/matrix_transform.hpp>
+#include <glm/gtc/matrix_access.hpp>
 #include <ostream>
 
 std::ostream & operator<<(std::ostream & out, const glm::vec3 & v);

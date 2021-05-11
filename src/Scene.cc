@@ -42,18 +42,18 @@ void Scene::Initialize(double difficulty)
 {
   assert(difficulty == difficulty);
   
-  glm::vec3 topleft(-10, 0, 40);
+  glm::vec3 topleft(-10, 40, 0);
 
   _player = new ObjectSpaceship(this);
-  _player->SetPosition(topleft + glm::vec3(0, 0, -53));
+  _player->SetPosition(topleft + glm::vec3(0, -53, 0));
   {
     auto mesh = AssetLoader->LoadMesh("Player");
     assert(mesh);
     _player->SetMesh(mesh);
   }
-  _player->AddWeapon(glm::vec3(0, 0, 1),
+  _player->AddWeapon(glm::vec3(0, 1, 0),
                      AssetLoader->LoadMesh("Projectile"),
-                     glm::vec3(0, 0, 1),
+                     glm::vec3(0, 1, 0),
                      10.0,
                      34.0);
   _player->AddEngine(glm::vec3(-1, 0, 0), 20.0);
@@ -64,15 +64,15 @@ void Scene::Initialize(double difficulty)
     for(int x = 0; x < 20; x++)
       {
         auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
-        invader->SetPosition(topleft + glm::vec3(x, 0, -y));
+        invader->SetPosition(topleft + glm::vec3(x, y, 0));
 
         auto mesh = AssetLoader->LoadMesh("Invader1");
         assert(mesh);
         invader->SetMesh(mesh);
 
-        invader->AddWeapon(glm::vec3(0, 0, -1),
+        invader->AddWeapon(glm::vec3(0, -1, 0),
                            AssetLoader->LoadMesh("Projectile"),
-                           glm::vec3(0, 0, -1),
+                           glm::vec3(0, -1, 0),
                            5.0,
                            34.0);
         

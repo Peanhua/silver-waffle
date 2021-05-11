@@ -18,16 +18,24 @@ bool Mesh::LoadFromFile(const std::string & filename)
       return false;
     }
 
-  return LoadFromAssimpNode(scene, scene->mRootNode);
+  return LoadFromAssimpNode(scene, scene->mRootNode, true);
 }
 
 
-bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node)
+bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
 {
-  bool success = true;
+  /* The first empty node contains rotation matrix rotating the model to +y = up,
+  ** so the first node can be skipped.
+  */
+  if(first && node->mNumMeshes == 0 && node->mNumChildren == 1)
+    return LoadFromAssimpNode(scene, node->mChildren[0], false);
   
-  _transform = ToGLM(node->mTransformation);
+  if(!first)
+    _transform = ToGLM(node->mTransformation);
  
+  
+  bool success = true;
+
   SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
  
   for(unsigned int mi = 0; mi < node->mNumMeshes; mi++)
@@ -73,7 +81,7 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node)
         {
           auto child = new Mesh(_options);
           assert(child);
-          success = child->LoadFromAssimpNode(scene, childnode);
+          success = child->LoadFromAssimpNode(scene, childnode, false);
           assert(success);
           _children.push_back(child);
         }
@@ -86,8 +94,27 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node)
 
 static glm::mat4 ToGLM(const aiMatrix4x4 & from)
 {
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Waddress-of-packed-member"
-  return glm::transpose(glm::make_mat4(&from.a1));
-#pragma GCC diagnostic pop
+  glm::mat4 dst;
+
+  dst[0][0] = from.a1;
+  dst[0][1] = from.a2;
+  dst[0][2] = from.a3;
+  dst[0][3] = from.a4;
+
+  dst[1][0] = from.b1;
+  dst[1][1] = from.b2;
+  dst[1][2] = from.b3;
+  dst[1][3] = from.b4;
+
+  dst[2][0] = from.c1;
+  dst[2][1] = from.c2;
+  dst[2][2] = from.c3;
+  dst[2][3] = from.c4;
+
+  dst[3][0] = from.d1;
+  dst[3][1] = from.d2;
+  dst[3][2] = from.d3;
+  dst[3][3] = from.d4;
+  
+  return dst;
 }

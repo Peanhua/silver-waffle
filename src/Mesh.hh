@@ -80,7 +80,7 @@ private:
 
   std::vector<Mesh *> _children;
 
-  bool LoadFromAssimpNode(const aiScene * scene, aiNode * node);
+  bool LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first);
 };
 
 #endif

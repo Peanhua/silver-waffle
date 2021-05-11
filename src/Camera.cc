@@ -3,7 +3,7 @@
 
 Camera::Camera()
   : _up(0, 0, 1),
-    _position(0, -15, -20),
+    _position(0, -20, 14.5),
     _target_position(0, 0, 0),
     _view_projection(1)
 {
@@ -52,7 +52,7 @@ void Camera::UpdateViewProjection()
 {
   _view = glm::lookAt(_position, _target_position, _up);
   _view_projection = _projection * _view;
-  std::cout << "camera: " << _position << std::endl;
+  std::cout << "camera: " << _position << " -> " << _target_position << std::endl;
 }
 
 const glm::mat4 & Camera::GetView() const

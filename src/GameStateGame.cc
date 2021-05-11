@@ -116,24 +116,33 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
     case SDLK_x:
       if(pressed)
         {
+          /*
           auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(1, 0, 0));
           _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
+          */
+          _scene->GetPlayer()->RotateRoll(10.0);
         }
       break;
 
     case SDLK_y:
       if(pressed)
         {
+          /*
           auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(0, 1, 0));
           _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
+          */
+          _scene->GetPlayer()->RotatePitch(10.0);
         }
       break;
       
     case SDLK_z:
       if(pressed)
         {
+          /*
           auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(0, 0, 1));
           _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
+          */
+          _scene->GetPlayer()->RotateYaw(10.0);
         }
       break;
 

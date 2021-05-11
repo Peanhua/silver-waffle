@@ -24,7 +24,7 @@ void ObjectSpaceship::Tick(double deltatime)
         AddImpulse(glm::vec3(-5.0 * deltatime, 0, 0));
     }
 
-  const auto max_x = 10.3f;
+  const auto max_x = 10.0f;
   const auto pos = GetPosition();
   const auto vel = GetVelocity();
   if(pos.x < -max_x)

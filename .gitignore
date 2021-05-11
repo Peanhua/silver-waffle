@@ -59,3 +59,4 @@ stamp-h1
 
 # Other
 .bash_history
+*.assxml

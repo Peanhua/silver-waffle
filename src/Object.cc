@@ -4,6 +4,7 @@
 Object::Object(Scene * scene)
   : _scene(scene),
     _position(0, 0, 0),
+    _orientation(1),
     _mesh(nullptr),
     _health(100.0)
 {
@@ -20,7 +21,7 @@ void Object::Draw(const glm::mat4 & mvp) const
   if(!IsAlive())
     return;
   
-  const glm::mat4 mymvp(mvp * glm::translate(glm::mat4(1.0f), _position));
+  const glm::mat4 mymvp(glm::translate(mvp, _position) * _orientation);
 
   if(_mesh)
     _mesh->Draw(mymvp);
@@ -39,7 +40,13 @@ void Object::SetPosition(const glm::vec3 & position)
 }
 
 
-const glm::vec3 & Object::GetPosition() const
+void Object::Translate(const glm::vec3 & translation)
+{
+  _position += translation;
+}
+
+
+const glm::vec3 Object::GetPosition() const
 {
   return _position;
 }
@@ -87,3 +94,38 @@ bool Object::IsAlive() const
   return _health > 0.0;
 }
 
+
+glm::vec3 Object::GetForwardVector() const
+{
+  return glm::column(_orientation, 1);
+}
+
+
+glm::vec3 Object::GetRightVector() const
+{
+  return glm::column(_orientation, 0);
+}
+
+
+glm::vec3 Object::GetUpVector() const
+{
+  return glm::column(_orientation, 2);
+}
+
+
+void Object::RotateRoll(double angle)
+{
+  _orientation *= glm::rotate(glm::mat4(1), glm::radians(static_cast<float>(angle)), glm::vec3(0, 1, 0));
+}
+
+
+void Object::RotatePitch(double angle)
+{
+  _orientation *= glm::rotate(glm::mat4(1), glm::radians(static_cast<float>(angle)), glm::vec3(1, 0, 0));
+}
+
+
+void Object::RotateYaw(double angle)
+{
+  _orientation *= glm::rotate(glm::mat4(1), glm::radians(static_cast<float>(angle)), glm::vec3(0, 0, 1));
+}
