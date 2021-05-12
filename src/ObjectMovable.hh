@@ -16,9 +16,13 @@ public:
   void SetVelocity(const glm::vec3 & velocity);
   const glm::vec3 & GetVelocity() const;
 
+  void SetAngularVelocity(const glm::quat & angular_velocity);
+  void AddAngularImpulse(const glm::quat & impulse);
+
 private:
   glm::vec3 _velocity;
   double    _max_velocity;
+  glm::quat _angular_velocity;
 };
 
 #endif

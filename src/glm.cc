@@ -22,3 +22,10 @@ std::ostream & operator<<(std::ostream & out, const glm::mat4 & m)
   
   return out;
 }
+
+
+std::ostream & operator<<(std::ostream & out, const glm::quat & q)
+{
+  out << "(r=" << glm::roll(q) << ", p=" << glm::pitch(q) << ", y=" << glm::yaw(q) << ")";
+  return out;
+}

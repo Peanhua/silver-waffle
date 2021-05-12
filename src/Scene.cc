@@ -13,9 +13,14 @@ Scene::Scene()
   : _random_generator(0),
     _projectilepos(0)
 {
+  std::uniform_real_distribution<float> rdist(0, 1);
   for(int i = 0; i < 1000; i++)
     {
       auto b = new ObjectProjectile(this);
+
+      auto rotangle = glm::normalize(glm::vec3(rdist(_random_generator), rdist(_random_generator), rdist(_random_generator)));
+      b->SetAngularVelocity(glm::angleAxis(glm::radians(180.0f), rotangle));
+
       _projectiles.push_back(b);
     }
 
@@ -65,6 +70,7 @@ void Scene::Initialize(double difficulty)
       {
         auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
         invader->SetPosition(topleft + glm::vec3(x, y, 0));
+        invader->RotateYaw(180.0);
 
         auto mesh = AssetLoader->LoadMesh("Invader1");
         assert(mesh);
