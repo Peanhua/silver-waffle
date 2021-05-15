@@ -1,20 +1,19 @@
 #include "Scene.hh"
+#include "Explosion.hh"
 #include "ObjectInvader.hh"
 #include "ObjectProjectile.hh"
-#include "SubsystemAssetLoader.hh"
 #include "ObjectSpaceship.hh"
-#include "MeshOverlay.hh"
+#include "SubsystemAssetLoader.hh"
 #include <iostream>
 
 
-static Mesh * overlay = nullptr;
-
 Scene::Scene()
   : _random_generator(0),
-    _projectilepos(0)
+    _projectilepos(0),
+    _explosionpos(0)
 {
   std::uniform_real_distribution<float> rdist(0, 1);
-  for(int i = 0; i < 1000; i++)
+  for(int i = 0; i < 300; i++)
     {
       auto b = new ObjectProjectile(this);
 
@@ -24,22 +23,28 @@ Scene::Scene()
       _projectiles.push_back(b);
     }
 
-  overlay = new MeshOverlay();
-  overlay->UpdateGPU();
+  std::minstd_rand random(_random_generator());
+  for(int i = 0; i < 100; i++)
+    _explosions.push_back(new Explosion(random));
 }
 
 
 void Scene::Draw(const glm::mat4 & mvp) const
 {
-  _player->Draw(mvp);
+  if(_player->IsAlive())
+    _player->Draw(mvp);
 
   for(auto i : _invaders)
-    i->Draw(mvp);
+    if(i->IsAlive())
+      i->Draw(mvp);
 
   for(auto b : _projectiles)
-    b->Draw(mvp);
+    if(b->IsAlive())
+      b->Draw(mvp);
 
-  overlay->Draw(glm::mat4(1));
+  for(auto e : _explosions)
+    if(e->IsAlive())
+      e->Draw(mvp);
 }
 
 
@@ -151,11 +156,36 @@ void Scene::Tick(double deltatime)
 
         if(target)
           {
+            AddExplosion(target->GetPosition());
             target->Hit(projectile->GetDamage(), hitdir);
             projectile->Hit(projectile->GetDamage(), -hitdir);
           }
       }
+
+  for(auto e : _explosions)
+    if(e->IsAlive())
+      e->Tick(deltatime);
 }
+
+
+void Scene::AddExplosion(const glm::vec3 & position)
+{
+  for(unsigned int i = 0; i < _explosions.size(); i++)
+    {
+      auto explosion = _explosions[_explosionpos];
+      
+      _explosionpos++;
+      if(_explosionpos >= _explosions.size())
+        _explosionpos = 0;
+      
+      if(!explosion->IsAlive())
+        {
+          explosion->Activate(position);
+          break;
+        }
+    }
+}
+
 
 #if 0
 void Scene2::Initialize(double difficulty)

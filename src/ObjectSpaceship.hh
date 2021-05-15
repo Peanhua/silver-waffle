@@ -2,6 +2,7 @@
 #define OBJECT_SPACESHIP_HH_
 
 #include "ObjectMovable.hh"
+#include <vector>
 
 
 class ObjectSpaceship : public ObjectMovable

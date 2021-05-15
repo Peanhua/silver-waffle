@@ -2,8 +2,10 @@
 #define GAME_STATE_GAME_HH_
 
 #include "GameState.hh"
-#include "Camera.hh"
-#include "Scene.hh"
+
+class Camera;
+class Scene;
+
 
 class GameStateGame : public GameState
 {

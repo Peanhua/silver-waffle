@@ -21,6 +21,7 @@ public:
   void   SetUniformValue(const std::string & name, float value);
   */
   void SetMatrix(const std::string & name, const glm::mat4 & matrix);
+  void SetFloat(const std::string & name, float value);
   
 private:
   GLuint _program;

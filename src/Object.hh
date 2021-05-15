@@ -2,11 +2,10 @@
 #define OBJECT_HH_
 
 #include "glm.hh"
-#include "Mesh.hh"
-#include "ShaderProgram.hh"
 
-
+class Mesh;
 class Scene;
+
 
 class Object
 {

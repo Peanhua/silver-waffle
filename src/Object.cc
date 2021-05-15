@@ -1,4 +1,5 @@
 #include "Object.hh"
+#include "Mesh.hh"
 #include <iostream>
 
 Object::Object(Scene * scene)
@@ -18,9 +19,6 @@ Object::~Object()
 
 void Object::Draw(const glm::mat4 & mvp) const
 {
-  if(!IsAlive())
-    return;
-  
   if(_mesh)
     {
       const glm::mat4 mymvp(glm::translate(mvp, _position) * glm::toMat4(_orientation));

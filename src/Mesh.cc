@@ -12,6 +12,7 @@ Mesh::Mesh(const unsigned int options)
     _element_vbo(0),
     _color_vbo(0),
     _texcoord_vbo(0),
+    _generic_vec3_vbo(0),
     _primitive_type(GL_TRIANGLES),
     _shader_program(nullptr),
     _texture(nullptr),
@@ -89,6 +90,7 @@ void Mesh::AddTexCoord(const glm::vec2 & coord)
 
 void Mesh::AddElement(unsigned int index)
 {
+  assert(_options & OPTION_ELEMENT);
   _indices.push_back(index);
 }
 
@@ -113,6 +115,14 @@ void Mesh::AddElement(unsigned int index1, unsigned int index2, unsigned int ind
   AddElement(index4);
 }
 
+
+void Mesh::AddGenericVec3Input(const glm::vec3 & vector)
+{
+  assert(_options & OPTION_GENERIC_VEC3_INPUT);
+  _generic_vec3s.push_back(vector.x);
+  _generic_vec3s.push_back(vector.y);
+  _generic_vec3s.push_back(vector.z);
+}
 
 
 void Mesh::SetPrimitiveType(const GLenum primitive_type)
@@ -173,6 +183,18 @@ void Mesh::UpdateGPU()
       glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_texcoords.size() * sizeof(GLfloat)), _texcoords.data(), GL_STATIC_DRAW);
       glEnableVertexAttribArray(ALOC_TEXCOORD);
       glVertexAttribPointer(ALOC_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
+
+  if(_options & OPTION_GENERIC_VEC3_INPUT)
+    {
+      if(_generic_vec3_vbo == 0)
+        glGenBuffers(1, &_generic_vec3_vbo);
+      assert(_generic_vec3_vbo != 0);
+
+      glBindBuffer(GL_ARRAY_BUFFER, _generic_vec3_vbo);
+      glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_generic_vec3s.size() * sizeof(GLfloat)), _generic_vec3s.data(), GL_STATIC_DRAW);
+      glEnableVertexAttribArray(ALOC_GENERIC_VEC3);
+      glVertexAttribPointer(ALOC_GENERIC_VEC3, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
   for(auto c : _children)

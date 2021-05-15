@@ -1,8 +1,10 @@
 #include "GameStateGame.hh"
-#include "SubsystemAssetLoader.hh"
 #include "Camera2.hh"
 #include "ObjectSpaceship.hh"
+#include "Scene.hh"
+#include "SubsystemAssetLoader.hh"
 #include <iostream>
+
 
 GameStateGame::GameStateGame()
   : GameState()

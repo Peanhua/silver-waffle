@@ -12,9 +12,6 @@ ObjectProjectile::ObjectProjectile(Scene * scene)
 
 void ObjectProjectile::Tick(double deltatime)
 {
-  if(!IsAlive())
-    return;
-
   ObjectMovable::Tick(deltatime);
 
   _lifetime_left -= deltatime;
