@@ -1,5 +1,17 @@
 #include "glm.hh"
 
+
+std::ostream & operator<<(std::ostream & out, const glm::ivec2 & v)
+{
+  const char delimiter = ' ';
+
+  out << v.x << delimiter;
+  out << v.y << delimiter;
+
+  return out;
+}
+
+
 std::ostream & operator<<(std::ostream & out, const glm::vec3 & v)
 {
   const char delimiter = ' ';

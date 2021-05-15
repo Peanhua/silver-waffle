@@ -1,14 +1,11 @@
 #include "MeshOverlay.hh"
-#include "Image.hh"
 #include "SubsystemAssetLoader.hh"
 #include <vector>
 
 MeshOverlay::MeshOverlay()
   : Mesh(OPTION_ELEMENT | OPTION_TEXTURE | OPTION_BLEND)
 {
-  auto texture = new Image(true);
-  texture->Load("Images/GameOverlay.png");
-  texture->UpdateGPU(true, true);
+  auto texture = AssetLoader->LoadImage("GameOverlay");
   SetTexture(texture);
   assert(GetTexture());
 

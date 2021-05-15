@@ -2,7 +2,9 @@
 #define SUBSYSTEM_GAME_STATE_HH_
 
 #include "Subsystem.hh"
-#include "GameState.hh"
+#include <vector>
+
+class GameState;
 
 class SubsystemGameState : public Subsystem
 {
@@ -17,7 +19,7 @@ public:
   GameState * GetGameState() const;
   
 private:
-  GameState * _gamestate;
+  GameState * _root_gamestate;
 };
 
 #endif

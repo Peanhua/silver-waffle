@@ -56,6 +56,12 @@ void Mesh::Draw(const glm::mat4 & mvp) const
 }
 
 
+void Mesh::ClearVertices()
+{
+  _vertices.clear();
+}
+
+
 void Mesh::AddVertex(const glm::vec3 & position)
 {
   _vertices.push_back(position.x);

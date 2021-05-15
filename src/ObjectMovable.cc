@@ -5,7 +5,8 @@ ObjectMovable::ObjectMovable(Scene * scene)
   : Object(scene),
     _velocity(glm::vec3(0, 0, 0)),
     _max_velocity(10),
-    _angular_velocity(0, 0, 0, 0)
+    _angular_velocity(0, 0, 0, 0),
+    _angular_velocity_magnitude(0)
 {
 }
 
@@ -14,11 +15,11 @@ void ObjectMovable::Tick(double deltatime)
 {
   Translate(_velocity * static_cast<float>(deltatime));
 
-  if(glm::length(_angular_velocity) > 0.01f)
+  if(_angular_velocity_magnitude > 0.01)
     {
       glm::quat src(1, 0, 0, 0);
       glm::quat dst = _angular_velocity;
-      glm::quat res = glm::slerp(src, dst, static_cast<float>(deltatime));
+      glm::quat res = glm::slerp(src, dst, static_cast<float>(_angular_velocity_magnitude * deltatime));
       Rotate(res);
     }
   
@@ -60,13 +61,8 @@ const glm::vec3 & ObjectMovable::GetVelocity() const
 }
 
 
-void ObjectMovable::SetAngularVelocity(const glm::quat & angular_velocity)
+void ObjectMovable::SetAngularVelocity(const glm::quat & angular_velocity, double magnitude)
 {
   _angular_velocity = angular_velocity;
-}
-
-
-void ObjectMovable::AddAngularImpulse(const glm::quat & impulse)
-{
-  _angular_velocity *= impulse;
+  _angular_velocity_magnitude = magnitude;
 }

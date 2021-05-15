@@ -3,7 +3,8 @@
 
 
 GameState::GameState()
-  : _running(true)
+  : _running(true),
+    _child(nullptr)
 {
 }
 
@@ -13,12 +14,26 @@ GameState::~GameState()
 }
 
 
-GameState * GameState::GetCurrentState()
+GameState * GameState::GetChildState() const
 {
-  if(_running)
-    return this;
+  return _child;
+}
+
+
+void GameState::SetChildState(GameState * gamestate)
+{
+  if(gamestate)
+    assert(!_child);
   else
-    return nullptr;
+    assert(_child);
+  
+  _child = gamestate;
+}
+
+
+bool GameState::IsRunning() const
+{
+  return _running;
 }
 
 
@@ -40,3 +55,19 @@ void GameState::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
   assert(key == key);
   assert(mod == mod);
 }
+
+
+void GameState::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relative_movement)
+{
+  assert(position == position);
+  assert(relative_movement == relative_movement);
+}
+
+
+void GameState::OnMouseButton(bool pressed, unsigned int button, const glm::ivec2 & position)
+{
+  assert(pressed == pressed);
+  assert(button == button);
+  assert(position == position);
+}
+

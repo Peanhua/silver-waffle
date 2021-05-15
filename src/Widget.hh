@@ -1,0 +1,57 @@
+#ifndef WIDGET_HH_
+#define WIDGET_HH_
+
+#include "glm.hh"
+#include <vector>
+#include <functional>
+
+class Mesh;
+
+
+class Widget
+{
+public:
+  typedef std::function<void(bool pressed, unsigned int button, const glm::ivec2 & position)> on_clicked_t;
+  
+  Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
+  virtual ~Widget();
+
+  Widget *   GetWidgetAt(const glm::ivec2 & position);
+  glm::ivec2 GetAbsolutePosition() const;
+  const glm::ivec2 & GetPosition() const;
+  const glm::ivec2 & GetSize() const;
+
+  void SetImage(const std::string & name);
+
+  void SetIsFocused(bool is_focused);
+  bool GetIsFocused() const;
+  
+  virtual void Draw() const;
+
+  void OnClicked(bool pressed);
+  void SetOnClicked(on_clicked_t callback);
+
+protected:
+  const glm::mat4 & GetMVP() const;
+  
+private:
+  Widget *              _parent;
+  std::vector<Widget *> _children;
+
+  glm::mat4  _mvp;
+  glm::ivec2 _position;
+  glm::ivec2 _size;
+
+  Mesh * _imagemesh;
+  Mesh * _focused_borders_mesh;
+
+  bool _focused;
+  bool _activated;
+
+  on_clicked_t _on_clicked;
+
+  void UpdateMVP();
+  void OnSizeUpdated();
+};
+
+#endif

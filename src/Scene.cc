@@ -19,7 +19,7 @@ Scene::Scene()
       auto b = new ObjectProjectile(this);
 
       auto rotangle = glm::normalize(glm::vec3(rdist(_random_generator), rdist(_random_generator), rdist(_random_generator)));
-      b->SetAngularVelocity(glm::angleAxis(glm::radians(180.0f), rotangle));
+      b->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(rdist(_random_generator)) * 10.0);
 
       _projectiles.push_back(b);
     }

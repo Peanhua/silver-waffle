@@ -48,6 +48,10 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
   switch(key)
     {
+    case SDLK_ESCAPE:
+      if(pressed)
+        Quit();
+      break;
 #if 0
     case SDLK_LEFT:
       if(pressed)

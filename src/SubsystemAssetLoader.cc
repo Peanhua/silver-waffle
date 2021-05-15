@@ -1,4 +1,7 @@
 #include "SubsystemAssetLoader.hh"
+#include "Image.hh"
+#include "Mesh.hh"
+#include "ShaderProgram.hh"
 #include <cassert>
 #include <json11.hpp>
 #include <iostream>
@@ -119,4 +122,22 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
     }
   
   return mesh;
+}
+
+
+Image * SubsystemAssetLoader::LoadImage(const std::string & name)
+{
+  auto it = _images.find(name);
+  if(it != _images.end())
+    return (*it).second;
+
+  auto rv = new Image(true);
+  if(rv->Load(std::string("Images/") + name + ".png"))
+    {
+      rv->UpdateGPU(true, true);
+      _images[name] = rv;
+    }
+
+  assert(rv);
+  return rv;
 }

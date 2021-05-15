@@ -38,8 +38,7 @@ public:
   void   Draw(const glm::mat4 & mvp) const;
   double GetBoundingSphereRadius()   const;
 
-  
-protected:
+  void ClearVertices();
   void AddVertex(const glm::vec3 & position);
   void AddColor(const glm::vec3 & color);
   void AddTexCoord(const glm::vec2 & coord);

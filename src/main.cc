@@ -1,6 +1,5 @@
 #include "SubsystemHandler.hh"
 #include "SubsystemAssetLoader.hh"
-#include "SubsystemGameState.hh"
 #include "SubsystemGfx.hh"
 #include "SubsystemInput.hh"
 #include <SDL.h>

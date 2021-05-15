@@ -22,6 +22,7 @@ silverwaffle_SOURCES =		\
 	Camera2.cc		\
 	GameState.cc		\
 	GameStateGame.cc	\
+	GameStateTitle.cc	\
 	Image.cc		\
 	Mesh.cc			\
 	Mesh_LoadFromFile.cc	\
@@ -40,5 +41,6 @@ silverwaffle_SOURCES =		\
 	SubsystemGfx.cc		\
 	SubsystemHandler.cc	\
 	SubsystemInput.cc	\
+	Widget.cc		\
 	glm.cc			\
 	main.cc

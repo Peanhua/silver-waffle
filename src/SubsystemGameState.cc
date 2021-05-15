@@ -1,44 +1,69 @@
 #include "SubsystemGameState.hh"
-#include "GameStateGame.hh"
+#include "GameStateTitle.hh"
+
 
 SubsystemGameState::SubsystemGameState()
   : Subsystem("GameState"),
-    _gamestate(nullptr)
+    _root_gamestate(nullptr)
 {
 }
 
 
 bool SubsystemGameState::Start()
 {
-  _gamestate = new GameStateGame();
-  return _gamestate;
+  _root_gamestate = new GameStateTitle();
+  return GetGameState();
 }
 
 
 void SubsystemGameState::Stop()
 {
-  _gamestate = nullptr;
+  while(auto state = GetGameState())
+    state->Quit();
+  _root_gamestate = nullptr;
 }
 
 
 void SubsystemGameState::Tick(double deltatime)
 {
-  if(!_gamestate)
+  auto state = GetGameState();
+  if(!state)
     return;
 
-  _gamestate->Tick(deltatime);
-  _gamestate = _gamestate->GetCurrentState();
+  auto child = state->GetChildState();
+  if(child && !child->IsRunning())
+    {
+      state->SetChildState(nullptr);
+      delete child;
+    }
+
+  state->Tick(deltatime);
 }
 
 
 bool SubsystemGameState::IsRunning() const
 {
-  return _gamestate;
+  auto state = GetGameState();
+  if(!state)
+    return false;
+
+  return state->IsRunning();
 }
 
 
 GameState * SubsystemGameState::GetGameState() const
 {
-  return _gamestate;
+  auto rv = _root_gamestate;
+  if(rv && !rv->IsRunning())
+    return nullptr;
+
+  auto next = rv;
+  while(next && next->IsRunning())
+    {
+      rv = next;
+      next = rv->GetChildState();
+    }
+
+  return rv;
 }
 
