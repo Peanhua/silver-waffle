@@ -50,7 +50,7 @@ void Scene::Initialize(double difficulty)
   glm::vec3 topleft(-10, 40, 0);
 
   _player = new ObjectSpaceship(this);
-  _player->SetPosition(topleft + glm::vec3(0, -53, 0));
+  _player->SetPosition(glm::vec3(0, topleft.y - 53, topleft.z));
   {
     auto mesh = AssetLoader->LoadMesh("Player");
     assert(mesh);
@@ -144,7 +144,7 @@ void Scene::Tick(double deltatime)
           {
             if(projectile->CheckCollision(*_player, hitdir))
               {
-                hitdir.z = 0.0f;
+                hitdir.y = 0.0f;
                 target = _player;
               }
           }
