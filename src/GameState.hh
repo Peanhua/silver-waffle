@@ -4,6 +4,9 @@
 #include "glm.hh"
 #include <SDL_keyboard.h>
 
+class Widget;
+
+
 class GameState
 {
 public:
@@ -15,6 +18,9 @@ public:
 
   bool IsRunning() const;
   void Quit();
+
+  void     SetRootWidget(Widget * widget);
+  Widget * GetRootWidget() const;
   
   virtual void Tick(double deltatime);
   virtual void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod);
@@ -24,6 +30,9 @@ public:
 private:
   bool        _running;
   GameState * _child;
+
+  Widget * _root_widget;
+  Widget * _focused_widget;
 };
 
 #endif

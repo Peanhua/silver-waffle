@@ -1,10 +1,14 @@
 #include "GameState.hh"
+#include "Widget.hh"
 #include <cassert>
+#include <GL/glew.h>
 
 
 GameState::GameState()
   : _running(true),
-    _child(nullptr)
+    _child(nullptr),
+    _root_widget(nullptr),
+    _focused_widget(nullptr)
 {
 }
 
@@ -46,28 +50,73 @@ void GameState::Quit()
 void GameState::Tick(double deltatime)
 {
   assert(deltatime == deltatime);
+  glDisable(GL_DEPTH_TEST);
+  if(_root_widget)
+    _root_widget->Draw();
 }
 
 
 void GameState::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 {
-  assert(pressed == pressed);
-  assert(key == key);
   assert(mod == mod);
+
+  if(pressed && key == SDLK_ESCAPE)
+    Quit();
 }
 
 
 void GameState::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relative_movement)
 {
-  assert(position == position);
   assert(relative_movement == relative_movement);
+  
+  if(!_root_widget)
+    return;
+
+  auto focused = _root_widget->GetWidgetAt(position);
+  if(focused)
+    {
+      if(focused != _focused_widget)
+        {
+          if(_focused_widget)
+            _focused_widget->SetIsFocused(false);
+          _focused_widget = focused;
+          _focused_widget->SetIsFocused(true);
+        }
+    }
+  else
+    {
+      if(_focused_widget)
+        _focused_widget->SetIsFocused(false);
+      _focused_widget = nullptr;
+    }
 }
 
 
 void GameState::OnMouseButton(bool pressed, unsigned int button, const glm::ivec2 & position)
 {
-  assert(pressed == pressed);
   assert(button == button);
-  assert(position == position);
+  
+  if(_root_widget)
+    {
+      auto w = _root_widget->GetWidgetAt(position);
+      if(w)
+        w->OnClicked(pressed);
+    }
 }
 
+
+void GameState::SetRootWidget(Widget * widget)
+{
+  if(widget)
+    assert(!_root_widget);
+  else
+    assert(_root_widget);
+  
+  _root_widget = widget;
+}
+
+
+Widget * GameState::GetRootWidget() const
+{
+  return _root_widget;
+}
