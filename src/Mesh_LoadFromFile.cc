@@ -37,6 +37,7 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
   bool success = true;
 
   SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
+  _name = node->mName.C_Str();
  
   for(unsigned int mi = 0; mi < node->mNumMeshes; mi++)
     {
@@ -61,6 +62,10 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
                       mesh->mVertices[vi].z);
           AddVertex(v);
           AddColor(diffuse_color);
+          glm::vec3 n(mesh->mNormals[vi].x,
+                      mesh->mNormals[vi].y,
+                      mesh->mNormals[vi].z);
+          AddNormal(n);
         }
 
       for(unsigned int fi = 0; fi < mesh->mNumFaces; fi++)

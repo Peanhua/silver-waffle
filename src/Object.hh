@@ -13,7 +13,7 @@ public:
   Object(Scene * scene);
   virtual ~Object();
   
-  virtual void Draw(const glm::mat4 & mvp) const;
+  virtual void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
   virtual void Tick(double deltatime);
   virtual void Hit(double damage, const glm::vec3 & impulse);
 

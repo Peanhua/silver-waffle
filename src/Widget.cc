@@ -73,10 +73,10 @@ const glm::ivec2 & Widget::GetSize() const
 void Widget::Draw() const
 {
   if(_imagemesh)
-    _imagemesh->Draw(GetMVP());
+    _imagemesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
 
   if(_focused && _focused_borders_mesh)
-    _focused_borders_mesh->Draw(GetMVP());
+    _focused_borders_mesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
   
   for(auto c : _children)
     c->Draw();
@@ -101,14 +101,27 @@ void Widget::SetOnClicked(on_clicked_t callback)
 void Widget::UpdateMVP()
 {
   auto pos = GetAbsolutePosition();
-  _mvp = glm::ortho(0.0, 1024.0 - 1.0, 768.0 - 1.0, 0.0, -1.0, 1.0);
-  _mvp = glm::translate(_mvp, glm::vec3(pos.x, pos.y, 0));
+  _projection = glm::ortho(0.0, 1024.0 - 1.0, 768.0 - 1.0, 0.0, -1.0, 1.0);
+  _view = glm::translate(glm::mat4(1), glm::vec3(pos.x, pos.y, 0));
+  _mvp = _projection * _view;
 }
 
 
 const glm::mat4 & Widget::GetMVP() const
 {
   return _mvp;
+}
+
+
+const glm::mat4 & Widget::GetProjection() const
+{
+  return _projection;
+}
+
+
+const glm::mat4 & Widget::GetView() const
+{
+  return _view;
 }
 
 

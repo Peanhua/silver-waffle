@@ -48,10 +48,10 @@ bool Explosion::IsAlive() const
 }
 
 
-void Explosion::Draw(const glm::mat4 & mvp) const
+void Explosion::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
 {
   _mesh->GetShaderProgram()->Use();
   _mesh->GetShaderProgram()->SetFloat("in_time", static_cast<float>(_time));
-  _mesh->Draw(mvp);
+  _mesh->Draw(glm::mat4(1), view, projection, vp);
 }
 

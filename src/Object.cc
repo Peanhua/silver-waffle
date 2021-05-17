@@ -17,12 +17,13 @@ Object::~Object()
 }
 
 
-void Object::Draw(const glm::mat4 & mvp) const
+void Object::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
 {
   if(_mesh)
     {
-      const glm::mat4 mymvp(glm::translate(mvp, _position) * glm::toMat4(_orientation));
-      _mesh->Draw(mymvp);
+      const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
+      const glm::mat4 mvp(vp * model);
+      _mesh->Draw(model, view, projection, mvp);
     }
 }
 

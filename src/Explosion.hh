@@ -14,7 +14,7 @@ public:
 
   void Activate(const glm::vec3 & position);
   void Tick(double deltatime);
-  void Draw(const glm::mat4 & mvp) const;
+  void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
   bool IsAlive() const;
 
 private:

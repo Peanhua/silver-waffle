@@ -38,7 +38,7 @@ GameStateGame::~GameStateGame()
 void GameStateGame::Tick(double deltatime)
 {
   _scene->Tick(deltatime);
-  _scene->Draw(_camera->GetViewProjection());
+  _scene->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
   if(!_scene->GetPlayer()->IsAlive())
     Quit();
 }

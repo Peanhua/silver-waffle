@@ -12,6 +12,7 @@ Mesh::Mesh(const unsigned int options)
     _element_vbo(0),
     _color_vbo(0),
     _texcoord_vbo(0),
+    _normal_vbo(0),
     _generic_vec3_vbo(0),
     _primitive_type(GL_TRIANGLES),
     _shader_program(nullptr),
@@ -21,9 +22,10 @@ Mesh::Mesh(const unsigned int options)
 }
 
 
-void Mesh::Draw(const glm::mat4 & mvp) const
+void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp) const
 {
-  const glm::mat4 transform(mvp * _transform);
+  const glm::mat4 mymvp(mvp * _transform);
+  const glm::mat4 mymodel(model * _transform);
 
   if(_vertices.size() > 0)
     {
@@ -40,7 +42,10 @@ void Mesh::Draw(const glm::mat4 & mvp) const
       if(_options & OPTION_BLEND)
         glEnable(GL_BLEND);
 
-      _shader_program->SetMatrix("in_mvp", transform);
+      _shader_program->SetMatrix("in_model",      mymodel);
+      _shader_program->SetMatrix("in_view",       view);
+      _shader_program->SetMatrix("in_projection", projection);
+      _shader_program->SetMatrix("in_mvp",        mymvp);
       
       glBindVertexArray(_vao);
       if(_options & OPTION_ELEMENT)
@@ -53,7 +58,7 @@ void Mesh::Draw(const glm::mat4 & mvp) const
     }
 
   for(auto c : _children)
-    c->Draw(transform);
+    c->Draw(mymodel, view, projection, mymvp);
 }
 
 
@@ -85,6 +90,15 @@ void Mesh::AddTexCoord(const glm::vec2 & coord)
   assert(_options & OPTION_TEXTURE);
   _texcoords.push_back(coord.x);
   _texcoords.push_back(coord.y);
+}
+
+
+void Mesh::AddNormal(const glm::vec3 & normal)
+{
+  assert(_options & OPTION_NORMAL);
+  _normals.push_back(normal.x);
+  _normals.push_back(normal.y);
+  _normals.push_back(normal.z);
 }
 
 
@@ -185,6 +199,18 @@ void Mesh::UpdateGPU()
       glVertexAttribPointer(ALOC_TEXCOORD, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
+  if(_options & OPTION_NORMAL)
+    {
+      if(_normal_vbo == 0)
+        glGenBuffers(1, &_normal_vbo);
+      assert(_normal_vbo != 0);
+
+      glBindBuffer(GL_ARRAY_BUFFER, _normal_vbo);
+      glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_normals.size() * sizeof(GLfloat)), _normals.data(), GL_STATIC_DRAW);
+      glEnableVertexAttribArray(ALOC_NORMAL);
+      glVertexAttribPointer(ALOC_NORMAL, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
+
   if(_options & OPTION_GENERIC_VEC3_INPUT)
     {
       if(_generic_vec3_vbo == 0)
@@ -257,4 +283,17 @@ void Mesh::SetTexture(Image * texture_image)
 Image * Mesh::GetTexture() const
 {
   return _texture;
+}
+
+
+Mesh * Mesh::FindChild(const std::string & name)
+{
+  if(_name == name)
+    return this;
+
+  Mesh * rv = nullptr;
+  for(auto it = _children.begin(); !rv && it != _children.end(); it++)
+    rv = (*it)->FindChild(name);
+  
+  return rv;
 }

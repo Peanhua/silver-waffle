@@ -84,7 +84,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
   if(it != _meshes.end())
     return (*it).second;
 
-  auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT);
+  auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL);
   assert(mesh);
   if(mesh->LoadFromFile("3d-models/" + name + ".dae"))
     {

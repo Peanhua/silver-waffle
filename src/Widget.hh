@@ -33,11 +33,15 @@ public:
 
 protected:
   const glm::mat4 & GetMVP() const;
+  const glm::mat4 & GetProjection() const;
+  const glm::mat4 & GetView() const;
   
 private:
   Widget *              _parent;
   std::vector<Widget *> _children;
 
+  glm::mat4  _projection;
+  glm::mat4  _view;
   glm::mat4  _mvp;
   glm::ivec2 _position;
   glm::ivec2 _size;

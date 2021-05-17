@@ -25,6 +25,7 @@ ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, co
   glBindAttribLocation(_program, Mesh::ALOC_COLOR,        "in_color");
   glBindAttribLocation(_program, Mesh::ALOC_TEXCOORD,     "in_texcoord");
   glBindAttribLocation(_program, Mesh::ALOC_GENERIC_VEC3, "in_generic_vec3");
+  glBindAttribLocation(_program, Mesh::ALOC_NORMAL,       "in_normal");
 
   glLinkProgram(_program);
 }
@@ -45,7 +46,7 @@ GLuint ShaderProgram::GetProgram() const
 void ShaderProgram::SetMatrix(const std::string & name, const glm::mat4 & matrix)
 {
   auto loc = glGetUniformLocation(_program, name.c_str());
-  assert(loc >= 0);
+  //assert(loc >= 0);
   if(loc >= 0)
     glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
 }
@@ -54,7 +55,7 @@ void ShaderProgram::SetMatrix(const std::string & name, const glm::mat4 & matrix
 void ShaderProgram::SetFloat(const std::string & name, float value)
 {
   auto loc = glGetUniformLocation(_program, name.c_str());
-  assert(loc >= 0);
+  //assert(loc >= 0);
   if(loc >= 0)
     glUniform1f(loc, value);
 }

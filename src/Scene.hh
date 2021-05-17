@@ -5,6 +5,7 @@
 #include <random>
 
 class Explosion;
+class Mesh;
 class Object;
 class ObjectInvader;
 class ObjectProjectile;
@@ -16,7 +17,7 @@ class Scene
 public:
   Scene();
   
-  void              Draw(const glm::mat4 & mvp) const;
+  void              Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
   void              Tick(double deltatime);
 
   void              Initialize(double difficulty);
@@ -33,6 +34,7 @@ private:
   unsigned int                    _projectilepos;
   std::vector<Explosion *>        _explosions;
   unsigned int                    _explosionpos;
+  std::vector<Mesh *>             _numbers;
 };
 
 
