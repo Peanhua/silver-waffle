@@ -8,10 +8,12 @@
 #include <iostream>
 #include "Widget.hh"
 
+
 Scene::Scene()
   : _random_generator(0),
     _projectilepos(0),
-    _explosionpos(0)
+    _explosionpos(0),
+    _on_destroyed_callback(nullptr)
 {
   std::uniform_real_distribution<float> rdist(0, 1);
   for(int i = 0; i < 300; i++)
@@ -27,17 +29,6 @@ Scene::Scene()
   std::minstd_rand random(_random_generator());
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
-
-#if 0
-  auto numbers = AssetLoader->LoadMesh("Numbers");
-  assert(numbers);
-  for(char i = '0'; i <= '9'; i++)
-    {
-      auto n = numbers->FindChild(std::string("Number") + i);
-      assert(n);
-      _numbers.push_back(n);
-    }
-  #endif
 }
 
 
@@ -58,29 +49,6 @@ void Scene::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm
   for(auto e : _explosions)
     if(e->IsAlive())
       e->Draw(view, projection, vp);
-#if 0
-#if 1
-  glm::mat4 proj = glm::perspective(glm::radians(30.0), 1024.0 / 768.0, 0.001, 1000.0);
-  glm::mat4 view = glm::lookAt(glm::vec3(0, -100, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
-  glm::mat4 nmvp = proj * view;
-  float size = 5.0f;
-  nmvp = glm::translate(nmvp, glm::vec3(-20, -20, 0));
-  nmvp = glm::rotate(nmvp, glm::radians(180.0f), glm::vec3(1, 0, 0));
-  nmvp = glm::scale(nmvp, glm::vec3(size, size, size));
-#else
-  float size = 50.0f;
-  auto nmvp = glm::ortho(0.0f, 1024.0f - 1.0f, 768.0f - 1.0f, 0.0f, -100.0f, 100.0f);
-  nmvp = glm::translate(nmvp, glm::vec3(size, size, 0));
-  nmvp = glm::rotate(nmvp, glm::radians(-90.0f), glm::vec3(1, 0, 0));
-  nmvp = glm::scale(nmvp, glm::vec3(size, size, size));
-#endif
-  //  nmvp = glm::rotate(nmvp, glm::radians(45.0f), glm::vec3(0, 0, 1));
-  for(int i = 0; i <= 9; i++)
-    {
-      _numbers[i]->Draw(nmvp);
-      nmvp = glm::translate(nmvp, glm::vec3(1, 0, 0));
-    }
-#endif
 }
 
 
@@ -192,9 +160,15 @@ void Scene::Tick(double deltatime)
 
         if(target)
           {
-            AddExplosion(target->GetPosition());
             target->Hit(projectile->GetDamage(), hitdir);
             projectile->Hit(projectile->GetDamage(), -hitdir);
+
+            if(!target->IsAlive())
+              {
+                AddExplosion(target->GetPosition());
+                if(_on_destroyed_callback)
+                  _on_destroyed_callback(projectile->GetOwner(), target);
+              }
           }
       }
 
@@ -220,6 +194,13 @@ void Scene::AddExplosion(const glm::vec3 & position)
           break;
         }
     }
+}
+
+
+void Scene::SetOnDestroyed(on_destroyed_t callback)
+{
+  assert(!_on_destroyed_callback);
+  _on_destroyed_callback = callback;
 }
 
 

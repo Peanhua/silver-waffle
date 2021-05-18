@@ -2,6 +2,7 @@
 #include "Camera2.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
+#include "ScoreReel.hh"
 #include "SubsystemAssetLoader.hh"
 #include <iostream>
 
@@ -25,6 +26,14 @@ GameStateGame::GameStateGame()
   _camera->UpdateViewProjection();
   
   _scene->Initialize(1.0);
+  _scene->SetOnDestroyed([this](Object * destroyer, Object * target)
+  {
+    std::cout << "Destroyed " << target << std::endl;
+    if(destroyer == _scene->GetPlayer() && target != _scene->GetPlayer())
+      _score_reel->SetScore(_score_reel->GetScore() + 1);
+  });
+
+  _score_reel = new ScoreReel(6);
 }
 
 
@@ -39,6 +48,10 @@ void GameStateGame::Tick(double deltatime)
 {
   _scene->Tick(deltatime);
   _scene->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
+
+  _score_reel->Tick(deltatime);
+  _score_reel->Draw();
+
   if(!_scene->GetPlayer()->IsAlive())
     Quit();
 }

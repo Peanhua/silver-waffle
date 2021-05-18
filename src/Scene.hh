@@ -2,6 +2,7 @@
 #define SCENE_HH_
 
 #include "glm.hh"
+#include <functional>
 #include <random>
 
 class Explosion;
@@ -15,6 +16,9 @@ class ObjectSpaceship;
 class Scene
 {
 public:
+  typedef std::function<void(Object * destroyer, Object * target)> on_destroyed_t;
+
+  
   Scene();
   
   void              Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
@@ -25,6 +29,7 @@ public:
   ObjectSpaceship * GetPlayer() const;
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   void              AddExplosion(const glm::vec3 & position);
+  void              SetOnDestroyed(on_destroyed_t callback);
   
 private:
   std::mt19937_64                 _random_generator;
@@ -34,7 +39,7 @@ private:
   unsigned int                    _projectilepos;
   std::vector<Explosion *>        _explosions;
   unsigned int                    _explosionpos;
-  std::vector<Mesh *>             _numbers;
+  on_destroyed_t                  _on_destroyed_callback;
 };
 
 

@@ -60,6 +60,7 @@ public:
   void            SetTexture(Image * texture_image);
   Image *         GetTexture() const;
 
+  void   AddChild(Mesh * child);
   Mesh * FindChild(const std::string & name);
   
 private:

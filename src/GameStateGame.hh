@@ -5,6 +5,7 @@
 
 class Camera;
 class Scene;
+class ScoreReel;
 
 
 class GameStateGame : public GameState
@@ -17,9 +18,10 @@ public:
   void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod) override;
 
 private:
-  double   _fov;
-  Camera * _camera;
-  Scene *  _scene;
+  double      _fov;
+  Camera *    _camera;
+  Scene *     _scene;
+  ScoreReel * _score_reel;
 };
 
 #endif

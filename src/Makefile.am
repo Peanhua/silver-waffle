@@ -34,6 +34,7 @@ silverwaffle_SOURCES =		\
 	ObjectProjectile.cc	\
 	ObjectSpaceship.cc	\
 	Scene.cc		\
+	ScoreReel.cc		\
 	Shader.cc		\
 	ShaderProgram.cc	\
 	Subsystem.cc		\

@@ -297,3 +297,10 @@ Mesh * Mesh::FindChild(const std::string & name)
   
   return rv;
 }
+
+
+void Mesh::AddChild(Mesh * child)
+{
+  assert(child);
+  _children.push_back(child);
+}
