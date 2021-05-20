@@ -33,7 +33,7 @@ GameStateGame::GameStateGame()
       _score_reel->SetScore(_score_reel->GetScore() + 1);
   });
 
-  _score_reel = new ScoreReel(6);
+  _score_reel = new ScoreReel(10);
 }
 
 

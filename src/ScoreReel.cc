@@ -6,7 +6,7 @@
 
 ScoreReel::ScoreReel(unsigned int drum_count)
   : _drum_count(drum_count),
-    _drum_width(0.6)
+    _drum_width(0.75)
 {
   auto nums = AssetLoader->LoadMesh("Numbers");
   std::vector<Mesh *> numbers;
@@ -14,7 +14,7 @@ ScoreReel::ScoreReel(unsigned int drum_count)
     {
       auto n = nums->FindChild(std::string("Number") + i);
       assert(n);
-      n->SetShaderProgram(AssetLoader->LoadShaderProgram("Flat"));
+      n->SetShaderProgram(AssetLoader->LoadShaderProgram("ScoreReel"));
       numbers.push_back(n);
     }
   
@@ -32,8 +32,8 @@ ScoreReel::ScoreReel(unsigned int drum_count)
   std::vector<glm::vec3> vertices {
     glm::vec3(_drum_count * _drum_width, 0,  1.1), 
     glm::vec3(_drum_count * _drum_width, 0, -1.1), 
-    glm::vec3(0,                         0, -1.1),
-    glm::vec3(0,                         0,  1.1),
+    glm::vec3(0.5 - _drum_width,         0, -1.1),
+    glm::vec3(0.5 - _drum_width,         0,  1.1),
   };
   
   std::vector<unsigned int> indices {
@@ -68,8 +68,8 @@ void ScoreReel::Tick(double deltatime)
 void ScoreReel::Draw() const
 {
   glm::mat4 proj = glm::perspective(glm::radians(30.0), 1024.0 / 768.0, 0.001, 1000.0);
-  glm::mat4 view = glm::lookAt(glm::vec3(0, -20, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
-  glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.5f * -static_cast<float>(_drum_count * _drum_width), 0, 4));
+  glm::mat4 view = glm::lookAt(glm::vec3(0, -40, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+  glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.0f + 0.5f * -static_cast<float>(_drum_count * _drum_width), 0, 9.2));
   _background->Draw(model, view, proj, proj * view * model);
   
   for(unsigned int i = 0; i < _drums.size(); i++)
@@ -93,7 +93,7 @@ void ScoreReel::SetScore(unsigned int score)
       score /= 10;
       
       const auto drumind = _drum_count - i - 1;
-      const double adjustment = 0.75;
+      const double adjustment = 1.0;
       _drums_target_angles[drumind] = 360.0 / 10.0 * (adjustment + static_cast<double>(10 - drumscore));
     }
 }
@@ -114,7 +114,7 @@ Mesh * ScoreReel::CreateDrum(const std::vector<Mesh *> numbers) const
     {
       auto num = new Mesh(0);
       auto forward = glm::column(rot, 1);
-      auto mov = glm::translate(glm::mat4(1), forward.xyz() * 1.2f);
+      auto mov = glm::translate(glm::mat4(1), forward.xyz() * 1.3f);
       rot = glm::rotate(rot, glm::radians(-18.0f), glm::vec3(1, 0, 0));
       num->ApplyTransform(mov * rot);
       num->AddChild(numbers[i]);

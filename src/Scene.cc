@@ -78,7 +78,7 @@ void Scene::Initialize(double difficulty)
     for(int x = 0; x < 20; x++)
       {
         auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
-        invader->SetPosition(topleft + glm::vec3(x, y, 0));
+        invader->SetPosition(topleft + glm::vec3(0.5 + x, y, 0));
         invader->RotateYaw(180.0);
 
         auto mesh = AssetLoader->LoadMesh("Invader1");
