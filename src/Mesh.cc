@@ -22,15 +22,16 @@ Mesh::Mesh(const unsigned int options)
 }
 
 
-void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp) const
+void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program) const
 {
   const glm::mat4 mymvp(mvp * _transform);
   const glm::mat4 mymodel(model * _transform);
 
   if(_vertices.size() > 0)
     {
-      assert(_shader_program);
-      _shader_program->Use();
+      auto shader = shader_program ? shader_program : _shader_program;
+      assert(shader);
+      shader->Use();
 
       if(_options & OPTION_TEXTURE)
         {
@@ -42,10 +43,10 @@ void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4
       if(_options & OPTION_BLEND)
         glEnable(GL_BLEND);
 
-      _shader_program->SetMatrix("in_model",      mymodel);
-      _shader_program->SetMatrix("in_view",       view);
-      _shader_program->SetMatrix("in_projection", projection);
-      _shader_program->SetMatrix("in_mvp",        mymvp);
+      shader->SetMatrix("in_model",      mymodel);
+      shader->SetMatrix("in_view",       view);
+      shader->SetMatrix("in_projection", projection);
+      shader->SetMatrix("in_mvp",        mymvp);
       
       glBindVertexArray(_vao);
       if(_options & OPTION_ELEMENT)
@@ -58,7 +59,7 @@ void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4
     }
 
   for(auto c : _children)
-    c->Draw(mymodel, view, projection, mymvp);
+    c->Draw(mymodel, view, projection, mymvp, shader_program);
 }
 
 

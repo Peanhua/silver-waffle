@@ -10,6 +10,7 @@ Widget::Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & 
     _size(size),
     _imagemesh(nullptr),
     _focused_borders_mesh(nullptr),
+    _visible(true),
     _focused(false),
     _activated(false)
 {
@@ -79,12 +80,15 @@ void Widget::Tick(double deltatime)
 
 void Widget::Draw() const
 {
+  if(!_visible)
+    return;
+  
   if(_imagemesh)
     _imagemesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
-
+  
   if(_focused && _focused_borders_mesh)
     _focused_borders_mesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
-  
+
   for(auto c : _children)
     c->Draw();
 }
@@ -92,6 +96,9 @@ void Widget::Draw() const
 
 void Widget::OnClicked(bool pressed)
 {
+  if(!_visible)
+    return;
+  
   _activated = pressed;
   if(_on_clicked)
     _on_clicked(pressed, 0, glm::ivec2(0, 0));
@@ -174,6 +181,18 @@ Image * Widget::GetImage() const
     return nullptr;
   
   return _imagemesh->GetTexture();
+}
+
+
+void Widget::SetIsVisible(bool is_visible)
+{
+  _visible = is_visible;
+}
+
+
+bool Widget::GetIsVisible() const
+{
+  return _visible;
 }
 
 

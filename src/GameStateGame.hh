@@ -2,10 +2,12 @@
 #define GAME_STATE_GAME_HH_
 
 #include "GameState.hh"
+#include <vector>
 
 class Camera;
 class Scene;
 class ScoreReel;
+class WidgetPlayerShip;
 
 
 class GameStateGame : public GameState
@@ -22,6 +24,12 @@ private:
   Camera *    _camera;
   Scene *     _scene;
   ScoreReel * _score_reel;
+  
+  unsigned int          _lives;
+  std::vector<Widget *> _lives_widgets;
+
+  void OnPlayerDies();
+  void OnLivesUpdated();
 };
 
 #endif

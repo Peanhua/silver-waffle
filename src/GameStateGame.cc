@@ -4,11 +4,14 @@
 #include "Scene.hh"
 #include "ScoreReel.hh"
 #include "SubsystemAssetLoader.hh"
+#include "WidgetPlayerShip.hh"
 #include <iostream>
+#include <GL/glew.h>
 
 
 GameStateGame::GameStateGame()
-  : GameState()
+  : GameState(),
+    _lives(3)
 {
 #if 1
   _camera = new Camera();
@@ -28,12 +31,24 @@ GameStateGame::GameStateGame()
   _scene->Initialize(1.0);
   _scene->SetOnDestroyed([this](Object * destroyer, Object * target)
   {
-    std::cout << "Destroyed " << target << std::endl;
     if(destroyer == _scene->GetPlayer() && target != _scene->GetPlayer())
       _score_reel->SetScore(_score_reel->GetScore() + 1);
+    else if(target == _scene->GetPlayer())
+      OnPlayerDies();
   });
 
   _score_reel = new ScoreReel(10);
+
+  auto root = new Widget(nullptr, glm::ivec2(0, 0), glm::ivec2(1024, 768));
+  assert(root);
+  SetRootWidget(root);
+
+  for(int i = 0; i < 5; i++)
+    {
+      auto w = new WidgetPlayerShip(root, glm::ivec2(750 + i * 50, 10), glm::ivec2(50, 50));
+      _lives_widgets.push_back(w);
+    }
+  OnLivesUpdated();
 }
 
 
@@ -46,6 +61,8 @@ GameStateGame::~GameStateGame()
 
 void GameStateGame::Tick(double deltatime)
 {
+  glEnable(GL_DEPTH_TEST);
+  
   _scene->Tick(deltatime);
   _scene->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
 
@@ -53,9 +70,6 @@ void GameStateGame::Tick(double deltatime)
   _score_reel->Draw();
 
   GameState::Tick(deltatime);
-
-  if(!_scene->GetPlayer()->IsAlive())
-    Quit();
 }
 
 
@@ -173,4 +187,31 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       break;
     }
 
+}
+
+
+void GameStateGame::OnLivesUpdated()
+{
+  unsigned int used = 0;
+  for(auto w : _lives_widgets)
+    {
+      w->SetIsVisible(used < _lives);
+      used++;
+    }
+}
+
+
+void GameStateGame::OnPlayerDies()
+{
+  _lives--;
+  OnLivesUpdated();
+  
+  if(_lives > 0)
+    {
+      auto player = _scene->GetPlayer();
+      player->SetHealth(100);
+      player->SetPosition(glm::vec3(0, player->GetPosition().yz()));
+    }
+  else
+    Quit();
 }

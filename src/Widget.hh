@@ -26,6 +26,9 @@ public:
   void    SetImage(const std::string & name);
   Image * GetImage() const;
 
+  void SetIsVisible(bool is_visible);
+  bool GetIsVisible() const;
+  
   void SetIsFocused(bool is_focused);
   bool GetIsFocused() const;
 
@@ -53,6 +56,7 @@ private:
   Mesh * _imagemesh;
   Mesh * _focused_borders_mesh;
 
+  bool _visible;
   bool _focused;
   bool _activated;
 
