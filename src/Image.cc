@@ -5,13 +5,19 @@
 #include <SDL_image.h>
 
 
-Image::Image(bool alpha)
+Image::Image(bool alpha, GLuint texture_id)
   : _width(0),
     _height(0),
     _bytes_per_pixel(0),
     _alpha(alpha),
     _data(nullptr),
-    _texture_id(0)
+    _texture_id(texture_id)
+{
+}
+
+
+Image::Image(bool alpha)
+  : Image(alpha, 0)
 {
 }
 
@@ -193,3 +199,11 @@ GLuint Image::GetTextureId() const
 {
   return _texture_id;
 }
+
+
+void Image::SetTextureId(GLuint texture_id)
+{
+  _texture_id = texture_id;
+}
+
+ 

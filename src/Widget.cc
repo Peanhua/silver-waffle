@@ -70,6 +70,13 @@ const glm::ivec2 & Widget::GetSize() const
 }
 
 
+void Widget::Tick(double deltatime)
+{
+  for(auto c : _children)
+    c->Tick(deltatime);
+}
+
+
 void Widget::Draw() const
 {
   if(_imagemesh)
@@ -127,6 +134,11 @@ const glm::mat4 & Widget::GetView() const
 
 void Widget::SetImage(const std::string & name)
 {
+  SetImage(AssetLoader->LoadImage(name));
+}
+
+void Widget::SetImage(Image * image)
+{
   if(!_imagemesh)
     {
       _imagemesh = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
@@ -151,8 +163,17 @@ void Widget::SetImage(const std::string & name)
     }
   assert(_imagemesh);
 
-  _imagemesh->SetTexture(AssetLoader->LoadImage(name));
+  _imagemesh->SetTexture(image);
   OnSizeUpdated();
+}
+
+
+Image * Widget::GetImage() const
+{
+  if(!_imagemesh)
+    return nullptr;
+  
+  return _imagemesh->GetTexture();
 }
 
 

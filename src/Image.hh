@@ -11,12 +11,14 @@ class Image
 {
 public:
   Image(bool alpha);
+  Image(bool alpha, GLuint texture_id);
   ~Image();
 
   bool   Load(const std::string & filename);
   bool   Load(SDL_Surface & source);
   void   UpdateGPU(bool mipmapping, bool linear_filtering);
   GLuint GetTextureId() const;
+  void   SetTextureId(GLuint texture_id);
   
 private:
   unsigned int         _width;

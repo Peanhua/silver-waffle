@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 
+class Image;
 class Mesh;
 
 
@@ -21,11 +22,14 @@ public:
   const glm::ivec2 & GetPosition() const;
   const glm::ivec2 & GetSize() const;
 
-  void SetImage(const std::string & name);
+  void    SetImage(Image * image);
+  void    SetImage(const std::string & name);
+  Image * GetImage() const;
 
   void SetIsFocused(bool is_focused);
   bool GetIsFocused() const;
-  
+
+  virtual void Tick(double deltatime);
   virtual void Draw() const;
 
   void OnClicked(bool pressed);

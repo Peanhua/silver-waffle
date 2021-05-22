@@ -52,6 +52,8 @@ void GameStateGame::Tick(double deltatime)
   _score_reel->Tick(deltatime);
   _score_reel->Draw();
 
+  GameState::Tick(deltatime);
+
   if(!_scene->GetPlayer()->IsAlive())
     Quit();
 }

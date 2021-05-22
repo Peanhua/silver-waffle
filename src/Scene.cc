@@ -5,7 +5,6 @@
 #include "ObjectProjectile.hh"
 #include "ObjectSpaceship.hh"
 #include "SubsystemAssetLoader.hh"
-#include <iostream>
 #include "Widget.hh"
 
 

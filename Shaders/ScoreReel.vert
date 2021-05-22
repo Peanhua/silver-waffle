@@ -1,14 +1,14 @@
 // Blinn-Phong adaptation from https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model
 
-#version 150
+#version 330
 
 in vec3 in_vertex;
 in vec3 in_color;
 in vec3 in_normal;
 
-out vec3 diffuse_color;
-out vec3 vertex;
-out vec3 normal;
+out vec3 v2f_position;
+out vec3 v2f_normal;
+out vec3 v2f_color;
 
 uniform mat4 in_mvp;
 uniform mat4 in_view;
@@ -16,13 +16,10 @@ uniform mat4 in_model;
 
 void main()
 {
-  gl_Position = in_mvp * vec4(in_vertex,1);
-
-  vec4 tmp = (in_view * in_model) * vec4(in_vertex, 1);
-  vertex = tmp.xyz / tmp.w;
-
-  diffuse_color = in_color;
-  diffuse_color = vec3(1, 1, 1);
-  
-  normal = in_normal;
+  vec4 pos = in_view * in_model * vec4(in_vertex, 1);
+  v2f_position = pos.xyz / pos.w;
+  v2f_color = in_color;
+  mat4 normal_matrix = in_view * in_model;
+  v2f_normal = vec3(normal_matrix * vec4(in_normal, 0));
+  gl_Position = in_mvp * vec4(in_vertex, 1);
 }

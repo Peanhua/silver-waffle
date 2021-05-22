@@ -49,10 +49,13 @@ void GameState::Quit()
 
 void GameState::Tick(double deltatime)
 {
-  assert(deltatime == deltatime);
-  glDisable(GL_DEPTH_TEST);
   if(_root_widget)
-    _root_widget->Draw();
+    {
+      _root_widget->Tick(deltatime);
+      
+      glDisable(GL_DEPTH_TEST);
+      _root_widget->Draw();
+    }
 }
 
 
