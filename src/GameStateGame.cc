@@ -5,6 +5,7 @@
 #include "ScoreReel.hh"
 #include "SubsystemAssetLoader.hh"
 #include "WidgetPlayerShip.hh"
+#include "WidgetSpaceshipStatus.hh"
 #include <iostream>
 #include <GL/glew.h>
 
@@ -49,6 +50,10 @@ GameStateGame::GameStateGame()
       _lives_widgets.push_back(w);
     }
   OnLivesUpdated();
+
+  auto w = new WidgetSpaceshipStatus(root, glm::ivec2(950, 70), glm::ivec2(20, 100));
+  w->SetSpaceship(_scene->GetPlayer());
+  _playership_status_widget = w;
 }
 
 

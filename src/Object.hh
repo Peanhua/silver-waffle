@@ -22,6 +22,7 @@ public:
 
   bool   CheckCollision(const Object & other, glm::vec3 & out_hit_direction) const;
   bool   IsAlive() const;
+  double GetHealth() const;
   void   SetHealth(double health);
 
   void            SetPosition(const glm::vec3 & position);

@@ -26,6 +26,8 @@ public:
   void    SetImage(const std::string & name);
   Image * GetImage() const;
 
+  void SetScale(const glm::vec2 & scale);
+
   void SetIsVisible(bool is_visible);
   bool GetIsVisible() const;
   
@@ -39,9 +41,10 @@ public:
   void SetOnClicked(on_clicked_t callback);
 
 protected:
-  const glm::mat4 & GetMVP() const;
+  const glm::mat4 & GetMVP()        const;
   const glm::mat4 & GetProjection() const;
-  const glm::mat4 & GetView() const;
+  const glm::mat4 & GetView()       const;
+  const glm::mat4 & GetModel()      const;
   
 private:
   Widget *              _parent;
@@ -49,9 +52,11 @@ private:
 
   glm::mat4  _projection;
   glm::mat4  _view;
+  glm::mat4  _model;
   glm::mat4  _mvp;
   glm::ivec2 _position;
   glm::ivec2 _size;
+  glm::vec2  _scale;
 
   Mesh * _imagemesh;
   Mesh * _focused_borders_mesh;

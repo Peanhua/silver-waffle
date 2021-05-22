@@ -28,6 +28,8 @@ private:
   unsigned int          _lives;
   std::vector<Widget *> _lives_widgets;
 
+  Widget * _playership_status_widget;
+
   void OnPlayerDies();
   void OnLivesUpdated();
 };

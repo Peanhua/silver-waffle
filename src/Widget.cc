@@ -8,6 +8,7 @@ Widget::Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & 
   : _parent(parent),
     _position(position),
     _size(size),
+    _scale(glm::vec3(1, 1, 1)),
     _imagemesh(nullptr),
     _focused_borders_mesh(nullptr),
     _visible(true),
@@ -114,10 +115,15 @@ void Widget::SetOnClicked(on_clicked_t callback)
 
 void Widget::UpdateMVP()
 {
-  auto pos = GetAbsolutePosition();
   _projection = glm::ortho(0.0, 1024.0 - 1.0, 768.0 - 1.0, 0.0, -1.0, 1.0);
-  _view = glm::translate(glm::mat4(1), glm::vec3(pos.x, pos.y, 0));
-  _mvp = _projection * _view;
+
+  _view = glm::mat4(1);
+
+  auto pos = GetAbsolutePosition();
+  _model = glm::translate(glm::mat4(1), glm::vec3(pos.x, pos.y, 0));
+  _model = glm::scale(_model, glm::vec3(_scale.xy(), 0));
+  
+ _mvp = _projection * _view * _model;
 }
 
 
@@ -136,6 +142,12 @@ const glm::mat4 & Widget::GetProjection() const
 const glm::mat4 & Widget::GetView() const
 {
   return _view;
+}
+
+
+const glm::mat4 & Widget::GetModel() const
+{
+  return _model;
 }
 
 
@@ -181,6 +193,12 @@ Image * Widget::GetImage() const
     return nullptr;
   
   return _imagemesh->GetTexture();
+}
+
+
+void Widget::SetScale(const glm::vec2 & scale)
+{
+  _scale = scale;
 }
 
 

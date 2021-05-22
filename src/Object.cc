@@ -82,11 +82,16 @@ void Object::Hit(double damage, const glm::vec3 & impulse)
 }
 
 
+double Object::GetHealth() const
+{
+  return _health;
+}
+
+
 void Object::SetHealth(double health)
 {
   _health = health;
 }
-
 
 
 bool Object::IsAlive() const
