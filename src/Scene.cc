@@ -129,6 +129,33 @@ void Scene::Tick(double deltatime)
     if(i->IsAlive())
       i->Tick(deltatime);
   
+  for(auto i : _invaders)
+    if(i->IsAlive())
+      {
+        glm::vec3 hitdir;
+        if(i->CheckCollision(*_player, hitdir))
+          {
+            hitdir.y = 0;
+            
+            i->Hit(50, -hitdir);
+            if(!i->IsAlive())
+              {
+                AddExplosion(i->GetPosition());
+                if(_on_destroyed_callback)
+                  _on_destroyed_callback(_player, i);
+              }
+
+            _player->Hit(50, hitdir);
+            if(!_player->IsAlive())
+              {
+                AddExplosion(_player->GetPosition());
+                if(_on_destroyed_callback)
+                  _on_destroyed_callback(i, _player);
+              }
+            
+          }
+      }
+  
   for(auto projectile : _projectiles)
     if(projectile->IsAlive())
       {
