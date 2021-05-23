@@ -247,7 +247,7 @@ void Widget::OnSizeUpdated()
 
   if(!_focused_borders_mesh)
     {
-      _focused_borders_mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_BLEND);
+      _focused_borders_mesh = new Mesh(Mesh::OPTION_COLOR);
       assert(_focused_borders_mesh);
       _focused_borders_mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
       _focused_borders_mesh->SetPrimitiveType(GL_LINES);

@@ -21,6 +21,7 @@ public:
       OPTION_BLEND_DISCARD      = 1<<4,
       OPTION_GENERIC_VEC3_INPUT = 1<<5,
       OPTION_NORMAL             = 1<<6,
+      OPTION_COLOR_ALPHA        = 1<<7,
     };
   enum AttribLocation
     {
@@ -45,6 +46,7 @@ public:
   void ClearVertices();
   void AddVertex(const glm::vec3 & position);
   void AddColor(const glm::vec3 & color);
+  void AddColor(const glm::vec4 & color);
   void AddTexCoord(const glm::vec2 & coord);
   void AddNormal(const glm::vec3 & normal);
   void AddElement(unsigned int index);

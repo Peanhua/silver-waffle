@@ -9,7 +9,7 @@ WidgetSpaceshipStatus::WidgetSpaceshipStatus(Widget * parent, const glm::ivec2 &
     _spaceship(nullptr)
 {
   {
-    _meter = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_COLOR | Mesh::OPTION_BLEND);
+    _meter = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_COLOR);
     assert(_meter);
     _meter->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
 
@@ -36,7 +36,7 @@ WidgetSpaceshipStatus::WidgetSpaceshipStatus(Widget * parent, const glm::ivec2 &
 
 
   {
-    auto borders = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_BLEND);
+    auto borders = new Mesh(Mesh::OPTION_COLOR);
     assert(borders);
     borders->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
     borders->SetPrimitiveType(GL_LINES);

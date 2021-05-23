@@ -57,15 +57,18 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
       
       for(unsigned int vi = 0; vi < mesh->mNumVertices; vi++)
         {
-          glm::vec3 v(mesh->mVertices[vi].x,
-                      mesh->mVertices[vi].y,
-                      mesh->mVertices[vi].z);
-          AddVertex(v);
-          AddColor(diffuse_color);
-          glm::vec3 n(mesh->mNormals[vi].x,
-                      mesh->mNormals[vi].y,
-                      mesh->mNormals[vi].z);
-          AddNormal(n);
+          AddVertex(glm::vec3(mesh->mVertices[vi].x,
+                              mesh->mVertices[vi].y,
+                              mesh->mVertices[vi].z));
+                    
+          if(_options & OPTION_BLEND)
+            AddColor(diffuse_color);
+          else
+            AddColor(diffuse_color.xyz());
+          
+          AddNormal(glm::vec3(mesh->mNormals[vi].x,
+                              mesh->mNormals[vi].y,
+                              mesh->mNormals[vi].z));
         }
 
       for(unsigned int fi = 0; fi < mesh->mNumFaces; fi++)

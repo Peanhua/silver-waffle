@@ -80,9 +80,21 @@ void Mesh::AddVertex(const glm::vec3 & position)
 void Mesh::AddColor(const glm::vec3 & color)
 {
   assert(_options & OPTION_COLOR);
+  assert(!(_options & OPTION_COLOR_ALPHA));
   _colors.push_back(color.x);
   _colors.push_back(color.y);
   _colors.push_back(color.z);
+}
+
+
+void Mesh::AddColor(const glm::vec4 & color)
+{
+  assert(_options & OPTION_COLOR);
+  assert(_options & OPTION_COLOR_ALPHA);
+  _colors.push_back(color.x);
+  _colors.push_back(color.y);
+  _colors.push_back(color.z);
+  _colors.push_back(color.w);
 }
 
 
@@ -182,10 +194,14 @@ void Mesh::UpdateGPU()
         glGenBuffers(1, &_color_vbo);
       assert(_color_vbo != 0);
 
+      const unsigned int components = _options & OPTION_COLOR_ALPHA ? 4 : 3;
+      assert(_colors.size() % components == 0);
+      assert(_colors.size() / components == _vertices.size() / 3);
+
       glBindBuffer(GL_ARRAY_BUFFER, _color_vbo);
       glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_colors.size() * sizeof(GLfloat)), _colors.data(), GL_STATIC_DRAW);
       glEnableVertexAttribArray(ALOC_COLOR);
-      glVertexAttribPointer(ALOC_COLOR, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+      glVertexAttribPointer(ALOC_COLOR, static_cast<GLint>(components), GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
   if(_options & OPTION_TEXTURE)
