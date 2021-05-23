@@ -67,6 +67,7 @@ WidgetSpaceshipStatus::WidgetSpaceshipStatus(Widget * parent, const glm::ivec2 &
 void WidgetSpaceshipStatus::Draw() const
 {
   auto model = GetModel();
+  model = glm::translate(model, glm::vec3(0, GetSize().y - _spaceship->GetHealth(), 0));
   model = glm::scale(model, glm::vec3(GetSize().x, _spaceship->GetHealth(), 1));
   _meter->Draw(model, GetView(), GetProjection(), GetProjection() * GetView() * model);
   

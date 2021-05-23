@@ -46,12 +46,12 @@ GameStateGame::GameStateGame()
 
   for(int i = 0; i < 5; i++)
     {
-      auto w = new WidgetPlayerShip(root, glm::ivec2(750 + i * 50, 10), glm::ivec2(50, 50));
+      auto w = new WidgetPlayerShip(root, glm::ivec2(960 - i * 50, 10), glm::ivec2(50, 50));
       _lives_widgets.push_back(w);
     }
   OnLivesUpdated();
 
-  auto w = new WidgetSpaceshipStatus(root, glm::ivec2(950, 70), glm::ivec2(20, 100));
+  auto w = new WidgetSpaceshipStatus(root, glm::ivec2(990, 70), glm::ivec2(20, 100));
   w->SetSpaceship(_scene->GetPlayer());
   _playership_status_widget = w;
 }
