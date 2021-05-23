@@ -29,7 +29,7 @@ public:
 
   ObjectSpaceship * GetPlayer() const;
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
-  void              AddExplosion(const glm::vec3 & position);
+  void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
   void              SetOnDestroyed(on_destroyed_t callback);
   
 private:

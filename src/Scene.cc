@@ -164,19 +164,21 @@ void Scene::Tick(double deltatime)
         if(i->CheckCollision(*_player, hitdir))
           {
             hitdir.y = 0;
-            
+
+            auto vel = i->GetVelocity();
             i->Hit(50, -hitdir);
             if(!i->IsAlive())
               {
-                AddExplosion(i->GetPosition());
+                AddExplosion(i->GetPosition(), vel);
                 if(_on_destroyed_callback)
                   _on_destroyed_callback(_player, i);
               }
 
+            vel = _player->GetVelocity();
             _player->Hit(50, hitdir);
             if(!_player->IsAlive())
               {
-                AddExplosion(_player->GetPosition());
+                AddExplosion(_player->GetPosition(), vel);
                 if(_on_destroyed_callback)
                   _on_destroyed_callback(i, _player);
               }
@@ -221,12 +223,13 @@ void Scene::Tick(double deltatime)
 
         if(target)
           {
+            auto vel = target->GetVelocity();
             target->Hit(projectile->GetDamage(), hitdir);
             projectile->Hit(projectile->GetDamage(), -hitdir);
 
             if(!target->IsAlive())
               {
-                AddExplosion(target->GetPosition());
+                AddExplosion(target->GetPosition(), vel);
                 if(_on_destroyed_callback)
                   _on_destroyed_callback(projectile->GetOwner(), target);
               }
@@ -248,7 +251,7 @@ void Scene::Tick(double deltatime)
 }
 
 
-void Scene::AddExplosion(const glm::vec3 & position)
+void Scene::AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity)
 {
   for(unsigned int i = 0; i < _explosions.size(); i++)
     {
@@ -260,7 +263,7 @@ void Scene::AddExplosion(const glm::vec3 & position)
       
       if(!explosion->IsAlive())
         {
-          explosion->Activate(position);
+          explosion->Activate(position, velocity);
           break;
         }
     }

@@ -52,6 +52,15 @@ void ShaderProgram::SetMatrix(const std::string & name, const glm::mat4 & matrix
 }
 
 
+void ShaderProgram::SetVec3(const std::string & name, const glm::vec3 & value)
+{
+  auto loc = glGetUniformLocation(_program, name.c_str());
+  //assert(loc >= 0);
+  if(loc >= 0)
+    glUniform3fv(loc, 1, glm::value_ptr(value));
+}
+
+
 void ShaderProgram::SetFloat(const std::string & name, float value)
 {
   auto loc = glGetUniformLocation(_program, name.c_str());

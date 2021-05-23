@@ -26,13 +26,15 @@ Explosion::Explosion(std::minstd_rand & random)
 }
 
 
-void Explosion::Activate(const glm::vec3 & position)
+void Explosion::Activate(const glm::vec3 & position, const glm::vec3 & velocity)
 {
   _time = 0;
   _mesh->ClearVertices();
   for(int i = 0; i < _fragment_count; i++)
     _mesh->AddVertex(position);
   _mesh->UpdateGPU();
+
+  _velocity = velocity;
 }
 
 
@@ -52,6 +54,7 @@ void Explosion::Draw(const glm::mat4 & view, const glm::mat4 & projection, const
 {
   _mesh->GetShaderProgram()->Use();
   _mesh->GetShaderProgram()->SetFloat("in_time", static_cast<float>(_time));
+  _mesh->GetShaderProgram()->SetVec3("in_velocity", _velocity);
   _mesh->Draw(glm::mat4(1), view, projection, vp);
 }
 
