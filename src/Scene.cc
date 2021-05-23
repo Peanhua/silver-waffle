@@ -11,8 +11,6 @@
 
 Scene::Scene()
   : _random_generator(0),
-    _projectilepos(0),
-    _explosionpos(0),
     _on_destroyed_callback(nullptr)
 {
   std::uniform_real_distribution<float> rdist(0, 1);
@@ -113,19 +111,9 @@ ObjectSpaceship * Scene::GetPlayer() const
 
 void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime)
 {
-  bool done = false;
-  for(unsigned int i = 0; !done && i < _projectiles.size(); i++)
-    {
-      if(!_projectiles[_projectilepos]->IsAlive())
-        {
-          _projectiles[_projectilepos]->Activate(owner, position, velocity, damage, lifetime);
-          done = true;
-        }
-
-      _projectilepos++;
-      if(_projectilepos >= _projectiles.size())
-        _projectilepos = 0;
-    }
+  auto ind = _projectiles.GetNextFreeIndex();
+  if(ind < _projectiles.size())
+    _projectiles[ind]->Activate(owner, position, velocity, damage, lifetime);
 }
 
 
@@ -269,20 +257,9 @@ void Scene::Tick(double deltatime)
 
 void Scene::AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity)
 {
-  for(unsigned int i = 0; i < _explosions.size(); i++)
-    {
-      auto explosion = _explosions[_explosionpos];
-      
-      _explosionpos++;
-      if(_explosionpos >= _explosions.size())
-        _explosionpos = 0;
-      
-      if(!explosion->IsAlive())
-        {
-          explosion->Activate(position, velocity);
-          break;
-        }
-    }
+  auto ind = _explosions.GetNextFreeIndex();
+  if(ind < _explosions.size())
+    _explosions[ind]->Activate(position, velocity);
 }
 
 

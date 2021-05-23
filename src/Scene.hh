@@ -57,10 +57,8 @@ private:
   std::mt19937_64                 _random_generator;
   ObjectSpaceship *               _player;
   Container<ObjectInvader *>      _invaders;
-  std::vector<ObjectProjectile *> _projectiles;
-  unsigned int                    _projectilepos;
-  std::vector<Explosion *>        _explosions;
-  unsigned int                    _explosionpos;
+  Container<ObjectProjectile *>   _projectiles;
+  Container<Explosion *>          _explosions;
   on_destroyed_t                  _on_destroyed_callback;
   std::vector<WormholeWall *>     _walls;
 };
