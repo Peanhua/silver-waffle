@@ -19,6 +19,27 @@ class Scene
 public:
   typedef std::function<void(Object * destroyer, Object * target)> on_destroyed_t;
 
+  template<typename T> class Container : public std::vector<T>
+  {
+  public:
+    unsigned int GetNextFreeIndex()
+    {
+      for(unsigned int i = 0; i < std::vector<T>::size(); i++)
+        {
+          _pos++;
+          if(_pos >= std::vector<T>::size())
+            _pos = 0;
+
+          auto obj = std::vector<T>::at(_pos);
+          if(!obj || !obj->IsAlive())
+            return _pos;
+        }
+      return static_cast<unsigned int>(std::vector<T>::size());
+    }
+    
+  private:
+    unsigned int _pos;
+  };
   
   Scene();
   
@@ -35,7 +56,7 @@ public:
 private:
   std::mt19937_64                 _random_generator;
   ObjectSpaceship *               _player;
-  std::vector<ObjectInvader *>    _invaders;
+  Container<ObjectInvader *>      _invaders;
   std::vector<ObjectProjectile *> _projectiles;
   unsigned int                    _projectilepos;
   std::vector<Explosion *>        _explosions;

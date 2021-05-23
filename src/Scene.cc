@@ -42,7 +42,7 @@ void Scene::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm
     _player->Draw(view, projection, vp);
 
   for(auto i : _invaders)
-    if(i->IsAlive())
+    if(i && i->IsAlive())
       i->Draw(view, projection, vp);
 
   for(auto b : _projectiles)
@@ -99,27 +99,9 @@ void Scene::Initialize(double difficulty)
                      34.0);
   _player->AddEngine(glm::vec3(-1, 0, 0), 20.0);
   _player->AddEngine(glm::vec3( 1, 0, 0), 20.0);
-  
-  _invaders.clear();
-  for(int y = 0; y < 10; y++)
-    for(int x = 0; x < 20; x++)
-      {
-        auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
-        invader->SetPosition(topleft + glm::vec3(0.5 + x, y, 0));
-        invader->RotateYaw(180.0);
 
-        auto mesh = AssetLoader->LoadMesh("Invader1");
-        assert(mesh);
-        invader->SetMesh(mesh);
-
-        invader->AddWeapon(glm::vec3(0, -1, 0),
-                           AssetLoader->LoadMesh("Projectile"),
-                           glm::vec3(0, -1, 0),
-                           5.0,
-                           34.0);
-        
-        _invaders.push_back(invader);
-      }
+  for(int i = 0; i < 200; i++)
+    _invaders.push_back(nullptr);
 }
 
 
@@ -147,18 +129,18 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
 }
 
 
-
 void Scene::Tick(double deltatime)
 {
   if(_player->IsAlive())
     _player->Tick(deltatime);
   
   for(auto i : _invaders)
-    if(i->IsAlive())
+    if(i && i->IsAlive())
       i->Tick(deltatime);
-  
+
+  bool addmore = false;
   for(auto i : _invaders)
-    if(i->IsAlive())
+    if(i && i->IsAlive())
       {
         glm::vec3 hitdir;
         if(i->CheckCollision(*_player, hitdir))
@@ -188,10 +170,44 @@ void Scene::Tick(double deltatime)
         if(i->IsAlive())
           {
             const auto max_x = 10.0f + 0.75f;
-            if(std::abs(i->GetPosition().x) > max_x)
+            if(std::abs(i->GetPosition().x) > max_x || i->GetPosition().y < 40.0f - 53.0f - 2.0f)
               i->Hit(99999, -glm::normalize(i->GetVelocity()));
           }
       }
+    else
+      addmore = true;
+
+  if(addmore)
+    {
+      auto ind = _invaders.GetNextFreeIndex();
+      if(ind < _invaders.size())
+        {
+          auto rand = [this]() { return (static_cast<double>(_random_generator()) - static_cast<double>(_random_generator.min())) / static_cast<double>(_random_generator.max()); };
+          
+          auto r = rand();
+          if(r < 5.0 * deltatime)
+            {
+              const auto max_x = 10.0;
+              auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
+              invader->SetPosition(glm::vec3(-max_x + rand() * max_x * 2.0, 40, 0));
+              invader->RotateYaw(180.0);
+
+              auto mesh = AssetLoader->LoadMesh("Invader1");
+              assert(mesh);
+              invader->SetMesh(mesh);
+          
+              invader->AddWeapon(glm::vec3(0, -1, 0),
+                                 AssetLoader->LoadMesh("Projectile"),
+                                 glm::vec3(0, -1, 0),
+                                 5.0,
+                                 34.0);
+
+              delete _invaders[ind];
+              _invaders[ind] = invader;
+            }
+        }
+    }
+      
   
   for(auto projectile : _projectiles)
     if(projectile->IsAlive())
@@ -204,7 +220,7 @@ void Scene::Tick(double deltatime)
         if(projectile->GetOwner() == _player)
           {
             for(auto i : _invaders)
-              if(i->IsAlive())
+              if(i && i->IsAlive())
                 if(projectile->CheckCollision(*i, hitdir))
                   {
                     target = i;
