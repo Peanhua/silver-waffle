@@ -29,8 +29,8 @@ ScoreReel::ScoreReel(unsigned int drum_count)
     }
 
   
-  _background = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT);
-  _background->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
+  _background = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_BLEND);
+  _background->SetShaderProgram(AssetLoader->LoadShaderProgram("Mask"));
   
   std::vector<glm::vec3> vertices {
     glm::vec3(_drum_count * _drum_width,  0,  1.2), // 0
@@ -63,11 +63,8 @@ ScoreReel::ScoreReel(unsigned int drum_count)
   };
   
   for(auto v : vertices)
-    {
-      _background->AddVertex(v);
-      _background->AddColor(glm::vec3(0, 0, 0));
-      //_background->AddColor(glm::vec3(0.64, 0.12, 0.77));
-    }
+    _background->AddVertex(v);
+  
   for(auto ii : indices)
     _background->AddElement(ii);
   
