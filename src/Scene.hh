@@ -11,6 +11,7 @@ class Object;
 class ObjectInvader;
 class ObjectProjectile;
 class ObjectSpaceship;
+class WormholeWall;
 
 
 class Scene
@@ -40,6 +41,7 @@ private:
   std::vector<Explosion *>        _explosions;
   unsigned int                    _explosionpos;
   on_destroyed_t                  _on_destroyed_callback;
+  std::vector<WormholeWall *>     _walls;
 };
 
 

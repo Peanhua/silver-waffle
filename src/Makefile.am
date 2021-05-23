@@ -46,5 +46,6 @@ silverwaffle_SOURCES =				\
 	Widget.cc				\
 	WidgetPlayerShip.cc			\
 	WidgetSpaceshipStatus.cc		\
+	WormholeWall.cc				\
 	glm.cc					\
 	main.cc

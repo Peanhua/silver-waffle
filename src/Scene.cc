@@ -6,6 +6,7 @@
 #include "ObjectSpaceship.hh"
 #include "SubsystemAssetLoader.hh"
 #include "Widget.hh"
+#include "WormholeWall.hh"
 
 
 Scene::Scene()
@@ -28,6 +29,9 @@ Scene::Scene()
   std::minstd_rand random(_random_generator());
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
+
+  _walls.push_back(new WormholeWall(1000, 4));
+  _walls.push_back(new WormholeWall(1000, 4));
 }
 
 
@@ -48,6 +52,30 @@ void Scene::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm
   for(auto e : _explosions)
     if(e->IsAlive())
       e->Draw(view, projection, vp);
+
+  // Two walls (left and right), todo: test doing a half&full circle of walls, maybe left&right normally, and half/full circle during bonus levels?
+  const auto max_x = 10.0f + 0.75f; // 0.75 is approximately half of the player ship width, so that the ship never goes through the wall
+  const auto wormhole_length = 1000.0f;
+  std::vector<glm::vec3> wall_translations {
+    glm::vec3( max_x, 40 - 53 - 1 + wormhole_length, -4/2),
+    glm::vec3(-max_x, 40 - 53 - 1,                   -4/2),
+  };
+
+  std::vector<glm::vec4> wall_rotations {
+    glm::vec4(-90, 0, 0, 1),
+    glm::vec4( 90, 0, 0, 1),
+  };
+  
+  for(unsigned int i = 0; i < _walls.size(); i++)
+    {
+      assert(i < wall_translations.size());
+      assert(i < wall_rotations.size());
+      auto w = _walls[i];
+      glm::mat4 model(1);
+      model = glm::translate(model, wall_translations[i]);
+      model = glm::rotate(model, glm::radians(wall_rotations[i].x), wall_rotations[i].yzw());
+      w->Draw(model, view, projection, vp * model);
+    }
 }
 
 
@@ -154,6 +182,13 @@ void Scene::Tick(double deltatime)
               }
             
           }
+
+        if(i->IsAlive())
+          {
+            const auto max_x = 10.0f + 0.75f;
+            if(std::abs(i->GetPosition().x) > max_x)
+              i->Hit(99999, -glm::normalize(i->GetVelocity()));
+          }
       }
   
   for(auto projectile : _projectiles)
@@ -196,11 +231,20 @@ void Scene::Tick(double deltatime)
                   _on_destroyed_callback(projectile->GetOwner(), target);
               }
           }
+        else
+          {
+            const auto max_x = 10.0f + 0.75f;
+            if(std::abs(projectile->GetPosition().x) > max_x)
+              projectile->Hit(99999, -glm::normalize(projectile->GetVelocity()));
+          }
       }
 
   for(auto e : _explosions)
     if(e->IsAlive())
       e->Tick(deltatime);
+
+  for(auto w : _walls)
+    w->Tick(deltatime);
 }
 
 
