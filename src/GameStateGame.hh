@@ -4,6 +4,7 @@
 #include "GameState.hh"
 #include <vector>
 
+class Starfield;
 class Camera;
 class Scene;
 class ScoreReel;
@@ -24,6 +25,7 @@ private:
   Camera *    _camera;
   Scene *     _scene;
   ScoreReel * _score_reel;
+  Starfield * _starfield;
   
   unsigned int          _lives;
   std::vector<Widget *> _lives_widgets;

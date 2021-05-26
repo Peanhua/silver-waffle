@@ -3,9 +3,9 @@
 uniform mat4 in_mvp;
 
 in vec3 in_vertex;
-in vec3 in_color;
+in vec4 in_color;
 
-out vec3 diffuse_color;
+out vec4 diffuse_color;
 
 void main()
 {

@@ -27,8 +27,8 @@ bool SubsystemGfx::Start()
       if(_window)
         {
           SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+          SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
           SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
           
           auto context = SDL_GL_CreateContext(_window);
@@ -36,7 +36,7 @@ bool SubsystemGfx::Start()
           
           if(glewInit() == GLEW_OK)
             {
-              if(GLEW_VERSION_3_2)
+              if(GLEW_VERSION_4_1)
                 {
                   glViewport(0, 0, 1024, 768);
                   glClearColor(0, 0, 0, 0);

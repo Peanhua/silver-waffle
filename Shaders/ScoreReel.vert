@@ -19,7 +19,7 @@ void main()
   vec4 pos = in_view * in_model * vec4(in_vertex, 1);
   v2f_position = pos.xyz / pos.w;
   v2f_color = in_color;
-  mat4 normal_matrix = in_view * in_model;
-  v2f_normal = vec3(normal_matrix * vec4(in_normal, 0));
+  mat3 normal_matrix = mat3(transpose(inverse(in_view * in_model)));
+  v2f_normal = normal_matrix * in_normal;
   gl_Position = in_mvp * vec4(in_vertex, 1);
 }

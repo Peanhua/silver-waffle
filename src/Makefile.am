@@ -36,6 +36,7 @@ silverwaffle_SOURCES =				\
 	ScoreReel.cc				\
 	Shader.cc				\
 	ShaderProgram.cc			\
+	Starfield.cc				\
 	Subsystem.cc				\
 	SubsystemAssetLoader.cc			\
 	SubsystemGameState.cc			\

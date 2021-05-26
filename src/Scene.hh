@@ -60,7 +60,7 @@ private:
   Container<ObjectProjectile *>   _projectiles;
   Container<Explosion *>          _explosions;
   on_destroyed_t                  _on_destroyed_callback;
-  std::vector<WormholeWall *>     _walls;
+  WormholeWall *                  _wall;
 };
 
 

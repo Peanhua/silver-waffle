@@ -69,9 +69,11 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
 
   auto vs = LoadText("Shaders/" + name + ".vert");
   auto fs = LoadText("Shaders/" + name + ".frag");
+  auto gs = LoadText("Shaders/" + name + ".geom");
   std::vector<std::string> vss({vs});
   std::vector<std::string> fss({fs});
-  auto sp = new ShaderProgram(vss, fss);
+  std::vector<std::string> gss({gs});
+  auto sp = new ShaderProgram(vss, fss, gss);
   assert(sp);
   _shader_programs[name] = sp;
   return sp;

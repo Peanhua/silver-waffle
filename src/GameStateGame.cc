@@ -1,4 +1,5 @@
 #include "GameStateGame.hh"
+#include "Starfield.hh"
 #include "Camera2.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
@@ -54,6 +55,8 @@ GameStateGame::GameStateGame()
   auto w = new WidgetSpaceshipStatus(root, glm::ivec2(990, 70), glm::ivec2(20, 100));
   w->SetSpaceship(_scene->GetPlayer());
   _playership_status_widget = w;
+
+  _starfield = new Starfield(5.0, 50.0, 0);
 }
 
 
@@ -67,11 +70,13 @@ GameStateGame::~GameStateGame()
 void GameStateGame::Tick(double deltatime)
 {
   glEnable(GL_DEPTH_TEST);
-  
-  _scene->Tick(deltatime);
-  _scene->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
 
+  _starfield->Tick(deltatime);
+  _scene->Tick(deltatime);
   _score_reel->Tick(deltatime);
+
+  _starfield->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
+  _scene->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
   _score_reel->Draw();
 
   GameState::Tick(deltatime);

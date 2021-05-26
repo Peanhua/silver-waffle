@@ -3,12 +3,18 @@
 
 #include "GameState.hh"
 
+class Starfield;
+
+
 class GameStateTitle : public GameState
 {
 public:
   GameStateTitle();
+
+  void Tick(double deltatime) override;
   
 private:
+  Starfield * _starfield;
 };
 
 #endif

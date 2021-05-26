@@ -4,7 +4,7 @@
 #include "Mesh.hh"
 
 
-ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, const std::vector<std::string> & fragment_shaders)
+ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, const std::vector<std::string> & fragment_shaders, const std::vector<std::string> & geometry_shaders)
 {
   _program = glCreateProgram();
   for(auto src : vertex_shaders)
@@ -21,11 +21,20 @@ ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, co
       glAttachShader(_program, shader->GetShader());
     }
 
+  for(auto src : geometry_shaders)
+    if(src.size() > 0)
+      {
+        auto shader = new Shader(GL_GEOMETRY_SHADER, src);
+        assert(shader != 0);
+        glAttachShader(_program, shader->GetShader());
+      }
+
   glBindAttribLocation(_program, Mesh::ALOC_VERTEX,       "in_vertex");
   glBindAttribLocation(_program, Mesh::ALOC_COLOR,        "in_color");
   glBindAttribLocation(_program, Mesh::ALOC_TEXCOORD,     "in_texcoord");
-  glBindAttribLocation(_program, Mesh::ALOC_GENERIC_VEC3, "in_generic_vec3");
   glBindAttribLocation(_program, Mesh::ALOC_NORMAL,       "in_normal");
+  glBindAttribLocation(_program, Mesh::ALOC_GENERIC_VEC2, "in_generic_vec2");
+  glBindAttribLocation(_program, Mesh::ALOC_GENERIC_VEC3, "in_generic_vec3");
 
   glLinkProgram(_program);
 }

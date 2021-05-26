@@ -22,21 +22,27 @@ public:
       OPTION_GENERIC_VEC3_INPUT = 1<<5,
       OPTION_NORMAL             = 1<<6,
       OPTION_COLOR_ALPHA        = 1<<7,
+      OPTION_VERTEX_W           = 1<<8,
+      OPTION_GENERIC_VEC2_INPUT = 1<<9,
+      OPTION_VERTEX             = 1<<10,
+      OPTION_DYNAMIC_VERTEX     = 1<<11,
     };
   enum AttribLocation
     {
-      ALOC_VERTEX       = 0,
-      ALOC_COLOR        = 1,
-      ALOC_TEXCOORD     = 2,
-      ALOC_GENERIC_VEC3 = 3,
-      ALOC_NORMAL       = 4,
+      ALOC_VERTEX,
+      ALOC_COLOR,
+      ALOC_TEXCOORD,
+      ALOC_NORMAL,
+      ALOC_GENERIC_VEC2,
+      ALOC_GENERIC_VEC3,
     };
   
 
-  Mesh(const unsigned int options);
+  Mesh(unsigned int options);
 
   bool   LoadFromFile(const std::string & filename);
   void   UpdateGPU();
+  void   UpdateGPU(unsigned int update_options, unsigned int first, unsigned int count);
   void   CalculateBoundingSphereRadius(const glm::mat4 & transform = glm::mat4(1));
   void   ApplyTransform(const glm::mat4 & transform);
   
@@ -44,7 +50,13 @@ public:
   double GetBoundingSphereRadius()   const;
 
   void ClearVertices();
-  void AddVertex(const glm::vec3 & position);
+  void AddVertex(const glm::vec2 & vertex);
+  void AddVertex(const glm::vec3 & vertex);
+  void AddVertex(const glm::vec4 & vertex);
+  void SetVertex(unsigned int index, const glm::vec3 & vertex);
+  void SetVertex(unsigned int index, const glm::vec4 & vertex);
+  glm::vec3 GetVertex3(unsigned int index) const;
+  glm::vec4 GetVertex4(unsigned int index) const;
   void AddColor(const glm::vec3 & color);
   void AddColor(const glm::vec4 & color);
   void AddTexCoord(const glm::vec2 & coord);
@@ -53,7 +65,9 @@ public:
   void AddElement(unsigned int index1, unsigned int index2);
   void AddElement(unsigned int index1, unsigned int index2, unsigned int index3);
   void AddElement(unsigned int index1, unsigned int index2, unsigned int index3, unsigned int index4);
-  void AddGenericVec3Input(const glm::vec3 & vector);
+  void AddGenericVecInput(const glm::vec2 & vector);
+  void AddGenericVecInput(const glm::vec3 & vector);
+  glm::vec2 GetGenericVec2(unsigned int index) const;
   void SetPrimitiveType(const GLenum primitive_type);
   
   void            SetShaderProgram(ShaderProgram * shader_program);
@@ -77,6 +91,7 @@ private:
   GLuint _color_vbo;
   GLuint _texcoord_vbo;
   GLuint _normal_vbo;
+  GLuint _generic_vec2_vbo;
   GLuint _generic_vec3_vbo;
   GLenum _primitive_type;
 
@@ -85,6 +100,7 @@ private:
   std::vector<GLfloat> _colors;
   std::vector<GLfloat> _texcoords;
   std::vector<GLfloat> _normals;
+  std::vector<GLfloat> _generic_vec2s;
   std::vector<GLfloat> _generic_vec3s;
 
   ShaderProgram * _shader_program;

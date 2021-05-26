@@ -4,8 +4,8 @@
 #include <cassert>
 #include <iostream>
 
-Mesh::Mesh(const unsigned int options)
-  : _options(options),
+Mesh::Mesh(unsigned int options)
+  : _options(options | OPTION_VERTEX),
     _transform(1),
     _vao(0),
     _vertex_vbo(0),
@@ -13,6 +13,7 @@ Mesh::Mesh(const unsigned int options)
     _color_vbo(0),
     _texcoord_vbo(0),
     _normal_vbo(0),
+    _generic_vec2_vbo(0),
     _generic_vec3_vbo(0),
     _primitive_type(GL_TRIANGLES),
     _shader_program(nullptr),
@@ -69,11 +70,64 @@ void Mesh::ClearVertices()
 }
 
 
-void Mesh::AddVertex(const glm::vec3 & position)
+void Mesh::AddVertex(const glm::vec3 & vertex)
 {
-  _vertices.push_back(position.x);
-  _vertices.push_back(position.y);
-  _vertices.push_back(position.z);
+  assert(!(_options & OPTION_VERTEX_W));
+  _vertices.push_back(vertex.x);
+  _vertices.push_back(vertex.y);
+  _vertices.push_back(vertex.z);
+}
+
+
+void Mesh::AddVertex(const glm::vec4 & vertex)
+{
+  assert(_options & OPTION_VERTEX_W);
+  _vertices.push_back(vertex.x);
+  _vertices.push_back(vertex.y);
+  _vertices.push_back(vertex.z);
+  _vertices.push_back(vertex.w);
+}
+
+
+void Mesh::SetVertex(unsigned int index, const glm::vec3 & vertex)
+{
+  assert(!(_options & OPTION_VERTEX_W));
+  assert(index * 3 + 2 < _vertices.size());
+  _vertices[index * 3 + 0] = vertex.x;
+  _vertices[index * 3 + 1] = vertex.y;
+  _vertices[index * 3 + 2] = vertex.z;
+}
+
+
+void Mesh::SetVertex(unsigned int index, const glm::vec4 & vertex)
+{
+  assert(_options & OPTION_VERTEX_W);
+  assert(index * 4 + 3 < _vertices.size());
+  _vertices[index * 4 + 0] = vertex.x;
+  _vertices[index * 4 + 1] = vertex.y;
+  _vertices[index * 4 + 2] = vertex.z;
+  _vertices[index * 4 + 3] = vertex.w;
+}  
+
+
+glm::vec3 Mesh::GetVertex3(unsigned int index) const
+{
+  assert(!(_options & OPTION_VERTEX_W));
+  assert(index * 3 + 2 < _vertices.size());
+  return glm::vec3(_vertices[index * 3 + 0],
+                   _vertices[index * 3 + 1],
+                   _vertices[index * 3 + 2]);
+}
+
+
+glm::vec4 Mesh::GetVertex4(unsigned int index) const
+{
+  assert(_options & OPTION_VERTEX_W);
+  assert(index < _vertices.size() + 4);
+  return glm::vec4(_vertices[index * 4 + 0],
+                   _vertices[index * 4 + 1],
+                   _vertices[index * 4 + 2],
+                   _vertices[index * 4 + 3]);
 }
 
 
@@ -143,12 +197,29 @@ void Mesh::AddElement(unsigned int index1, unsigned int index2, unsigned int ind
 }
 
 
-void Mesh::AddGenericVec3Input(const glm::vec3 & vector)
+void Mesh::AddGenericVecInput(const glm::vec2 & vector)
+{
+  assert(_options & OPTION_GENERIC_VEC2_INPUT);
+  _generic_vec2s.push_back(vector.x);
+  _generic_vec2s.push_back(vector.y);
+}
+
+
+void Mesh::AddGenericVecInput(const glm::vec3 & vector)
 {
   assert(_options & OPTION_GENERIC_VEC3_INPUT);
   _generic_vec3s.push_back(vector.x);
   _generic_vec3s.push_back(vector.y);
   _generic_vec3s.push_back(vector.z);
+}
+
+
+glm::vec2 Mesh::GetGenericVec2(unsigned int index) const
+{
+  assert(_options & OPTION_GENERIC_VEC2_INPUT);
+  assert(index * 2 + 1 < _generic_vec2s.size());
+  return glm::vec2(_generic_vec2s[index * 2 + 0],
+                   _generic_vec2s[index * 2 + 1]);
 }
 
 
@@ -171,11 +242,15 @@ void Mesh::UpdateGPU()
     if(_vertex_vbo == 0)
       glGenBuffers(1, &_vertex_vbo);
     assert(_vertex_vbo != 0);
+
+    const unsigned int components = (_options & OPTION_VERTEX_W) ? 4 : 3;
+    assert(_vertices.size() % components == 0);
+    const GLenum usage = (_options & OPTION_DYNAMIC_VERTEX) ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW;
     
     glBindBuffer(GL_ARRAY_BUFFER, _vertex_vbo);
-    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_vertices.size() * sizeof(GLfloat)), _vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_vertices.size() * sizeof(GLfloat)), _vertices.data(), usage);
     glEnableVertexAttribArray(ALOC_VERTEX);
-    glVertexAttribPointer(ALOC_VERTEX, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glVertexAttribPointer(ALOC_VERTEX, static_cast<GLint>(components), GL_FLOAT, GL_FALSE, 0, nullptr);
   }
   
   if(_options & OPTION_ELEMENT)
@@ -196,7 +271,6 @@ void Mesh::UpdateGPU()
 
       const unsigned int components = _options & OPTION_COLOR_ALPHA ? 4 : 3;
       assert(_colors.size() % components == 0);
-      assert(_colors.size() / components == _vertices.size() / 3);
 
       glBindBuffer(GL_ARRAY_BUFFER, _color_vbo);
       glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_colors.size() * sizeof(GLfloat)), _colors.data(), GL_STATIC_DRAW);
@@ -228,6 +302,18 @@ void Mesh::UpdateGPU()
       glVertexAttribPointer(ALOC_NORMAL, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
+  if(_options & OPTION_GENERIC_VEC2_INPUT)
+    {
+      if(_generic_vec2_vbo == 0)
+        glGenBuffers(1, &_generic_vec2_vbo);
+      assert(_generic_vec2_vbo != 0);
+
+      glBindBuffer(GL_ARRAY_BUFFER, _generic_vec2_vbo);
+      glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_generic_vec2s.size() * sizeof(GLfloat)), _generic_vec2s.data(), GL_STATIC_DRAW);
+      glEnableVertexAttribArray(ALOC_GENERIC_VEC2);
+      glVertexAttribPointer(ALOC_GENERIC_VEC2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
+
   if(_options & OPTION_GENERIC_VEC3_INPUT)
     {
       if(_generic_vec3_vbo == 0)
@@ -242,6 +328,25 @@ void Mesh::UpdateGPU()
 
   for(auto c : _children)
     c->UpdateGPU();
+}
+
+
+void Mesh::UpdateGPU(unsigned int update_options, unsigned int first, unsigned int count)
+{
+  if(update_options & OPTION_VERTEX)
+    {
+      assert(_vertex_vbo != 0);
+      
+      const unsigned int components = (_options & OPTION_VERTEX_W) ? 4 : 3;
+      assert(_vertices.size() % components == 0);
+      
+      glBindBuffer(GL_ARRAY_BUFFER, _vertex_vbo);
+      glBufferSubData(GL_ARRAY_BUFFER,
+                      first * components * sizeof(GLfloat),
+                      static_cast<GLsizeiptr>(count * components * sizeof(GLfloat)),
+                      _vertices.data() + first * components);
+    }
+  // todo: Add the remaining options.
 }
 
 
