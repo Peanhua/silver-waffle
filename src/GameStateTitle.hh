@@ -15,6 +15,8 @@ public:
   
 private:
   Starfield * _starfield;
+  double      _starfield_cameramovement_timer;
+  float       _starfield_vertical_cameramovement;
 };
 
 #endif

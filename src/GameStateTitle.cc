@@ -7,9 +7,11 @@
 
 
 GameStateTitle::GameStateTitle()
-  : GameState()
+  : GameState(),
+    _starfield_cameramovement_timer(0.0),
+    _starfield_vertical_cameramovement(180.0f)
 {
-  _starfield = new Starfield(1.0, 30.0, 0);
+  _starfield = new Starfield(15.0, 90.0, 0);
 
   auto root = new Widget(nullptr, glm::ivec2(0, 0), glm::ivec2(1024, 768));
   assert(root);
@@ -39,10 +41,31 @@ GameStateTitle::GameStateTitle()
 
 void GameStateTitle::Tick(double deltatime)
 {
+  const auto cammove_start = 30.0;
+  const auto cammove_rise = 60.0;
+  const auto cammove_magnitude = 4.0;
+  
+  _starfield_cameramovement_timer += deltatime;
+
+  auto t = _starfield_cameramovement_timer - cammove_start;
+  if(t > 0.0)
+    {
+      auto amount = 2.5f;
+      if(t < cammove_rise)
+        amount *= static_cast<float>(t / cammove_rise);
+      
+      _starfield_vertical_cameramovement += amount;
+      
+      if(_starfield_vertical_cameramovement > 360.0f)
+        _starfield_vertical_cameramovement -= 360.0f;
+    }
+  
   glEnable(GL_DEPTH_TEST);
   _starfield->Tick(deltatime);
   glm::mat4 proj = glm::perspective(glm::radians(90.0), 1024.0 / 768.0, 0.001, 300.0);
-  glm::mat4 view = glm::lookAt(glm::vec3(0, -20, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+  glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -20.0f, cammove_magnitude * std::sin(glm::radians(_starfield_vertical_cameramovement))),
+                               glm::vec3(0, 0, 0),
+                               glm::vec3(0, 0, 1));
   _starfield->Draw(view, proj, proj * view);
   
   GameState::Tick(deltatime);
