@@ -50,11 +50,11 @@ void GameStateTitle::Tick(double deltatime)
   auto t = _starfield_cameramovement_timer - cammove_start;
   if(t > 0.0)
     {
-      auto amount = 2.5f;
+      auto amount = 120.0 * deltatime;
       if(t < cammove_rise)
-        amount *= static_cast<float>(t / cammove_rise);
+        amount *= t / cammove_rise;
       
-      _starfield_vertical_cameramovement += amount;
+      _starfield_vertical_cameramovement += static_cast<float>(amount);
       
       if(_starfield_vertical_cameramovement > 360.0f)
         _starfield_vertical_cameramovement -= 360.0f;
