@@ -43,6 +43,7 @@ silverwaffle_SOURCES =				\
 	SubsystemGfx.cc				\
 	SubsystemHandler.cc			\
 	SubsystemInput.cc			\
+	SubsystemSettings.cc			\
 	TextureRenderer.cc			\
 	Widget.cc				\
 	WidgetPlayerShip.cc			\

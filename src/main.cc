@@ -2,6 +2,7 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemGfx.hh"
 #include "SubsystemInput.hh"
+#include "SubsystemSettings.hh"
 #include <SDL.h>
 #include <iostream>
 #include <chrono>
@@ -25,10 +26,12 @@ int main(int argc, char *argv[])
 
       {
         SubsystemAssetLoader ass;
-        SubsystemGfx gfx;
-        SubsystemGameState gs;
-        SubsystemInput inp(gs);
+        SubsystemSettings    settings;
+        SubsystemGfx         gfx;
+        SubsystemGameState   gs;
+        SubsystemInput       inp(gs);
         ssh.Add(&ass);
+        ssh.Add(&settings);
         ssh.Add(&inp);
         ssh.Add(&gfx);
         ssh.Add(&gs);

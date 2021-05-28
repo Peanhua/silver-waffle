@@ -1,5 +1,6 @@
 #include "SubsystemGfx.hh"
 #include "ShaderProgram.hh"
+#include "SubsystemSettings.hh"
 #include <GL/glew.h>
 #include <SDL.h>
 #include <iostream>
@@ -22,7 +23,9 @@ bool SubsystemGfx::Start()
   
   if(SDL_InitSubSystem(SDL_INIT_VIDEO) == 0)
     {
-      _window = SDL_CreateWindow("Silver Waffle", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1024, 768, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
+      auto screen_width = Settings->GetInt("screen_width");
+      auto screen_height = Settings->GetInt("screen_height");
+      _window = SDL_CreateWindow("Silver Waffle", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, screen_width, screen_height, SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN);
 
       if(_window)
         {
@@ -38,7 +41,7 @@ bool SubsystemGfx::Start()
             {
               if(GLEW_VERSION_4_1)
                 {
-                  glViewport(0, 0, 1024, 768);
+                  glViewport(0, 0, screen_width, screen_height);
                   glClearColor(0, 0, 0, 0);
                   glEnable(GL_DEPTH_TEST);
                   glEnable(GL_CULL_FACE);

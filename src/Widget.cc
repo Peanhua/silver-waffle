@@ -1,6 +1,7 @@
 #include "Widget.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSettings.hh"
 #include <iostream>
 
 
@@ -115,7 +116,9 @@ void Widget::SetOnClicked(on_clicked_t callback)
 
 void Widget::UpdateMVP()
 {
-  _projection = glm::ortho(0.0, 1024.0 - 1.0, 768.0 - 1.0, 0.0, -1.0, 1.0);
+  const double width = Settings->GetInt("screen_width");
+  const double height = Settings->GetInt("screen_height");
+  _projection = glm::ortho(0.0, width - 1.0, height - 1.0, 0.0, -1.0, 1.0);
 
   _view = glm::mat4(1);
 

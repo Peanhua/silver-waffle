@@ -1,4 +1,5 @@
 #include "TextureRenderer.hh"
+#include "SubsystemSettings.hh"
 #include <cassert>
 
 
@@ -49,7 +50,7 @@ void TextureRenderer::BeginRender()
 void TextureRenderer::EndRender()
 {
   glBindFramebuffer(GL_FRAMEBUFFER, 0);
-  glViewport(0, 0, 1024, 768);
+  glViewport(0, 0, Settings->GetInt("screen_width"), Settings->GetInt("screen_height"));
 }
 
 

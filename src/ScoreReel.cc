@@ -1,6 +1,7 @@
 #include "ScoreReel.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSettings.hh"
 #include <cassert>
 
 //#define LARGE
@@ -101,7 +102,7 @@ void ScoreReel::Draw() const
 
       _drums[i]->Draw(drummodel, view, proj, proj * view * drummodel);
     }
-  glViewport(0, 0, 1024, 768);
+  glViewport(0, 0, Settings->GetInt("screen_width"), Settings->GetInt("screen_width"));
 }
 
 

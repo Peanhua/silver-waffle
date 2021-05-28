@@ -1,6 +1,7 @@
 #include "GameStateTitle.hh"
-#include "Starfield.hh"
 #include "GameStateGame.hh"
+#include "Starfield.hh"
+#include "SubsystemSettings.hh"
 #include "Widget.hh"
 #include <iostream>
 #include <GL/glew.h>
@@ -13,11 +14,14 @@ GameStateTitle::GameStateTitle()
 {
   _starfield = new Starfield(15.0, 90.0, 0);
 
-  auto root = new Widget(nullptr, glm::ivec2(0, 0), glm::ivec2(1024, 768));
+  const double width = Settings->GetInt("screen_width");
+  const double height = Settings->GetInt("screen_height");
+
+  auto root = new Widget(nullptr, glm::ivec2(0, 0), glm::ivec2(width, height));
   assert(root);
   SetRootWidget(root);
 
-  auto w = new Widget(root, glm::ivec2(1024/2 - 100, 768/2 - 100), glm::ivec2(200, 100));
+  auto w = new Widget(root, glm::ivec2(width / 2 - 100, height / 2 - 100), glm::ivec2(200, 100));
   w->SetImage("Button-Play-Up");
   w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
@@ -27,7 +31,7 @@ GameStateTitle::GameStateTitle()
       SetChildState(new GameStateGame());
   });
   
-  w = new Widget(root, glm::ivec2(1024/2 - 100, 768/2 + 100), glm::ivec2(200, 100));
+  w = new Widget(root, glm::ivec2(width / 2 - 100, height / 2 + 100), glm::ivec2(200, 100));
   w->SetImage("Button-Quit-Up");
   w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
@@ -62,7 +66,9 @@ void GameStateTitle::Tick(double deltatime)
   
   glEnable(GL_DEPTH_TEST);
   _starfield->Tick(deltatime);
-  glm::mat4 proj = glm::perspective(glm::radians(90.0), 1024.0 / 768.0, 0.001, 300.0);
+  const double width = Settings->GetInt("screen_width");
+  const double height = Settings->GetInt("screen_height");
+  glm::mat4 proj = glm::perspective(glm::radians(90.0), width / height, 0.001, 300.0);
   glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -20.0f, cammove_magnitude * std::sin(glm::radians(_starfield_vertical_cameramovement))),
                                glm::vec3(0, 0, 0),
                                glm::vec3(0, 0, 1));

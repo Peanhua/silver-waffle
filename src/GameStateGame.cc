@@ -6,6 +6,7 @@
 #include "Scene.hh"
 #include "ScoreReel.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSettings.hh"
 #include "WidgetPlayerShip.hh"
 #include "WidgetSpaceshipStatus.hh"
 #include <iostream>
@@ -55,18 +56,21 @@ GameStateGame::GameStateGame()
 
   _score_reel = new ScoreReel(10);
 
-  auto root = new Widget(nullptr, glm::ivec2(0, 0), glm::ivec2(1024, 768));
+  const double width = Settings->GetInt("screen_width");
+  const double height = Settings->GetInt("screen_height");
+
+  auto root = new Widget(nullptr, glm::ivec2(0, 0), glm::ivec2(Settings->GetInt("screen_width"), Settings->GetInt("screen_height")));
   assert(root);
   SetRootWidget(root);
 
   for(int i = 0; i < 5; i++)
     {
-      auto w = new WidgetPlayerShip(root, glm::ivec2(960 - i * 50, 10), glm::ivec2(50, 50));
+      auto w = new WidgetPlayerShip(root, glm::ivec2(width - 64 - i * 50, 10), glm::ivec2(50, 50));
       _lives_widgets.push_back(w);
     }
   OnLivesUpdated();
 
-  auto w = new WidgetSpaceshipStatus(root, glm::ivec2(990, 70), glm::ivec2(20, 100));
+  auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 70), glm::ivec2(20, 100));
   w->SetSpaceship(_scene->GetPlayer());
   _playership_status_widget = w;
 
@@ -130,7 +134,7 @@ void GameStateGame::Tick(double deltatime)
   if(_planet_rotation > 360.0)
     _planet_rotation -= 360.0;
 
-  _planet_position -= 3.0 / level->GetDistanceMultiplier() * deltatime;
+  _planet_position -= 300.0 / level->GetDistanceMultiplier() * deltatime;
 
   if(_planet_position < -2080)
     {

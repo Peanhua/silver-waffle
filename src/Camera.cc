@@ -1,5 +1,7 @@
 #include "Camera.hh"
+#include "SubsystemSettings.hh"
 #include <iostream>
+
 
 Camera::Camera()
   : _up(0, 0, 1),
@@ -19,8 +21,10 @@ Camera::~Camera()
 
 void Camera::SetFOV(double fov)
 {
+  const double width = Settings->GetInt("screen_width");
+  const double height = Settings->GetInt("screen_height");
   _fov = fov;
-  _projection = glm::perspective(glm::radians(_fov), 1024.0 / 768.0, 0.001, 2000.0);
+  _projection = glm::perspective(glm::radians(_fov), width / height, 0.001, 2000.0);
 }
 
 
