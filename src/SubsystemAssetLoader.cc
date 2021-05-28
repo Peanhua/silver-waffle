@@ -86,8 +86,26 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
   if(it != _meshes.end())
     return (*it).second;
 
-  auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL);
+  json11::Json config;
+  const std::string filename("3d-models/" + name + ".json");
+  std::string json_string = LoadText(filename);
+  if(json_string.size() > 0)
+    {
+      std::string err;
+      config = json11::Json::parse(json_string, err);
+      if(!config.is_object())
+        std::cerr << "Error while parsing '" << filename << "': " << err << std::endl;
+    }
+
+  unsigned int mesh_options = Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL;
+  if(config.is_object())
+    if(config["use_texture"].is_bool())
+      if(config["use_texture"].bool_value())
+        mesh_options |= Mesh::OPTION_TEXTURE;
+  
+  auto mesh = new Mesh(mesh_options);
   assert(mesh);
+  
   if(mesh->LoadFromFile("3d-models/" + name + ".dae"))
     {
       mesh->UpdateGPU();
@@ -95,32 +113,23 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
       _meshes[name] = mesh;
     }
 
-  const std::string filename("3d-models/" + name + ".json");
-  std::string json_string = LoadText(filename);
-  if(json_string.size() > 0)
+  if(config.is_object())
     {
-      std::string err;
-      auto config = json11::Json::parse(json_string, err);
-      if(config.is_object())
+      if(config["rotate-x"].is_number())
         {
-          if(config["rotate-x"].is_number())
-            {
-              auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-x"].number_value())), glm::vec3(1, 0, 0));
-              mesh->ApplyTransform(transform);
-            }
-          if(config["rotate-y"].is_number())
-            {
-              auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-y"].number_value())), glm::vec3(0, 1, 0));
-              mesh->ApplyTransform(transform);
-            }
-          if(config["rotate-z"].is_number())
-            {
-              auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-z"].number_value())), glm::vec3(0, 0, 1));
-              mesh->ApplyTransform(transform);
-            }
+          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-x"].number_value())), glm::vec3(1, 0, 0));
+          mesh->ApplyTransform(transform);
         }
-      else
-        std::cerr << "Error while parsing '" << filename << "': " << err << std::endl;
+      if(config["rotate-y"].is_number())
+        {
+          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-y"].number_value())), glm::vec3(0, 1, 0));
+          mesh->ApplyTransform(transform);
+        }
+      if(config["rotate-z"].is_number())
+        {
+          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-z"].number_value())), glm::vec3(0, 0, 1));
+          mesh->ApplyTransform(transform);
+        }
     }
   
   return mesh;
@@ -134,12 +143,32 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
     return (*it).second;
 
   auto rv = new Image(true);
-  if(rv->Load(std::string("Images/") + name + ".png"))
+
+  auto start = name.find_last_of('/');
+  if(start == name.npos)
+    start = 0;
+  else
+    if(start > 0)
+      start++;
+
+  auto end = name.size();
+  auto dotpos = name.find_last_of('.');
+  if(dotpos != name.npos && dotpos > start)
+    end = dotpos - start;
+
+  std::string stripped_name = name.substr(start, end);
+
+  if(rv->Load(std::string("Images/") + stripped_name + ".png") || rv->Load(std::string("Images/") + stripped_name + ".jpg"))
     {
       rv->UpdateGPU(true, true);
       _images[name] = rv;
     }
-
+  else
+    {
+      delete rv;
+      rv = nullptr;
+    }
+  
   assert(rv);
   return rv;
 }

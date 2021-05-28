@@ -20,7 +20,7 @@ Camera::~Camera()
 void Camera::SetFOV(double fov)
 {
   _fov = fov;
-  _projection = glm::perspective(glm::radians(_fov), 1024.0 / 768.0, 0.001, 1000.0);
+  _projection = glm::perspective(glm::radians(_fov), 1024.0 / 768.0, 0.001, 2000.0);
 }
 
 

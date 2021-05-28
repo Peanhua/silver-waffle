@@ -73,7 +73,7 @@ public:
   void            SetShaderProgram(ShaderProgram * shader_program);
   ShaderProgram * GetShaderProgram() const;
 
-  void            SetTexture(Image * texture_image);
+  void            SetTexture(Image * texture_image, bool set_children = false);
   Image *         GetTexture() const;
 
   void   AddChild(Mesh * child);

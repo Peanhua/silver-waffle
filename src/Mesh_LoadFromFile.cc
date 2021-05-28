@@ -36,7 +36,10 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
   
   bool success = true;
 
-  SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
+  if(_options & OPTION_TEXTURE)
+    SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
+  else
+    SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
   _name = node->mName.C_Str();
  
   for(unsigned int mi = 0; mi < node->mNumMeshes; mi++)
@@ -45,6 +48,7 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
       auto startpos = _vertices.size() / 3;
 
       auto material = scene->mMaterials[mesh->mMaterialIndex];
+      
       aiColor4D tmpcolor;
       glm::vec4 diffuse_color(1, 1, 1, 1);
       if(aiGetMaterialColor(material, AI_MATKEY_COLOR_DIFFUSE, &tmpcolor) == AI_SUCCESS)
@@ -53,6 +57,20 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
           diffuse_color.g = tmpcolor.g;
           diffuse_color.b = tmpcolor.b;
           diffuse_color.a = tmpcolor.a;
+        }
+
+      if(_options & OPTION_TEXTURE)
+        {
+          assert(mesh->GetNumUVChannels() == 1);
+          assert(mesh->mNumUVComponents[0] == 2);
+          assert(mesh->HasTextureCoords(0));
+          assert(material->GetTextureCount(aiTextureType_DIFFUSE) == 1);
+          aiString path;
+          auto x = material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
+          assert(x == aiReturn_SUCCESS);
+          auto texture = AssetLoader->LoadImage(path.C_Str());
+          assert(texture);
+          SetTexture(texture);
         }
       
       for(unsigned int vi = 0; vi < mesh->mNumVertices; vi++)
@@ -69,6 +87,15 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
           AddNormal(glm::vec3(mesh->mNormals[vi].x,
                               mesh->mNormals[vi].y,
                               mesh->mNormals[vi].z));
+
+          if(_options & OPTION_TEXTURE)
+            {
+              assert(mesh->GetNumUVChannels() == 1);
+              assert(mesh->mNumUVComponents[0] == 2);
+              assert(mesh->HasTextureCoords(0));
+              AddTexCoord(glm::vec2(mesh->mTextureCoords[0][vi].x,
+                                    mesh->mTextureCoords[0][vi].y));
+            }
         }
 
       for(unsigned int fi = 0; fi < mesh->mNumFaces; fi++)

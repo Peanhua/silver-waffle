@@ -1,6 +1,7 @@
 #include "GameStateGame.hh"
 #include "Starfield.hh"
 #include "Camera2.hh"
+#include "Mesh.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScoreReel.hh"
@@ -13,8 +14,21 @@
 
 GameStateGame::GameStateGame()
   : GameState(),
+    _planet_position(0),
+    _planet_rotation(0),
+    _current_level(0),
     _lives(3)
 {
+  _levels.push_back(new Level("8k_mercury",          1.0));
+  _levels.push_back(new Level("4k_venus_atmosphere", 1.0));
+  _levels.push_back(new Level("8k_earth_daymap",     1.0));
+  _levels.push_back(new Level("8k_mars",             1.0));
+  _levels.push_back(new Level("8k_jupiter",          1.0));
+  _levels.push_back(new Level("8k_saturn",           1.0));
+  _levels.push_back(new Level("2k_uranus",           1.0));
+  _levels.push_back(new Level("2k_neptune",          1.0));
+  
+  
 #if 1
   _camera = new Camera();
   _scene = new Scene();
@@ -57,6 +71,43 @@ GameStateGame::GameStateGame()
   _playership_status_widget = w;
 
   _starfield = new Starfield(5.0, 50.0, 0);
+
+  _planet = AssetLoader->LoadMesh("Planet");
+  assert(_planet);
+
+  {
+    _space = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
+    _space->SetTexture(AssetLoader->LoadImage("8k_stars_milky_way"));
+    _space->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
+
+    std::vector<glm::vec3> vertices {
+      glm::vec3( 1,  1, 0), 
+      glm::vec3( 1, -1, 0), 
+      glm::vec3(-1, -1, 0),
+      glm::vec3(-1,  1, 0),
+    };
+    std::vector<glm::vec2> texcoords {
+      glm::vec2(1, 1),
+      glm::vec2(1, 0),
+      glm::vec2(0, 0),
+      glm::vec2(0, 1) 
+    };
+    std::vector<unsigned int> indices {
+      0, 3, 1,
+      1, 3, 2
+    };
+    
+    for(auto v : vertices)
+      _space->AddVertex(v);
+    for(auto tc : texcoords)
+      _space->AddTexCoord(tc);
+    for(auto i : indices)
+      _space->AddElement(i);
+    
+    _space->UpdateGPU();    
+  }
+
+  OnLevelChanged();
 }
 
 
@@ -69,16 +120,54 @@ GameStateGame::~GameStateGame()
 
 void GameStateGame::Tick(double deltatime)
 {
-  glEnable(GL_DEPTH_TEST);
+  auto level = _levels[_current_level];
 
   _starfield->Tick(deltatime);
   _scene->Tick(deltatime);
   _score_reel->Tick(deltatime);
 
+  _planet_rotation += 1.5 * deltatime;
+  if(_planet_rotation > 360.0)
+    _planet_rotation -= 360.0;
+
+  _planet_position -= 3.0 / level->GetDistanceMultiplier() * deltatime;
+
+  if(_planet_position < -2080)
+    {
+      if(_current_level + 1 < _levels.size())
+        {
+          _current_level++;
+          OnLevelChanged();
+        }
+      else
+        Quit();
+    }
+
+  {
+    glDisable(GL_DEPTH_TEST);
+    glm::mat4 model(1);
+    model = glm::translate(model, glm::vec3(0, 0, 0.5));
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
+    model = glm::scale(model, glm::vec3(4, 2, 2));
+    glm::mat4 proj = _camera->GetProjection();
+    glm::mat4 view = glm::lookAt(glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+    _space->Draw(model, view, proj, proj * view * model);
+  }
+  
+  {
+    glDisable(GL_DEPTH_TEST);
+    glm::mat4 model(1);
+    model = glm::translate(model, glm::vec3(0, 2000 + _planet_position, -101));
+    model = glm::rotate(model, static_cast<float>(glm::radians(_planet_rotation)), glm::vec3(0, 0, 1));
+    model = glm::scale(model, glm::vec3(200, 200, 200));
+    _planet->Draw(model, _camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection() * model);
+  }
+
+  glEnable(GL_DEPTH_TEST);
   _starfield->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
   _scene->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
   _score_reel->Draw();
-
+  
   GameState::Tick(deltatime);
 }
 
@@ -225,3 +314,32 @@ void GameStateGame::OnPlayerDies()
   else
     Quit();
 }
+
+
+void GameStateGame::OnLevelChanged()
+{
+  auto level = _levels[_current_level];
+  _planet->SetTexture(level->GetTexture(), true);
+  _planet_position = 0;
+}
+
+
+
+GameStateGame::Level::Level(const std::string & planet_texture, double distance_multiplier)
+  : _planet_texture(planet_texture),
+    _distance_multiplier(distance_multiplier)
+{
+}
+
+
+Image * GameStateGame::Level::GetTexture() const
+{
+  return AssetLoader->LoadImage(_planet_texture);
+}
+
+
+double GameStateGame::Level::GetDistanceMultiplier() const
+{
+  return _distance_multiplier;
+}
+
