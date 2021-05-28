@@ -134,7 +134,7 @@ void GameStateGame::Tick(double deltatime)
   if(_planet_rotation > 360.0)
     _planet_rotation -= 360.0;
 
-  _planet_position -= 300.0 / level->GetDistanceMultiplier() * deltatime;
+  _planet_position -= 3.0 / level->GetDistanceMultiplier() * deltatime;
 
   if(_planet_position < -2080)
     {
