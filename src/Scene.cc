@@ -28,7 +28,7 @@ Scene::Scene()
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
 
-  _wall = new WormholeWall(1000, 4);
+  _wall = new WormholeWall(100, 4);
 }
 
 

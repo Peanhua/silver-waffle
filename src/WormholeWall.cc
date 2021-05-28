@@ -20,14 +20,19 @@ WormholeWall::WormholeWall(double length, double height)
     0, 3, 1,
     1, 3, 2,
   };
+  std::vector<glm::vec4> colors {
+    glm::vec4(glm::vec3(0.64, 0.12, 0.77) * 0.1f, 0.0f),
+    glm::vec4(glm::vec3(0.64, 0.12, 0.77) * 0.1f, 0.0f),
+    glm::vec4(glm::vec3(0.64, 0.12, 0.77) * 0.1f, 0.5f),
+    glm::vec4(glm::vec3(0.64, 0.12, 0.77) * 0.1f, 0.5f),
+  };
   
   for(auto v : vertices)
-    {
-      _mesh->AddVertex(v);
-      _mesh->AddColor(glm::vec4(glm::vec3(0.64, 0.12, 0.77) * 0.1f, 0.5f));
-    }
-  for(auto ii : indices)
-    _mesh->AddElement(ii);
+    _mesh->AddVertex(v);
+  for(auto c : colors)
+    _mesh->AddColor(c);
+  for(auto i : indices)
+    _mesh->AddElement(i);
   
   _mesh->UpdateGPU();
 }
