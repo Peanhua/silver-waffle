@@ -59,7 +59,7 @@ GameStateGame::GameStateGame()
   const double width = Settings->GetInt("screen_width");
   const double height = Settings->GetInt("screen_height");
 
-  auto root = new Widget(nullptr, glm::ivec2(0, 0), glm::ivec2(Settings->GetInt("screen_width"), Settings->GetInt("screen_height")));
+  auto root = new Widget(nullptr, glm::ivec2(0, 0), glm::ivec2(width, height));
   assert(root);
   SetRootWidget(root);
 
@@ -134,7 +134,7 @@ void GameStateGame::Tick(double deltatime)
   if(_planet_rotation > 360.0)
     _planet_rotation -= 360.0;
 
-  _planet_position -= 3.0 / level->GetDistanceMultiplier() * deltatime;
+  _planet_position -= 3.0 * Settings->GetDouble("cheat_planet_movement_multiplier") / level->GetDistanceMultiplier() * deltatime;
 
   if(_planet_position < -2080)
     {

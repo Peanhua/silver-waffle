@@ -5,6 +5,7 @@
 #include "ObjectProjectile.hh"
 #include "ObjectSpaceship.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSettings.hh"
 #include "Widget.hh"
 #include "WormholeWall.hh"
 
@@ -151,7 +152,7 @@ void Scene::Tick(double deltatime)
     else
       addmore = true;
 
-  if(addmore)
+  if(addmore && !Settings->GetBool("cheat_no_enemies"))
     {
       auto ind = _invaders.GetNextFreeIndex();
       if(ind < _invaders.size())
