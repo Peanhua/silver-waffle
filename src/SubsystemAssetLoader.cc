@@ -157,8 +157,14 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
     end = dotpos - start;
 
   std::string stripped_name = name.substr(start, end);
+  std::string quality = "";
+  if(true)
+    quality = "-low";
 
-  if(rv->Load(std::string("Images/") + stripped_name + ".png") || rv->Load(std::string("Images/") + stripped_name + ".jpg"))
+  if(rv->Load(std::string("Images/") + stripped_name + quality + ".png") ||
+     rv->Load(std::string("Images/") + stripped_name + quality + ".jpg") ||
+     rv->Load(std::string("Images/") + stripped_name +           ".png") ||
+     rv->Load(std::string("Images/") + stripped_name +           ".jpg"))
     {
       rv->UpdateGPU(true, true);
       _images[name] = rv;

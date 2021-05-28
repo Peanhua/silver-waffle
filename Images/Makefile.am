@@ -1,0 +1,77 @@
+imagesdir = $(pkgdatadir)/Images
+
+2k_mars-low.jpg : 2k_mars.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+2k_neptune-low.jpg : 2k_neptune.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+2k_uranus-low.jpg : 2k_uranus.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+4k_venus_atmosphere-low.jpg : 4k_venus_atmosphere.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+8k_earth_daymap-low.jpg : 8k_earth_daymap.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+8k_jupiter-low.jpg : 8k_jupiter.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+8k_mars-low.jpg : 8k_mars.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+8k_mercury-low.jpg : 8k_mercury.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+8k_saturn-low.jpg : 8k_saturn.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+8k_stars_milky_way-low.jpg : 8k_stars_milky_way.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
+images_DATA = \
+	2k_mars.jpg			\
+	2k_mars-low.jpg			\
+	2k_neptune.jpg			\
+	2k_neptune-low.jpg		\
+	2k_uranus.jpg			\
+	2k_uranus-low.jpg		\
+	4k_venus_atmosphere.jpg		\
+	4k_venus_atmosphere-low.jpg	\
+	8k_earth_daymap.jpg		\
+	8k_earth_daymap-low.jpg		\
+	8k_jupiter.jpg			\
+	8k_jupiter-low.jpg		\
+	8k_mars.jpg			\
+	8k_mars-low.jpg			\
+	8k_mercury.jpg			\
+	8k_mercury-low.jpg		\
+	8k_saturn.jpg			\
+	8k_saturn-low.jpg		\
+	8k_stars_milky_way.jpg		\
+	8k_stars_milky_way-low.jpg
+
+CLEANFILES = \
+	2k_mars-low.jpg			\
+	2k_neptune-low.jpg		\
+	2k_uranus-low.jpg		\
+	4k_venus_atmosphere-low.jpg	\
+	8k_earth_daymap-low.jpg		\
+	8k_jupiter-low.jpg		\
+	8k_mars-low.jpg			\
+	8k_mercury-low.jpg		\
+	8k_saturn-low.jpg		\
+	8k_stars_milky_way-low.jpg
+
+EXTRA_DIST = \
+	2k_mars.jpg		\
+	2k_neptune.jpg		\
+	2k_uranus.jpg		\
+	4k_venus_atmosphere.jpg	\
+	8k_earth_daymap.jpg	\
+	8k_jupiter.jpg		\
+	8k_mars.jpg		\
+	8k_mercury.jpg		\
+	8k_saturn.jpg		\
+	8k_stars_milky_way.jpg
