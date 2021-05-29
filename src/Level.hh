@@ -3,6 +3,7 @@
 
 #include <random>
 #include <string>
+#include <vector>
 
 class Camera;
 class Image;
@@ -22,6 +23,23 @@ public:
   bool IsFinished() const;
   
 private:
+  class ProgramEntry
+  {
+  public:
+    ProgramEntry();
+
+    void SetStartTime(double time);
+    void SetStopTime(double time);
+    void SetSpawnInterval(double interval);
+    void Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime);
+    
+  private:
+    double _invader_spawn_timer;
+    double _invader_spawn_start_time;
+    double _invader_spawn_stop_time;
+    double _invader_spawn_interval;
+  };
+  
   Scene * _scene;
   
   std::mt19937_64 _random_generator;
@@ -31,7 +49,7 @@ private:
   double  _planet_position;
   double  _planet_rotation;
 
-  double _invader_spawn_timer;
+  std::vector<ProgramEntry *> _program;
 };
 
 #endif

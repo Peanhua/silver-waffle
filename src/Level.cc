@@ -13,12 +13,37 @@ Level::Level(Scene * scene, const std::string & planet_texture)
   : _scene(scene),
     _random_generator(0),
     _planet_position(0),
-    _planet_rotation(0),
-    _invader_spawn_timer(0)
+    _planet_rotation(0)
 {
   _planet = AssetLoader->LoadMesh("Planet");
   assert(_planet);
   _planet_texture = AssetLoader->LoadImage(planet_texture);
+
+  auto e = new ProgramEntry();
+  e->SetStartTime(0.0);
+  e->SetStopTime(30.0);
+  e->SetSpawnInterval(0.5);
+  _program.push_back(e);
+  
+  e = new ProgramEntry();
+  e->SetStartTime(60.0);
+  e->SetSpawnInterval(2.0);
+  _program.push_back(e);
+
+  e = new ProgramEntry();
+  e->SetStartTime(70.0);
+  e->SetSpawnInterval(3.0);
+  _program.push_back(e);
+
+  e = new ProgramEntry();
+  e->SetStartTime(90.0);
+  e->SetSpawnInterval(4.0);
+  _program.push_back(e);
+
+  e = new ProgramEntry();
+  e->SetStartTime(120.0);
+  e->SetSpawnInterval(2.0);
+  _program.push_back(e);
 }
 
 
@@ -30,22 +55,8 @@ void Level::Tick(double deltatime)
 
   _planet_position -= 3.0 * Settings->GetDouble("cheat_planet_movement_multiplier") * deltatime;
 
-
-  _invader_spawn_timer += deltatime;
-  const auto next_spawn_time = 1.0;
-  if(_invader_spawn_timer > next_spawn_time)
-    {
-      _invader_spawn_timer -= next_spawn_time;
-
-      auto rand = [this]()
-      {
-        return (static_cast<float>(_random_generator()) - static_cast<float>(_random_generator.min())) / static_cast<float>(_random_generator.max());
-      };
-      
-      const auto max_x = _scene->GetPlayAreaSize().x * 0.5f;
-      _scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
-    }
-  
+  for(auto e : _program)
+    e->Tick(_scene, _random_generator, deltatime);
 }
 
 
@@ -70,4 +81,60 @@ void Level::Draw(const Camera & camera) const
 void Level::Start()
 {
   _planet_position = 0;
+}
+
+
+
+Level::ProgramEntry::ProgramEntry()
+  : _invader_spawn_timer(0),
+    _invader_spawn_start_time(0),
+    _invader_spawn_stop_time(999999),
+    _invader_spawn_interval(1.0)
+{
+}
+
+
+void Level::ProgramEntry::SetStartTime(double time)
+{
+  _invader_spawn_start_time = time;
+}
+
+
+void Level::ProgramEntry::SetStopTime(double time)
+{
+  _invader_spawn_stop_time = time;
+}
+
+
+void Level::ProgramEntry::SetSpawnInterval(double interval)
+{
+  _invader_spawn_interval = interval;
+}
+
+
+void Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime)
+{
+  if(_invader_spawn_stop_time < 0.0)
+    return;
+  _invader_spawn_stop_time -= deltatime;
+  
+  if(_invader_spawn_start_time > 0.0)
+    {
+      _invader_spawn_start_time -= deltatime;
+      return;
+    }
+
+  _invader_spawn_timer += deltatime;
+  if(_invader_spawn_timer > _invader_spawn_interval)
+    {
+      _invader_spawn_timer -= _invader_spawn_interval;
+      
+      auto rand = [&random_generator]()
+      {
+        return (static_cast<float>(random_generator()) - static_cast<float>(random_generator.min())) / static_cast<float>(random_generator.max());
+      };
+      
+      const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
+      scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
+    }
 }
