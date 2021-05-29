@@ -23,22 +23,6 @@ void ObjectSpaceship::Tick(double deltatime)
       else if(vel.x > 0.0f)
         AddImpulse(glm::vec3(-5.0 * deltatime, 0, 0));
     }
-
-  const auto max_x = 10.0f;
-  const auto pos = GetPosition();
-  const auto vel = GetVelocity();
-  if(pos.x < -max_x)
-    {
-      SetPosition(glm::vec3(-max_x, pos.yz()));
-      if(vel.x < 0.0f)
-        SetVelocity(glm::vec3(0.0f, vel.yz()));
-    }
-  else if(pos.x > max_x)
-    {
-      SetPosition(glm::vec3(max_x, pos.yz()));
-      if(vel.x > 0.0f)
-        SetVelocity(glm::vec3(0.0f, vel.yz()));
-    }
 }
 
 

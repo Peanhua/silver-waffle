@@ -1,4 +1,5 @@
 #include "GameStateTitle.hh"
+#include "Camera.hh"
 #include "GameStateGame.hh"
 #include "Starfield.hh"
 #include "SubsystemSettings.hh"
@@ -13,6 +14,11 @@ GameStateTitle::GameStateTitle()
     _starfield_vertical_cameramovement(180.0f)
 {
   _starfield = new Starfield(15.0, 90.0, 0);
+
+  _starfield_camera = new Camera();
+  _starfield_camera->SetFOV(90.0);
+  _starfield_camera->SetClippingPlanes(0.001, 300.0);
+  _starfield_camera->UpdateProjection();
 
   const double width = Settings->GetInt("screen_width");
   const double height = Settings->GetInt("screen_height");
@@ -66,13 +72,12 @@ void GameStateTitle::Tick(double deltatime)
   
   glEnable(GL_DEPTH_TEST);
   _starfield->Tick(deltatime);
-  const double width = Settings->GetInt("screen_width");
-  const double height = Settings->GetInt("screen_height");
-  glm::mat4 proj = glm::perspective(glm::radians(90.0), width / height, 0.001, 300.0);
-  glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -20.0f, cammove_magnitude * std::sin(glm::radians(_starfield_vertical_cameramovement))),
-                               glm::vec3(0, 0, 0),
-                               glm::vec3(0, 0, 1));
-  _starfield->Draw(view, proj, proj * view);
+
+  _starfield_camera->SetPosition(glm::vec3(0.0f,
+                                         -20.0f,
+                                         static_cast<float>(cammove_magnitude) * std::sin(glm::radians(_starfield_vertical_cameramovement))));
+  _starfield_camera->UpdateView();
+  _starfield->Draw(*_starfield_camera);
   
   GameState::Tick(deltatime);
 }

@@ -19,7 +19,6 @@ silverwaffle_LDADD =       \
 
 silverwaffle_SOURCES =				\
 	Camera.cc				\
-	Camera2.cc				\
 	Explosion.cc				\
 	GameState.cc				\
 	GameStateGame.cc			\

@@ -3,6 +3,7 @@
 
 #include "GameState.hh"
 
+class Camera;
 class Starfield;
 
 
@@ -17,6 +18,7 @@ private:
   Starfield * _starfield;
   double      _starfield_cameramovement_timer;
   float       _starfield_vertical_cameramovement;
+  Camera *    _starfield_camera;
 };
 
 #endif

@@ -4,6 +4,7 @@
 #include "glm.hh"
 #include <random>
 
+class Camera;
 class Mesh;
 
 
@@ -13,7 +14,7 @@ public:
   Starfield(double radius_min, double radius_max, unsigned long random_seed);
 
   void Tick(double deltatime);
-  void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp) const;
+  void Draw(const Camera & camera) const;
 
 private:
   double _radius_min;

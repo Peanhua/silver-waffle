@@ -5,6 +5,7 @@ ObjectMovable::ObjectMovable(Scene * scene)
   : Object(scene),
     _velocity(glm::vec3(0, 0, 0)),
     _max_velocity(10),
+    _horizontal_position_limit(0),
     _angular_velocity(0, 0, 0, 0),
     _angular_velocity_magnitude(0)
 {
@@ -23,8 +24,33 @@ void ObjectMovable::Tick(double deltatime)
       Rotate(res);
     }
   
+  if(_horizontal_position_limit > 0.0f)
+    {
+      const auto pos = GetPosition();
+      const auto vel = GetVelocity();
+      if(pos.x < -_horizontal_position_limit)
+        {
+          SetPosition(glm::vec3(-_horizontal_position_limit, pos.yz()));
+          if(vel.x < 0.0f)
+            SetVelocity(glm::vec3(0.0f, vel.yz()));
+        }
+      else if(pos.x > _horizontal_position_limit)
+        {
+          SetPosition(glm::vec3(_horizontal_position_limit, pos.yz()));
+          if(vel.x > 0.0f)
+            SetVelocity(glm::vec3(0.0f, vel.yz()));
+        }
+    }
+
   Object::Tick(deltatime);
 }
+
+
+void ObjectMovable::SetHorizontalPositionLimit(double limit)
+{
+  _horizontal_position_limit = static_cast<float>(limit);
+}
+  
 
 
 void ObjectMovable::Hit(double damage, const glm::vec3 & impulse)

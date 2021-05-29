@@ -1,11 +1,11 @@
 #include "GameStateGame.hh"
-#include "Starfield.hh"
-#include "Camera2.hh"
+#include "Camera.hh"
 #include "Level.hh"
 #include "Mesh.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScoreReel.hh"
+#include "Starfield.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "WidgetPlayerShip.hh"
@@ -41,7 +41,7 @@ GameStateGame::GameStateGame()
 #endif
   
   _camera->SetFOV(_fov);
-  _camera->UpdateViewProjection();
+  _camera->UpdateProjection();
   
   _scene->Initialize(1.0);
   _scene->SetOnDestroyed([this](Object * destroyer, Object * target)
@@ -151,7 +151,7 @@ void GameStateGame::Tick(double deltatime)
   level->Draw(*_camera);
 
   glEnable(GL_DEPTH_TEST);
-  _starfield->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
+  _starfield->Draw(*_camera);
   _scene->Draw(*_camera);
   _score_reel->Draw();
   
@@ -220,7 +220,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
           _fov++;
           std::cout << "fov:" << _fov << std::endl;
           _camera->SetFOV(_fov);
-          _camera->UpdateViewProjection();
+          _camera->UpdateProjection();
         }
       break;
       
@@ -230,7 +230,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
           _fov--;
           std::cout << "fov:" << _fov << std::endl;
           _camera->SetFOV(_fov);
-          _camera->UpdateViewProjection();
+          _camera->UpdateProjection();
         }
       break;
 

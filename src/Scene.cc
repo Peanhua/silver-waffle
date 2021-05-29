@@ -13,6 +13,7 @@
 
 Scene::Scene()
   : _random_generator(0),
+    _play_area_size(glm::vec2(20, 60)),
     _on_destroyed_callback(nullptr)
 {
   std::uniform_real_distribution<float> rdist(0, 1);
@@ -57,7 +58,7 @@ void Scene::Draw(const Camera & camera) const
       e->Draw(view, projection, vp);
 
   // Two walls (left and right), todo: test doing a half&full circle of walls, maybe left&right normally, and half/full circle during bonus levels?
-  const auto max_x = 10.0f + 0.75f; // 0.75 is approximately half of the player ship width, so that the ship never goes through the wall
+  const auto max_x = GetPlayAreaSize().x * 0.5f + 0.75f; // 0.75 is approximately half of the player ship width, so that the ship never goes through the wall
   for(int i = 0; i < 360; i += 180)
     {
       glm::mat4 model(1);
@@ -73,10 +74,9 @@ void Scene::Initialize(double difficulty)
 {
   assert(difficulty == difficulty);
   
-  glm::vec3 topleft(-10, 40, 0);
-
   _player = new ObjectSpaceship(this);
-  _player->SetPosition(glm::vec3(0, topleft.y - 53, topleft.z));
+  _player->SetPosition(glm::vec3(0, 40 - 53, 0));
+  _player->SetHorizontalPositionLimit(GetPlayAreaSize().x * 0.5f);
   {
     auto mesh = AssetLoader->LoadMesh("Player");
     assert(mesh);
@@ -149,7 +149,7 @@ void Scene::Tick(double deltatime)
 
         if(i->IsAlive())
           {
-            const auto max_x = 10.0f + 0.75f;
+            const auto max_x = GetPlayAreaSize().x * 0.5f + 0.75f;
             if(std::abs(i->GetPosition().x) > max_x || i->GetPosition().y < 40.0f - 53.0f - 2.0f)
               i->Hit(99999, -glm::normalize(i->GetVelocity()));
           }
@@ -157,37 +157,19 @@ void Scene::Tick(double deltatime)
     else
       addmore = true;
 
-  if(addmore && !Settings->GetBool("cheat_no_enemies"))
+  if(addmore)
     {
-      auto ind = _invaders.GetNextFreeIndex();
-      if(ind < _invaders.size())
+      auto rand = [this]()
+      {
+        return (static_cast<float>(_random_generator()) - static_cast<float>(_random_generator.min())) / static_cast<float>(_random_generator.max());
+      };
+      
+      if(static_cast<double>(rand()) < 5.0 * deltatime)
         {
-          auto rand = [this]() { return (static_cast<double>(_random_generator()) - static_cast<double>(_random_generator.min())) / static_cast<double>(_random_generator.max()); };
-          
-          auto r = rand();
-          if(r < 5.0 * deltatime)
-            {
-              const auto max_x = 10.0;
-              auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
-              invader->SetPosition(glm::vec3(-max_x + rand() * max_x * 2.0, 40, 0));
-              invader->RotateYaw(180.0);
-
-              auto mesh = AssetLoader->LoadMesh("Invader1");
-              assert(mesh);
-              invader->SetMesh(mesh);
-          
-              invader->AddWeapon(glm::vec3(0, -1, 0),
-                                 AssetLoader->LoadMesh("Projectile"),
-                                 glm::vec3(0, -1, 0),
-                                 5.0,
-                                 34.0);
-
-              delete _invaders[ind];
-              _invaders[ind] = invader;
-            }
+          const auto max_x = GetPlayAreaSize().x * 0.5f;
+          AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
         }
     }
-      
   
   for(auto projectile : _projectiles)
     if(projectile->IsAlive())
@@ -232,7 +214,7 @@ void Scene::Tick(double deltatime)
           }
         else
           {
-            const auto max_x = 10.0f + 0.75f;
+            const auto max_x = GetPlayAreaSize().x * 0.5f + 0.75f;
             if(std::abs(projectile->GetPosition().x) > max_x)
               projectile->Hit(99999, -glm::normalize(projectile->GetVelocity()));
           }
@@ -284,3 +266,38 @@ void Scene2::Initialize(double difficulty)
 }
 #endif
 
+
+ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
+{
+  if(Settings->GetBool("cheat_no_enemies"))
+    return nullptr;
+
+  auto ind = _invaders.GetNextFreeIndex();
+  if(ind >= _invaders.size())
+    return nullptr;
+  
+  auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
+  invader->SetPosition(position);
+  invader->RotateYaw(180.0);
+      
+  auto mesh = AssetLoader->LoadMesh("Invader1");
+  assert(mesh);
+  invader->SetMesh(mesh);
+      
+  invader->AddWeapon(glm::vec3(0, -1, 0),
+                     AssetLoader->LoadMesh("Projectile"),
+                     glm::vec3(0, -1, 0),
+                     5.0,
+                     34.0);
+
+  delete _invaders[ind];
+  _invaders[ind] = invader;
+
+  return invader;
+}
+
+
+const glm::vec2 & Scene::GetPlayAreaSize() const
+{
+  return _play_area_size;
+}

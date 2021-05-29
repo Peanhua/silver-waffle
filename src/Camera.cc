@@ -4,13 +4,16 @@
 
 
 Camera::Camera()
-  : _up(0, 0, 1),
+  : _fov(60.0),
+    _clippingplane_near(0.001),
+    _clippingplane_far(2000.0),
+    _up(0, 0, 1),
     _position(0, -20, 14.5),
     _target_position(0, 0, 0),
     _view_projection(1)
 {
-  SetFOV(60.0);
-  UpdateViewProjection();
+  UpdateView();
+  UpdateProjection();
 }
 
 
@@ -21,10 +24,14 @@ Camera::~Camera()
 
 void Camera::SetFOV(double fov)
 {
-  const double width = Settings->GetInt("screen_width");
-  const double height = Settings->GetInt("screen_height");
   _fov = fov;
-  _projection = glm::perspective(glm::radians(_fov), width / height, 0.001, 2000.0);
+}
+
+
+void Camera::SetClippingPlanes(double near, double far)
+{
+  _clippingplane_near = near;
+  _clippingplane_far  = far;
 }
 
 
@@ -52,11 +59,19 @@ const glm::mat4 & Camera::GetViewProjection() const
 }
 
 
-void Camera::UpdateViewProjection()
+void Camera::UpdateProjection()
+{
+  const double width  = Settings->GetInt("screen_width");
+  const double height = Settings->GetInt("screen_height");
+  _projection = glm::perspective(glm::radians(_fov), width / height, _clippingplane_near, _clippingplane_far);
+  _view_projection = _projection * _view;
+}
+
+
+void Camera::UpdateView()
 {
   _view = glm::lookAt(_position, _target_position, _up);
   _view_projection = _projection * _view;
-  std::cout << "camera: " << _position << " -> " << _target_position << std::endl;
 }
 
 const glm::mat4 & Camera::GetView() const
@@ -78,7 +93,7 @@ void Camera::MoveForward(double amount)
   GetDirection(d);
   _position += d * static_cast<float>(amount);
   //_target_position += d * static_cast<float>(amount);
-  UpdateViewProjection();
+  UpdateView();
 }
 
 
@@ -90,7 +105,7 @@ void Camera::MoveRight(double amount)
   auto right = glm::normalize(glm::cross(_up, d));
   _position += right * static_cast<float>(amount);
   //_target_position += right * static_cast<float>(amount);
-  UpdateViewProjection();
+  UpdateView();
 }
 
 
@@ -98,7 +113,7 @@ void Camera::MoveUp(double amount)
 {
   _position += _up * static_cast<float>(amount);
   //_target_position += _up * static_cast<float>(amount);
-  UpdateViewProjection();
+  UpdateView();
 }
 
 

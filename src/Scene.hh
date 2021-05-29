@@ -49,13 +49,17 @@ public:
 
   void              Initialize(double difficulty);
 
+  const glm::vec2 & GetPlayAreaSize() const;
+  
   ObjectSpaceship * GetPlayer() const;
+  ObjectInvader *   AddInvader(const glm::vec3 & position);
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
   void              SetOnDestroyed(on_destroyed_t callback);
   
 private:
   std::mt19937_64                 _random_generator;
+  glm::vec2                       _play_area_size;
   ObjectSpaceship *               _player;
   Container<ObjectInvader *>      _invaders;
   Container<ObjectProjectile *>   _projectiles;

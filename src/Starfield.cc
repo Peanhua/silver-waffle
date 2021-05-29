@@ -1,4 +1,5 @@
 #include "Starfield.hh"
+#include "Camera.hh"
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
@@ -81,8 +82,12 @@ void Starfield::ResetStar(unsigned int index)
 }
 
 
-void Starfield::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp) const
+void Starfield::Draw(const Camera & camera) const
 {
+  const glm::mat4 & view       = camera.GetView();
+  const glm::mat4 & projection = camera.GetProjection();
+  const glm::mat4 & mvp        = camera.GetViewProjection();
+    
   glm::mat4 model(1);
   model = glm::translate(model, glm::vec3(0, 40 - 53 - 2, 0));
 
