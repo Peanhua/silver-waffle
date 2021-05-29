@@ -118,7 +118,6 @@ void Scene::Tick(double deltatime)
     if(i && i->IsAlive())
       i->Tick(deltatime);
 
-  bool addmore = false;
   for(auto i : _invaders)
     if(i && i->IsAlive())
       {
@@ -154,23 +153,7 @@ void Scene::Tick(double deltatime)
               i->Hit(99999, -glm::normalize(i->GetVelocity()));
           }
       }
-    else
-      addmore = true;
 
-  if(addmore)
-    {
-      auto rand = [this]()
-      {
-        return (static_cast<float>(_random_generator()) - static_cast<float>(_random_generator.min())) / static_cast<float>(_random_generator.max());
-      };
-      
-      if(static_cast<double>(rand()) < 5.0 * deltatime)
-        {
-          const auto max_x = GetPlayAreaSize().x * 0.5f;
-          AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
-        }
-    }
-  
   for(auto projectile : _projectiles)
     if(projectile->IsAlive())
       {

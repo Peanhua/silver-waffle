@@ -18,16 +18,6 @@ GameStateGame::GameStateGame()
     _current_level(0),
     _lives(3)
 {
-  _levels.push_back(new Level("8k_mercury",          1.0));
-  _levels.push_back(new Level("4k_venus_atmosphere", 1.0));
-  _levels.push_back(new Level("8k_earth_daymap",     1.0));
-  _levels.push_back(new Level("8k_mars",             1.0));
-  _levels.push_back(new Level("8k_jupiter",          1.0));
-  _levels.push_back(new Level("8k_saturn",           1.0));
-  _levels.push_back(new Level("2k_uranus",           1.0));
-  _levels.push_back(new Level("2k_neptune",          1.0));
-  
-  
 #if 1
   _camera = new Camera();
   _scene = new Scene();
@@ -51,6 +41,17 @@ GameStateGame::GameStateGame()
     else if(target == _scene->GetPlayer())
       OnPlayerDies();
   });
+
+  {
+    _levels.push_back(new Level(_scene, "8k_mercury"));
+    _levels.push_back(new Level(_scene, "4k_venus_atmosphere"));
+    _levels.push_back(new Level(_scene, "8k_earth_daymap"));
+    _levels.push_back(new Level(_scene, "8k_mars"));
+    _levels.push_back(new Level(_scene, "8k_jupiter"));
+    _levels.push_back(new Level(_scene, "8k_saturn"));
+    _levels.push_back(new Level(_scene, "2k_uranus"));
+    _levels.push_back(new Level(_scene, "2k_neptune"));
+  }
 
   _score_reel = new ScoreReel(10);
 

@@ -1,6 +1,7 @@
 #include "Level.hh"
 #include "Camera.hh"
 #include "Mesh.hh"
+#include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "glm.hh"
@@ -8,10 +9,12 @@
 #include <GL/glew.h>
 
 
-Level::Level(const std::string & planet_texture, double distance_multiplier)
-  : _distance_multiplier(distance_multiplier),
+Level::Level(Scene * scene, const std::string & planet_texture)
+  : _scene(scene),
+    _random_generator(0),
     _planet_position(0),
-    _planet_rotation(0)
+    _planet_rotation(0),
+    _invader_spawn_timer(0)
 {
   _planet = AssetLoader->LoadMesh("Planet");
   assert(_planet);
@@ -25,7 +28,24 @@ void Level::Tick(double deltatime)
   if(_planet_rotation > 360.0)
     _planet_rotation -= 360.0;
 
-  _planet_position -= 3.0 * Settings->GetDouble("cheat_planet_movement_multiplier") / _distance_multiplier * deltatime;
+  _planet_position -= 3.0 * Settings->GetDouble("cheat_planet_movement_multiplier") * deltatime;
+
+
+  _invader_spawn_timer += deltatime;
+  const auto next_spawn_time = 1.0;
+  if(_invader_spawn_timer > next_spawn_time)
+    {
+      _invader_spawn_timer -= next_spawn_time;
+
+      auto rand = [this]()
+      {
+        return (static_cast<float>(_random_generator()) - static_cast<float>(_random_generator.min())) / static_cast<float>(_random_generator.max());
+      };
+      
+      const auto max_x = _scene->GetPlayAreaSize().x * 0.5f;
+      _scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
+    }
+  
 }
 
 
