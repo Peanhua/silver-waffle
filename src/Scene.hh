@@ -5,6 +5,7 @@
 #include <functional>
 #include <random>
 
+class Camera;
 class Explosion;
 class Mesh;
 class Object;
@@ -43,7 +44,7 @@ public:
   
   Scene();
   
-  void              Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
+  void              Draw(const Camera & camera) const;
   void              Tick(double deltatime);
 
   void              Initialize(double difficulty);

@@ -6,6 +6,7 @@
 
 class Camera;
 class Image;
+class Level;
 class Mesh;
 class Scene;
 class ScoreReel;
@@ -24,29 +25,11 @@ public:
 
 private:
 
-  class Level
-  {
-  public:
-    Level(const std::string & planet_texture, double distance_multiplier);
-
-    Image * GetTexture() const;
-
-    double GetDistanceMultiplier() const;
-
-  private:
-    std::string _planet_texture;
-    double      _distance_multiplier;
-  };
-  
-  
   double      _fov;
   Camera *    _camera;
   Scene *     _scene;
   ScoreReel * _score_reel;
   Starfield * _starfield;
-  Mesh *      _planet;
-  double      _planet_position;
-  double      _planet_rotation;
   Mesh *      _space;
   std::vector<Level *> _levels;
   unsigned int         _current_level;

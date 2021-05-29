@@ -12,12 +12,14 @@ SubsystemSettings::SubsystemSettings()
 
 bool SubsystemSettings::Start()
 {
-  assert(!Settings);
+  if(Settings)
+    return false;
+  
   Settings = this;
 
-  _int_values["screen_width"] = 1024;
+  _int_values["screen_width"]  = 1024;
   _int_values["screen_height"] = 768;
-
+  
   _int_values["cheat_planet_movement_multiplier"] = 1;
   _bool_values["cheat_no_enemies"] = false;
   

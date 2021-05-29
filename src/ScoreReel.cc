@@ -87,7 +87,7 @@ void ScoreReel::Tick(double deltatime)
 
 void ScoreReel::Draw() const
 {
-  glViewport(0, 768 - 150, 300, 200);
+  glViewport(0, Settings->GetInt("screen_height") - 150, 300, 200);
   glm::mat4 proj = glm::perspective(glm::radians(30.0), 300.0 / 200.0, 0.001, 1000.0);
   glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -static_cast<float>(_drum_count) - 2.0f, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
   glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.5f * -static_cast<float>(_drum_count) * static_cast<float>(_drum_width), 0, 0));

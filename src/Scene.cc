@@ -1,4 +1,5 @@
 #include "Scene.hh"
+#include "Camera.hh"
 #include "Explosion.hh"
 #include "Mesh.hh"
 #include "ObjectInvader.hh"
@@ -33,8 +34,12 @@ Scene::Scene()
 }
 
 
-void Scene::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
+void Scene::Draw(const Camera & camera) const
 {
+  const glm::mat4 & view       = camera.GetView();
+  const glm::mat4 & projection = camera.GetProjection();
+  const glm::mat4 & vp         = camera.GetViewProjection();
+
   glEnable(GL_DEPTH_TEST);
   if(_player->IsAlive())
     _player->Draw(view, projection, vp);

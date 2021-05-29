@@ -1,6 +1,7 @@
 #include "GameStateGame.hh"
 #include "Starfield.hh"
 #include "Camera2.hh"
+#include "Level.hh"
 #include "Mesh.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
@@ -10,13 +11,10 @@
 #include "WidgetPlayerShip.hh"
 #include "WidgetSpaceshipStatus.hh"
 #include <iostream>
-#include <GL/glew.h>
 
 
 GameStateGame::GameStateGame()
   : GameState(),
-    _planet_position(0),
-    _planet_rotation(0),
     _current_level(0),
     _lives(3)
 {
@@ -76,9 +74,6 @@ GameStateGame::GameStateGame()
 
   _starfield = new Starfield(5.0, 50.0, 0);
 
-  _planet = AssetLoader->LoadMesh("Planet");
-  assert(_planet);
-
   {
     _space = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
     _space->SetTexture(AssetLoader->LoadImage("8k_stars_milky_way"));
@@ -129,14 +124,9 @@ void GameStateGame::Tick(double deltatime)
   _starfield->Tick(deltatime);
   _scene->Tick(deltatime);
   _score_reel->Tick(deltatime);
+  level->Tick(deltatime);
 
-  _planet_rotation += 1.5 * deltatime;
-  if(_planet_rotation > 360.0)
-    _planet_rotation -= 360.0;
-
-  _planet_position -= 3.0 * Settings->GetDouble("cheat_planet_movement_multiplier") / level->GetDistanceMultiplier() * deltatime;
-
-  if(_planet_position < -2080)
+  if(level->IsFinished())
     {
       if(_current_level + 1 < _levels.size())
         {
@@ -158,18 +148,11 @@ void GameStateGame::Tick(double deltatime)
     _space->Draw(model, view, proj, proj * view * model);
   }
   
-  {
-    glDisable(GL_DEPTH_TEST);
-    glm::mat4 model(1);
-    model = glm::translate(model, glm::vec3(0, 2000 + _planet_position, -101));
-    model = glm::rotate(model, static_cast<float>(glm::radians(_planet_rotation)), glm::vec3(0, 0, 1));
-    model = glm::scale(model, glm::vec3(200, 200, 200));
-    _planet->Draw(model, _camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection() * model);
-  }
+  level->Draw(*_camera);
 
   glEnable(GL_DEPTH_TEST);
   _starfield->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
-  _scene->Draw(_camera->GetView(), _camera->GetProjection(), _camera->GetViewProjection());
+  _scene->Draw(*_camera);
   _score_reel->Draw();
   
   GameState::Tick(deltatime);
@@ -323,27 +306,5 @@ void GameStateGame::OnPlayerDies()
 void GameStateGame::OnLevelChanged()
 {
   auto level = _levels[_current_level];
-  _planet->SetTexture(level->GetTexture(), true);
-  _planet_position = 0;
+  level->Start();
 }
-
-
-
-GameStateGame::Level::Level(const std::string & planet_texture, double distance_multiplier)
-  : _planet_texture(planet_texture),
-    _distance_multiplier(distance_multiplier)
-{
-}
-
-
-Image * GameStateGame::Level::GetTexture() const
-{
-  return AssetLoader->LoadImage(_planet_texture);
-}
-
-
-double GameStateGame::Level::GetDistanceMultiplier() const
-{
-  return _distance_multiplier;
-}
-

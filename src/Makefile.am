@@ -25,6 +25,7 @@ silverwaffle_SOURCES =				\
 	GameStateGame.cc			\
 	GameStateTitle.cc			\
 	Image.cc				\
+	Level.cc				\
 	Mesh.cc					\
 	Mesh_LoadFromFile.cc			\
 	Object.cc				\
