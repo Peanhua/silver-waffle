@@ -31,6 +31,7 @@ GameStateGame::GameStateGame()
 #endif
   
   _camera->SetFOV(_fov);
+  _camera->SetClippingPlanes(0.01, 10000.0);
   _camera->UpdateProjection();
   
   _scene->Initialize(1.0);
@@ -43,14 +44,16 @@ GameStateGame::GameStateGame()
   });
 
   {
-    _levels.push_back(new Level(_scene, "8k_mercury"));
-    _levels.push_back(new Level(_scene, "4k_venus_atmosphere"));
-    _levels.push_back(new Level(_scene, "8k_earth_daymap"));
-    _levels.push_back(new Level(_scene, "8k_mars"));
-    _levels.push_back(new Level(_scene, "8k_jupiter"));
-    _levels.push_back(new Level(_scene, "8k_saturn"));
-    _levels.push_back(new Level(_scene, "2k_uranus"));
-    _levels.push_back(new Level(_scene, "2k_neptune"));
+    const double earth_size = 100.0;
+    const double earth_radius = 6371.0;
+    _levels.push_back(new Level(_scene, "8k_mercury",          earth_size *  2440.0 / earth_radius));
+    _levels.push_back(new Level(_scene, "4k_venus_atmosphere", earth_size *  6052.0 / earth_radius));
+    _levels.push_back(new Level(_scene, "8k_earth_daymap",     earth_size *  6371.0 / earth_radius));
+    _levels.push_back(new Level(_scene, "8k_mars",             earth_size *  3390.0 / earth_radius));
+    _levels.push_back(new Level(_scene, "8k_jupiter",          earth_size * 69911.0 / earth_radius));
+    _levels.push_back(new Level(_scene, "8k_saturn",           earth_size * 58232.0 / earth_radius));
+    _levels.push_back(new Level(_scene, "2k_uranus",           earth_size * 25362.0 / earth_radius));
+    _levels.push_back(new Level(_scene, "2k_neptune",          earth_size * 24622.0 / earth_radius));
   }
 
   _score_reel = new ScoreReel(10);

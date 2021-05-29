@@ -14,7 +14,7 @@ class Scene;
 class Level
 {
 public:
-  Level(Scene * scene, const std::string & planet_texture);
+  Level(Scene * scene, const std::string & planet_texture, double planet_size);
   
   void Tick(double deltatime);
   void Draw(const Camera & camera) const;
@@ -45,7 +45,9 @@ private:
   std::mt19937_64 _random_generator;
 
   Image * _planet_texture;
+  double  _planet_size;
   Mesh *  _planet;
+  double  _planet_position_start;
   double  _planet_position;
   double  _planet_rotation;
 
