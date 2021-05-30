@@ -2,6 +2,7 @@
 #include "Camera.hh"
 #include "Explosion.hh"
 #include "Mesh.hh"
+#include "ObjectCollectible.hh"
 #include "ObjectInvader.hh"
 #include "ObjectProjectile.hh"
 #include "ObjectSpaceship.hh"
@@ -9,12 +10,14 @@
 #include "SubsystemSettings.hh"
 #include "Widget.hh"
 #include "WormholeWall.hh"
+#include <iostream>
 
 
 Scene::Scene()
   : _random_generator(0),
     _play_area_size(glm::vec2(20, 60)),
-    _on_destroyed_callback(nullptr)
+    _on_destroyed_callback(nullptr),
+    _on_collectible_collected_callback(nullptr)
 {
   std::uniform_real_distribution<float> rdist(0, 1);
   for(int i = 0; i < 300; i++)
@@ -58,6 +61,10 @@ void Scene::Draw(const Camera & camera) const
     if(b->IsAlive())
       b->Draw(view, projection, vp);
 
+  for(auto c : _collectibles)
+    if(c && c->IsAlive())
+      c->Draw(view, projection, vp);
+  
   for(auto e : _explosions)
     if(e->IsAlive())
       e->Draw(view, projection, vp);
@@ -97,6 +104,9 @@ void Scene::Initialize(double difficulty)
 
   for(int i = 0; i < 200; i++)
     _invaders.push_back(nullptr);
+
+  for(int i = 0; i < 50; i++)
+    _collectibles.push_back(nullptr);
 }
 
 
@@ -159,12 +169,32 @@ void Scene::Tick(double deltatime)
           }
       }
 
+  for(auto collectible : _collectibles)
+    if(collectible && collectible->IsAlive())
+      {
+        collectible->Tick(deltatime);
+
+        glm::vec3 hitdir;
+        if(collectible->CheckCollision(*_player, hitdir))
+          {
+            AddExplosion(collectible->GetPosition(), -hitdir);
+            if(_on_collectible_collected_callback)
+              _on_collectible_collected_callback(collectible);
+            collectible->Hit(99999, -hitdir);
+          }
+        else
+          {
+            if(std::abs(collectible->GetPosition().x) > GetPlayAreaSize().x * 0.5f)
+              collectible->Hit(99999, -glm::normalize(collectible->GetVelocity()));
+          }
+      }
+
   for(auto projectile : _projectiles)
     if(projectile->IsAlive())
       {
         projectile->Tick(deltatime);
         
-        ObjectSpaceship * target = nullptr;
+        ObjectMovable * target = nullptr;
         glm::vec3 hitdir;
         
         if(projectile->GetOwner() == _player)
@@ -234,6 +264,13 @@ void Scene::SetOnDestroyed(on_destroyed_t callback)
 }
 
 
+void Scene::SetOnCollectibleCollected(on_collectible_collected_t callback)
+{
+  assert(!_on_collectible_collected_callback);
+  _on_collectible_collected_callback = callback;
+}
+
+
 #if 0
 void Scene2::Initialize(double difficulty)
 {
@@ -285,6 +322,31 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
   _invaders[ind] = invader;
 
   return invader;
+}
+
+
+ObjectCollectible * Scene::AddCollectible(const glm::vec3 & position, const glm::vec3 & velocity)
+{
+  auto ind = _collectibles.GetNextFreeIndex();
+  if(ind >= _collectibles.size())
+    return nullptr;
+
+  auto rand = [this]()
+  {
+    return (static_cast<float>(_random_generator()) - static_cast<float>(_random_generator.min())) / static_cast<float>(_random_generator.max());
+  };
+
+  auto score = 5.0f + rand() * 5.0f;
+  auto coll = new ObjectCollectible(this, static_cast<unsigned int>(score));
+  coll->SetPosition(position);
+  coll->AddImpulse(velocity);
+  auto rotangle = glm::normalize(glm::vec3(rand(), rand(), rand()));
+  coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(rand()) * 10.0);
+
+  delete _collectibles[ind];
+  _collectibles[ind] = coll;
+
+  return coll;
 }
 
 

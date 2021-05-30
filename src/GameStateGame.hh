@@ -3,6 +3,7 @@
 
 #include "GameState.hh"
 #include <vector>
+#include <random>
 
 class Camera;
 class Image;
@@ -24,7 +25,8 @@ public:
   void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod) override;
 
 private:
-
+  std::mt19937_64                       _random;
+  std::uniform_real_distribution<float> _rdist;
   double      _fov;
   Camera *    _camera;
   Scene *     _scene;

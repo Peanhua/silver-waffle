@@ -2,6 +2,7 @@
 #include "Camera.hh"
 #include "Level.hh"
 #include "Mesh.hh"
+#include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScoreReel.hh"
@@ -15,6 +16,8 @@
 
 GameStateGame::GameStateGame()
   : GameState(),
+    _random(0),
+    _rdist(0, 1),
     _current_level(0),
     _lives(3)
 {
@@ -35,12 +38,23 @@ GameStateGame::GameStateGame()
   _camera->UpdateProjection();
   
   _scene->Initialize(1.0);
+  
   _scene->SetOnDestroyed([this](Object * destroyer, Object * target)
   {
     if(destroyer == _scene->GetPlayer() && target != _scene->GetPlayer())
-      _score_reel->SetScore(_score_reel->GetScore() + 1);
+      {
+        _score_reel->SetScore(_score_reel->GetScore() + 1);
+
+        if(_rdist(_random) < 0.05f)
+          _scene->AddCollectible(target->GetPosition(), glm::vec3(0, -1, 0));
+      }
     else if(target == _scene->GetPlayer())
       OnPlayerDies();
+  });
+
+  _scene->SetOnCollectibleCollected([this](ObjectCollectible * collectible)
+  {
+    _score_reel->SetScore(_score_reel->GetScore() + collectible->GetScoreBonus());
   });
 
   {
