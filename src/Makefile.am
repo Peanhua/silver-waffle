@@ -27,6 +27,7 @@ silverwaffle_SOURCES =				\
 	Level.cc				\
 	Mesh.cc					\
 	Mesh_LoadFromFile.cc			\
+	MeshProgressBar.cc			\
 	Object.cc				\
 	ObjectCollectible.cc			\
 	ObjectInvader.cc			\
@@ -50,6 +51,7 @@ silverwaffle_SOURCES =				\
 	Widget.cc				\
 	WidgetPlayerShip.cc			\
 	WidgetSpaceshipStatus.cc		\
+	WidgetWeaponStatus.cc			\
 	WormholeWall.cc				\
 	glm.cc					\
 	main.cc

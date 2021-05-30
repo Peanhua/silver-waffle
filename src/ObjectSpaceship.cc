@@ -12,7 +12,7 @@ void ObjectSpaceship::Tick(double deltatime)
         engines_on = true;
         AddImpulse(engine->_thrust_direction * static_cast<float>(engine->_power * engine->_throttle * deltatime));
       }
-  
+
   if(_engines.size() > 0 && !engines_on)
     { // todo: separate controls and use the engines to slow down
       const auto vel = GetVelocity();
@@ -23,6 +23,9 @@ void ObjectSpaceship::Tick(double deltatime)
       else if(vel.x > 0.0f)
         AddImpulse(glm::vec3(-5.0 * deltatime, 0, 0));
     }
+
+  for(auto w : _weapons)
+    w->_heat = std::max(0.0, w->_heat - 0.1 * deltatime);
 }
 
 
@@ -50,15 +53,28 @@ unsigned int ObjectSpaceship::AddWeapon(const glm::vec3 & location, Mesh * proje
 }
 
   
-void ObjectSpaceship::FireWeapon(unsigned int weapon_id)
+bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
 {
   assert(weapon_id < _weapons.size());
   auto weapon = _weapons[weapon_id];
+  if(weapon->_heat > 1.0)
+    return false;
+
   _scene->AddProjectile(this,
                         GetPosition() + weapon->_location,
                         GetVelocity() * 0.5f + weapon->_projectile_direction * static_cast<float>(weapon->_projectile_initial_velocity),
                         weapon->_projectile_damage,
                         10.0);
+  weapon->_heat += 0.03;
+  return true;
+}
+
+
+double ObjectSpaceship::GetWeaponHeat(unsigned int weapon_id) const
+{
+  assert(weapon_id < _weapons.size());
+  auto weapon = _weapons[weapon_id];
+  return weapon->_heat;
 }
 
 

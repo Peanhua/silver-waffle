@@ -11,6 +11,7 @@
 #include "SubsystemSettings.hh"
 #include "WidgetPlayerShip.hh"
 #include "WidgetSpaceshipStatus.hh"
+#include "WidgetWeaponStatus.hh"
 #include <iostream>
 
 
@@ -86,10 +87,15 @@ GameStateGame::GameStateGame()
     }
   OnLivesUpdated();
 
-  auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 70), glm::ivec2(20, 100));
-  w->SetSpaceship(_scene->GetPlayer());
-  _playership_status_widget = w;
-
+  {
+    auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 70), glm::ivec2(20, 100));
+    w->SetSpaceship(_scene->GetPlayer());
+  }
+  {
+    auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 70), glm::ivec2(20, 100));
+    w->SetSpaceship(_scene->GetPlayer());
+  }
+    
   _starfield = new Starfield(5.0, 50.0, 0);
 
   {

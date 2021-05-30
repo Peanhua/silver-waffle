@@ -449,6 +449,12 @@ void Mesh::ApplyTransform(const glm::mat4 & transform)
 }
 
 
+void Mesh::SetTransform(const glm::mat4 & transform)
+{
+  _transform = transform;
+}
+
+
 void Mesh::SetTexture(Image * texture_image, bool set_children)
 {
   assert(texture_image);

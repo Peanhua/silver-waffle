@@ -50,6 +50,7 @@ public:
   void   UpdateGPU(unsigned int update_options, unsigned int first, unsigned int count);
   void   CalculateBoundingSphereRadius(const glm::mat4 & transform = glm::mat4(1));
   void   ApplyTransform(const glm::mat4 & transform);
+  void   SetTransform(const glm::mat4 & transform);
   
   void   Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
   double GetBoundingSphereRadius()   const;

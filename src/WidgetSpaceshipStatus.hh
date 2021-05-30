@@ -3,6 +3,7 @@
 
 #include "Widget.hh"
 
+class MeshProgressBar;
 class ObjectSpaceship;
 
 
@@ -16,9 +17,9 @@ public:
   void              SetSpaceship(ObjectSpaceship * spaceship);
   ObjectSpaceship * GetSpaceship() const;
 
-private:
+protected:
   ObjectSpaceship * _spaceship;
-  Mesh *            _meter;
+  MeshProgressBar * _meter;
 };
 
 
