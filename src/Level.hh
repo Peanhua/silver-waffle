@@ -15,6 +15,8 @@ class Level
 {
 public:
   Level(Scene * scene, const std::string & planet_texture, double planet_size);
+
+  void SetPlanetRing(float start, float end);
   
   void Tick(double deltatime);
   void Draw(const Camera & camera) const;
@@ -47,6 +49,7 @@ private:
   Image * _planet_texture;
   double  _planet_size;
   Mesh *  _planet;
+  Mesh *  _planet_ring;
   double  _planet_position_start;
   double  _planet_position;
   double  _planet_rotation;

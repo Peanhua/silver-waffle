@@ -52,6 +52,7 @@ GameStateGame::GameStateGame()
     _levels.push_back(new Level(_scene, "8k_mars",             earth_size *  3390.0 / earth_radius));
     _levels.push_back(new Level(_scene, "8k_jupiter",          earth_size * 69911.0 / earth_radius));
     _levels.push_back(new Level(_scene, "8k_saturn",           earth_size * 58232.0 / earth_radius));
+    _levels[5]->SetPlanetRing(0.65f, 1.5f);
     _levels.push_back(new Level(_scene, "2k_uranus",           earth_size * 25362.0 / earth_radius));
     _levels.push_back(new Level(_scene, "2k_neptune",          earth_size * 24622.0 / earth_radius));
   }
@@ -152,9 +153,9 @@ void GameStateGame::Tick(double deltatime)
     _space->Draw(model, view, proj, proj * view * model);
   }
   
-  level->Draw(*_camera);
-
   glEnable(GL_DEPTH_TEST);
+  level->Draw(*_camera);
+  glClear(GL_DEPTH_BUFFER_BIT);
   _starfield->Draw(*_camera);
   _scene->Draw(*_camera);
   _score_reel->Draw();
