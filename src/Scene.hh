@@ -50,8 +50,11 @@ public:
   void              Initialize(double difficulty);
 
   const glm::vec2 & GetPlayAreaSize() const;
-  
   ObjectSpaceship * GetPlayer() const;
+
+  void              ClearPlanets();
+  void              AddPlanet(Object * planet);
+  
   ObjectInvader *   AddInvader(const glm::vec3 & position);
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
@@ -66,6 +69,7 @@ private:
   Container<Explosion *>          _explosions;
   on_destroyed_t                  _on_destroyed_callback;
   WormholeWall *                  _wall;
+  std::vector<Object *>           _planets;
 };
 
 

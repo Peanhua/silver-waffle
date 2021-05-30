@@ -23,6 +23,60 @@ Mesh::Mesh(unsigned int options)
 }
 
 
+Mesh::~Mesh()
+{
+  if(_vao != 0)
+    glDeleteVertexArrays(1, &_vao);
+
+  std::vector<GLuint> vbos {
+    _vertex_vbo,
+    _element_vbo,
+    _color_vbo,
+    _texcoord_vbo,
+    _normal_vbo,
+    _generic_vec2_vbo,
+    _generic_vec3_vbo,
+  };
+  for(auto vbo : vbos)
+    if(vbo != 0)
+      glDeleteBuffers(1, &vbo);
+
+  for(auto c : _children)
+    delete c;
+}
+
+
+Mesh::Mesh(const Mesh & other)
+  : _options(other._options),
+    _transform(other._transform),
+    _vao(0),
+    _vertex_vbo(0),
+    _element_vbo(0),
+    _color_vbo(0),
+    _texcoord_vbo(0),
+    _normal_vbo(0),
+    _generic_vec2_vbo(0),
+    _generic_vec3_vbo(0),
+    _primitive_type(other._primitive_type),
+    _vertices(other._vertices),
+    _indices(other._indices),
+    _colors(other._colors),
+    _texcoords(other._texcoords),
+    _normals(other._normals),
+    _generic_vec2s(other._generic_vec2s),
+    _generic_vec3s(other._generic_vec3s),
+    _shader_program(other._shader_program),
+    _texture(other._texture),
+    _bounding_sphere_radius(other._bounding_sphere_radius)
+{
+  for(auto c : other._children)
+    {
+      Mesh * child = new Mesh(*c);
+      _children.push_back(child);
+    }
+}
+
+
 void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program) const
 {
   const glm::mat4 mymvp(mvp * _transform);

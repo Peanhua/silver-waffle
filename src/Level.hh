@@ -1,6 +1,7 @@
 #ifndef LEVEL_HH_
 #define LEVEL_HH_
 
+#include "glm.hh"
 #include <random>
 #include <string>
 #include <vector>
@@ -8,21 +9,21 @@
 class Camera;
 class Image;
 class Mesh;
+class ObjectPlanet;
 class Scene;
 
 
 class Level
 {
 public:
-  Level(Scene * scene, const std::string & planet_texture, double planet_size);
+  Level(Scene * scene, const std::string & planet_texture, double planet_size, const glm::vec2 & planet_ring_radius = glm::vec2(0, 0));
 
-  void SetPlanetRing(float start, float end);
-  
-  void Tick(double deltatime);
-  void Draw(const Camera & camera) const;
+  void   Start();
+  void   Tick(double deltatime);
 
-  void Start();
-  bool IsFinished() const;
+  bool   IsFinished()   const;
+  double GetTotalTime() const;
+  double GetTime()      const;
   
 private:
   class ProgramEntry
@@ -46,13 +47,10 @@ private:
   
   std::mt19937_64 _random_generator;
 
-  Image * _planet_texture;
-  double  _planet_size;
-  Mesh *  _planet;
-  Mesh *  _planet_ring;
-  double  _planet_position_start;
-  double  _planet_position;
-  double  _planet_rotation;
+  double         _planet_size;
+  double         _planet_position_start;
+  ObjectPlanet * _planet;
+  double         _time;
 
   std::vector<ProgramEntry *> _program;
 };

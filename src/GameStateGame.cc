@@ -51,8 +51,7 @@ GameStateGame::GameStateGame()
     _levels.push_back(new Level(_scene, "8k_earth_daymap",     earth_size *  6371.0 / earth_radius));
     _levels.push_back(new Level(_scene, "8k_mars",             earth_size *  3390.0 / earth_radius));
     _levels.push_back(new Level(_scene, "8k_jupiter",          earth_size * 69911.0 / earth_radius));
-    _levels.push_back(new Level(_scene, "8k_saturn",           earth_size * 58232.0 / earth_radius));
-    _levels[5]->SetPlanetRing(0.65f, 1.5f);
+    _levels.push_back(new Level(_scene, "8k_saturn",           earth_size * 58232.0 / earth_radius, glm::vec2(0.65f, 1.50f)));
     _levels.push_back(new Level(_scene, "2k_uranus",           earth_size * 25362.0 / earth_radius));
     _levels.push_back(new Level(_scene, "2k_neptune",          earth_size * 24622.0 / earth_radius));
   }
@@ -125,7 +124,7 @@ GameStateGame::~GameStateGame()
 void GameStateGame::Tick(double deltatime)
 {
   auto level = _levels[_current_level];
-
+  
   _starfield->Tick(deltatime);
   _scene->Tick(deltatime);
   _score_reel->Tick(deltatime);
@@ -154,8 +153,6 @@ void GameStateGame::Tick(double deltatime)
   }
   
   glEnable(GL_DEPTH_TEST);
-  level->Draw(*_camera);
-  glClear(GL_DEPTH_BUFFER_BIT);
   _starfield->Draw(*_camera);
   _scene->Draw(*_camera);
   _score_reel->Draw();

@@ -42,6 +42,11 @@ void Scene::Draw(const Camera & camera) const
   const glm::mat4 & vp         = camera.GetViewProjection();
 
   glEnable(GL_DEPTH_TEST);
+
+  for(auto p : _planets)
+    p->Draw(view, projection, vp);
+  glClear(GL_DEPTH_BUFFER_BIT);
+  
   if(_player->IsAlive())
     _player->Draw(view, projection, vp);
 
@@ -208,6 +213,9 @@ void Scene::Tick(double deltatime)
       e->Tick(deltatime);
 
   _wall->Tick(deltatime);
+
+  for(auto p : _planets)
+    p->Tick(deltatime);
 }
 
 
@@ -283,4 +291,17 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
 const glm::vec2 & Scene::GetPlayAreaSize() const
 {
   return _play_area_size;
+}
+
+
+void Scene::ClearPlanets()
+{
+  _planets.clear();
+}
+
+
+void Scene::AddPlanet(Object * planet)
+{
+  assert(planet);
+  _planets.push_back(planet);
 }

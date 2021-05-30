@@ -58,6 +58,7 @@ stamp-h1
 
 # Generated files
 /Images/*-low.jpg
+/Images/*-low.png
 
 # Other
 .bash_history

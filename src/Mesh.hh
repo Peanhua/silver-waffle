@@ -39,7 +39,12 @@ public:
   
 
   Mesh(unsigned int options);
-
+  ~Mesh();
+  Mesh(const Mesh &);
+  Mesh(Mesh &&)                  = delete; // todo: move constructor
+  Mesh & operator=(const Mesh &) = delete; // todo: copy assignment
+  Mesh & operator=(Mesh &&)      = delete; // todo: move assignment
+  
   bool   LoadFromFile(const std::string & filename);
   void   UpdateGPU();
   void   UpdateGPU(unsigned int update_options, unsigned int first, unsigned int count);
