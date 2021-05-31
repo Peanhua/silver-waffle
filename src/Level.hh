@@ -11,12 +11,13 @@ class Image;
 class Mesh;
 class ObjectPlanet;
 class Scene;
+class SolarSystemObject;
 
 
 class Level
 {
 public:
-  Level(Scene * scene, const std::string & planet_texture, double planet_size, const glm::vec2 & planet_ring_radius = glm::vec2(0, 0));
+  Level(Scene * scene, const SolarSystemObject * planet);
 
   void   Start();
   void   Tick(double deltatime);

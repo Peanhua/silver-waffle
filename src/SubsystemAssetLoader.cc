@@ -2,8 +2,8 @@
 #include "Image.hh"
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
+#include "SolarSystemObject.hh"
 #include <cassert>
-#include <json11.hpp>
 #include <iostream>
 #include <fstream>
 
@@ -79,6 +79,30 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   return sp;
 }
 
+json11::Json * SubsystemAssetLoader::LoadJson(const std::string & filename)
+{
+  auto it = _jsons.find(filename);
+  if(it != _jsons.end())
+    return (*it).second;
+
+  auto json = new json11::Json();
+  std::string json_string = LoadText(filename + ".json");
+  if(json_string.size() > 0)
+    {
+      std::string err;
+      *json = json11::Json::parse(json_string, err);
+      if(!json->is_object())
+        {
+          std::cerr << "Error while parsing '" << filename << ".json': " << err << std::endl;
+          delete json;
+          json = nullptr;
+        }
+    }
+  _jsons[filename] = json;
+
+  return json;
+}
+
 
 Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
 {
@@ -86,23 +110,14 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
   if(it != _meshes.end())
     return (*it).second;
 
-  json11::Json config;
-  const std::string filename("3d-models/" + name + ".json");
-  std::string json_string = LoadText(filename);
-  if(json_string.size() > 0)
-    {
-      std::string err;
-      config = json11::Json::parse(json_string, err);
-      if(!config.is_object())
-        std::cerr << "Error while parsing '" << filename << "': " << err << std::endl;
-    }
-
-  unsigned int mesh_options = Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL;
-  if(config.is_object())
-    if(config["use_texture"].is_bool())
-      if(config["use_texture"].bool_value())
-        mesh_options |= Mesh::OPTION_TEXTURE;
+  auto config = LoadJson("3d-models/" + name);
   
+  unsigned int mesh_options = Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL;
+  if(config)
+    if((*config)["use_texture"].is_bool())
+      if((*config)["use_texture"].bool_value())
+        mesh_options |= Mesh::OPTION_TEXTURE;
+
   auto mesh = new Mesh(mesh_options);
   assert(mesh);
   
@@ -113,23 +128,19 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
       _meshes[name] = mesh;
     }
 
-  if(config.is_object())
+  if(config)
     {
-      if(config["rotate-x"].is_number())
-        {
-          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-x"].number_value())), glm::vec3(1, 0, 0));
-          mesh->ApplyTransform(transform);
-        }
-      if(config["rotate-y"].is_number())
-        {
-          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-y"].number_value())), glm::vec3(0, 1, 0));
-          mesh->ApplyTransform(transform);
-        }
-      if(config["rotate-z"].is_number())
-        {
-          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(config["rotate-z"].number_value())), glm::vec3(0, 0, 1));
-          mesh->ApplyTransform(transform);
-        }
+      auto rotate = [&mesh, &config](const std::string & rotname, const glm::vec3 & axis)
+      {
+        if((*config)[rotname].is_number())
+          {
+            auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians((*config)[rotname].number_value())), axis);
+            mesh->ApplyTransform(transform);
+          }
+      };
+      rotate("rotate-x", glm::vec3(1, 0, 0));
+      rotate("rotate-y", glm::vec3(0, 1, 0));
+      rotate("rotate-z", glm::vec3(0, 0, 1));
     }
   
   return mesh;
@@ -178,3 +189,55 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
   assert(rv);
   return rv;
 }
+
+
+SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(int type, unsigned int index)
+{
+  auto it = _solar_system_objects.find(type);
+  if(it == _solar_system_objects.end())
+    {
+      auto config = LoadJson("Data/SolarSystemObjects");
+      assert(config);
+
+      std::string arrname = "unknown";
+      auto typ = static_cast<SolarSystemObject::Type>(type);
+      switch(typ)
+        {
+        case SolarSystemObject::TYPE_STAR:   arrname = "stars";   break;
+        case SolarSystemObject::TYPE_PLANET: arrname = "planets"; break;
+        }
+      assert((*config)[arrname].is_array());
+      
+      auto objs = new std::vector<SolarSystemObject *>();
+      for(auto data : (*config)[arrname].array_items())
+        {
+          glm::vec2 ring(0, 0);
+          if(data["ring"].is_array())
+            {
+              auto a = data["ring"].array_items();
+              assert(a.size() == 2);
+              ring.x = static_cast<float>(a[0].number_value());
+              ring.y = static_cast<float>(a[1].number_value());
+            }
+          
+          auto obj = new SolarSystemObject(typ,
+                                           data["texture"].string_value(),
+                                           data["radius"].number_value(),
+                                           ring);
+          objs->push_back(obj);
+        }
+      _solar_system_objects[type] = objs;
+
+      it = _solar_system_objects.find(type);
+      if(it == _solar_system_objects.end())
+        return nullptr;
+    }
+
+  auto objs = (*it).second;
+  assert(objs);
+  if(index >= objs->size())
+    return nullptr;
+
+  return objs->at(index);
+}
+

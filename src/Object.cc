@@ -1,6 +1,7 @@
 #include "Object.hh"
+#include "Camera.hh"
 #include "Mesh.hh"
-#include <iostream>
+
 
 Object::Object(Scene * scene)
   : _scene(scene),
@@ -14,6 +15,12 @@ Object::Object(Scene * scene)
 
 Object::~Object()
 {
+}
+
+
+void Object::Draw(const Camera & camera) const
+{
+  Draw(camera.GetView(), camera.GetProjection(), camera.GetViewProjection());
 }
 
 

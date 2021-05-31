@@ -3,21 +3,21 @@
 #include "ObjectPlanet.hh"
 #include "Mesh.hh"
 #include "Scene.hh"
+#include "SolarSystemObject.hh"
 #include "SubsystemAssetLoader.hh"
 #include <cassert>
 
 
 
-Level::Level(Scene * scene, const std::string & planet_texture, double planet_size, const glm::vec2 & planet_ring_radius)
+Level::Level(Scene * scene, const SolarSystemObject * planet)
   : _scene(scene),
     _random_generator(0),
-    _planet_size(planet_size),
-    _planet_position_start(200.0 + planet_size * 9.0),
     _time(0)
 {
-  _planet = new ObjectPlanet(scene, AssetLoader->LoadImage(planet_texture), planet_size);
-  if(planet_ring_radius.y > 0.0f && planet_ring_radius.x < planet_ring_radius.y)
-    _planet->AddPlanetRing(planet_ring_radius.x, planet_ring_radius.y);
+  const auto scale = 100.0;
+  _planet = static_cast<ObjectPlanet *>(planet->CreateSceneObject(scene, scale));
+  _planet_size = planet->GetRelativeSize() * scale;
+  _planet_position_start = 200.0 + _planet_size * 9.0;
   
   
   auto end_of_time = _planet_position_start - 2.0 * (10 + 53.0); // 2.0 is the speed of an invader, 53 is distance from invader spawn to player, 10 extra

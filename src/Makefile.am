@@ -40,6 +40,7 @@ silverwaffle_SOURCES =				\
 	ScoreReel.cc				\
 	Shader.cc				\
 	ShaderProgram.cc			\
+	SolarSystemObject.cc			\
 	SpaceParticles.cc			\
 	Subsystem.cc				\
 	SubsystemAssetLoader.cc			\

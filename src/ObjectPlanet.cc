@@ -13,6 +13,9 @@ ObjectPlanet::ObjectPlanet(Scene * scene, Image * planet_texture, double planet_
   planet->SetTexture(planet_texture, true);
   planet->UpdateGPU();
   SetMesh(planet);
+  auto f = AssetLoader->LoadImage("White");
+  assert(f);
+  assert(f != planet->GetTexture());
 }
 
 

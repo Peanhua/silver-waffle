@@ -1,8 +1,5 @@
 imagesdir = $(pkgdatadir)/Images
 
-2k_mars-low.jpg : 2k_mars.jpg
-	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
-
 2k_neptune-low.jpg : 2k_neptune.jpg
 	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
 
@@ -33,9 +30,10 @@ imagesdir = $(pkgdatadir)/Images
 8k_saturn_ring_alpha-low.png : 8k_saturn_ring_alpha.png
 	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
 
+8k_sun-low.jpg: 8k_sun.jpg
+	$(AM_V_GEN) $(CONVERT) $< -scale 10% $@
+
 images_DATA = \
-	2k_mars.jpg			\
-	2k_mars-low.jpg			\
 	2k_neptune.jpg			\
 	2k_neptune-low.jpg		\
 	2k_uranus.jpg			\
@@ -55,10 +53,11 @@ images_DATA = \
 	8k_saturn_ring_alpha.png	\
 	8k_saturn_ring_alpha-low.png	\
 	8k_stars_milky_way.jpg		\
-	8k_stars_milky_way-low.jpg
+	8k_stars_milky_way-low.jpg	\
+	8k_sun.jpg			\
+	8k_sun-low.jpg
 
 CLEANFILES = \
-	2k_mars-low.jpg			\
 	2k_neptune-low.jpg		\
 	2k_uranus-low.jpg		\
 	4k_venus_atmosphere-low.jpg	\
@@ -68,10 +67,10 @@ CLEANFILES = \
 	8k_mercury-low.jpg		\
 	8k_saturn-low.jpg		\
 	8k_saturn_ring_alpha-low.png	\
-	8k_stars_milky_way-low.jpg
+	8k_stars_milky_way-low.jpg	\
+	8k_sun-low.jpg
 
 EXTRA_DIST = \
-	2k_mars.jpg			\
 	2k_neptune.jpg			\
 	2k_uranus.jpg			\
 	4k_venus_atmosphere.jpg		\
@@ -81,4 +80,5 @@ EXTRA_DIST = \
 	8k_mercury.jpg			\
 	8k_saturn.jpg			\
 	8k_saturn_ring_alpha.png	\
-	8k_stars_milky_way.jpg
+	8k_stars_milky_way.jpg		\
+	8k_sun.jpg

@@ -2,7 +2,10 @@
 #include "Camera.hh"
 #include "GameStateGame.hh"
 #include "Milkyway.hh"
+#include "Object.hh"
+#include "SolarSystemObject.hh"
 #include "SpaceParticles.hh"
+#include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "Widget.hh"
 #include <iostream>
@@ -10,9 +13,7 @@
 
 
 GameStateTitle::GameStateTitle()
-  : GameState(),
-    _particles_cameramovement_timer(0.0),
-    _particles_vertical_cameramovement(180.0f)
+  : GameState()
 {
   _milkyway = new Milkyway();
 
@@ -20,9 +21,39 @@ GameStateTitle::GameStateTitle()
 
   _camera = new Camera();
   _camera->SetFOV(90.0);
-  _camera->SetClippingPlanes(0.001, 300.0);
+  _camera->SetClippingPlanes(0.001, 1300.0);
   _camera->UpdateProjection();
+  _camera->SetPosition(glm::vec3(0.0f, -20.0f, 0.0f));
 
+
+  auto startdist = 70.0;
+  auto z = -11.0f;
+  auto distance = 0.0;
+  {
+    auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::TYPE_STAR, 0);
+    assert(sobj);
+    _planets.push_back(sobj->CreateSceneObject(nullptr, 0.2));
+    _planets[_planets.size() - 1]->SetPosition(glm::vec3(distance, startdist, z));
+    distance += sobj->GetRelativeSize() * 0.2;
+  }
+  {
+    bool done = false;
+    for(unsigned int i = 0; !done; i++)
+      {
+        auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::TYPE_PLANET, i);
+        if(sobj)
+          {
+            distance += sobj->GetRelativeSize() * 1.1;
+            _planets.push_back(sobj->CreateSceneObject(nullptr, 1.0));
+            _planets[_planets.size() - 1]->SetPosition(glm::vec3(distance, startdist, z));
+            distance += sobj->GetRelativeSize() * 1.1;
+          }
+        else
+          done = true;
+      }
+  }
+
+  
   const double width = Settings->GetInt("screen_width");
   const double height = Settings->GetInt("screen_height");
 
@@ -54,37 +85,19 @@ GameStateTitle::GameStateTitle()
 
 void GameStateTitle::Tick(double deltatime)
 {
-  const auto cammove_start = 30.0;
-  const auto cammove_rise = 60.0;
-  const auto cammove_magnitude = 4.0;
-  
-  _particles_cameramovement_timer += deltatime;
-
-  auto t = _particles_cameramovement_timer - cammove_start;
-  if(t > 0.0)
-    {
-      auto amount = 120.0 * deltatime;
-      if(t < cammove_rise)
-        amount *= t / cammove_rise;
-      
-      _particles_vertical_cameramovement += static_cast<float>(amount);
-      
-      if(_particles_vertical_cameramovement > 360.0f)
-        _particles_vertical_cameramovement -= 360.0f;
-    }
 
   _particles->Tick(deltatime);
-  _camera->SetPosition(glm::vec3(0.0f,
-                                 -20.0f,
-                                 static_cast<float>(cammove_magnitude) * std::sin(glm::radians(_particles_vertical_cameramovement))));
 
   
   glDisable(GL_DEPTH_TEST);
   _milkyway->Draw(*_camera);
   
   glEnable(GL_DEPTH_TEST);
-
   _camera->UpdateView();
+
+  for(auto planet : _planets)
+    planet->Draw(*_camera);
+
   _particles->Draw(*_camera);
   
   GameState::Tick(deltatime);

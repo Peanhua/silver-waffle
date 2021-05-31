@@ -2,9 +2,11 @@
 #define GAME_STATE_TITLE_HH_
 
 #include "GameState.hh"
+#include <vector>
 
 class Camera;
 class Milkyway;
+class Object;
 class SpaceParticles;
 
 
@@ -18,9 +20,8 @@ public:
 private:
   Milkyway *       _milkyway;
   SpaceParticles * _particles;
-  double           _particles_cameramovement_timer;
-  float            _particles_vertical_cameramovement;
   Camera *         _camera;
+  std::vector<Object *> _planets;
 };
 
 #endif

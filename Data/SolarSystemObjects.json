@@ -1,0 +1,52 @@
+{
+  "stars": [
+    {
+      "name":    "Sun",
+      "texture": "8k_sun",
+      "radius":  695000.0
+    }
+  ],
+  "planets": [
+    {
+      "name":    "Mercury",
+      "texture": "8k_mercury",
+      "radius":    2440.0
+    },
+    {
+      "name":    "Venus",
+      "texture": "4k_venus_atmosphere",
+      "radius":    6052.0
+    },
+    {
+      "name":    "Earth",
+      "texture": "8k_earth_daymap",
+      "radius":    6371.0
+    },
+    {
+      "name":    "Mars",
+      "texture": "8k_mars",
+      "radius":    3390.0
+    },
+    {
+      "name":    "Jupiter",
+      "texture": "8k_jupiter",
+      "radius":   69911.0
+    },
+    {
+      "name":    "Saturn",
+      "texture": "8k_saturn",
+      "radius":   58232.0,
+      "ring":    [ 0.65, 1.50 ]
+    },
+    {
+      "name":    "Uranus",
+      "texture": "2k_uranus",
+      "radius":   25362.0
+    },
+    {
+      "name":    "Neptune",
+      "texture": "2k_neptune",
+      "radius":   24622.0
+    }
+  ]
+}
