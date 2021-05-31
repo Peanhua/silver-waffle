@@ -4,6 +4,7 @@
 #include "GameState.hh"
 
 class Camera;
+class Milkyway;
 class SpaceParticles;
 
 
@@ -15,10 +16,11 @@ public:
   void Tick(double deltatime) override;
   
 private:
+  Milkyway *       _milkyway;
   SpaceParticles * _particles;
   double           _particles_cameramovement_timer;
   float            _particles_vertical_cameramovement;
-  Camera *         _particles_camera;
+  Camera *         _camera;
 };
 
 #endif

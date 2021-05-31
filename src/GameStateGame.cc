@@ -2,12 +2,12 @@
 #include "Camera.hh"
 #include "Level.hh"
 #include "Mesh.hh"
+#include "Milkyway.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScoreReel.hh"
 #include "SpaceParticles.hh"
-#include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "WidgetPlayerShip.hh"
 #include "WidgetSpaceshipStatus.hh"
@@ -98,37 +98,7 @@ GameStateGame::GameStateGame()
     
   _particles = new SpaceParticles(5.0, 50.0, 0);
 
-  {
-    _space = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
-    _space->SetTexture(AssetLoader->LoadImage("8k_stars_milky_way"));
-    _space->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
-
-    std::vector<glm::vec3> vertices {
-      glm::vec3( 1,  1, 0), 
-      glm::vec3( 1, -1, 0), 
-      glm::vec3(-1, -1, 0),
-      glm::vec3(-1,  1, 0),
-    };
-    std::vector<glm::vec2> texcoords {
-      glm::vec2(1, 1),
-      glm::vec2(1, 0),
-      glm::vec2(0, 0),
-      glm::vec2(0, 1) 
-    };
-    std::vector<unsigned int> indices {
-      0, 3, 1,
-      1, 3, 2
-    };
-    
-    for(auto v : vertices)
-      _space->AddVertex(v);
-    for(auto tc : texcoords)
-      _space->AddTexCoord(tc);
-    for(auto i : indices)
-      _space->AddElement(i);
-    
-    _space->UpdateGPU();    
-  }
+  _milkyway = new Milkyway();
 
   OnLevelChanged();
 }
@@ -161,16 +131,8 @@ void GameStateGame::Tick(double deltatime)
         Quit();
     }
 
-  {
-    glDisable(GL_DEPTH_TEST);
-    glm::mat4 model(1);
-    model = glm::translate(model, glm::vec3(0, 0, 0.5));
-    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
-    model = glm::scale(model, glm::vec3(4, 2, 2));
-    glm::mat4 proj = _camera->GetProjection();
-    glm::mat4 view = glm::lookAt(glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
-    _space->Draw(model, view, proj, proj * view * model);
-  }
+  glDisable(GL_DEPTH_TEST);
+  _milkyway->Draw(*_camera);
   
   glEnable(GL_DEPTH_TEST);
   _particles->Draw(*_camera);

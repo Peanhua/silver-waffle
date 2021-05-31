@@ -1,6 +1,7 @@
 #include "GameStateTitle.hh"
 #include "Camera.hh"
 #include "GameStateGame.hh"
+#include "Milkyway.hh"
 #include "SpaceParticles.hh"
 #include "SubsystemSettings.hh"
 #include "Widget.hh"
@@ -13,12 +14,14 @@ GameStateTitle::GameStateTitle()
     _particles_cameramovement_timer(0.0),
     _particles_vertical_cameramovement(180.0f)
 {
+  _milkyway = new Milkyway();
+
   _particles = new SpaceParticles(15.0, 90.0, 0);
 
-  _particles_camera = new Camera();
-  _particles_camera->SetFOV(90.0);
-  _particles_camera->SetClippingPlanes(0.001, 300.0);
-  _particles_camera->UpdateProjection();
+  _camera = new Camera();
+  _camera->SetFOV(90.0);
+  _camera->SetClippingPlanes(0.001, 300.0);
+  _camera->UpdateProjection();
 
   const double width = Settings->GetInt("screen_width");
   const double height = Settings->GetInt("screen_height");
@@ -69,15 +72,20 @@ void GameStateTitle::Tick(double deltatime)
       if(_particles_vertical_cameramovement > 360.0f)
         _particles_vertical_cameramovement -= 360.0f;
     }
+
+  _particles->Tick(deltatime);
+  _camera->SetPosition(glm::vec3(0.0f,
+                                 -20.0f,
+                                 static_cast<float>(cammove_magnitude) * std::sin(glm::radians(_particles_vertical_cameramovement))));
+
+  
+  glDisable(GL_DEPTH_TEST);
+  _milkyway->Draw(*_camera);
   
   glEnable(GL_DEPTH_TEST);
-  _particles->Tick(deltatime);
 
-  _particles_camera->SetPosition(glm::vec3(0.0f,
-                                         -20.0f,
-                                         static_cast<float>(cammove_magnitude) * std::sin(glm::radians(_particles_vertical_cameramovement))));
-  _particles_camera->UpdateView();
-  _particles->Draw(*_particles_camera);
+  _camera->UpdateView();
+  _particles->Draw(*_camera);
   
   GameState::Tick(deltatime);
 }

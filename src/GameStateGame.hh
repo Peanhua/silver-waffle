@@ -9,6 +9,7 @@ class Camera;
 class Image;
 class Level;
 class Mesh;
+class Milkyway;
 class Scene;
 class ScoreReel;
 class SpaceParticles;
@@ -32,7 +33,7 @@ private:
   Scene *     _scene;
   ScoreReel * _score_reel;
   SpaceParticles * _particles;
-  Mesh *      _space;
+  Milkyway *       _milkyway;
   std::vector<Level *> _levels;
   unsigned int         _current_level;
   
