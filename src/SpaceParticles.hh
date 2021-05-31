@@ -1,5 +1,5 @@
-#ifndef STARFIELD_HH_
-#define STARFIELD_HH_
+#ifndef SPACE_PARTICLES_HH_
+#define SPACE_PARTICLES_HH_
 
 #include "glm.hh"
 #include <random>
@@ -8,10 +8,10 @@ class Camera;
 class Mesh;
 
 
-class Starfield
+class SpaceParticles
 {
 public:
-  Starfield(double radius_min, double radius_max, unsigned long random_seed);
+  SpaceParticles(double radius_min, double radius_max, unsigned long random_seed);
 
   void Tick(double deltatime);
   void Draw(const Camera & camera) const;

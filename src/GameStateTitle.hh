@@ -4,7 +4,7 @@
 #include "GameState.hh"
 
 class Camera;
-class Starfield;
+class SpaceParticles;
 
 
 class GameStateTitle : public GameState
@@ -15,10 +15,10 @@ public:
   void Tick(double deltatime) override;
   
 private:
-  Starfield * _starfield;
-  double      _starfield_cameramovement_timer;
-  float       _starfield_vertical_cameramovement;
-  Camera *    _starfield_camera;
+  SpaceParticles * _particles;
+  double           _particles_cameramovement_timer;
+  float            _particles_vertical_cameramovement;
+  Camera *         _particles_camera;
 };
 
 #endif

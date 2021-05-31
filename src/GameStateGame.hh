@@ -11,7 +11,7 @@ class Level;
 class Mesh;
 class Scene;
 class ScoreReel;
-class Starfield;
+class SpaceParticles;
 class WidgetPlayerShip;
 
 
@@ -31,7 +31,7 @@ private:
   Camera *    _camera;
   Scene *     _scene;
   ScoreReel * _score_reel;
-  Starfield * _starfield;
+  SpaceParticles * _particles;
   Mesh *      _space;
   std::vector<Level *> _levels;
   unsigned int         _current_level;

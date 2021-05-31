@@ -6,7 +6,7 @@
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScoreReel.hh"
-#include "Starfield.hh"
+#include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "WidgetPlayerShip.hh"
@@ -96,7 +96,7 @@ GameStateGame::GameStateGame()
     w->SetSpaceship(_scene->GetPlayer());
   }
     
-  _starfield = new Starfield(5.0, 50.0, 0);
+  _particles = new SpaceParticles(5.0, 50.0, 0);
 
   {
     _space = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
@@ -145,7 +145,7 @@ void GameStateGame::Tick(double deltatime)
 {
   auto level = _levels[_current_level];
   
-  _starfield->Tick(deltatime);
+  _particles->Tick(deltatime);
   _scene->Tick(deltatime);
   _score_reel->Tick(deltatime);
   level->Tick(deltatime);
@@ -173,7 +173,7 @@ void GameStateGame::Tick(double deltatime)
   }
   
   glEnable(GL_DEPTH_TEST);
-  _starfield->Draw(*_camera);
+  _particles->Draw(*_camera);
   _scene->Draw(*_camera);
   _score_reel->Draw();
   

@@ -1,7 +1,7 @@
 #include "GameStateTitle.hh"
 #include "Camera.hh"
 #include "GameStateGame.hh"
-#include "Starfield.hh"
+#include "SpaceParticles.hh"
 #include "SubsystemSettings.hh"
 #include "Widget.hh"
 #include <iostream>
@@ -10,15 +10,15 @@
 
 GameStateTitle::GameStateTitle()
   : GameState(),
-    _starfield_cameramovement_timer(0.0),
-    _starfield_vertical_cameramovement(180.0f)
+    _particles_cameramovement_timer(0.0),
+    _particles_vertical_cameramovement(180.0f)
 {
-  _starfield = new Starfield(15.0, 90.0, 0);
+  _particles = new SpaceParticles(15.0, 90.0, 0);
 
-  _starfield_camera = new Camera();
-  _starfield_camera->SetFOV(90.0);
-  _starfield_camera->SetClippingPlanes(0.001, 300.0);
-  _starfield_camera->UpdateProjection();
+  _particles_camera = new Camera();
+  _particles_camera->SetFOV(90.0);
+  _particles_camera->SetClippingPlanes(0.001, 300.0);
+  _particles_camera->UpdateProjection();
 
   const double width = Settings->GetInt("screen_width");
   const double height = Settings->GetInt("screen_height");
@@ -55,29 +55,29 @@ void GameStateTitle::Tick(double deltatime)
   const auto cammove_rise = 60.0;
   const auto cammove_magnitude = 4.0;
   
-  _starfield_cameramovement_timer += deltatime;
+  _particles_cameramovement_timer += deltatime;
 
-  auto t = _starfield_cameramovement_timer - cammove_start;
+  auto t = _particles_cameramovement_timer - cammove_start;
   if(t > 0.0)
     {
       auto amount = 120.0 * deltatime;
       if(t < cammove_rise)
         amount *= t / cammove_rise;
       
-      _starfield_vertical_cameramovement += static_cast<float>(amount);
+      _particles_vertical_cameramovement += static_cast<float>(amount);
       
-      if(_starfield_vertical_cameramovement > 360.0f)
-        _starfield_vertical_cameramovement -= 360.0f;
+      if(_particles_vertical_cameramovement > 360.0f)
+        _particles_vertical_cameramovement -= 360.0f;
     }
   
   glEnable(GL_DEPTH_TEST);
-  _starfield->Tick(deltatime);
+  _particles->Tick(deltatime);
 
-  _starfield_camera->SetPosition(glm::vec3(0.0f,
+  _particles_camera->SetPosition(glm::vec3(0.0f,
                                          -20.0f,
-                                         static_cast<float>(cammove_magnitude) * std::sin(glm::radians(_starfield_vertical_cameramovement))));
-  _starfield_camera->UpdateView();
-  _starfield->Draw(*_starfield_camera);
+                                         static_cast<float>(cammove_magnitude) * std::sin(glm::radians(_particles_vertical_cameramovement))));
+  _particles_camera->UpdateView();
+  _particles->Draw(*_particles_camera);
   
   GameState::Tick(deltatime);
 }

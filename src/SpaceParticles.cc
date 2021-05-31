@@ -1,11 +1,11 @@
-#include "Starfield.hh"
+#include "SpaceParticles.hh"
 #include "Camera.hh"
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 
 
-Starfield::Starfield(double radius_min, double radius_max, unsigned long random_seed)
+SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned long random_seed)
   : _radius_min(radius_min),
     _radius_max(radius_max),
     _time(0),
@@ -35,13 +35,13 @@ Starfield::Starfield(double radius_min, double radius_max, unsigned long random_
 }
 
 
-double Starfield::GetRandom(double min)
+double SpaceParticles::GetRandom(double min)
 {
   return min + (1.0 - min) * _rdist(_random);
 }
 
 
-void Starfield::Tick(double deltatime)
+void SpaceParticles::Tick(double deltatime)
 {
   _time += deltatime;
 
@@ -68,7 +68,7 @@ void Starfield::Tick(double deltatime)
 }
 
 
-void Starfield::ResetStar(unsigned int index)
+void SpaceParticles::ResetStar(unsigned int index)
 {
   double angle = GetRandom() * glm::radians(360.0);
   auto pos = glm::vec3(_radius_min + GetRandom() * (_radius_max - _radius_min),
@@ -82,7 +82,7 @@ void Starfield::ResetStar(unsigned int index)
 }
 
 
-void Starfield::Draw(const Camera & camera) const
+void SpaceParticles::Draw(const Camera & camera) const
 {
   const glm::mat4 & view       = camera.GetView();
   const glm::mat4 & projection = camera.GetProjection();
