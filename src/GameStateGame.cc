@@ -48,8 +48,28 @@ GameStateGame::GameStateGame()
       {
         _score_reel->SetScore(_score_reel->GetScore() + 1);
 
-        if(_rdist(_random) < 0.05f)
-          _scene->AddCollectible(target->GetPosition(), glm::vec3(0, -1, 0));
+        // todo: Generate collectible meshes in asset loader.
+        auto r = _rdist(_random);
+        if(r < 0.05f)
+          {
+            auto score = 5.0f + _rdist(_random) * 5.0f;
+            auto coll = new ObjectCollectible(_scene);
+            coll->SetMesh(AssetLoader->LoadMesh("ScoreBonus"));
+            coll->SetBonus(ObjectCollectible::TYPE_SCORE_BONUS, score);
+            // todo: Add random rotation 
+            //auto rotangle = glm::normalize(glm::vec3(rand(), rand(), rand()));
+            //coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(rand()) * 10.0);
+            _scene->AddCollectible(coll, target->GetPosition(), glm::vec3(0, -1, 0));
+          }
+        else if(r < 0.075f)
+          {
+            auto coll = new ObjectCollectible(_scene);
+            coll->SetMesh(AssetLoader->LoadMesh("BonusCylinder"));
+            coll->GetMesh()->UpdateGPU();
+            //coll->GetMesh()->SetTexture(AssetLoader->LoadImage("BonusIcon-2xDamage"), true);
+            coll->SetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER, 2.0);
+            _scene->AddCollectible(coll, target->GetPosition(), glm::vec3(0, -1, 0));
+          }
       }
     else if(target == _scene->GetPlayer())
       OnPlayerDies();
@@ -57,9 +77,12 @@ GameStateGame::GameStateGame()
 
   _scene->SetOnCollectibleCollected([this](ObjectCollectible * collectible)
   {
-    _score_reel->SetScore(_score_reel->GetScore() + collectible->GetScoreBonus());
+    if(collectible->HasBonus(ObjectCollectible::TYPE_SCORE_BONUS))
+      _score_reel->SetScore(_score_reel->GetScore() + static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_BONUS)));
+    if(collectible->HasBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER))
+      _scene->GetPlayer()->ActivateBonusDamageMultiplier(collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER), 30.0);
   });
-
+  
   {
     bool done = false;
     for(unsigned int i = 0; !done; i++)

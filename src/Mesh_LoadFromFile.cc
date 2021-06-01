@@ -36,10 +36,6 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
   
   bool success = true;
 
-  if(_options & OPTION_TEXTURE)
-    SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
-  else
-    SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
   _name = node->mName.C_Str();
  
   for(unsigned int mi = 0; mi < node->mNumMeshes; mi++)
@@ -59,12 +55,13 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
           diffuse_color.a = tmpcolor.a;
         }
 
-      if(_options & OPTION_TEXTURE)
+      if(material->GetTextureCount(aiTextureType_DIFFUSE) == 1)
         {
           assert(mesh->GetNumUVChannels() == 1);
           assert(mesh->mNumUVComponents[0] == 2);
           assert(mesh->HasTextureCoords(0));
-          assert(material->GetTextureCount(aiTextureType_DIFFUSE) == 1);
+          _options |= OPTION_TEXTURE;
+          
           aiString path;
           auto x = material->GetTexture(aiTextureType_DIFFUSE, 0, &path);
           assert(x == aiReturn_SUCCESS);
@@ -109,6 +106,12 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
         }
     }
 
+  if(_options & OPTION_TEXTURE)
+    SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
+  else
+    SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
+
+  
   for(unsigned int i = 0; success && i < node->mNumChildren; i++)
     {
       auto childnode = node->mChildren[i];

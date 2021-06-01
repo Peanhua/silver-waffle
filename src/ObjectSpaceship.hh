@@ -8,7 +8,7 @@
 class ObjectSpaceship : public ObjectMovable
 {
 public:
-  using ObjectMovable::ObjectMovable;
+  ObjectSpaceship(Scene * scene);
 
   void Tick(double deltatime) override;
 
@@ -19,6 +19,8 @@ public:
   void   SetWeaponAutofire(unsigned int weapon_id, bool enabled);
   double GetWeaponHeat(unsigned int weapon_id) const;
   void   SetEnginePower(unsigned int engine_id, double throttle);
+
+  void ActivateBonusDamageMultiplier(double multiplier, double time);
 
 private:
   class Engine
@@ -45,6 +47,8 @@ private:
   
   std::vector<Engine *> _engines;
   std::vector<Weapon *> _weapons;
+  double _bonus_damage_multiplier;
+  double _bonus_damage_timer;
 };
 
 #endif

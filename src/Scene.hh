@@ -60,7 +60,7 @@ public:
   ObjectInvader *   AddInvader(const glm::vec3 & position);
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
-  ObjectCollectible * AddCollectible(const glm::vec3 & position, const glm::vec3 & velocity);
+  bool              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity);
   void              SetOnDestroyed(on_destroyed_t callback);
   void              SetOnCollectibleCollected(on_collectible_collected_t callback);
   

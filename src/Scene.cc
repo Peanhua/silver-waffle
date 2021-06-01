@@ -325,28 +325,20 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
 }
 
 
-ObjectCollectible * Scene::AddCollectible(const glm::vec3 & position, const glm::vec3 & velocity)
+bool Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity)
 {
   auto ind = _collectibles.GetNextFreeIndex();
   if(ind >= _collectibles.size())
-    return nullptr;
+    return false;
 
-  auto rand = [this]()
-  {
-    return (static_cast<float>(_random_generator()) - static_cast<float>(_random_generator.min())) / static_cast<float>(_random_generator.max());
-  };
-
-  auto score = 5.0f + rand() * 5.0f;
-  auto coll = new ObjectCollectible(this, static_cast<unsigned int>(score));
-  coll->SetPosition(position);
-  coll->AddImpulse(velocity);
-  auto rotangle = glm::normalize(glm::vec3(rand(), rand(), rand()));
-  coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(rand()) * 10.0);
+  collectible->SetPosition(position);
+  collectible->AddImpulse(velocity);
+  collectible->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0)), 1.0f);
 
   delete _collectibles[ind];
-  _collectibles[ind] = coll;
+  _collectibles[ind] = collectible;
 
-  return coll;
+  return true;
 }
 
 

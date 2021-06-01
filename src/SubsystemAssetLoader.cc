@@ -112,13 +112,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
 
   auto config = LoadJson("3d-models/" + name);
   
-  unsigned int mesh_options = Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL;
-  if(config)
-    if((*config)["use_texture"].is_bool())
-      if((*config)["use_texture"].bool_value())
-        mesh_options |= Mesh::OPTION_TEXTURE;
-
-  auto mesh = new Mesh(mesh_options);
+  auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL);
   assert(mesh);
   
   if(mesh->LoadFromFile("3d-models/" + name + ".dae"))

@@ -2,16 +2,26 @@
 #define OBJECT_COLLECTIBLE_HH_
 
 #include "ObjectMovable.hh"
+#include <map>
+
 
 class ObjectCollectible : public ObjectMovable
 {
 public:
-  ObjectCollectible(Scene * scene, unsigned int score_bonus);
+  enum Type
+    {
+      TYPE_SCORE_BONUS,
+      TYPE_DAMAGE_MULTIPLIER
+    };
+  
+  ObjectCollectible(Scene * scene);
 
-  unsigned int GetScoreBonus() const;
+  void   SetBonus(Type type, double amount);
+  bool   HasBonus(Type type) const;
+  double GetBonus(Type type) const;
   
 private:
-  unsigned int _score_bonus;
+  std::map<Type, double> _bonuses;
 };
 
 #endif

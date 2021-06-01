@@ -1,6 +1,15 @@
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 
+
+ObjectSpaceship::ObjectSpaceship(Scene * scene)
+  : ObjectMovable(scene),
+    _bonus_damage_multiplier(1),
+    _bonus_damage_timer(0)
+{
+}
+
+
 void ObjectSpaceship::Tick(double deltatime)
 {
   ObjectMovable::Tick(deltatime);
@@ -33,6 +42,9 @@ void ObjectSpaceship::Tick(double deltatime)
       
       weapon->_heat = std::max(0.0, weapon->_heat - 0.1 * deltatime);
     }
+
+  if(_bonus_damage_timer > 0.0)
+    _bonus_damage_timer -= deltatime;
 }
 
 
@@ -68,10 +80,14 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
   if(weapon->_heat > 1.0)
     return false;
 
+  auto damage = weapon->_projectile_damage;
+  if(_bonus_damage_timer > 0.0)
+    damage *= _bonus_damage_multiplier;
+  
   _scene->AddProjectile(this,
                         GetPosition() + weapon->_location,
                         GetVelocity() * 0.5f + weapon->_projectile_direction * static_cast<float>(weapon->_projectile_initial_velocity),
-                        weapon->_projectile_damage,
+                        damage,
                         10.0);
   weapon->_heat += 0.03;
   return true;
@@ -98,5 +114,12 @@ void ObjectSpaceship::SetEnginePower(unsigned int engine_id, double throttle)
 {
   assert(engine_id < _engines.size());
   _engines[engine_id]->_throttle = throttle;
+}
+
+
+void ObjectSpaceship::ActivateBonusDamageMultiplier(double multiplier, double time)
+{
+  _bonus_damage_multiplier = multiplier;
+  _bonus_damage_timer = time;
 }
 
