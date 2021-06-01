@@ -15,9 +15,10 @@ public:
   unsigned int AddEngine(const glm::vec3 & thrust_direction, double power);
   unsigned int AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
   
-  bool FireWeapon(unsigned int weapon_id);
+  bool   FireWeapon(unsigned int weapon_id);
+  void   SetWeaponAutofire(unsigned int weapon_id, bool enabled);
   double GetWeaponHeat(unsigned int weapon_id) const;
-  void SetEnginePower(unsigned int engine_id, double throttle);
+  void   SetEnginePower(unsigned int engine_id, double throttle);
 
 private:
   class Engine
@@ -33,6 +34,7 @@ private:
   {
   public:
     glm::vec3 _location;
+    bool      _autofire;
     double    _heat;
     Mesh *    _projectile;
     glm::vec3 _projectile_direction;

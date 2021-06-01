@@ -2,7 +2,7 @@
 #include "Camera.hh"
 #include "GameStateGame.hh"
 #include "Milkyway.hh"
-#include "Object.hh"
+#include "ObjectMovable.hh"
 #include "SolarSystemObject.hh"
 #include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
@@ -34,6 +34,7 @@ GameStateTitle::GameStateTitle()
     assert(sobj);
     _planets.push_back(sobj->CreateSceneObject(nullptr, 0.2));
     _planets[_planets.size() - 1]->SetPosition(glm::vec3(distance, startdist, z));
+    static_cast<ObjectMovable *>(_planets[_planets.size() - 1])->SetAngularVelocity(glm::angleAxis(glm::radians(1.5f), glm::vec3(0, 0, 1)), 1.5);
     distance += sobj->GetRelativeSize() * 0.2;
   }
   {
@@ -46,6 +47,7 @@ GameStateTitle::GameStateTitle()
             distance += sobj->GetRelativeSize() * 1.1;
             _planets.push_back(sobj->CreateSceneObject(nullptr, 1.0));
             _planets[_planets.size() - 1]->SetPosition(glm::vec3(distance, startdist, z));
+            static_cast<ObjectMovable *>(_planets[_planets.size() - 1])->SetAngularVelocity(glm::angleAxis(glm::radians(1.5f), glm::vec3(0, 0, 1)), 10.0);
             distance += sobj->GetRelativeSize() * 1.1;
           }
         else
@@ -88,6 +90,9 @@ void GameStateTitle::Tick(double deltatime)
 
   _particles->Tick(deltatime);
 
+  for(auto planet : _planets)
+    planet->Tick(deltatime);
+    
   
   glDisable(GL_DEPTH_TEST);
   _milkyway->Draw(*_camera);

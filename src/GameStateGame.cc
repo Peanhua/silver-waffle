@@ -175,7 +175,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       break;
 
     case SDLK_SPACE:
-      _scene->GetPlayer()->FireWeapon(0);
+      _scene->GetPlayer()->SetWeaponAutofire(0, pressed);
       break;
 #endif
       
