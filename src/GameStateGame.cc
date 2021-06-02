@@ -22,6 +22,7 @@ GameStateGame::GameStateGame()
     _random(0),
     _rdist(0, 1),
     _current_level(0),
+    _score_multiplier_timer(0),
     _lives(3)
 {
 #if 1
@@ -46,7 +47,12 @@ GameStateGame::GameStateGame()
   {
     if(destroyer == _scene->GetPlayer() && target != _scene->GetPlayer())
       {
-        _score_reel->SetScore(_score_reel->GetScore() + 1);
+        {
+          unsigned int score = 1;
+          if(_score_multiplier_timer > 0.0)
+            score *= _score_multiplier;
+          _score_reel->SetScore(_score_reel->GetScore() + score);
+        }
 
         ObjectCollectible::Type bonustype = ObjectCollectible::TYPE_NONE;
         double bonus;
@@ -62,6 +68,11 @@ GameStateGame::GameStateGame()
         else if(r < 0.15f)
           {
             bonustype = ObjectCollectible::TYPE_DAMAGE_MULTIPLIER;
+            bonus = 2.0;
+          }
+        else if(r < 0.30f)
+          {
+            bonustype = ObjectCollectible::TYPE_SCORE_MULTIPLIER;
             bonus = 2.0;
           }
 
@@ -88,9 +99,16 @@ GameStateGame::GameStateGame()
   _scene->SetOnCollectibleCollected([this](ObjectCollectible * collectible)
   {
     if(collectible->HasBonus(ObjectCollectible::TYPE_SCORE_BONUS))
-      _score_reel->SetScore(_score_reel->GetScore() + static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_BONUS)));
+      {
+        auto score = static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_BONUS));
+        if(_score_multiplier_timer > 0.0)
+          score *= _score_multiplier;
+        _score_reel->SetScore(_score_reel->GetScore() + score);
+      }
     if(collectible->HasBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER))
       _scene->GetPlayer()->ActivateBonusDamageMultiplier(collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER), 30.0);
+    _score_multiplier = static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_MULTIPLIER));
+    _score_multiplier_timer = 30.0;
   });
   
   {
@@ -133,7 +151,8 @@ GameStateGame::GameStateGame()
     std::vector<std::string> imagenames
       {
         "",
-        "BonusIcon-2xDamage"
+        "BonusIcon-2xDamage",
+        "BonusIcon-2xScore",
       };
     unsigned int x = 10;
     for(auto imagename : imagenames)
@@ -173,6 +192,8 @@ void GameStateGame::Tick(double deltatime)
   _scene->Tick(deltatime);
   _score_reel->Tick(deltatime);
   level->Tick(deltatime);
+  if(_score_multiplier_timer > 0.0)
+    _score_multiplier_timer -= deltatime;
 
   if(level->IsFinished())
     {
@@ -186,6 +207,7 @@ void GameStateGame::Tick(double deltatime)
     }
 
   _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetBonusDamageTimer() > 0.0);
+  _active_bonus_widgets[ObjectCollectible::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_score_multiplier_timer > 0.0);
 
   glDisable(GL_DEPTH_TEST);
   _milkyway->Draw(*_camera);

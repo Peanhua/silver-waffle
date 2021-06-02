@@ -36,6 +36,8 @@ private:
   Milkyway *       _milkyway;
   std::vector<Level *> _levels;
   unsigned int         _current_level;
+  unsigned int _score_multiplier;
+  double       _score_multiplier_timer;
   
   unsigned int          _lives;
   std::vector<Widget *> _lives_widgets;

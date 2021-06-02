@@ -261,6 +261,11 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
       collectible->GetMesh()->SetTexture(LoadImage("BonusIcon-2xDamage"), true);
       collectible->GetMesh()->UpdateGPU();
       break;
+    case ObjectCollectible::TYPE_SCORE_MULTIPLIER:
+      collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
+      collectible->GetMesh()->SetTexture(LoadImage("BonusIcon-2xScore"), true);
+      collectible->GetMesh()->UpdateGPU();
+      break;
     }
 
   _collectibles[type] = collectible;

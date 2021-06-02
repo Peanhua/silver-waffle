@@ -12,6 +12,7 @@ public:
     {
       TYPE_SCORE_BONUS,
       TYPE_DAMAGE_MULTIPLIER,
+      TYPE_SCORE_MULTIPLIER,
       TYPE_SIZEOF,
       TYPE_NONE = TYPE_SIZEOF
     };
