@@ -1,6 +1,10 @@
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 
+#include "Mesh.hh"
+#include "ShaderProgram.hh"
+#include "SubsystemAssetLoader.hh"
+
 
 ObjectSpaceship::ObjectSpaceship(Scene * scene)
   : ObjectMovable(scene),
@@ -162,3 +166,17 @@ double ObjectSpaceship::GetShieldTimer() const
   return _shield_timer;
 }
 
+void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
+{
+  auto mesh = GetMesh();
+  if(mesh)
+    {
+      const glm::mat4 model(glm::translate(glm::mat4(1), GetPosition()) * glm::toMat4(GetOrientation()));
+      const glm::mat4 mvp(vp * model);
+      auto shader = AssetLoader->LoadShaderProgram("Spaceship");
+      shader->Use();
+      shader->SetInt("in_shields", _shield_timer > 0.0 ? 1 : 0);
+      shader->SetFloat("in_time", _shield_timer - std::floor(_shield_timer));
+      mesh->Draw(model, view, projection, mvp, shader);
+    }
+}

@@ -87,7 +87,7 @@ GameStateGame::GameStateGame()
             assert(c);
             auto coll = new ObjectCollectible(*c);
             coll->SetBonus(bonustype, bonus);
-            _scene->AddCollectible(coll, target->GetPosition(), glm::vec3(0, -1, 0));
+            _scene->AddCollectible(coll, target->GetPosition(), glm::vec3(0, -5, 0));
             if(dorandomrotation)
               {
                 auto rotangle = glm::normalize(glm::vec3(_rdist(_random) * 2.0f - 1.0f,

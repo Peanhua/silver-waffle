@@ -10,6 +10,7 @@ class ObjectSpaceship : public ObjectMovable
 public:
   ObjectSpaceship(Scene * scene);
 
+  void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const override;
   void Tick(double deltatime) override;
   void Hit(double damage, const glm::vec3 & impulse) override;
 
