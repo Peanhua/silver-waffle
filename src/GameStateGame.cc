@@ -75,6 +75,11 @@ GameStateGame::GameStateGame()
             bonustype = ObjectCollectible::TYPE_SCORE_MULTIPLIER;
             bonus = 2.0;
           }
+        else if(r < 0.40f)
+          {
+            bonustype = ObjectCollectible::TYPE_SHIELD;
+            bonus = 100.0;
+          }
 
         if(bonustype != ObjectCollectible::TYPE_NONE)
           {
@@ -107,8 +112,13 @@ GameStateGame::GameStateGame()
       }
     if(collectible->HasBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER))
       _scene->GetPlayer()->ActivateBonusDamageMultiplier(collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER), 30.0);
-    _score_multiplier = static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_MULTIPLIER));
-    _score_multiplier_timer = 30.0;
+    if(collectible->HasBonus(ObjectCollectible::TYPE_SCORE_MULTIPLIER))
+      {
+        _score_multiplier = static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_MULTIPLIER));
+        _score_multiplier_timer = 30.0;
+      }
+    if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
+      _scene->GetPlayer()->ActivateShield(collectible->GetBonus(ObjectCollectible::TYPE_SHIELD), 30.0);
   });
   
   {
@@ -153,6 +163,7 @@ GameStateGame::GameStateGame()
         "",
         "BonusIcon-2xDamage",
         "BonusIcon-2xScore",
+        "BonusIcon-Shield",
       };
     unsigned int x = 10;
     for(auto imagename : imagenames)
@@ -208,6 +219,7 @@ void GameStateGame::Tick(double deltatime)
 
   _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetBonusDamageTimer() > 0.0);
   _active_bonus_widgets[ObjectCollectible::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_score_multiplier_timer > 0.0);
+  _active_bonus_widgets[ObjectCollectible::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetShieldTimer() > 0.0);
 
   glDisable(GL_DEPTH_TEST);
   _milkyway->Draw(*_camera);

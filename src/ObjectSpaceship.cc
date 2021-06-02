@@ -5,7 +5,9 @@
 ObjectSpaceship::ObjectSpaceship(Scene * scene)
   : ObjectMovable(scene),
     _bonus_damage_multiplier(1),
-    _bonus_damage_timer(0)
+    _bonus_damage_timer(0),
+    _shield(0),
+    _shield_timer(0)
 {
 }
 
@@ -45,6 +47,8 @@ void ObjectSpaceship::Tick(double deltatime)
 
   if(_bonus_damage_timer > 0.0)
     _bonus_damage_timer -= deltatime;
+  if(_shield_timer > 0.0)
+    _shield_timer -= deltatime;
 }
 
 
@@ -127,5 +131,34 @@ void ObjectSpaceship::ActivateBonusDamageMultiplier(double multiplier, double ti
 double ObjectSpaceship::GetBonusDamageTimer() const
 {
   return _bonus_damage_timer;
+}
+
+
+void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
+{
+  if(_shield_timer > 0.0)
+    {
+      double reduction = std::min(_shield, damage);
+      
+      _shield -= reduction;
+      if(_shield < 0.0)
+        _shield_timer = 0.0;
+      
+      damage -= reduction;
+    }
+  ObjectMovable::Hit(damage, impulse);
+}
+
+
+void ObjectSpaceship::ActivateShield(double amount, double time)
+{
+  _shield = std::max(_shield, amount);
+  _shield_timer += time;
+}
+
+
+double ObjectSpaceship::GetShieldTimer() const
+{
+  return _shield_timer;
 }
 
