@@ -40,6 +40,8 @@ private:
   unsigned int          _lives;
   std::vector<Widget *> _lives_widgets;
 
+  std::vector<Widget *> _active_bonus_widgets;
+
   void OnPlayerDies();
   void OnLivesUpdated();
   void OnLevelChanged();

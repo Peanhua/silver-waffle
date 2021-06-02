@@ -123,3 +123,9 @@ void ObjectSpaceship::ActivateBonusDamageMultiplier(double multiplier, double ti
   _bonus_damage_timer = time;
 }
 
+
+double ObjectSpaceship::GetBonusDamageTimer() const
+{
+  return _bonus_damage_timer;
+}
+

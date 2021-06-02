@@ -21,6 +21,7 @@ public:
   void   SetEnginePower(unsigned int engine_id, double throttle);
 
   void ActivateBonusDamageMultiplier(double multiplier, double time);
+  double GetBonusDamageTimer() const;
 
 private:
   class Engine

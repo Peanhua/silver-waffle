@@ -48,27 +48,37 @@ GameStateGame::GameStateGame()
       {
         _score_reel->SetScore(_score_reel->GetScore() + 1);
 
-        // todo: Generate collectible meshes in asset loader.
+        ObjectCollectible::Type bonustype = ObjectCollectible::TYPE_NONE;
+        double bonus;
+        bool dorandomrotation = false;
+
         auto r = _rdist(_random);
-        if(r < 0.05f)
+        if(r < 0.1f)
           {
-            auto score = 5.0f + _rdist(_random) * 5.0f;
-            auto coll = new ObjectCollectible(_scene);
-            coll->SetMesh(AssetLoader->LoadMesh("ScoreBonus"));
-            coll->SetBonus(ObjectCollectible::TYPE_SCORE_BONUS, score);
-            // todo: Add random rotation 
-            //auto rotangle = glm::normalize(glm::vec3(rand(), rand(), rand()));
-            //coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(rand()) * 10.0);
-            _scene->AddCollectible(coll, target->GetPosition(), glm::vec3(0, -1, 0));
+            bonustype = ObjectCollectible::TYPE_SCORE_BONUS;
+            bonus = 5.0f + _rdist(_random) * 5.0f;
+            dorandomrotation = true;
           }
-        else if(r < 0.075f)
+        else if(r < 0.15f)
           {
-            auto coll = new ObjectCollectible(_scene);
-            coll->SetMesh(AssetLoader->LoadMesh("BonusCylinder"));
-            coll->GetMesh()->UpdateGPU();
-            //coll->GetMesh()->SetTexture(AssetLoader->LoadImage("BonusIcon-2xDamage"), true);
-            coll->SetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER, 2.0);
+            bonustype = ObjectCollectible::TYPE_DAMAGE_MULTIPLIER;
+            bonus = 2.0;
+          }
+
+        if(bonustype != ObjectCollectible::TYPE_NONE)
+          {
+            auto c = AssetLoader->LoadObjectCollectible(bonustype);
+            assert(c);
+            auto coll = new ObjectCollectible(*c);
+            coll->SetBonus(bonustype, bonus);
             _scene->AddCollectible(coll, target->GetPosition(), glm::vec3(0, -1, 0));
+            if(dorandomrotation)
+              {
+                auto rotangle = glm::normalize(glm::vec3(_rdist(_random) * 2.0f - 1.0f,
+                                                         _rdist(_random) * 2.0f - 1.0f,
+                                                         _rdist(_random) * 2.0f - 1.0f));
+                coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(_rdist(_random)) * 10.0);
+              }
           }
       }
     else if(target == _scene->GetPlayer())
@@ -119,6 +129,26 @@ GameStateGame::GameStateGame()
     auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 70), glm::ivec2(20, 100));
     w->SetSpaceship(_scene->GetPlayer());
   }
+  {
+    std::vector<std::string> imagenames
+      {
+        "",
+        "BonusIcon-2xDamage"
+      };
+    unsigned int x = 10;
+    for(auto imagename : imagenames)
+      {
+        Widget * w = nullptr;
+        if(imagename.size() > 0)
+          {
+            w = new Widget(root, glm::ivec2(x, 70), glm::ivec2(48, 48));
+            w->SetImage(imagename);
+            w->SetIsVisible(false);
+            x += 50;
+          }
+        _active_bonus_widgets.push_back(w);
+      }
+  }
     
   _particles = new SpaceParticles(5.0, 50.0, 0);
 
@@ -154,6 +184,8 @@ void GameStateGame::Tick(double deltatime)
       else
         Quit();
     }
+
+  _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetBonusDamageTimer() > 0.0);
 
   glDisable(GL_DEPTH_TEST);
   _milkyway->Draw(*_camera);

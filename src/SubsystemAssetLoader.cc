@@ -1,6 +1,7 @@
 #include "SubsystemAssetLoader.hh"
 #include "Image.hh"
 #include "Mesh.hh"
+#include "ObjectCollectible.hh"
 #include "ShaderProgram.hh"
 #include "SolarSystemObject.hh"
 #include <cassert>
@@ -233,5 +234,36 @@ SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(int type, unsign
     return nullptr;
 
   return objs->at(index);
+}
+
+
+
+ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
+{
+  if(type == ObjectCollectible::TYPE_NONE)
+    return nullptr;
+  
+  auto it = _collectibles.find(type);
+  if(it != _collectibles.end())
+    return (*it).second;
+
+  auto collectible = new ObjectCollectible(nullptr);
+  switch(static_cast<ObjectCollectible::Type>(type))
+    {
+    case ObjectCollectible::TYPE_NONE:
+      assert(false);
+      break;
+    case ObjectCollectible::TYPE_SCORE_BONUS:
+      collectible->SetMesh(LoadMesh("ScoreBonus"));
+      break;
+    case ObjectCollectible::TYPE_DAMAGE_MULTIPLIER:
+      collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
+      collectible->GetMesh()->SetTexture(LoadImage("BonusIcon-2xDamage"), true);
+      collectible->GetMesh()->UpdateGPU();
+      break;
+    }
+
+  _collectibles[type] = collectible;
+  return collectible;
 }
 
