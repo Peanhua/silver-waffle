@@ -145,7 +145,7 @@ void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
       double reduction = std::min(_shield, damage);
       
       _shield -= reduction;
-      if(_shield < 0.0)
+      if(_shield < 0.0001)
         _shield_timer = 0.0;
       
       damage -= reduction;

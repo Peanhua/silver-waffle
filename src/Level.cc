@@ -1,5 +1,6 @@
 #include "Level.hh"
 #include "Camera.hh"
+#include "ObjectInvader.hh"
 #include "ObjectPlanet.hh"
 #include "Mesh.hh"
 #include "Scene.hh"
@@ -151,6 +152,8 @@ void Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator
       };
       
       const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
-      scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
+      auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
+      if(rand() < 0.2)
+        invader->ActivateShield(50, 9999);
     }
 }
