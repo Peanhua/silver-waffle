@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 
+class Font;
 class Image;
 class Mesh;
 
@@ -25,6 +26,8 @@ public:
   void    SetImage(Image * image);
   void    SetImage(const std::string & name);
   Image * GetImage() const;
+
+  void SetText(const std::string & text);
 
   void SetScale(const glm::vec2 & scale);
 
@@ -60,7 +63,9 @@ private:
 
   Mesh * _imagemesh;
   Mesh * _focused_borders_mesh;
-
+  Font * _font;
+  Mesh * _textmesh;
+  
   bool _visible;
   bool _focused;
   bool _activated;

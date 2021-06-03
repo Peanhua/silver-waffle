@@ -1,4 +1,5 @@
 #include "Widget.hh"
+#include "Font.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
@@ -12,6 +13,8 @@ Widget::Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & 
     _scale(glm::vec3(1, 1, 1)),
     _imagemesh(nullptr),
     _focused_borders_mesh(nullptr),
+    _font(nullptr),
+    _textmesh(nullptr),
     _visible(true),
     _focused(false),
     _activated(false)
@@ -87,6 +90,12 @@ void Widget::Draw() const
   
   if(_imagemesh)
     _imagemesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
+  if(_textmesh)
+    {
+      glDisable(GL_CULL_FACE);
+      _textmesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
+      glEnable(GL_CULL_FACE);
+    }
   
   if(_focused && _focused_borders_mesh)
     _focused_borders_mesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
@@ -196,6 +205,25 @@ Image * Widget::GetImage() const
     return nullptr;
   
   return _imagemesh->GetTexture();
+}
+
+
+void Widget::SetText(const std::string & text)
+{
+  if(!_font)
+    {
+      _font = new Font("/usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf", 50);
+      assert(_font);
+    }
+  if(!_textmesh)
+    {
+      _textmesh = new Mesh(Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
+      assert(_textmesh);
+      _textmesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Font"));
+    }
+  _textmesh->Clear();
+  _font->Render(text, *_textmesh, 1);
+  _textmesh->UpdateGPU();
 }
 
 

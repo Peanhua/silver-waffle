@@ -176,7 +176,7 @@ void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection,
       auto shader = AssetLoader->LoadShaderProgram("Spaceship");
       shader->Use();
       shader->SetInt("in_shields", _shield_timer > 0.0 ? 1 : 0);
-      shader->SetFloat("in_time", _shield_timer - std::floor(_shield_timer));
+      shader->SetFloat("in_time", static_cast<float>(_shield_timer - std::floor(_shield_timer)));
       mesh->Draw(model, view, projection, mvp, shader);
     }
 }

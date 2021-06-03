@@ -55,10 +55,12 @@ public:
   void   Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
   double GetBoundingSphereRadius()   const;
 
+  void Clear();
   void ClearVertices();
   void AddVertex(const glm::vec2 & vertex);
   void AddVertex(const glm::vec3 & vertex);
   void AddVertex(const glm::vec4 & vertex);
+  void AddVertexT(const glm::vec3 & vertex, const glm::vec2 & texcoord);
   void SetVertex(unsigned int index, const glm::vec3 & vertex);
   void SetVertex(unsigned int index, const glm::vec4 & vertex);
   glm::vec3 GetVertex3(unsigned int index) const;
@@ -74,7 +76,9 @@ public:
   void AddGenericVecInput(const glm::vec2 & vector);
   void AddGenericVecInput(const glm::vec3 & vector);
   glm::vec2 GetGenericVec2(unsigned int index) const;
-  void SetPrimitiveType(const GLenum primitive_type);
+
+  GLenum GetPrimitiveType() const;
+  void   SetPrimitiveType(const GLenum primitive_type);
   
   void            SetShaderProgram(ShaderProgram * shader_program);
   ShaderProgram * GetShaderProgram() const;

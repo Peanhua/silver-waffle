@@ -12,6 +12,7 @@ class Image
 public:
   Image(bool alpha);
   Image(bool alpha, GLuint texture_id);
+  Image(unsigned int width, unsigned int height, unsigned int bytes_per_pixel, bool alpha);
   ~Image();
 
   bool   Load(const std::string & filename);
@@ -19,6 +20,19 @@ public:
   void   UpdateGPU(bool mipmapping, bool linear_filtering);
   GLuint GetTextureId() const;
   void   SetTextureId(GLuint texture_id);
+  bool   Expand(unsigned int new_width, unsigned int new_height);
+  void   ToSingleChannel(unsigned int channel); // Remove all but the specified channel.
+  void   ToSignedDistanceField(double shrink_min, double shrink_max); // Higher shrink value means more distance values are set to zero (min) or to 1 (max).
+  void   Blit(unsigned int x, unsigned int y, const Image & src);
+  void   Blit(unsigned int x, unsigned int y, const Image & src, unsigned int src_x, unsigned int src_y, unsigned int width, unsigned int height);
+  void   CopyData(const uint8_t * src);
+  void   Clear();
+
+  unsigned int GetWidth()         const;
+  unsigned int GetHeight()        const;
+  unsigned int GetBytesPerPixel() const;
+  uint8_t *    GetData()          const;
+
   
 private:
   unsigned int         _width;

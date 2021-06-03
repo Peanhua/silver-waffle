@@ -124,6 +124,18 @@ void Mesh::ClearVertices()
 }
 
 
+void Mesh::Clear()
+{
+  _vertices.clear();
+  _indices.clear();
+  _colors.clear();
+  _texcoords.clear();
+  _normals.clear();
+  _generic_vec2s.clear();
+  _generic_vec3s.clear();
+}
+
+
 void Mesh::AddVertex(const glm::vec3 & vertex)
 {
   assert(!(_options & OPTION_VERTEX_W));
@@ -140,6 +152,13 @@ void Mesh::AddVertex(const glm::vec4 & vertex)
   _vertices.push_back(vertex.y);
   _vertices.push_back(vertex.z);
   _vertices.push_back(vertex.w);
+}
+
+
+void Mesh::AddVertexT(const glm::vec3 & vertex, const glm::vec2 & texcoord)
+{
+  AddVertex(vertex);
+  AddTexCoord(texcoord);
 }
 
 
@@ -274,6 +293,12 @@ glm::vec2 Mesh::GetGenericVec2(unsigned int index) const
   assert(index * 2 + 1 < _generic_vec2s.size());
   return glm::vec2(_generic_vec2s[index * 2 + 0],
                    _generic_vec2s[index * 2 + 1]);
+}
+
+
+GLenum Mesh::GetPrimitiveType() const
+{
+  return _primitive_type;
 }
 
 

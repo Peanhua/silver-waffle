@@ -1,7 +1,9 @@
 #include "Image.hh"
+#include "glm.hh"
 #include <cassert>
 #include <cstring>
 #include <iostream>
+#include <vector>
 #include <SDL_image.h>
 
 
@@ -19,6 +21,13 @@ Image::Image(bool alpha, GLuint texture_id)
 Image::Image(bool alpha)
   : Image(alpha, 0)
 {
+}
+
+
+Image::Image(unsigned int width, unsigned int height, unsigned int bytes_per_pixel, bool alpha)
+  : Image(alpha, 0)
+{
+  Resize(width, height, bytes_per_pixel);
 }
 
 
@@ -152,8 +161,8 @@ void Image::UpdateGPU(bool mipmapping, bool linear_filtering)
 
   if(_bytes_per_pixel == 1)
     {
-      internalformat = GL_ALPHA8;
-      format = GL_ALPHA;
+      internalformat = GL_RED;
+      format = GL_RED;
     }
   else if(_alpha)
     {
@@ -207,3 +216,193 @@ void Image::SetTextureId(GLuint texture_id)
 }
 
  
+void Image::ToSingleChannel(unsigned int channel)
+{
+  assert(channel < _bytes_per_pixel);
+  assert(_width > 0);
+  assert(_height > 0);
+
+  std::vector<uint8_t> tmp;
+  tmp.resize(_width * _height);
+  
+  for(unsigned int y = 0; y < _height; y++)
+    for(unsigned int x = 0; x < _width; x++)
+      tmp[x + y * _width] = _data[(x + y * _width) * _bytes_per_pixel + channel];
+
+  _bytes_per_pixel = 1;
+  _alpha           = false;
+
+  for(unsigned int y = 0; y < _height; y++)
+    for(unsigned int x = 0; x < _width; x++)
+      _data[(x + y * _width) * _bytes_per_pixel] = tmp[x + y * _width];
+}
+
+
+void Image::CopyData(const uint8_t * src)
+{
+  std::memcpy(_data, src, _width * _height * _bytes_per_pixel);
+}
+
+
+unsigned int Image::GetWidth() const
+{
+  return _width;
+}
+
+
+unsigned int Image::GetHeight() const
+{
+  return _height;
+}
+
+
+unsigned int Image::GetBytesPerPixel() const
+{
+  return _bytes_per_pixel;
+}
+
+
+void Image::Clear()
+{
+  assert(_width > 0 && _height > 0 && _bytes_per_pixel > 0);
+  memset(_data, 0, _width * _height * _bytes_per_pixel);
+}
+
+
+void Image::Blit(unsigned int x, unsigned int y, const Image & src)
+{
+  Blit(x, y, src, 0, 0, src.GetWidth(), src.GetHeight());
+}
+
+
+
+void Image::Blit(unsigned int x, unsigned int y, const Image & src, unsigned int src_x, unsigned int src_y, unsigned int width, unsigned int height)
+{
+  assert(src.GetWidth()  >= src_x + width );
+  assert(src.GetHeight() >= src_y + height);
+  assert(_width  >= x + width );
+  assert(_height >= y + height);
+
+  assert(src.GetBytesPerPixel() == GetBytesPerPixel());
+
+  auto srcdata = src.GetData();
+  for(unsigned int yi = 0; yi < height; yi++)
+    memcpy(_data   + (x +     (yi + y)     * GetWidth())     * _bytes_per_pixel,
+           srcdata + (src_x + (yi + src_y) * src.GetWidth()) * _bytes_per_pixel,
+           width * _bytes_per_pixel);
+}
+
+
+uint8_t * Image::GetData() const
+{
+  return _data;
+}
+
+
+bool Image::Expand(unsigned int new_width, unsigned int new_height)
+{
+  bool rv = false;
+
+  assert(_width <= new_width);
+  assert(_height <= new_height);
+
+  auto bpp = _bytes_per_pixel;
+
+  auto newdata = static_cast<uint8_t *>(std::malloc(new_width * new_height * bpp));
+  assert(newdata != NULL);
+  if(newdata != NULL)
+    {
+      size_t slinelen, dlinelen;
+      
+      slinelen = _width    * bpp;
+      dlinelen = new_width * bpp;
+
+      std::memset(newdata, 0, new_width * new_height * bpp);
+
+      for(unsigned int y = 0; y < _height; y++)
+        std::memcpy(newdata + y * dlinelen, _data + y * slinelen, slinelen);
+      
+      _width  = new_width;
+      _height = new_height;
+      
+      free(_data);
+      _data = newdata;
+
+      rv = true;
+    }
+
+  return rv;
+}
+
+
+void Image::ToSignedDistanceField(double shrink_min, double shrink_max)
+{
+  std::vector<double> distances;
+  distances.resize(_width * _height);
+
+  assert(_bytes_per_pixel > 0);
+  auto channel = _bytes_per_pixel - 1;
+
+  double max = 0;
+  double min = 0;
+  /* Calculate the distances for each x,y position and store them in 'distances'. */
+  for(unsigned int y = 0; y < _height; y++)
+    for(unsigned int x = 0; x < _width; x++)
+      {
+        glm::dvec2 curpos(x, y);
+        glm::dvec2 closest(-1, -1);
+        double     closest_distance = std::max(_width, _height);
+        bool       found = false;
+        
+        for(unsigned int y2 = 0; y2 < _height; y2++)
+          for(unsigned int x2 = 0; x2 < _width; x2++)
+            if(y2 != y || x2 != x)
+              {
+                unsigned int pos = (x2 + y2 * _width) * _bytes_per_pixel + channel;
+                if(this->_data[pos])
+                  {
+                    double distance = glm::distance(curpos, glm::dvec2(x2, y2));
+                    if(distance < closest_distance)
+                      {
+                        closest_distance = distance;
+                        closest = glm::dvec2(x2, y2);
+                        found = true;
+                      }
+                  }
+              }
+        assert(found);
+
+        if(this->_data[(x + y * _width) * _bytes_per_pixel + channel] == 0)
+          closest_distance = -closest_distance;
+
+        distances[x + y * _width] = closest_distance;
+
+        if(found)
+          {
+            if(closest_distance < min)
+              min = closest_distance;
+            if(closest_distance > max)
+              max = closest_distance;
+          }
+      }
+
+  /* Map distances to 0..1, store the distance to all channels (rgba) into the image data (in range 0...255). */
+  min *= (1.0 - shrink_min);
+  max *= (1.0 - shrink_max);
+  for(unsigned int y = 0; y < _height; y++)
+    for(unsigned int x = 0; x < _width; x++)
+      {
+        double value;
+
+        if(distances[x + y * _width] < 0.0)
+          value = 0.5 * glm::smoothstep(min, 0.0, distances[x + y * _width]);
+        else
+          value = 0.5 * glm::smoothstep(0.0, max, distances[x + y * _width]) + 0.5;
+
+        assert(value >= 0.0);
+        assert(value <= 1.0);
+        value *= 255.0;
+
+        this->_data[(x + y * _width) * _bytes_per_pixel + channel] = static_cast<uint8_t>(value);
+      }
+}

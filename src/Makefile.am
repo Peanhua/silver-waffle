@@ -5,7 +5,8 @@ AM_CXXFLAGS =                \
         $(GLEW_CFLAGS)       \
         $(GLM_CFLAGS)        \
 	$(ASSIMP_CFLAGS)     \
-	$(JSON11_CFLAGS)
+	$(JSON11_CFLAGS)     \
+	$(FREETYPE2_CFLAGS)
 
 bin_PROGRAMS = silverwaffle
 
@@ -15,11 +16,13 @@ silverwaffle_LDADD =       \
         $(GL_LIBS)         \
         $(GLEW_LIBS)       \
 	$(ASSIMP_LIBS)     \
-	$(JSON11_LIBS)
+	$(JSON11_LIBS)     \
+	$(FREETYPE2_LIBS)
 
 silverwaffle_SOURCES =				\
 	Camera.cc				\
 	Explosion.cc				\
+	Font.cc					\
 	GameState.cc				\
 	GameStateGame.cc			\
 	GameStateTitle.cc			\

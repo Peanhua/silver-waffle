@@ -23,6 +23,8 @@ PKG_CHECK_MODULES([ASSIMP], [assimp >= 3.3.1])
 
 PKG_CHECK_MODULES([JSON11], [json11 >= 1])
 
+PKG_CHECK_MODULES([FREETYPE2], [freetype2])
+
 AX_CHECK_GL
 
 AC_ARG_VAR([CONVERT], [Path to the convert program from ImageMagick or alternative.])
