@@ -8,7 +8,8 @@ GameState::GameState()
   : _running(true),
     _child(nullptr),
     _root_widget(nullptr),
-    _focused_widget(nullptr)
+    _focused_widget(nullptr),
+    _modal_widget(nullptr)
 {
 }
 
@@ -75,7 +76,11 @@ void GameState::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & rela
   if(!_root_widget)
     return;
 
-  auto focused = _root_widget->GetWidgetAt(position);
+  auto start = _root_widget;
+  if(_modal_widget)
+    start = _modal_widget;
+  
+  auto focused = start->GetWidgetAt(position);
   if(focused)
     {
       if(focused != _focused_widget)
@@ -101,7 +106,11 @@ void GameState::OnMouseButton(bool pressed, unsigned int button, const glm::ivec
   
   if(_root_widget)
     {
-      auto w = _root_widget->GetWidgetAt(position);
+      auto start = _root_widget;
+      if(_modal_widget)
+        start = _modal_widget;
+      
+      auto w = start->GetWidgetAt(position);
       if(w)
         w->OnClicked(pressed);
     }
@@ -123,3 +132,14 @@ Widget * GameState::GetRootWidget() const
 {
   return _root_widget;
 }
+
+
+void GameState::SetModalWidget(Widget * widget)
+{
+  if(widget)
+    assert(!_modal_widget);
+  else
+    assert(_modal_widget);
+  _modal_widget = widget;
+}
+

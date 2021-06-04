@@ -45,10 +45,12 @@ private:
   std::vector<Widget *> _lives_widgets;
   std::vector<WidgetSpaceshipStatus *> _player_status_widgets;
   std::vector<Widget *> _active_bonus_widgets;
+  Widget * _pausebutton;
 
   void OnPlayerDies();
   void OnLivesUpdated();
   void OnLevelChanged();
+  void NextLifeOrQuit();
 };
 
 #endif

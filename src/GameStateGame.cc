@@ -244,6 +244,15 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 {
   assert(mod == mod);
 
+  if(_paused)
+    {
+      if(key == SDLK_ESCAPE || key == SDLK_SPACE)
+        if(!pressed)
+          NextLifeOrQuit();
+      return;
+    }
+  
+  
   switch(key)
     {
     case SDLK_ESCAPE:
@@ -375,31 +384,39 @@ void GameStateGame::OnPlayerDies()
 
   _paused = true;
   const std::string t("Press the button to continue.");
-  auto font = new Font("/usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf", 20.0f * 1.15f);
+  auto font = AssetLoader->LoadFont(20);
   double tlen = font->GetWidth(t);
-  auto pausebutton = new Widget(GetRootWidget(), glm::ivec2((width - static_cast<int>(tlen)) / 2, height / 2), glm::ivec2(tlen, 27));
-  pausebutton->SetText(t);
-  pausebutton->SetOnClicked([this, pausebutton](bool pressed, unsigned int button, const glm::ivec2 & position)
+  _pausebutton = new Widget(GetRootWidget(), glm::ivec2((width - static_cast<int>(tlen)) / 2, height / 2), glm::ivec2(tlen, 27));
+  _pausebutton->SetText(t);
+  _pausebutton->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
-    assert(pressed == pressed);
     assert(button == button);
     assert(position == position);
-    
-    _lives--;
-    OnLivesUpdated();
-  
-    if(_lives > 0)
-      {
-        _scene->CreatePlayer();
-        for(auto w : _player_status_widgets)
-          w->SetSpaceship(_scene->GetPlayer());
-      }
-    else
-      Quit();
 
-    pausebutton->Destroy();
-    _paused = false;
+    if(!pressed)
+      NextLifeOrQuit();
   });
+  SetModalWidget(_pausebutton);
+}
+
+
+void GameStateGame::NextLifeOrQuit()
+{
+  _lives--;
+  OnLivesUpdated();
+  
+  if(_lives > 0)
+    {
+      _scene->CreatePlayer();
+      for(auto w : _player_status_widgets)
+        w->SetSpaceship(_scene->GetPlayer());
+    }
+  else
+    Quit();
+  
+  SetModalWidget(nullptr);
+  _pausebutton->Destroy();
+  _paused = false;
 }
 
 

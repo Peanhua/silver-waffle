@@ -6,6 +6,7 @@
 #include <map>
 #include <vector>
 
+class Font;
 class Image;
 class Mesh;
 class ObjectCollectible;
@@ -21,6 +22,7 @@ public:
   bool Start() override;
   void Stop() override;
 
+  Font *              LoadFont(float size);
   const std::string & LoadText(const std::string & filename);
   json11::Json *      LoadJson(const std::string & filename);
   ShaderProgram *     LoadShaderProgram(const std::string & name);
@@ -37,6 +39,7 @@ private:
   std::map<std::string, Image *>         _images;
   std::map<int, std::vector<SolarSystemObject *> *> _solar_system_objects;
   std::map<int, ObjectCollectible *>     _collectibles;
+  std::map<float, Font *>                _fonts;
 };
 
 extern SubsystemAssetLoader * AssetLoader;

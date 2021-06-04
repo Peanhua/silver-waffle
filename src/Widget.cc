@@ -238,7 +238,7 @@ void Widget::SetText(const std::string & text)
 {
   if(!_font)
     {
-      _font = new Font("/usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf", 20.0f * 1.15f);
+      _font = AssetLoader->LoadFont(20);
       assert(_font);
     }
   if(!_textmesh)

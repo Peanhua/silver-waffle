@@ -21,6 +21,8 @@ public:
 
   void     SetRootWidget(Widget * widget);
   Widget * GetRootWidget() const;
+
+  void     SetModalWidget(Widget * widget);
   
   virtual void Tick(double deltatime);
   virtual void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod);
@@ -33,6 +35,7 @@ private:
 
   Widget * _root_widget;
   Widget * _focused_widget;
+  Widget * _modal_widget;
 };
 
 #endif

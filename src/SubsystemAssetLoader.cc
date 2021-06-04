@@ -1,4 +1,5 @@
 #include "SubsystemAssetLoader.hh"
+#include "Font.hh"
 #include "Image.hh"
 #include "Mesh.hh"
 #include "ObjectCollectible.hh"
@@ -275,5 +276,17 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
 
   _collectibles[type] = collectible;
   return collectible;
+}
+
+
+Font * SubsystemAssetLoader::LoadFont(float size)
+{
+  auto it = _fonts.find(size);
+  if(it != _fonts.end())
+    return (*it).second;
+
+  auto font = new Font("/usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf", static_cast<unsigned int>(size * 1.15f));
+  _fonts[size] = font;
+  return font;
 }
 
