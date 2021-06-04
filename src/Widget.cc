@@ -110,11 +110,7 @@ void Widget::Draw() const
   if(_imagemesh)
     _imagemesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
   if(_textmesh)
-    {
-      glDisable(GL_CULL_FACE);
-      _textmesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
-      glEnable(GL_CULL_FACE);
-    }
+    _textmesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
   
   if(_focused && _focused_borders_mesh)
     _focused_borders_mesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());

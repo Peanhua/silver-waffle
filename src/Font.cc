@@ -184,32 +184,15 @@ void Font::Render(const glm::vec3 & position, const std::string & text, Mesh & m
           ch -= '!';
 
           float width = static_cast<float>(_characters[ch].width) * size;
-          /*
-          const bool flipy = false;
 
-          if(flipy)
-            {
-              mesh.AddVertexT(pos,                               glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[3]));
-              mesh.AddVertexT(pos + glm::vec3(width, 0,      0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[3]));
-              mesh.AddVertexT(pos + glm::vec3(width, height, 0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[1]));
-              mesh.AddVertexT(pos + glm::vec3(0,     height, 0), glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[1]));
-            }
-            else*/
-          {
-            /*
-            mesh.AddVertexT(pos + glm::vec3(width, 0,      0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[1]));
-            mesh.AddVertexT(pos + glm::vec3(width, height, 0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[3]));
-            mesh.AddVertexT(pos + glm::vec3(0,     height, 0), glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[3]));
-            mesh.AddVertexT(pos,                               glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[1]));
-            */
-            mesh.AddVertexT(pos + glm::vec3(width, 0,      0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[1])); 
-            mesh.AddVertexT(pos + glm::vec3(width, height, 0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[3]));
-            mesh.AddVertexT(pos,                               glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[1]));
+          mesh.AddVertexT(pos,                               glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[1]));
+          mesh.AddVertexT(pos + glm::vec3(width, height, 0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[3]));
+          mesh.AddVertexT(pos + glm::vec3(width, 0,      0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[1])); 
+          
+          mesh.AddVertexT(pos,                               glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[1]));
+          mesh.AddVertexT(pos + glm::vec3(0,     height, 0), glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[3]));
+          mesh.AddVertexT(pos + glm::vec3(width, height, 0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[3]));
 
-            mesh.AddVertexT(pos + glm::vec3(width, height, 0), glm::vec2(_characters[ch].texture_coordinates[2], _characters[ch].texture_coordinates[3]));
-            mesh.AddVertexT(pos + glm::vec3(0,     height, 0), glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[3]));
-            mesh.AddVertexT(pos,                               glm::vec2(_characters[ch].texture_coordinates[0], _characters[ch].texture_coordinates[1]));
-          }
           pos.x += width;
         }
     }
