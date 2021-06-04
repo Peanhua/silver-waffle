@@ -25,7 +25,8 @@ GameStateGame::GameStateGame()
     _paused(false),
     _current_level(0),
     _score_multiplier_timer(0),
-    _lives(3)
+    _lives(3),
+    _pausebutton(nullptr)
 {
 #if 1
   _camera = new Camera();
@@ -402,6 +403,9 @@ void GameStateGame::OnPlayerDies()
 
 void GameStateGame::NextLifeOrQuit()
 {
+  assert(_paused);
+  assert(_pausebutton);
+  
   _lives--;
   OnLivesUpdated();
   
@@ -416,6 +420,7 @@ void GameStateGame::NextLifeOrQuit()
   
   SetModalWidget(nullptr);
   _pausebutton->Destroy();
+  _pausebutton = nullptr;
   _paused = false;
 }
 

@@ -31,6 +31,9 @@ public:
 
   Font * GetFont() const;
   void   SetText(const std::string & text);
+  void   SetTextColor(const glm::vec3 & color);
+  void   SetTextPadding(const glm::vec2 & padding);
+  void   SetTextPaddingCentered(bool horizontally, bool vertically);
 
   void SetScale(const glm::vec2 & scale);
 
@@ -67,8 +70,12 @@ private:
 
   Mesh * _imagemesh;
   Mesh * _focused_borders_mesh;
-  Font * _font;
-  Mesh * _textmesh;
+
+  Font *      _font;
+  std::string _text;
+  Mesh *      _textmesh;
+  glm::vec3   _textcolor;
+  glm::vec2   _textpadding;
   
   bool _visible;
   bool _focused;

@@ -54,6 +54,7 @@ silverwaffle_SOURCES =				\
 	SubsystemSettings.cc			\
 	TextureRenderer.cc			\
 	Widget.cc				\
+	WidgetButton.cc				\
 	WidgetPlayerShip.cc			\
 	WidgetSpaceshipStatus.cc		\
 	WidgetWeaponStatus.cc			\

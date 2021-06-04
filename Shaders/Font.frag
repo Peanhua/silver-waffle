@@ -1,6 +1,8 @@
 #version 330 core
 
 uniform sampler2D texture0;
+uniform mat4 in_mvp;
+uniform vec3 in_font_color;
 
 in vec2 texcoord;
 
@@ -15,7 +17,6 @@ void main()
 
 
 const float FONT_WEIGHT     = 0.6;
-const vec4  FONT_COLOR      = vec4(1, 1, 1, 1);
 
 const bool  OUTLINE         = false;
 const vec4  OUTLINE_COLOR   = vec4(0, 1, 0, 1);
@@ -26,7 +27,7 @@ const float SOFT_EDGE_WIDTH = 0.2;
 
 vec4 FontColor()
 {
-  vec4 color = FONT_COLOR;
+  vec4 color = vec4(in_font_color, 1);
 
   float distAlphaMask = texture2D(texture0, texcoord.st).r;
 

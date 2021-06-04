@@ -151,19 +151,19 @@ Font::~Font()
 }
 
 
-void Font::Render(int x, int y, const std::string & text, Mesh & mesh)
+void Font::Render(int x, int y, const std::string & text, Mesh & mesh) const
 {
   Render(glm::vec3(x, y, 0), text, mesh, 1.0f);
 }
 
 
-void Font::Render(const std::string & text, Mesh & mesh, float size)
+void Font::Render(const std::string & text, Mesh & mesh, float size) const
 {
   Render(glm::vec3(0, 0, 0), text, mesh, size);
 }
 
 
-void Font::Render(const glm::vec3 & position, const std::string & text, Mesh & mesh, float size)
+void Font::Render(const glm::vec3 & position, const std::string & text, Mesh & mesh, float size) const
 {
   assert(text.length() < 256);
   assert(mesh.GetPrimitiveType() == GL_TRIANGLES);
@@ -200,7 +200,7 @@ void Font::Render(const glm::vec3 & position, const std::string & text, Mesh & m
 }
 
 
-unsigned int Font::GetWidth(const std::string & text)
+unsigned int Font::GetWidth(const std::string & text) const
 {
   unsigned int len = 0;
 
@@ -211,4 +211,10 @@ unsigned int Font::GetWidth(const std::string & text)
       len += this->_characters[static_cast<unsigned int>(text[i] - '!')].width;
 
   return len;
+}
+
+
+unsigned int Font::GetHeight() const
+{
+  return _height;
 }

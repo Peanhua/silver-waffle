@@ -17,14 +17,14 @@ public:
   Font(const std::string & name, unsigned int font_size);
   ~Font();
 
-  unsigned int GetHeight();
-  unsigned int GetWidth(const std::string & text);
-  unsigned int GetNWidth(const std::string & text, unsigned int textlen);
+  unsigned int GetHeight() const;
+  unsigned int GetWidth(const std::string & text) const;
+  unsigned int GetNWidth(const std::string & text, unsigned int textlen) const;
 
-  GLuint       GetTexture();
-  void         Render(const std::string & text, Mesh & mesh, float size);
-  void         Render(int x, int y, const std::string & text, Mesh & mesh);
-  void         Render(const glm::vec3 & position, const std::string & text, Mesh & mesh, float size);
+  GLuint       GetTexture() const;
+  void         Render(const std::string & text, Mesh & mesh, float size) const;
+  void         Render(int x, int y, const std::string & text, Mesh & mesh) const;
+  void         Render(const glm::vec3 & position, const std::string & text, Mesh & mesh, float size) const;
 
 
 private:

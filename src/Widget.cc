@@ -1,6 +1,7 @@
 #include "Widget.hh"
 #include "Font.hh"
 #include "Mesh.hh"
+#include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include <iostream>
@@ -15,6 +16,8 @@ Widget::Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & 
     _focused_borders_mesh(nullptr),
     _font(nullptr),
     _textmesh(nullptr),
+    _textcolor(glm::vec3(1, 1, 1)),
+    _textpadding(glm::vec2(0, 0)),
     _visible(true),
     _focused(false),
     _activated(false)
@@ -110,7 +113,14 @@ void Widget::Draw() const
   if(_imagemesh)
     _imagemesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
   if(_textmesh)
-    _textmesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
+    {
+      auto shader = _textmesh->GetShaderProgram();
+      shader->Use();
+      shader->SetVec3("in_font_color", _textcolor);
+      glm::mat4 model(1);
+      model = glm::translate(model, glm::vec3(_textpadding, 0));
+      _textmesh->Draw(model, GetView(), GetProjection(), GetMVP() * model);
+    }
   
   if(_focused && _focused_borders_mesh)
     _focused_borders_mesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
@@ -148,7 +158,7 @@ void Widget::UpdateMVP()
   _view = glm::mat4(1);
 
   auto pos = GetAbsolutePosition();
-  _model = glm::translate(glm::mat4(1), glm::vec3(pos.x, pos.y, 0));
+  _model = glm::translate(glm::mat4(1), glm::vec3(pos.xy(), 0));
   _model = glm::scale(_model, glm::vec3(_scale.xy(), 0));
   
  _mvp = _projection * _view * _model;
@@ -243,6 +253,7 @@ void Widget::SetText(const std::string & text)
       assert(_textmesh);
       _textmesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Font"));
     }
+  _text = text;
   _textmesh->Clear();
   _font->Render(text, *_textmesh, 1);
   _textmesh->UpdateGPU();
@@ -337,5 +348,28 @@ void Widget::OnSizeUpdated()
     _focused_borders_mesh->AddVertex(glm::vec3(v.x * static_cast<float>(size.x), v.y * static_cast<float>(size.y), v.z));
   
   _focused_borders_mesh->UpdateGPU();
+}
+
+
+void Widget::SetTextColor(const glm::vec3 & color)
+{
+  _textcolor = color;
+}
+
+
+void Widget::SetTextPadding(const glm::vec2 & padding)
+{
+  _textpadding = padding;
+}
+
+
+void Widget::SetTextPaddingCentered(bool horizontally, bool vertically)
+{
+  assert(_font);
+  if(horizontally)
+    _textpadding.x = (_size.x - _font->GetWidth(_text)) / 2;
+
+  if(vertically)
+    _textpadding.y = (_size.y - _font->GetHeight()) / 2;
 }
 

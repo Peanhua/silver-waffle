@@ -7,7 +7,7 @@
 #include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
-#include "Widget.hh"
+#include "WidgetButton.hh"
 #include <iostream>
 #include <GL/glew.h>
 
@@ -63,8 +63,10 @@ GameStateTitle::GameStateTitle()
   assert(root);
   SetRootWidget(root);
 
-  auto w = new Widget(root, glm::ivec2(width / 2 - 100, height / 2 - 100), glm::ivec2(200, 100));
-  w->SetImage("Button-Play-Up");
+  auto w = new WidgetButton(root, glm::ivec2(width / 2 - 100, height / 2 - 100), glm::ivec2(200, 100));
+  w->SetText("Play");
+  w->SetTextColor(glm::vec3(0.5, 1.0, 0.5));
+  w->SetTextPaddingCentered(true, true);
   w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
     assert(button == button);
@@ -73,8 +75,10 @@ GameStateTitle::GameStateTitle()
       SetChildState(new GameStateGame());
   });
   
-  w = new Widget(root, glm::ivec2(width / 2 - 100, height / 2 + 100), glm::ivec2(200, 100));
-  w->SetImage("Button-Quit-Up");
+  w = new WidgetButton(root, glm::ivec2(width / 2 - 100, height / 2 + 100), glm::ivec2(200, 100));
+  w->SetText("Quit");
+  w->SetTextColor(glm::vec3(1.0, 0.5, 0.5));
+  w->SetTextPaddingCentered(true, true);
   w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
     assert(button == button);
