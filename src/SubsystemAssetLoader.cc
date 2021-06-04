@@ -285,7 +285,7 @@ Font * SubsystemAssetLoader::LoadFont(float size)
   if(it != _fonts.end())
     return (*it).second;
 
-  auto font = new Font("/usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf", static_cast<unsigned int>(size * 1.15f));
+  auto font = new Font("Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf", static_cast<unsigned int>(size * 1.15f));
   _fonts[size] = font;
   return font;
 }
