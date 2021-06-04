@@ -32,11 +32,20 @@ Widget::~Widget()
 }
 
 
+void Widget::Destroy()
+{
+  assert(_parent);
+  if(_parent)
+    _parent->_destroyed_children.push_back(this);
+}
+
+
 Widget * Widget::GetWidgetAt(const glm::ivec2 & position)
 {
   Widget * rv = nullptr;
   for(auto it = _children.cbegin(); !rv && it != _children.cend(); it++)
-    rv = (*it)->GetWidgetAt(position);
+    if(*it)
+      rv = (*it)->GetWidgetAt(position);
 
   if(!rv)
     {
@@ -79,7 +88,17 @@ const glm::ivec2 & Widget::GetSize() const
 void Widget::Tick(double deltatime)
 {
   for(auto c : _children)
-    c->Tick(deltatime);
+    if(c)
+      c->Tick(deltatime);
+
+  for(auto c : _destroyed_children)
+    {
+      for(unsigned int i = 0; i < _children.size(); i++)
+        if(_children[i] == c)
+          _children[i] = nullptr;
+      delete c;
+    }
+  _destroyed_children.clear();
 }
 
 
@@ -101,7 +120,8 @@ void Widget::Draw() const
     _focused_borders_mesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
 
   for(auto c : _children)
-    c->Draw();
+    if(c)
+      c->Draw();
 }
 
 
@@ -208,11 +228,17 @@ Image * Widget::GetImage() const
 }
 
 
+Font * Widget::GetFont() const
+{
+  return _font;
+}
+
+
 void Widget::SetText(const std::string & text)
 {
   if(!_font)
     {
-      _font = new Font("/usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf", 50);
+      _font = new Font("/usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf", 20.0f * 1.15f);
       assert(_font);
     }
   if(!_textmesh)

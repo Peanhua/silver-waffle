@@ -14,6 +14,7 @@ class Scene;
 class ScoreReel;
 class SpaceParticles;
 class WidgetPlayerShip;
+class WidgetSpaceshipStatus;
 
 
 class GameStateGame : public GameState
@@ -29,6 +30,7 @@ private:
   std::mt19937_64                       _random;
   std::uniform_real_distribution<float> _rdist;
   double      _fov;
+  bool        _paused;
   Camera *    _camera;
   Scene *     _scene;
   ScoreReel * _score_reel;
@@ -41,7 +43,7 @@ private:
   
   unsigned int          _lives;
   std::vector<Widget *> _lives_widgets;
-
+  std::vector<WidgetSpaceshipStatus *> _player_status_widgets;
   std::vector<Widget *> _active_bonus_widgets;
 
   void OnPlayerDies();

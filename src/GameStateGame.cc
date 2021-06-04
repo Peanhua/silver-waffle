@@ -1,5 +1,6 @@
 #include "GameStateGame.hh"
 #include "Camera.hh"
+#include "Font.hh"
 #include "Level.hh"
 #include "Mesh.hh"
 #include "Milkyway.hh"
@@ -21,6 +22,7 @@ GameStateGame::GameStateGame()
   : GameState(),
     _random(0),
     _rdist(0, 1),
+    _paused(false),
     _current_level(0),
     _score_multiplier_timer(0),
     _lives(3)
@@ -152,10 +154,12 @@ GameStateGame::GameStateGame()
   {
     auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 70), glm::ivec2(20, 100));
     w->SetSpaceship(_scene->GetPlayer());
+    _player_status_widgets.push_back(w);
   }
   {
     auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 70), glm::ivec2(20, 100));
     w->SetSpaceship(_scene->GetPlayer());
+    _player_status_widgets.push_back(w);
   }
   {
     std::vector<std::string> imagenames
@@ -202,21 +206,24 @@ void GameStateGame::Tick(double deltatime)
   _particles->Tick(deltatime);
   _scene->Tick(deltatime);
   _score_reel->Tick(deltatime);
-  level->Tick(deltatime);
   if(_score_multiplier_timer > 0.0)
     _score_multiplier_timer -= deltatime;
 
-  if(level->IsFinished())
+  if(!_paused)
     {
-      if(_current_level + 1 < _levels.size())
+      level->Tick(deltatime);
+      if(level->IsFinished())
         {
-          _current_level++;
-          OnLevelChanged();
+          if(_current_level + 1 < _levels.size())
+            {
+              _current_level++;
+              OnLevelChanged();
+            }
+          else
+            Quit();
         }
-      else
-        Quit();
     }
-
+  
   _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetBonusDamageTimer() > 0.0);
   _active_bonus_widgets[ObjectCollectible::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_score_multiplier_timer > 0.0);
   _active_bonus_widgets[ObjectCollectible::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetShieldTimer() > 0.0);
@@ -363,17 +370,36 @@ void GameStateGame::OnLivesUpdated()
 
 void GameStateGame::OnPlayerDies()
 {
-  _lives--;
-  OnLivesUpdated();
+  const auto width = Settings->GetInt("screen_width");
+  const auto height = Settings->GetInt("screen_height");
+
+  _paused = true;
+  const std::string t("Press the button to continue.");
+  auto font = new Font("/usr/share/fonts/liberation-mono/LiberationMono-Regular.ttf", 20.0f * 1.15f);
+  double tlen = font->GetWidth(t);
+  auto pausebutton = new Widget(GetRootWidget(), glm::ivec2((width - static_cast<int>(tlen)) / 2, height / 2), glm::ivec2(tlen, 27));
+  pausebutton->SetText(t);
+  pausebutton->SetOnClicked([this, pausebutton](bool pressed, unsigned int button, const glm::ivec2 & position)
+  {
+    assert(pressed == pressed);
+    assert(button == button);
+    assert(position == position);
+    
+    _lives--;
+    OnLivesUpdated();
   
-  if(_lives > 0)
-    {
-      auto player = _scene->GetPlayer();
-      player->SetHealth(100);
-      player->SetPosition(glm::vec3(0, player->GetPosition().yz()));
-    }
-  else
-    Quit();
+    if(_lives > 0)
+      {
+        _scene->CreatePlayer();
+        for(auto w : _player_status_widgets)
+          w->SetSpaceship(_scene->GetPlayer());
+      }
+    else
+      Quit();
+
+    pausebutton->Destroy();
+    _paused = false;
+  });
 }
 
 

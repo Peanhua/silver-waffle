@@ -215,3 +215,17 @@ void Font::Render(const glm::vec3 & position, const std::string & text, Mesh & m
     }
   mesh.SetTexture(_image);
 }
+
+
+unsigned int Font::GetWidth(const std::string & text)
+{
+  unsigned int len = 0;
+
+  for(unsigned int i = 0; i < text.length(); i++)
+    if(text[i] == ' ')
+      len += this->_height / 3;
+    else if(text[i] >= '!' && text[i] <= '~')
+      len += this->_characters[static_cast<unsigned int>(text[i] - '!')].width;
+
+  return len;
+}

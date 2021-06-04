@@ -25,8 +25,8 @@ void ObjectPlanet::AddPlanetRing(float start, float end)
   ring->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
   ring->SetTexture(AssetLoader->LoadImage("8k_saturn_ring_alpha"));
 
-  constexpr auto PI = 4.0f * std::atan(1.0f);
-  constexpr auto step = 2.0f * PI / 128.0f;
+  const auto PI = 4.0f * std::atan(1.0f);
+  const auto step = 2.0f * PI / 128.0f;
   
   unsigned int ind = 0;
   for(auto arc = -PI; arc < PI - step; arc += step)

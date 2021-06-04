@@ -18,6 +18,8 @@ public:
   Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
   virtual ~Widget();
 
+  void Destroy();
+  
   Widget *   GetWidgetAt(const glm::ivec2 & position);
   glm::ivec2 GetAbsolutePosition() const;
   const glm::ivec2 & GetPosition() const;
@@ -27,7 +29,8 @@ public:
   void    SetImage(const std::string & name);
   Image * GetImage() const;
 
-  void SetText(const std::string & text);
+  Font * GetFont() const;
+  void   SetText(const std::string & text);
 
   void SetScale(const glm::vec2 & scale);
 
@@ -52,6 +55,7 @@ protected:
 private:
   Widget *              _parent;
   std::vector<Widget *> _children;
+  std::vector<Widget *> _destroyed_children;
 
   glm::mat4  _projection;
   glm::mat4  _view;

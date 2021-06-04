@@ -73,6 +73,9 @@ void Object::SetMesh(Mesh * mesh)
 
 bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction) const
 {
+  if(!IsAlive() || !other.IsAlive())
+    return false;
+  
   auto distance = glm::distance(GetPosition(), other.GetPosition());
   if(distance > static_cast<float>(GetMesh()->GetBoundingSphereRadius() + other.GetMesh()->GetBoundingSphereRadius()))
     return false;

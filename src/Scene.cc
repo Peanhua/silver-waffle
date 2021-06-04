@@ -16,6 +16,7 @@
 Scene::Scene()
   : _random_generator(0),
     _play_area_size(glm::vec2(20, 60)),
+    _player(nullptr),
     _on_destroyed_callback(nullptr),
     _on_collectible_collected_callback(nullptr)
 {
@@ -81,10 +82,23 @@ void Scene::Draw(const Camera & camera) const
     }
 }
 
-
 void Scene::Initialize(double difficulty)
 {
   assert(difficulty == difficulty);
+
+  CreatePlayer();
+
+  for(int i = 0; i < 200; i++)
+    _invaders.push_back(nullptr);
+
+  for(int i = 0; i < 50; i++)
+    _collectibles.push_back(nullptr);
+}
+
+
+ObjectSpaceship * Scene::CreatePlayer()
+{
+  delete _player;
   
   _player = new ObjectSpaceship(this);
   _player->SetPosition(glm::vec3(0, 40 - 53, 0));
@@ -102,11 +116,7 @@ void Scene::Initialize(double difficulty)
   _player->AddEngine(glm::vec3(-1, 0, 0), 20.0);
   _player->AddEngine(glm::vec3( 1, 0, 0), 20.0);
 
-  for(int i = 0; i < 200; i++)
-    _invaders.push_back(nullptr);
-
-  for(int i = 0; i < 50; i++)
-    _collectibles.push_back(nullptr);
+  return _player;
 }
 
 
@@ -244,8 +254,9 @@ void Scene::Tick(double deltatime)
 
   _wall->Tick(deltatime);
 
-  for(auto p : _planets)
-    p->Tick(deltatime);
+  if(_player->IsAlive())
+    for(auto p : _planets)
+      p->Tick(deltatime);
 }
 
 
