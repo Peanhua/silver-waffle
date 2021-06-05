@@ -3,6 +3,7 @@
 uniform sampler2D texture0;
 uniform mat4 in_mvp;
 uniform vec3 in_font_color;
+uniform float in_font_weight;
 
 in vec3 in_vertex;
 in vec2 in_texcoord;

@@ -63,11 +63,15 @@ GameStateTitle::GameStateTitle()
   assert(root);
   SetRootWidget(root);
 
-  auto w = new WidgetButton(root, glm::ivec2(width / 2 - 100, height / 2 - 100), glm::ivec2(200, 100));
+  int bw = 150;
+  int bh = 60;
+  
+  auto w = new WidgetButton(root, glm::ivec2((width - bw) / 2, height - bh * 4), glm::ivec2(bw, bh));
   w->SetTextFont(AssetLoader->LoadFont(30));
   w->SetText("Play");
   w->SetTextColor(glm::vec3(0.5, 1.0, 0.5));
   w->SetTextPaddingCentered(true, true);
+  w->SetTextFontWeight(0.55f);
   w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
     assert(button == button);
@@ -76,11 +80,12 @@ GameStateTitle::GameStateTitle()
       SetChildState(new GameStateGame());
   });
   
-  w = new WidgetButton(root, glm::ivec2(width / 2 - 100, height / 2 + 100), glm::ivec2(200, 100));
+  w = new WidgetButton(root, glm::ivec2((width - bw) / 2, height - bh * 2), glm::ivec2(bw, bh));
   w->SetTextFont(AssetLoader->LoadFont(30));
   w->SetText("Quit");
   w->SetTextColor(glm::vec3(1.0, 0.5, 0.5));
   w->SetTextPaddingCentered(true, true);
+  w->SetTextFontWeight(0.55f);
   w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
     assert(button == button);

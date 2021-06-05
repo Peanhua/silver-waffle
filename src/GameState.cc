@@ -83,13 +83,14 @@ void GameState::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & rela
   auto focused = start->GetWidgetAt(position);
   if(focused)
     {
-      if(focused != _focused_widget)
-        {
-          if(_focused_widget)
-            _focused_widget->SetIsFocused(false);
-          _focused_widget = focused;
-          _focused_widget->SetIsFocused(true);
-        }
+      if(focused->GetIsFocusable())
+        if(focused != _focused_widget)
+          {
+            if(_focused_widget)
+              _focused_widget->SetIsFocused(false);
+            _focused_widget = focused;
+            _focused_widget->SetIsFocused(true);
+          }
     }
   else
     {

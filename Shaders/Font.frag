@@ -3,6 +3,7 @@
 uniform sampler2D texture0;
 uniform mat4 in_mvp;
 uniform vec3 in_font_color;
+uniform float in_font_weight;
 
 in vec2 texcoord;
 
@@ -16,7 +17,6 @@ void main()
 }
 
 
-const float FONT_WEIGHT     = 0.6;
 
 const bool  OUTLINE         = false;
 const vec4  OUTLINE_COLOR   = vec4(0, 1, 0, 1);
@@ -32,16 +32,16 @@ vec4 FontColor()
   float distAlphaMask = texture2D(texture0, texcoord.st).r;
 
   if(SOFT_EDGES)
-    color.a *= smoothstep(FONT_WEIGHT - SOFT_EDGE_WIDTH, FONT_WEIGHT, distAlphaMask);
+    color.a *= smoothstep(in_font_weight - SOFT_EDGE_WIDTH, in_font_weight, distAlphaMask);
   else
-    color.a *= float(distAlphaMask >= FONT_WEIGHT);
+    color.a *= float(distAlphaMask >= in_font_weight);
 
   if(OUTLINE)
-    if(distAlphaMask <= FONT_WEIGHT)
-      if(distAlphaMask >= FONT_WEIGHT - OUTLINE_WIDTH)
+    if(distAlphaMask <= in_font_weight)
+      if(distAlphaMask >= in_font_weight - OUTLINE_WIDTH)
         {
-          float strength = smoothstep(FONT_WEIGHT - OUTLINE_WIDTH,
-                                      FONT_WEIGHT,
+          float strength = smoothstep(in_font_weight - OUTLINE_WIDTH,
+                                      in_font_weight,
                                       distAlphaMask);
           color = mix(color, OUTLINE_COLOR, strength);
         }

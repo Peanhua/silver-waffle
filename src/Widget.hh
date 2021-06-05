@@ -33,6 +33,7 @@ public:
   void   SetText(const std::string & text);
   void   SetTextFont(Font * font);
   void   SetTextColor(const glm::vec3 & color);
+  void   SetTextFontWeight(float weight);
   void   SetTextPadding(const glm::vec2 & padding);
   void   SetTextPaddingCentered(bool horizontally, bool vertically);
 
@@ -43,6 +44,9 @@ public:
   
   void SetIsFocused(bool is_focused);
   bool GetIsFocused() const;
+
+  void SetIsFocusable(bool is_focusable);
+  bool GetIsFocusable() const;
 
   virtual void Tick(double deltatime);
   virtual void Draw() const;
@@ -77,9 +81,11 @@ private:
   Mesh *      _textmesh;
   glm::vec3   _textcolor;
   glm::vec2   _textpadding;
+  float       _text_font_weight;
   
   bool _visible;
   bool _focused;
+  bool _focusable;
   bool _activated;
 
   on_clicked_t _on_clicked;

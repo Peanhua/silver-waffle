@@ -18,8 +18,10 @@ Widget::Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & 
     _textmesh(nullptr),
     _textcolor(glm::vec3(1, 1, 1)),
     _textpadding(glm::vec2(0, 0)),
+    _text_font_weight(0.6f),
     _visible(true),
     _focused(false),
+    _focusable(true),
     _activated(false)
 {
   if(parent)
@@ -117,6 +119,7 @@ void Widget::Draw() const
       auto shader = _textmesh->GetShaderProgram();
       shader->Use();
       shader->SetVec3("in_font_color", _textcolor);
+      shader->SetFloat("in_font_weight", _text_font_weight);
       glm::mat4 model(1);
       model = glm::translate(model, glm::vec3(_textpadding, 0));
       _textmesh->Draw(model, GetView(), GetProjection(), GetMVP() * model);
@@ -293,8 +296,23 @@ bool Widget::GetIsVisible() const
 }
 
 
+void Widget::SetIsFocusable(bool is_focusable)
+{
+  _focusable = is_focusable;
+}
+
+
+bool Widget::GetIsFocusable() const
+{
+  return _focusable;
+}
+
+
 void Widget::SetIsFocused(bool is_focused)
 {
+  if(is_focused)
+    assert(_focusable);
+
   _focused = is_focused;
 }
 
@@ -372,6 +390,12 @@ void Widget::SetTextColor(const glm::vec3 & color)
 }
 
 
+void Widget::SetTextFontWeight(float weight)
+{
+  _text_font_weight = weight;
+}
+
+
 void Widget::SetTextPadding(const glm::vec2 & padding)
 {
   _textpadding = padding;
@@ -382,9 +406,9 @@ void Widget::SetTextPaddingCentered(bool horizontally, bool vertically)
 {
   assert(_font);
   if(horizontally)
-    _textpadding.x = (_size.x - _font->GetWidth(_text)) / 2;
+    _textpadding.x = (static_cast<float>(_size.x) - static_cast<float>(_font->GetWidth(_text))) / 2.0f;
 
   if(vertically)
-    _textpadding.y = (_size.y - _font->GetHeight()) / 2;
+    _textpadding.y = (static_cast<float>(_size.y) - static_cast<float>(_font->GetHeight())) / 2.0f;
 }
 
