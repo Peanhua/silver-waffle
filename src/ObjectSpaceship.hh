@@ -50,13 +50,30 @@ private:
     double    _projectile_damage;
   private:
   };
+
+  class Upgrade
+  {
+  public:
+    enum class Type
+      {
+        BONUS_DAMAGE,
+        SHIELD
+      };
+
+    Type   _type;
+    double _value;
+    double _timer;
+
+    void Tick(double deltatime);
+    bool IsActive() const;
+  private:
+  };
   
-  std::vector<Engine *> _engines;
-  std::vector<Weapon *> _weapons;
-  double _bonus_damage_multiplier;
-  double _bonus_damage_timer;
-  double _shield;
-  double _shield_timer;
+  std::vector<Engine *>  _engines;
+  std::vector<Weapon *>  _weapons;
+  std::vector<Upgrade *> _upgrades;
+  
+  Upgrade * GetUpgrade(Upgrade::Type type) const;
 };
 
 #endif

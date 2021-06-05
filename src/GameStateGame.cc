@@ -145,17 +145,17 @@ GameStateGame::GameStateGame()
       _scene->GetPlayer()->ActivateShield(collectible->GetBonus(ObjectCollectible::TYPE_SHIELD), 30.0);
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK))
       {
-        _upgradematerial_a += collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK);
+        _upgradematerial_a += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK));
         _upgradematerial_a_widget->SetText(std::to_string(_upgradematerial_a));
       }
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE))
       {
-        _upgradematerial_d += collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE);
+        _upgradematerial_d += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE));
         _upgradematerial_d_widget->SetText(std::to_string(_upgradematerial_d));
       }
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL))
       {
-        _upgradematerial_p += collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL);
+        _upgradematerial_p += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL));
         _upgradematerial_p_widget->SetText(std::to_string(_upgradematerial_p));
       }
   });

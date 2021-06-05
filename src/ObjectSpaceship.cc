@@ -7,12 +7,22 @@
 
 
 ObjectSpaceship::ObjectSpaceship(Scene * scene)
-  : ObjectMovable(scene),
-    _bonus_damage_multiplier(1),
-    _bonus_damage_timer(0),
-    _shield(0),
-    _shield_timer(0)
+  : ObjectMovable(scene)
 {
+  {
+    auto u = new Upgrade();
+    u->_type = Upgrade::Type::BONUS_DAMAGE;
+    u->_value = 0;
+    u->_timer = 0;
+    _upgrades.push_back(u);
+  }
+  {
+    auto u = new Upgrade();
+    u->_type = Upgrade::Type::SHIELD;
+    u->_value = 0;
+    u->_timer = 0;
+    _upgrades.push_back(u);
+  }
 }
 
 
@@ -49,10 +59,8 @@ void ObjectSpaceship::Tick(double deltatime)
       weapon->_heat = std::max(0.0, weapon->_heat - 0.1 * deltatime);
     }
 
-  if(_bonus_damage_timer > 0.0)
-    _bonus_damage_timer -= deltatime;
-  if(_shield_timer > 0.0)
-    _shield_timer -= deltatime;
+  for(auto u : _upgrades)
+    u->Tick(deltatime);
 }
 
 
@@ -89,8 +97,9 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
     return false;
 
   auto damage = weapon->_projectile_damage;
-  if(_bonus_damage_timer > 0.0)
-    damage *= _bonus_damage_multiplier;
+  auto bonus = GetUpgrade(Upgrade::Type::BONUS_DAMAGE);
+  if(bonus->IsActive() > 0.0)
+    damage *= bonus->_value;
   
   _scene->AddProjectile(this,
                         GetPosition() + weapon->_location,
@@ -127,26 +136,29 @@ void ObjectSpaceship::SetEnginePower(unsigned int engine_id, double throttle)
 
 void ObjectSpaceship::ActivateBonusDamageMultiplier(double multiplier, double time)
 {
-  _bonus_damage_multiplier = multiplier;
-  _bonus_damage_timer = time;
+  auto bonus = GetUpgrade(Upgrade::Type::BONUS_DAMAGE);
+  bonus->_value = multiplier;
+  bonus->_timer = time;
 }
 
 
 double ObjectSpaceship::GetBonusDamageTimer() const
 {
-  return _bonus_damage_timer;
+  auto bonus = GetUpgrade(Upgrade::Type::BONUS_DAMAGE);
+  return bonus->_timer;
 }
 
 
 void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
 {
-  if(_shield_timer > 0.0)
+  auto shield = GetUpgrade(Upgrade::Type::SHIELD);
+  if(shield->IsActive())
     {
-      double reduction = std::min(_shield, damage);
+      double reduction = std::min(shield->_value, damage);
       
-      _shield -= reduction;
-      if(_shield < 0.0001)
-        _shield_timer = 0.0;
+      shield->_value -= reduction;
+      if(shield->_value < 0.0001)
+        shield->_timer = 0.0;
       
       damage -= reduction;
     }
@@ -154,16 +166,28 @@ void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
 }
 
 
+ObjectSpaceship::Upgrade * ObjectSpaceship::GetUpgrade(Upgrade::Type type) const
+{
+  for(auto u : _upgrades)
+    if(u->_type == type)
+      return u;
+  assert(false);
+  return nullptr;
+}
+
+
 void ObjectSpaceship::ActivateShield(double amount, double time)
 {
-  _shield = std::max(_shield, amount);
-  _shield_timer += time;
+  auto shield = GetUpgrade(Upgrade::Type::SHIELD);
+  shield->_value = std::max(shield->_value, amount);
+  shield->_timer += time;
 }
 
 
 double ObjectSpaceship::GetShieldTimer() const
 {
-  return _shield_timer;
+  auto shield = GetUpgrade(Upgrade::Type::SHIELD);
+  return shield->_timer;
 }
 
 void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
@@ -175,8 +199,23 @@ void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection,
       const glm::mat4 mvp(vp * model);
       auto shader = AssetLoader->LoadShaderProgram("Spaceship");
       shader->Use();
-      shader->SetInt("in_shields", _shield_timer > 0.0 ? 1 : 0);
-      shader->SetFloat("in_time", static_cast<float>(_shield_timer - std::floor(_shield_timer)));
+      auto shield = GetUpgrade(Upgrade::Type::SHIELD);
+      shader->SetInt("in_shields", shield->IsActive() ? 1 : 0);
+      shader->SetFloat("in_time", static_cast<float>(shield->_timer - std::floor(shield->_timer)));
       mesh->Draw(model, view, projection, mvp, shader);
     }
 }
+
+
+void ObjectSpaceship::Upgrade::Tick(double deltatime)
+{
+  if(_timer > 0.0)
+    _timer -= deltatime;
+}
+
+
+bool ObjectSpaceship::Upgrade::IsActive() const
+{
+  return _timer > 0.0;
+}
+
