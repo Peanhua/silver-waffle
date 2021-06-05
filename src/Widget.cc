@@ -97,12 +97,12 @@ void Widget::Tick(double deltatime)
       c->Tick(deltatime);
 
   for(auto c : _destroyed_children)
-    {
-      for(unsigned int i = 0; i < _children.size(); i++)
-        if(_children[i] == c)
+    for(unsigned int i = 0; i < _children.size(); i++)
+      if(_children[i] == c)
+        {
           _children[i] = nullptr;
-      delete c;
-    }
+          delete c;
+        }
   _destroyed_children.clear();
 }
 
