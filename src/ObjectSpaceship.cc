@@ -263,7 +263,7 @@ void ObjectSpaceship::Upgrade::AddFromCollectible(ObjectCollectible * collectibl
       break;
     case Type::SHIELD:
       if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
-        Add(std::max(_value, collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER)), 30.0);
+        Add(std::max(_value, collectible->GetBonus(ObjectCollectible::TYPE_SHIELD)), 30.0);
       break;
     }
 }
