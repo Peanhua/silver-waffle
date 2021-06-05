@@ -31,6 +31,7 @@ public:
 
   Font * GetFont() const;
   void   SetText(const std::string & text);
+  void   SetTextFont(Font * font);
   void   SetTextColor(const glm::vec3 & color);
   void   SetTextPadding(const glm::vec2 & padding);
   void   SetTextPaddingCentered(bool horizontally, bool vertically);

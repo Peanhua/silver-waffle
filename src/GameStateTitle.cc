@@ -64,6 +64,7 @@ GameStateTitle::GameStateTitle()
   SetRootWidget(root);
 
   auto w = new WidgetButton(root, glm::ivec2(width / 2 - 100, height / 2 - 100), glm::ivec2(200, 100));
+  w->SetTextFont(AssetLoader->LoadFont(30));
   w->SetText("Play");
   w->SetTextColor(glm::vec3(0.5, 1.0, 0.5));
   w->SetTextPaddingCentered(true, true);
@@ -76,6 +77,7 @@ GameStateTitle::GameStateTitle()
   });
   
   w = new WidgetButton(root, glm::ivec2(width / 2 - 100, height / 2 + 100), glm::ivec2(200, 100));
+  w->SetTextFont(AssetLoader->LoadFont(30));
   w->SetText("Quit");
   w->SetTextColor(glm::vec3(1.0, 0.5, 0.5));
   w->SetTextPaddingCentered(true, true);

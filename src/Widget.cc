@@ -242,6 +242,15 @@ Font * Widget::GetFont() const
 
 void Widget::SetText(const std::string & text)
 {
+  _text = text;
+
+  if(_text.length() == 0)
+    {
+      delete _textmesh;
+      _textmesh = nullptr;
+      return;
+    }
+  
   if(!_font)
     {
       _font = AssetLoader->LoadFont(20);
@@ -253,10 +262,16 @@ void Widget::SetText(const std::string & text)
       assert(_textmesh);
       _textmesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Font"));
     }
-  _text = text;
   _textmesh->Clear();
-  _font->Render(text, *_textmesh, 1);
+  _font->Render(_text, *_textmesh, 1);
   _textmesh->UpdateGPU();
+}
+
+
+void Widget::SetTextFont(Font * font)
+{
+  _font = font;
+  SetText(_text);
 }
 
 
