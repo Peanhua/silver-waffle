@@ -27,10 +27,18 @@ public:
   void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod) override;
 
 private:
+  enum class State
+    {
+      RUNNING,
+      DEATH_PAUSE,
+      FULL_PAUSE
+    };
+  
+  State _state;
+  bool  _state_death_pause_key_eaten;
   std::mt19937_64                       _random;
   std::uniform_real_distribution<float> _rdist;
   double      _fov;
-  bool        _paused;
   Camera *    _camera;
   Scene *     _scene;
   ScoreReel * _score_reel;

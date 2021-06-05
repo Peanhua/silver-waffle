@@ -20,9 +20,9 @@
 
 GameStateGame::GameStateGame()
   : GameState(),
+    _state(State::RUNNING),
     _random(0),
     _rdist(0, 1),
-    _paused(false),
     _current_level(0),
     _score_multiplier_timer(0),
     _upgradematerial_a(0),
@@ -144,44 +144,45 @@ GameStateGame::GameStateGame()
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK))
       {
         _upgradematerial_a += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK));
-
         unsigned int cost = 10;
         if(_upgradematerial_a >= cost)
-          switch(_scene->GetPlayer()->GetWeaponCount())
-            {
-            case 1:
-              _scene->GetPlayer()->AddWeapon(glm::vec3(-0.1, 1, 0),
-                                             AssetLoader->LoadMesh("Projectile"),
-                                             glm::normalize(glm::vec3(-0.1, 1, 0)),
-                                             10.0,
-                                             34.0);
+          {
+            switch(_scene->GetPlayer()->GetWeaponCount())
+              {
+              case 1:
+                _scene->GetPlayer()->AddWeapon(glm::vec3(-0.1, 1, 0),
+                                               AssetLoader->LoadMesh("Projectile"),
+                                               glm::normalize(glm::vec3(-0.1, 1, 0)),
+                                               10.0,
+                                               34.0);
+                break;
+              case 2:
+                _scene->GetPlayer()->AddWeapon(glm::vec3(0.1, 1, 0),
+                                               AssetLoader->LoadMesh("Projectile"),
+                                               glm::normalize(glm::vec3(0.1, 1, 0)),
+                                               10.0,
+                                               34.0);
+                break;
+              case 3:
+                _scene->GetPlayer()->AddWeapon(glm::vec3(-0.2, 1, 0),
+                                               AssetLoader->LoadMesh("Projectile"),
+                                               glm::normalize(glm::vec3(-0.2, 1, 0)),
+                                               10.0,
+                                               34.0);
+                break;
+              case 4:
+                _scene->GetPlayer()->AddWeapon(glm::vec3(0.2, 1, 0),
+                                               AssetLoader->LoadMesh("Projectile"),
+                                               glm::normalize(glm::vec3(0.2, 1, 0)),
+                                               10.0,
+                                               34.0);
+                break;
+              default:
+                cost = 0;
               break;
-            case 2:
-              _scene->GetPlayer()->AddWeapon(glm::vec3(0.1, 1, 0),
-                                             AssetLoader->LoadMesh("Projectile"),
-                                             glm::normalize(glm::vec3(0.1, 1, 0)),
-                                             10.0,
-                                             34.0);
-              break;
-            case 3:
-              _scene->GetPlayer()->AddWeapon(glm::vec3(-0.2, 1, 0),
-                                             AssetLoader->LoadMesh("Projectile"),
-                                             glm::normalize(glm::vec3(-0.2, 1, 0)),
-                                             10.0,
-                                             34.0);
-              break;
-            case 4:
-              _scene->GetPlayer()->AddWeapon(glm::vec3(0.2, 1, 0),
-                                             AssetLoader->LoadMesh("Projectile"),
-                                             glm::normalize(glm::vec3(0.2, 1, 0)),
-                                             10.0,
-                                             34.0);
-              break;
-            default:
-              cost = 0;
-              break;
-            }
-        _upgradematerial_a -= cost;
+              }
+            _upgradematerial_a -= cost;
+          }
         
         _upgradematerial_a_widget->SetText(std::to_string(_upgradematerial_a));
       }
@@ -294,12 +295,16 @@ void GameStateGame::Tick(double deltatime)
   auto level = _levels[_current_level];
   
   _particles->Tick(deltatime);
-  _scene->Tick(deltatime);
   _score_reel->Tick(deltatime);
-  if(_score_multiplier_timer > 0.0)
-    _score_multiplier_timer -= deltatime;
 
-  if(!_paused)
+  if(_state != State::FULL_PAUSE)
+    {
+      _scene->Tick(deltatime);
+      if(_score_multiplier_timer > 0.0)
+        _score_multiplier_timer -= deltatime;
+    }
+
+  if(_state == State::RUNNING)
     {
       level->Tick(deltatime);
       if(level->IsFinished())
@@ -334,20 +339,38 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 {
   assert(mod == mod);
 
-  if(_paused)
+  if(_state == State::DEATH_PAUSE)
     {
-      if(key == SDLK_ESCAPE || key == SDLK_SPACE)
-        if(!pressed)
-          NextLifeOrQuit();
+      if(key == SDLK_ESCAPE && !pressed)
+        NextLifeOrQuit();
+      else if(key == SDLK_SPACE)
+        {
+          if(pressed)
+            _state_death_pause_key_eaten = true;
+          else
+            if(_state_death_pause_key_eaten)
+              NextLifeOrQuit();
+        }
       return;
     }
   
-  
+  if(_state == State::FULL_PAUSE)
+    {
+      if((key == SDLK_ESCAPE || key == SDLK_TAB) && !pressed)
+        _state = State::RUNNING;
+      return;
+    }
+
+  assert(_state == State::RUNNING);
   switch(key)
     {
     case SDLK_ESCAPE:
-      if(pressed)
+      if(!pressed)
         Quit();
+      break;
+    case SDLK_TAB:
+      if(!pressed)
+        _state = State::FULL_PAUSE;
       break;
 #if 0
     case SDLK_LEFT:
@@ -473,7 +496,10 @@ void GameStateGame::OnPlayerDies()
   const auto width = Settings->GetInt("screen_width");
   const auto height = Settings->GetInt("screen_height");
 
-  _paused = true;
+  assert(_state == State::RUNNING);
+  _state = State::DEATH_PAUSE;
+  _state_death_pause_key_eaten = false;
+  
   const std::string t("Press the button to continue.");
   auto font = AssetLoader->LoadFont(20);
   double tlen = font->GetWidth(t);
@@ -493,7 +519,7 @@ void GameStateGame::OnPlayerDies()
 
 void GameStateGame::NextLifeOrQuit()
 {
-  assert(_paused);
+  assert(_state == State::DEATH_PAUSE);
   assert(_pausebutton);
   
   _lives--;
@@ -511,7 +537,7 @@ void GameStateGame::NextLifeOrQuit()
   SetModalWidget(nullptr);
   _pausebutton->Destroy();
   _pausebutton = nullptr;
-  _paused = false;
+  _state = State::RUNNING;
 }
 
 
