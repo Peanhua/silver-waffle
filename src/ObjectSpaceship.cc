@@ -2,6 +2,7 @@
 #include "Scene.hh"
 
 #include "Mesh.hh"
+#include "ObjectCollectible.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 
@@ -134,21 +135,6 @@ void ObjectSpaceship::SetEnginePower(unsigned int engine_id, double throttle)
 }
 
 
-void ObjectSpaceship::ActivateBonusDamageMultiplier(double multiplier, double time)
-{
-  auto bonus = GetUpgrade(Upgrade::Type::BONUS_DAMAGE);
-  bonus->_value = multiplier;
-  bonus->_timer = time;
-}
-
-
-double ObjectSpaceship::GetBonusDamageTimer() const
-{
-  auto bonus = GetUpgrade(Upgrade::Type::BONUS_DAMAGE);
-  return bonus->_timer;
-}
-
-
 void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
 {
   auto shield = GetUpgrade(Upgrade::Type::SHIELD);
@@ -175,20 +161,6 @@ ObjectSpaceship::Upgrade * ObjectSpaceship::GetUpgrade(Upgrade::Type type) const
   return nullptr;
 }
 
-
-void ObjectSpaceship::ActivateShield(double amount, double time)
-{
-  auto shield = GetUpgrade(Upgrade::Type::SHIELD);
-  shield->_value = std::max(shield->_value, amount);
-  shield->_timer += time;
-}
-
-
-double ObjectSpaceship::GetShieldTimer() const
-{
-  auto shield = GetUpgrade(Upgrade::Type::SHIELD);
-  return shield->_timer;
-}
 
 void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
 {
@@ -219,3 +191,48 @@ bool ObjectSpaceship::Upgrade::IsActive() const
   return _timer > 0.0;
 }
 
+
+void ObjectSpaceship::Upgrade::AddFromCollectible(ObjectCollectible * collectible)
+{
+  switch(_type)
+    {
+    case Type::BONUS_DAMAGE:
+      if(collectible->HasBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER))
+        Add(collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER), 30.0);
+      break;
+    case Type::SHIELD:
+      if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
+        Add(std::max(_value, collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER)), 30.0);
+      break;
+    }
+}
+
+
+void ObjectSpaceship::UpgradeFromCollectible(ObjectCollectible * collectible)
+{
+  for(auto u : _upgrades)
+    u->AddFromCollectible(collectible);
+}
+
+
+void ObjectSpaceship::AddUpgrade(Upgrade::Type type, double value, double time)
+{
+  auto upgrade = GetUpgrade(type);
+  upgrade->Add(value, time);
+}
+
+
+void ObjectSpaceship::Upgrade::Add(double amount, double time)
+{
+  switch(_type)
+    {
+    case Type::BONUS_DAMAGE:
+      _value = amount;
+      _timer = time;
+      break;
+    case Type::SHIELD:
+      _value = amount;
+      _timer += time;
+      break;
+    }
+}

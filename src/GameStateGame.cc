@@ -127,6 +127,8 @@ GameStateGame::GameStateGame()
 
   _scene->SetOnCollectibleCollected([this](ObjectCollectible * collectible)
   {
+    _scene->GetPlayer()->UpgradeFromCollectible(collectible);
+
     if(collectible->HasBonus(ObjectCollectible::TYPE_SCORE_BONUS))
       {
         auto score = static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_BONUS));
@@ -134,15 +136,11 @@ GameStateGame::GameStateGame()
           score *= _score_multiplier;
         _score_reel->SetScore(_score_reel->GetScore() + score);
       }
-    if(collectible->HasBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER))
-      _scene->GetPlayer()->ActivateBonusDamageMultiplier(collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER), 30.0);
     if(collectible->HasBonus(ObjectCollectible::TYPE_SCORE_MULTIPLIER))
       {
         _score_multiplier = static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_MULTIPLIER));
         _score_multiplier_timer = 30.0;
       }
-    if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
-      _scene->GetPlayer()->ActivateShield(collectible->GetBonus(ObjectCollectible::TYPE_SHIELD), 30.0);
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK))
       {
         _upgradematerial_a += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK));
@@ -277,9 +275,9 @@ void GameStateGame::Tick(double deltatime)
         }
     }
   
-  _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetBonusDamageTimer() > 0.0);
+  _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(ObjectSpaceship::Upgrade::Type::BONUS_DAMAGE)->IsActive());
   _active_bonus_widgets[ObjectCollectible::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_score_multiplier_timer > 0.0);
-  _active_bonus_widgets[ObjectCollectible::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetShieldTimer() > 0.0);
+  _active_bonus_widgets[ObjectCollectible::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(ObjectSpaceship::Upgrade::Type::SHIELD)->IsActive());
 
   glDisable(GL_DEPTH_TEST);
   _milkyway->Draw(*_camera);
