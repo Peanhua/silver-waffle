@@ -272,6 +272,21 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
       collectible->GetMesh()->SetTexture(LoadImage("BonusIcon-Shield"), true);
       collectible->GetMesh()->UpdateGPU();
       break;
+    case ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK:
+      collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
+      collectible->GetMesh()->SetAllColor(glm::vec3(1, 0, 0));
+      collectible->GetMesh()->UpdateGPU();
+      break;
+    case ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE:
+      collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
+      collectible->GetMesh()->SetAllColor(glm::vec3(0, 0, 1));
+      collectible->GetMesh()->UpdateGPU();
+      break;
+    case ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL:
+      collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
+      collectible->GetMesh()->SetAllColor(glm::vec3(1, 0.612, 0));
+      collectible->GetMesh()->UpdateGPU();
+      break;
     }
 
   _collectibles[type] = collectible;

@@ -40,12 +40,18 @@ private:
   unsigned int         _current_level;
   unsigned int _score_multiplier;
   double       _score_multiplier_timer;
+  unsigned int _upgradematerial_a;
+  unsigned int _upgradematerial_d;
+  unsigned int _upgradematerial_p;
   
   unsigned int          _lives;
   std::vector<Widget *> _lives_widgets;
   std::vector<WidgetSpaceshipStatus *> _player_status_widgets;
   std::vector<Widget *> _active_bonus_widgets;
   Widget * _pausebutton;
+  Widget * _upgradematerial_a_widget;
+  Widget * _upgradematerial_d_widget;
+  Widget * _upgradematerial_p_widget;
 
   void OnPlayerDies();
   void OnLivesUpdated();

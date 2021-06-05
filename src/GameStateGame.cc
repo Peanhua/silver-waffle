@@ -25,6 +25,9 @@ GameStateGame::GameStateGame()
     _paused(false),
     _current_level(0),
     _score_multiplier_timer(0),
+    _upgradematerial_a(0),
+    _upgradematerial_d(0),
+    _upgradematerial_p(0),
     _lives(3),
     _pausebutton(nullptr)
 {
@@ -62,7 +65,7 @@ GameStateGame::GameStateGame()
         bool dorandomrotation = false;
 
         auto r = _rdist(_random);
-        if(r < 0.1f)
+        if(r < 0.10f)
           {
             bonustype = ObjectCollectible::TYPE_SCORE_BONUS;
             bonus = 5.0f + _rdist(_random) * 5.0f;
@@ -73,15 +76,33 @@ GameStateGame::GameStateGame()
             bonustype = ObjectCollectible::TYPE_DAMAGE_MULTIPLIER;
             bonus = 2.0;
           }
-        else if(r < 0.30f)
+        else if(r < 0.20f)
           {
             bonustype = ObjectCollectible::TYPE_SCORE_MULTIPLIER;
             bonus = 2.0;
           }
-        else if(r < 0.40f)
+        else if(r < 0.30f)
           {
             bonustype = ObjectCollectible::TYPE_SHIELD;
             bonus = 100.0;
+          }
+        else if(r < 0.40f)
+          {
+            bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK;
+            bonus = 1.0;
+            dorandomrotation = true;
+          }
+        else if(r < 0.50f)
+          {
+            bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE;
+            bonus = 1.0;
+            dorandomrotation = true;
+          }
+        else if(r < 0.60f)
+          {
+            bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL;
+            bonus = 1.0;
+            dorandomrotation = true;
           }
 
         if(bonustype != ObjectCollectible::TYPE_NONE)
@@ -122,6 +143,21 @@ GameStateGame::GameStateGame()
       }
     if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
       _scene->GetPlayer()->ActivateShield(collectible->GetBonus(ObjectCollectible::TYPE_SHIELD), 30.0);
+    if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK))
+      {
+        _upgradematerial_a += collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK);
+        _upgradematerial_a_widget->SetText(std::to_string(_upgradematerial_a));
+      }
+    if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE))
+      {
+        _upgradematerial_d += collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE);
+        _upgradematerial_d_widget->SetText(std::to_string(_upgradematerial_d));
+      }
+    if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL))
+      {
+        _upgradematerial_p += collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL);
+        _upgradematerial_p_widget->SetText(std::to_string(_upgradematerial_p));
+      }
   });
   
   {
@@ -153,12 +189,28 @@ GameStateGame::GameStateGame()
   OnLivesUpdated();
 
   {
-    auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 70), glm::ivec2(20, 100));
+    auto w = new Widget(root, glm::ivec2(width - 100, 70), glm::ivec2(100, 30));
+    w->SetTextColor(glm::vec3(1, 0, 0));
+    _upgradematerial_a_widget = w;
+  }
+  {
+    auto w = new Widget(root, glm::ivec2(width - 100, 100), glm::ivec2(100, 30));
+    w->SetTextColor(glm::vec3(0, 0, 1));
+    _upgradematerial_d_widget = w;
+  }
+  {
+    auto w = new Widget(root, glm::ivec2(width - 100, 130), glm::ivec2(100, 30));
+    w->SetTextColor(glm::vec3(1, 0.612, 0));
+    _upgradematerial_p_widget = w;
+  }
+  
+  {
+    auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 160), glm::ivec2(20, 100));
     w->SetSpaceship(_scene->GetPlayer());
     _player_status_widgets.push_back(w);
   }
   {
-    auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 70), glm::ivec2(20, 100));
+    auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 160), glm::ivec2(20, 100));
     w->SetSpaceship(_scene->GetPlayer());
     _player_status_widgets.push_back(w);
   }

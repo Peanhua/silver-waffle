@@ -67,6 +67,7 @@ public:
   glm::vec4 GetVertex4(unsigned int index) const;
   void AddColor(const glm::vec3 & color);
   void AddColor(const glm::vec4 & color);
+  void SetAllColor(const glm::vec3 & color, bool children = true);
   void AddTexCoord(const glm::vec2 & coord);
   void AddNormal(const glm::vec3 & normal);
   void AddElement(unsigned int index);

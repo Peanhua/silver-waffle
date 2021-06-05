@@ -225,6 +225,18 @@ void Mesh::AddColor(const glm::vec4 & color)
 }
 
 
+void Mesh::SetAllColor(const glm::vec3 & color, bool children)
+{
+  _colors.clear();
+  for(unsigned int i = 0; i < _vertices.size(); i++)
+    AddColor(color);
+
+  if(children)
+    for(auto c : _children)
+      c->SetAllColor(color, children);
+}
+
+
 void Mesh::AddTexCoord(const glm::vec2 & coord)
 {
   assert(_options & OPTION_TEXTURE);
