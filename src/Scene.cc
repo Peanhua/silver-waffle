@@ -194,7 +194,7 @@ void Scene::Tick(double deltatime)
           }
         else
           {
-            if(std::abs(collectible->GetPosition().x) > GetPlayAreaSize().x * 0.5f)
+            if(std::abs(collectible->GetPosition().x) > GetPlayAreaSize().x * 0.5f || collectible->GetPosition().y < 40.0f - 53.0f - 2.0f)
               collectible->Hit(99999, -glm::normalize(collectible->GetVelocity()));
           }
       }
