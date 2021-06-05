@@ -86,19 +86,19 @@ GameStateGame::GameStateGame()
             bonustype = ObjectCollectible::TYPE_SHIELD;
             bonus = 100.0;
           }
-        else if(r < 0.40f)
+        else if(r < 0.50f)
           {
             bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK;
             bonus = 1.0;
             dorandomrotation = true;
           }
-        else if(r < 0.50f)
+        else if(r < 0.70f)
           {
             bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE;
             bonus = 1.0;
             dorandomrotation = true;
           }
-        else if(r < 0.60f)
+        else if(r < 0.90f)
           {
             bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL;
             bonus = 1.0;
@@ -144,6 +144,45 @@ GameStateGame::GameStateGame()
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK))
       {
         _upgradematerial_a += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK));
+
+        unsigned int cost = 10;
+        if(_upgradematerial_a >= cost)
+          switch(_scene->GetPlayer()->GetWeaponCount())
+            {
+            case 1:
+              _scene->GetPlayer()->AddWeapon(glm::vec3(-0.1, 1, 0),
+                                             AssetLoader->LoadMesh("Projectile"),
+                                             glm::normalize(glm::vec3(-0.1, 1, 0)),
+                                             10.0,
+                                             34.0);
+              break;
+            case 2:
+              _scene->GetPlayer()->AddWeapon(glm::vec3(0.1, 1, 0),
+                                             AssetLoader->LoadMesh("Projectile"),
+                                             glm::normalize(glm::vec3(0.1, 1, 0)),
+                                             10.0,
+                                             34.0);
+              break;
+            case 3:
+              _scene->GetPlayer()->AddWeapon(glm::vec3(-0.2, 1, 0),
+                                             AssetLoader->LoadMesh("Projectile"),
+                                             glm::normalize(glm::vec3(-0.2, 1, 0)),
+                                             10.0,
+                                             34.0);
+              break;
+            case 4:
+              _scene->GetPlayer()->AddWeapon(glm::vec3(0.2, 1, 0),
+                                             AssetLoader->LoadMesh("Projectile"),
+                                             glm::normalize(glm::vec3(0.2, 1, 0)),
+                                             10.0,
+                                             34.0);
+              break;
+            default:
+              cost = 0;
+              break;
+            }
+        _upgradematerial_a -= cost;
+        
         _upgradematerial_a_widget->SetText(std::to_string(_upgradematerial_a));
       }
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE))
@@ -331,7 +370,8 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       break;
 
     case SDLK_SPACE:
-      _scene->GetPlayer()->SetWeaponAutofire(0, pressed);
+      for(unsigned int i = 0; i < _scene->GetPlayer()->GetWeaponCount(); i++)
+        _scene->GetPlayer()->SetWeaponAutofire(i, pressed);
       break;
 #endif
       
