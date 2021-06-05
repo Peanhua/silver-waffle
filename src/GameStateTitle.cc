@@ -71,7 +71,7 @@ GameStateTitle::GameStateTitle()
   w->SetText("Play");
   w->SetTextColor(glm::vec3(0.5, 1.0, 0.5));
   w->SetTextPaddingCentered(true, true);
-  w->SetTextFontWeight(0.55f);
+  w->SetTextFontWeight(0.5f);
   w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
     assert(button == button);
@@ -85,7 +85,7 @@ GameStateTitle::GameStateTitle()
   w->SetText("Quit");
   w->SetTextColor(glm::vec3(1.0, 0.5, 0.5));
   w->SetTextPaddingCentered(true, true);
-  w->SetTextFontWeight(0.55f);
+  w->SetTextFontWeight(0.5f);
   w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
     assert(button == button);

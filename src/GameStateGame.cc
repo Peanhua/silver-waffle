@@ -553,7 +553,7 @@ void GameStateGame::ChangeState(State new_state)
           y += w->GetSize().y + 20;
         }
         font = AssetLoader->LoadFont(16);
-        font_weight = 0.75f;
+        font_weight = 0.25f;
         {
           const std::string t("Hull health: " + std::to_string(static_cast<int>(_scene->GetPlayer()->GetHealth())));
           const double tlen = font->GetWidth(t);

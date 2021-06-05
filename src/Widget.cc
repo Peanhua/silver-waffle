@@ -392,7 +392,7 @@ void Widget::SetTextColor(const glm::vec3 & color)
 
 void Widget::SetTextFontWeight(float weight)
 {
-  _text_font_weight = weight;
+  _text_font_weight = 1.0f - weight;
 }
 
 
