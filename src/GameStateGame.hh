@@ -61,6 +61,7 @@ private:
   Widget * _upgradematerial_d_widget;
   Widget * _upgradematerial_p_widget;
 
+  void ChangeState(State new_state);
   void OnPlayerDies();
   void OnLivesUpdated();
   void OnLevelChanged();

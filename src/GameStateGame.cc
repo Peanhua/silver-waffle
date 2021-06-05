@@ -357,7 +357,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
   if(_state == State::FULL_PAUSE)
     {
       if((key == SDLK_ESCAPE || key == SDLK_TAB) && !pressed)
-        _state = State::RUNNING;
+        ChangeState(State::RUNNING);
       return;
     }
 
@@ -370,7 +370,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       break;
     case SDLK_TAB:
       if(!pressed)
-        _state = State::FULL_PAUSE;
+        ChangeState(State::FULL_PAUSE);
       break;
 #if 0
     case SDLK_LEFT:
@@ -493,27 +493,8 @@ void GameStateGame::OnLivesUpdated()
 
 void GameStateGame::OnPlayerDies()
 {
-  const auto width = Settings->GetInt("screen_width");
-  const auto height = Settings->GetInt("screen_height");
-
   assert(_state == State::RUNNING);
-  _state = State::DEATH_PAUSE;
-  _state_death_pause_key_eaten = false;
-  
-  const std::string t("Press the button to continue.");
-  auto font = AssetLoader->LoadFont(20);
-  double tlen = font->GetWidth(t);
-  _pausebutton = new Widget(GetRootWidget(), glm::ivec2((width - static_cast<int>(tlen)) / 2, height / 2), glm::ivec2(tlen, 27));
-  _pausebutton->SetText(t);
-  _pausebutton->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
-  {
-    assert(button == button);
-    assert(position == position);
-
-    if(!pressed)
-      NextLifeOrQuit();
-  });
-  SetModalWidget(_pausebutton);
+  ChangeState(State::DEATH_PAUSE);
 }
 
 
@@ -533,11 +514,8 @@ void GameStateGame::NextLifeOrQuit()
     }
   else
     Quit();
-  
-  SetModalWidget(nullptr);
-  _pausebutton->Destroy();
-  _pausebutton = nullptr;
-  _state = State::RUNNING;
+
+  ChangeState(State::RUNNING);
 }
 
 
@@ -545,4 +523,63 @@ void GameStateGame::OnLevelChanged()
 {
   auto level = _levels[_current_level];
   level->Start();
+}
+
+
+void GameStateGame::ChangeState(State new_state)
+{
+  assert(_state != new_state);
+  switch(new_state)
+    {
+    case State::RUNNING:
+      if(_pausebutton)
+        {
+          SetModalWidget(nullptr);
+          _pausebutton->Destroy();
+          _pausebutton = nullptr;
+        }
+      break;
+      
+    case State::DEATH_PAUSE:
+      {
+        _state_death_pause_key_eaten = false;
+
+        const std::string t("Press the button to continue.");
+        const auto width = Settings->GetInt("screen_width");
+        const auto height = Settings->GetInt("screen_height");
+        auto font = AssetLoader->LoadFont(20);
+        double tlen = font->GetWidth(t);
+
+        assert(!_pausebutton);
+        _pausebutton = new Widget(GetRootWidget(), glm::ivec2((width - static_cast<int>(tlen)) / 2, height / 2), glm::ivec2(tlen, 27));
+        _pausebutton->SetText(t);
+        _pausebutton->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+        {
+          assert(button == button);
+          assert(position == position);
+          
+          if(!pressed)
+            NextLifeOrQuit();
+        });
+        SetModalWidget(_pausebutton);
+      }
+      break;
+      
+    case State::FULL_PAUSE:
+      {
+        const std::string t("PAUSED");
+        const auto width = Settings->GetInt("screen_width");
+        const auto height = Settings->GetInt("screen_height");
+        auto font = AssetLoader->LoadFont(20);
+        double tlen = font->GetWidth(t);
+
+        assert(!_pausebutton);
+        _pausebutton = new Widget(GetRootWidget(), glm::ivec2((width - static_cast<int>(tlen)) / 2, height / 2), glm::ivec2(tlen, 27));
+        _pausebutton->SetText(t);
+        SetModalWidget(_pausebutton);
+      }
+      break;
+    }
+  
+  _state = new_state;
 }
