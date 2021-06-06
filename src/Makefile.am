@@ -45,6 +45,7 @@ silverwaffle_SOURCES =				\
 	ShaderProgram.cc			\
 	SolarSystemObject.cc			\
 	SpaceParticles.cc			\
+	SpaceshipUpgrade.cc			\
 	Subsystem.cc				\
 	SubsystemAssetLoader.cc			\
 	SubsystemGameState.cc			\
@@ -56,6 +57,7 @@ silverwaffle_SOURCES =				\
 	Widget.cc				\
 	WidgetButton.cc				\
 	WidgetPlayerShip.cc			\
+	WidgetShopItem.cc			\
 	WidgetSpaceshipMaintenance.cc		\
 	WidgetSpaceshipStatus.cc		\
 	WidgetWeaponStatus.cc			\

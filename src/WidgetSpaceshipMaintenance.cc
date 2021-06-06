@@ -3,16 +3,21 @@
 #include "ObjectSpaceship.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
+#include "UpgradeMaterial.hh"
 #include "WidgetButton.hh"
+#include "WidgetShopItem.hh"
 #include <iostream>
 
 
-WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, ObjectSpaceship * spaceship, get_material_amount_t GetMaterialAmount, use_material_t UseMaterial)
+WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size,
+                                                       ObjectSpaceship * spaceship, std::vector<UpgradeMaterial *> & materials)
+
   : Widget(parent, position, size),
     _spaceship(spaceship)
 {
   auto font = AssetLoader->LoadFont(20);
   auto font_weight = 0.5f;
+  auto font_color = glm::vec3(0, 1, 1);
   
   SetImage("PanelBorders");
   SetIsFocusable(false);
@@ -23,6 +28,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
     const std::string t("SPACESHIP MAINTENANCE");
     const double tlen = font->GetWidth(t);
     auto w = new Widget(this, glm::ivec2((GetSize().x - static_cast<int>(tlen)) / 2, y), glm::ivec2(tlen, 30));
+    w->SetTextColor(font_color);
     w->SetText(t);
     w->SetTextFontWeight(font_weight);
     w->SetIsFocusable(false);
@@ -30,112 +36,29 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
   }
   font = AssetLoader->LoadFont(16);
   font_weight = 0.25f;
+  font_color = glm::vec3(0, 1, 0);
   {
     const std::string t("Hull health: " + std::to_string(static_cast<int>(_spaceship->GetHealth())));
     const double tlen = font->GetWidth(t);
     auto w = new Widget(this, glm::ivec2(x, y), glm::ivec2(tlen, 30));
     w->SetTextFont(font);
+    w->SetTextColor(font_color);
     w->SetText(t);
     w->SetTextFontWeight(font_weight);
     w->SetIsFocusable(false);
     y += w->GetSize().y + 4;
   }
-  {
-    const std::string t("Weapons: " + std::to_string(_spaceship->GetWeaponCount()));
-    const double tlen = font->GetWidth(t);
-    auto w = new Widget(this, glm::ivec2(x, y), glm::ivec2(tlen, 30));
-    w->SetTextFont(font);
-    w->SetText(t);
-    w->SetTextFontWeight(font_weight);
-    w->SetIsFocusable(false);
-    
-    unsigned int costs[] { 10, 0, 10 };
 
-    auto CanBuy = [this, GetMaterialAmount, costs]() -> bool
+  std::vector<SpaceshipUpgrade::Type> types
     {
-      if(_spaceship->GetWeaponCount() >= 5)
-        return false;
-      for(unsigned int i = 0; i < 3; i++)
-        if(GetMaterialAmount(i) < costs[i])
-          return false;
-      return true;
+      SpaceshipUpgrade::Type::WEAPON,
+      SpaceshipUpgrade::Type::WEAPON_COOLER
     };
-
-    if(CanBuy())
-      {
-        const std::string bt("Buy");
-        const double buytlen = font->GetWidth(bt);
-        auto buybutton = new WidgetButton(this, glm::ivec2(x + w->GetSize().x + 20, y), glm::ivec2(buytlen, 30));
-        buybutton->SetTextFont(font);
-        buybutton->SetText(bt);
-        buybutton->SetTextFontWeight(font_weight);
-        buybutton->SetOnClicked([this, w, costs, buybutton, CanBuy, UseMaterial](bool pressed, unsigned int button, const glm::ivec2 & pos)
-        {
-          assert(button == button);
-          assert(pos == pos);
-
-          if(!pressed && CanBuy())
-            {
-              _spaceship->AddUpgrade(ObjectSpaceship::Upgrade::Type::WEAPON, 0, 0);
-              for(unsigned int i = 0; i < 3; i++)
-                UseMaterial(i, costs[i]);
-              w->SetText(std::string("Weapons: ") + std::to_string(_spaceship->GetWeaponCount()));
-            }
-          if(!CanBuy())
-            buybutton->Destroy();
-        });
-      }
-
-    y += w->GetSize().y + 4;
-  }
-        
-  {
-    const std::string t("Weapon coolers: " + std::to_string(_spaceship->GetUpgrade(ObjectSpaceship::Upgrade::Type::WEAPON_COOLER)->GetIntValue()));
-    const double tlen = font->GetWidth(t);
-    auto w = new Widget(this, glm::ivec2(x, y), glm::ivec2(tlen, 30));
-    w->SetTextFont(font);
-    w->SetText(t);
-    w->SetTextFontWeight(font_weight);
-    w->SetIsFocusable(false);
-    
-    unsigned int costs[] { 6, 10, 4 };
-
-    auto CanBuy = [this, GetMaterialAmount, costs]() -> bool
+  for(auto t : types)
     {
-      if(_spaceship->GetUpgrade(ObjectSpaceship::Upgrade::Type::WEAPON_COOLER)->GetIntValue() >= static_cast<int>(_spaceship->GetWeaponCount()))
-        return false;
-      for(unsigned int i = 0; i < 3; i++)
-        if(GetMaterialAmount(i) < costs[i])
-          return false;
-      return true;
-    };
-
-    if(CanBuy())
-      {
-        const std::string bt("Buy");
-        const double buytlen = font->GetWidth(bt);
-        auto buybutton = new WidgetButton(this, glm::ivec2(x + w->GetSize().x + 20, y), glm::ivec2(buytlen, 30));
-        buybutton->SetTextFont(font);
-        buybutton->SetText(bt);
-        buybutton->SetTextFontWeight(font_weight);
-        buybutton->SetOnClicked([this, w, costs, buybutton, CanBuy, UseMaterial](bool pressed, unsigned int button, const glm::ivec2 & pos)
-        {
-          assert(button == button);
-          assert(pos == pos);
-
-          if(!pressed && CanBuy())
-            {
-              _spaceship->AddUpgrade(ObjectSpaceship::Upgrade::Type::WEAPON_COOLER, 0, 0);
-              for(unsigned int i = 0; i < 3; i++)
-                UseMaterial(i, costs[i]);
-              w->SetText("Weapon coolers: " + std::to_string(_spaceship->GetUpgrade(ObjectSpaceship::Upgrade::Type::WEAPON_COOLER)->GetIntValue()));
-            }
-          if(!CanBuy())
-            buybutton->Destroy();
-        });
-      }
-
-    y += w->GetSize().y + 4;
-  }
+      auto w = new WidgetShopItem(this, glm::ivec2(x, y), glm::ivec2(200, 30),
+                                  _spaceship, materials, _spaceship->GetUpgrade(t));
+      y += w->GetSize().y + 4;
+    }
 }
 

@@ -2,6 +2,7 @@
 #define OBJECT_SPACESHIP_HH_
 
 #include "ObjectMovable.hh"
+#include "SpaceshipUpgrade.hh"
 #include <vector>
 
 class ObjectCollectible;
@@ -10,39 +11,6 @@ class ObjectCollectible;
 class ObjectSpaceship : public ObjectMovable
 {
 public:
-  class Upgrade
-  {
-  public:
-    enum class Type
-      {
-        BONUS_DAMAGE,
-        SHIELD,
-        WEAPON,
-        WEAPON_COOLER,
-      };
-
-    Upgrade(ObjectSpaceship * spaceship, Type type);
-
-    void Add(int amount, double time);
-    void Add(double amount, double time);
-    void Tick(double deltatime);
-    void AddFromCollectible(ObjectCollectible * collectible);
-
-    bool   IsActive()    const;
-    Type   GetType()     const;
-    double GetValue()    const;
-    int    GetIntValue() const;
-    double GetTimer()    const;
-    
-  private:
-    ObjectSpaceship * _spaceship;
-    Type   _type;
-    double _value;
-    int    _int_value;
-    double _timer;
-  };
-
-
   ObjectSpaceship(Scene * scene);
 
   void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const override;
@@ -59,9 +27,10 @@ public:
   unsigned int AddEngine(const glm::vec3 & thrust_direction, double power);
   void         SetEnginePower(unsigned int engine_id, double throttle);
 
-  void      AddUpgrade(Upgrade::Type type, double value, double time);
-  void      UpgradeFromCollectible(ObjectCollectible * collectible);
-  Upgrade * GetUpgrade(Upgrade::Type type) const;
+  void               AddUpgrade(SpaceshipUpgrade::Type type, double value, double time);
+  bool               CanAddUpgrade(SpaceshipUpgrade::Type type) const;
+  void               UpgradeFromCollectible(ObjectCollectible * collectible);
+  SpaceshipUpgrade * GetUpgrade(SpaceshipUpgrade::Type type) const;
   
 private:
   class Engine
@@ -89,7 +58,7 @@ private:
   
   std::vector<Engine *>  _engines;
   std::vector<Weapon *>  _weapons;
-  std::vector<Upgrade *> _upgrades;
+  std::vector<SpaceshipUpgrade *> _upgrades;
 };
 
 #endif

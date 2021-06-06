@@ -12,6 +12,7 @@
 #include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
+#include "UpgradeMaterial.hh"
 #include "WidgetButton.hh"
 #include "WidgetPlayerShip.hh"
 #include "WidgetSpaceshipMaintenance.hh"
@@ -27,9 +28,6 @@ GameStateGame::GameStateGame()
     _rdist(0, 1),
     _current_level(0),
     _score_multiplier_timer(0),
-    _upgradematerial_a(0),
-    _upgradematerial_d(0),
-    _upgradematerial_p(0),
     _lives(3),
     _pausebutton(nullptr)
 {
@@ -44,6 +42,10 @@ GameStateGame::GameStateGame()
   _fov = 120.0;
 # define CAMERA_SPEED 1
 #endif
+
+  _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::ATTACK,   "Material A"));
+  _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::DEFENSE,  "Material D"));
+  _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::PHYSICAL, "Material P"));
   
   _camera->SetFOV(_fov);
   _camera->SetClippingPlanes(0.01, 10000.0);
@@ -145,18 +147,18 @@ GameStateGame::GameStateGame()
       }
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK))
       {
-        _upgradematerial_a += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK));
-        _upgradematerial_a_widget->SetText(std::to_string(_upgradematerial_a));
+        _upgradematerials[0]->Add(static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK)));
+        _upgradematerial_widgets[0]->SetText(std::to_string(_upgradematerials[0]->GetAmount()));
       }
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE))
       {
-        _upgradematerial_d += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE));
-        _upgradematerial_d_widget->SetText(std::to_string(_upgradematerial_d));
+        _upgradematerials[1]->Add(static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE)));
+        _upgradematerial_widgets[1]->SetText(std::to_string(_upgradematerials[1]->GetAmount()));
       }
     if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL))
       {
-        _upgradematerial_p += static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL));
-        _upgradematerial_p_widget->SetText(std::to_string(_upgradematerial_p));
+        _upgradematerials[2]->Add(static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL)));
+        _upgradematerial_widgets[2]->SetText(std::to_string(_upgradematerials[2]->GetAmount()));
       }
   });
   
@@ -192,17 +194,17 @@ GameStateGame::GameStateGame()
   {
     auto w = new Widget(root, glm::ivec2(width - 100, 70), glm::ivec2(100, 30));
     w->SetTextColor(glm::vec3(1, 0, 0));
-    _upgradematerial_a_widget = w;
+    _upgradematerial_widgets.push_back(w);
   }
   {
     auto w = new Widget(root, glm::ivec2(width - 100, 100), glm::ivec2(100, 30));
     w->SetTextColor(glm::vec3(0, 0, 1));
-    _upgradematerial_d_widget = w;
+    _upgradematerial_widgets.push_back(w);
   }
   {
     auto w = new Widget(root, glm::ivec2(width - 100, 130), glm::ivec2(100, 30));
     w->SetTextColor(glm::vec3(1, 0.612, 0));
-    _upgradematerial_p_widget = w;
+    _upgradematerial_widgets.push_back(w);
   }
   
   {
@@ -282,9 +284,9 @@ void GameStateGame::Tick(double deltatime)
         }
     }
   
-  _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(ObjectSpaceship::Upgrade::Type::BONUS_DAMAGE)->IsActive());
+  _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
   _active_bonus_widgets[ObjectCollectible::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_score_multiplier_timer > 0.0);
-  _active_bonus_widgets[ObjectCollectible::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(ObjectSpaceship::Upgrade::Type::SHIELD)->IsActive());
+  _active_bonus_widgets[ObjectCollectible::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->IsActive());
 
   glDisable(GL_DEPTH_TEST);
   _milkyway->Draw(*_camera);
@@ -500,6 +502,9 @@ void GameStateGame::ChangeState(State new_state)
           SetModalWidget(nullptr);
           _pausebutton->Destroy();
           _pausebutton = nullptr;
+
+          for(unsigned int i = 0; i < 3; i++)
+            _upgradematerial_widgets[i]->SetText(std::to_string(_upgradematerials[i]->GetAmount()));
         }
       break;
       
@@ -535,38 +540,7 @@ void GameStateGame::ChangeState(State new_state)
         const glm::ivec2 panelsize(600, 500);
 
         assert(!_pausebutton);
-        _pausebutton = new WidgetSpaceshipMaintenance(GetRootWidget(), glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(),
-                                                      // GetMaterialAmount()
-                                                      [this](unsigned int material_id) -> unsigned int
-                                                      {
-                                                        unsigned int rv = 0;
-                                                        switch(material_id)
-                                                          {
-                                                          case 0: rv = _upgradematerial_a; break;
-                                                          case 1: rv = _upgradematerial_d; break;
-                                                          case 2: rv = _upgradematerial_p; break;
-                                                          }
-                                                        return rv;
-                                                      },
-                                                      // UseMaterial()
-                                                      [this](unsigned int material_id, unsigned int materialuse)
-                                                      {
-                                                        switch(material_id)
-                                                          {
-                                                          case 0:
-                                                            _upgradematerial_a -= materialuse;
-                                                            _upgradematerial_a_widget->SetText(std::to_string(_upgradematerial_a));
-                                                            break;
-                                                          case 1:
-                                                            _upgradematerial_d -= materialuse;
-                                                            _upgradematerial_d_widget->SetText(std::to_string(_upgradematerial_d));
-                                                            break;
-                                                          case 2:
-                                                            _upgradematerial_p -= materialuse;
-                                                            _upgradematerial_p_widget->SetText(std::to_string(_upgradematerial_p));
-                                                            break;
-                                                          }
-                                                      });
+        _pausebutton = new WidgetSpaceshipMaintenance(GetRootWidget(), glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(), _upgradematerials);
         SetModalWidget(_pausebutton);
       }
       break;

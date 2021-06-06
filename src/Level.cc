@@ -154,6 +154,6 @@ void Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator
       const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
       auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
       if(invader && rand() < 0.2f)
-        invader->AddUpgrade(ObjectSpaceship::Upgrade::Type::SHIELD, 50, 9999);
+        invader->AddUpgrade(SpaceshipUpgrade::Type::SHIELD, 50, 9999);
     }
 }
