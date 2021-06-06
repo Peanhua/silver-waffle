@@ -16,23 +16,29 @@ public:
     enum class Type
       {
         BONUS_DAMAGE,
-        SHIELD
+        SHIELD,
+        WEAPON,
+        WEAPON_COOLER,
       };
 
-    Upgrade(Type type);
-    
+    Upgrade(ObjectSpaceship * spaceship, Type type);
+
+    void Add(int amount, double time);
     void Add(double amount, double time);
     void Tick(double deltatime);
     void AddFromCollectible(ObjectCollectible * collectible);
 
-    bool   IsActive() const;
-    Type   GetType()  const;
-    double GetValue() const;
-    double GetTimer() const;
+    bool   IsActive()    const;
+    Type   GetType()     const;
+    double GetValue()    const;
+    int    GetIntValue() const;
+    double GetTimer()    const;
     
   private:
+    ObjectSpaceship * _spaceship;
     Type   _type;
     double _value;
+    int    _int_value;
     double _timer;
   };
 

@@ -11,11 +11,13 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene)
   : ObjectMovable(scene)
 {
   {
-    auto u = new Upgrade(Upgrade::Type::BONUS_DAMAGE);
+    auto u = new Upgrade(this, Upgrade::Type::BONUS_DAMAGE);
     _upgrades.push_back(u);
-  }
-  {
-    auto u = new Upgrade(Upgrade::Type::SHIELD);
+    u = new Upgrade(this, Upgrade::Type::SHIELD);
+    _upgrades.push_back(u);
+    u = new Upgrade(this, Upgrade::Type::WEAPON);
+    _upgrades.push_back(u);
+    u = new Upgrade(this, Upgrade::Type::WEAPON_COOLER);
     _upgrades.push_back(u);
   }
 }
@@ -44,14 +46,19 @@ void ObjectSpaceship::Tick(double deltatime)
         AddImpulse(glm::vec3(-5.0 * deltatime, 0, 0));
     }
 
+  int weaponcoolercount = GetUpgrade(Upgrade::Type::WEAPON_COOLER)->GetIntValue();
   for(unsigned int i = 0; i < _weapons.size(); i++)
     {
       auto weapon = _weapons[i];
       
       if(weapon->_autofire)
         FireWeapon(i);
+
+      double cooling = 0.1;
+      if(static_cast<int>(i) < weaponcoolercount)
+        cooling += 0.05;
       
-      weapon->_heat = std::max(0.0, weapon->_heat - 0.1 * deltatime);
+      weapon->_heat = std::max(0.0, weapon->_heat - cooling * deltatime);
     }
 
   for(auto u : _upgrades)
@@ -72,12 +79,12 @@ unsigned int ObjectSpaceship::AddEngine(const glm::vec3 & thrust_direction, doub
 
 unsigned int ObjectSpaceship::AddWeapon()
 {
-  float id = (GetWeaponCount() + 1) / 2;
+  float id = static_cast<float>((GetWeaponCount() + 1) / 2);
   float sign = (GetWeaponCount() % 2) == 0 ? 1 : -1;
 
-  return AddWeapon(glm::vec3(sign * id * 0.1, 1, 0),
+  return AddWeapon(glm::vec3(sign * id * 0.1f, 1, 0),
                    AssetLoader->LoadMesh("Projectile"),
-                   glm::normalize(glm::vec3(sign * id * 0.1, 1, 0)),
+                   glm::normalize(glm::vec3(sign * id * 0.1f, 1, 0)),
                    10.0,
                    34.0);
 }
@@ -209,9 +216,11 @@ void ObjectSpaceship::AddUpgrade(Upgrade::Type type, double value, double time)
 
 
 
-ObjectSpaceship::Upgrade::Upgrade(Type type)
-  : _type(type),
+ObjectSpaceship::Upgrade::Upgrade(ObjectSpaceship * spaceship, Type type)
+  : _spaceship(spaceship),
+    _type(type),
     _value(0),
+    _int_value(0),
     _timer(0)
 {
 }
@@ -228,6 +237,13 @@ void ObjectSpaceship::Upgrade::Add(double amount, double time)
     case Type::SHIELD:
       _value = amount;
       _timer += time;
+      break;
+    case Type::WEAPON:
+      _spaceship->AddWeapon();
+      _int_value++;
+      break;
+    case Type::WEAPON_COOLER:
+      _int_value++;
       break;
     }
   if(_value < 0.0001)
@@ -249,6 +265,15 @@ double ObjectSpaceship::Upgrade::GetValue() const
 }
 
 
+int ObjectSpaceship::Upgrade::GetIntValue() const
+{
+  if(!IsActive())
+    return 0;
+  return _int_value;
+}
+
+
+
 double ObjectSpaceship::Upgrade::GetTimer() const
 {
   return _timer;
@@ -257,14 +282,30 @@ double ObjectSpaceship::Upgrade::GetTimer() const
 
 void ObjectSpaceship::Upgrade::Tick(double deltatime)
 {
-  if(IsActive())
+  if(IsActive() && _timer > 0.0)
     _timer -= deltatime;
 }
 
 
 bool ObjectSpaceship::Upgrade::IsActive() const
 {
-  return _timer > 0.0;
+  bool uses_timer;
+  switch(_type)
+    {
+    case Type::BONUS_DAMAGE:
+    case Type::SHIELD:
+      uses_timer = true;
+      break;
+    case Type::WEAPON:
+    case Type::WEAPON_COOLER:
+      uses_timer = false;
+      break;
+    }
+
+  if(uses_timer)
+    return _timer > 0.0;
+  else
+    return true;
 }
 
 
@@ -279,6 +320,10 @@ void ObjectSpaceship::Upgrade::AddFromCollectible(ObjectCollectible * collectibl
     case Type::SHIELD:
       if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
         Add(std::max(_value, collectible->GetBonus(ObjectCollectible::TYPE_SHIELD)), 30.0);
+      break;
+    case Type::WEAPON:
+      break;
+    case Type::WEAPON_COOLER:
       break;
     }
 }
