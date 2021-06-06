@@ -10,16 +10,19 @@
 ObjectSpaceship::ObjectSpaceship(Scene * scene)
   : ObjectMovable(scene)
 {
-  {
-    auto u = new SpaceshipUpgrade(this, SpaceshipUpgrade::Type::BONUS_DAMAGE);
-    _upgrades.push_back(u);
-    u = new SpaceshipUpgrade(this, SpaceshipUpgrade::Type::SHIELD);
-    _upgrades.push_back(u);
-    u = new SpaceshipUpgrade(this, SpaceshipUpgrade::Type::WEAPON);
-    _upgrades.push_back(u);
-    u = new SpaceshipUpgrade(this, SpaceshipUpgrade::Type::WEAPON_COOLER);
-    _upgrades.push_back(u);
-  }
+  std::vector<SpaceshipUpgrade::Type> types
+    {
+      SpaceshipUpgrade::Type::BONUS_DAMAGE,
+      SpaceshipUpgrade::Type::SHIELD,
+      SpaceshipUpgrade::Type::WEAPON,
+      SpaceshipUpgrade::Type::WEAPON_COOLER,
+      SpaceshipUpgrade::Type::ENGINE_UPGRADE,
+    };
+  for(auto t : types)
+    {
+      auto u = new SpaceshipUpgrade(this, t);
+      _upgrades.push_back(u);
+    }
 }
 
 
@@ -37,13 +40,14 @@ void ObjectSpaceship::Tick(double deltatime)
 
   if(_engines.size() > 0 && !engines_on)
     { // todo: separate controls and use the engines to slow down
+      double engine_strength = 0.25 + 2.75 * static_cast<double>(GetUpgrade(SpaceshipUpgrade::Type::ENGINE_UPGRADE)->GetIntValue()) / 3.0;
       const auto vel = GetVelocity();
       if(std::abs(vel.x) < 0.1f)
         SetVelocity(glm::vec3(0, vel.y, vel.z));
       else if(vel.x < 0.0f)
-        AddImpulse(glm::vec3(5.0 * deltatime, 0, 0));
+        AddImpulse(glm::vec3(engine_strength *  20.0 * deltatime, 0, 0));
       else if(vel.x > 0.0f)
-        AddImpulse(glm::vec3(-5.0 * deltatime, 0, 0));
+        AddImpulse(glm::vec3(engine_strength * -20.0 * deltatime, 0, 0));
     }
 
   int weaponcoolercount = GetUpgrade(SpaceshipUpgrade::Type::WEAPON_COOLER)->GetIntValue();
@@ -158,6 +162,13 @@ void ObjectSpaceship::SetEnginePower(unsigned int engine_id, double throttle)
 }
 
 
+void ObjectSpaceship::UpgradeEngines(double power_multiplier)
+{
+  for(auto e : _engines)
+    e->_power *= power_multiplier;
+}
+
+
 void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
 {
   auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
@@ -206,14 +217,12 @@ void ObjectSpaceship::UpgradeFromCollectible(ObjectCollectible * collectible)
     u->AddFromCollectible(collectible);
 }
 
-
+// todo: remove these two:
 void ObjectSpaceship::AddUpgrade(SpaceshipUpgrade::Type type, double value, double time)
 {
   auto upgrade = GetUpgrade(type);
   upgrade->Add(value, time);
 }
-
-
 bool ObjectSpaceship::CanAddUpgrade(SpaceshipUpgrade::Type type) const
 {
   auto upgrade = GetUpgrade(type);

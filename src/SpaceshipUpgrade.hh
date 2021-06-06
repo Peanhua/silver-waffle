@@ -16,6 +16,7 @@ public:
       SHIELD,
       WEAPON,
       WEAPON_COOLER,
+      ENGINE_UPGRADE,
     };
   
   SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type);

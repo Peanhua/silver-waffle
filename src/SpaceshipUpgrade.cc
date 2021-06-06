@@ -13,10 +13,11 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
 {
   switch(_type)
     {
-    case Type::BONUS_DAMAGE:  _name = "Bonus damage";  break;
-    case Type::SHIELD:        _name = "Shield";        break;
-    case Type::WEAPON:        _name = "Weapon";        break;
-    case Type::WEAPON_COOLER: _name = "Weapon cooler"; break;
+    case Type::BONUS_DAMAGE:   _name = "Bonus damage";  break;
+    case Type::SHIELD:         _name = "Shield";        break;
+    case Type::WEAPON:         _name = "Weapon";        break;
+    case Type::WEAPON_COOLER:  _name = "Weapon cooler"; break;
+    case Type::ENGINE_UPGRADE: _name = "Engine upgrade"; break;
     }
 }
 
@@ -33,7 +34,10 @@ bool SpaceshipUpgrade::CanAdd() const
       return _spaceship->GetWeaponCount() < 5;
 
     case Type::WEAPON_COOLER:
-      return _spaceship->GetUpgrade(Type::WEAPON_COOLER)->GetIntValue() < static_cast<int>(_spaceship->GetWeaponCount());
+      return GetIntValue() < static_cast<int>(_spaceship->GetWeaponCount());
+
+    case Type::ENGINE_UPGRADE:
+      return GetIntValue() < 3;
     }
   assert(false);
   return false;
@@ -59,6 +63,10 @@ void SpaceshipUpgrade::Add(double amount, double time)
       break;
     case Type::WEAPON_COOLER:
       _int_value++;
+      break;
+    case Type::ENGINE_UPGRADE:
+      _int_value++;
+      _spaceship->UpgradeEngines(1.5);
       break;
     }
   if(_value < 0.0001)
@@ -121,6 +129,11 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::DEFENSE]  = 10;
       costs[UpgradeMaterial::Type::PHYSICAL] =  4;
       break;
+    case Type::ENGINE_UPGRADE:
+      costs[UpgradeMaterial::Type::ATTACK]   =  5;
+      costs[UpgradeMaterial::Type::DEFENSE]  =  5;
+      costs[UpgradeMaterial::Type::PHYSICAL] =  2;
+      break;
     }
   return costs[for_material];
 }
@@ -144,6 +157,7 @@ bool SpaceshipUpgrade::IsActive() const
       break;
     case Type::WEAPON:
     case Type::WEAPON_COOLER:
+    case Type::ENGINE_UPGRADE:
       uses_timer = false;
       break;
     }
@@ -170,6 +184,8 @@ void SpaceshipUpgrade::AddFromCollectible(ObjectCollectible * collectible)
     case Type::WEAPON:
       break;
     case Type::WEAPON_COOLER:
+      break;
+    case Type::ENGINE_UPGRADE:
       break;
     }
 }

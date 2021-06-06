@@ -52,7 +52,8 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
   std::vector<SpaceshipUpgrade::Type> types
     {
       SpaceshipUpgrade::Type::WEAPON,
-      SpaceshipUpgrade::Type::WEAPON_COOLER
+      SpaceshipUpgrade::Type::WEAPON_COOLER,
+      SpaceshipUpgrade::Type::ENGINE_UPGRADE,
     };
   for(auto t : types)
     {
