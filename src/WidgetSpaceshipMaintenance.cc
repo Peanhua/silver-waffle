@@ -4,6 +4,7 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "WidgetButton.hh"
+#include <iostream>
 
 
 WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, ObjectSpaceship * spaceship, get_material_amount_t GetMaterialAmount, use_material_t UseMaterial)
@@ -13,8 +14,6 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
   auto font = AssetLoader->LoadFont(20);
   auto font_weight = 0.5f;
   
-  const glm::ivec2 panelsize(600, 500);
-  
   SetImage("PanelBorders");
   SetIsFocusable(false);
         
@@ -23,7 +22,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
   {
     const std::string t("SPACESHIP MAINTENANCE");
     const double tlen = font->GetWidth(t);
-    auto w = new Widget(this, glm::ivec2((panelsize.x - static_cast<int>(tlen)) / 2, y), glm::ivec2(tlen, 30));
+    auto w = new Widget(this, glm::ivec2((GetSize().x - static_cast<int>(tlen)) / 2, y), glm::ivec2(tlen, 30));
     w->SetText(t);
     w->SetTextFontWeight(font_weight);
     w->SetIsFocusable(false);
@@ -50,8 +49,19 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
     w->SetTextFontWeight(font_weight);
     w->SetIsFocusable(false);
     
-    unsigned int cost = 10;
-    if(GetMaterialAmount(0) >= cost)
+    unsigned int costs[] { 10, 0, 10 };
+
+    auto CanBuy = [this, GetMaterialAmount, costs]() -> bool
+    {
+      if(_spaceship->GetWeaponCount() >= 5)
+        return false;
+      for(int i = 0; i < 3; i++)
+        if(GetMaterialAmount(i) < costs[i])
+          return false;
+      return true;
+    };
+
+    if(CanBuy())
       {
         const std::string bt("Buy");
         const double buytlen = font->GetWidth(bt);
@@ -59,55 +69,20 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
         buybutton->SetTextFont(font);
         buybutton->SetText(bt);
         buybutton->SetTextFontWeight(font_weight);
-        buybutton->SetOnClicked([this, w, cost, GetMaterialAmount, UseMaterial](bool pressed, unsigned int button, const glm::ivec2 & pos)
+        buybutton->SetOnClicked([this, w, costs, buybutton, CanBuy, UseMaterial](bool pressed, unsigned int button, const glm::ivec2 & pos)
         {
           assert(button == button);
           assert(pos == pos);
 
-          if(!pressed)
+          if(!pressed && CanBuy())
             {
-              if(GetMaterialAmount(0) >= cost)
-                {
-                  unsigned int materialuse = cost;
-                  switch(_spaceship->GetWeaponCount())
-                    {
-                    case 1:
-                      _spaceship->AddWeapon(glm::vec3(-0.1, 1, 0),
-                                            AssetLoader->LoadMesh("Projectile"),
-                                            glm::normalize(glm::vec3(-0.1, 1, 0)),
-                                            10.0,
-                                            34.0);
-                      break;
-                    case 2:
-                      _spaceship->AddWeapon(glm::vec3(0.1, 1, 0),
-                                            AssetLoader->LoadMesh("Projectile"),
-                                            glm::normalize(glm::vec3(0.1, 1, 0)),
-                                            10.0,
-                                            34.0);
-                      break;
-                    case 3:
-                      _spaceship->AddWeapon(glm::vec3(-0.2, 1, 0),
-                                            AssetLoader->LoadMesh("Projectile"),
-                                            glm::normalize(glm::vec3(-0.2, 1, 0)),
-                                            10.0,
-                                            34.0);
-                      break;
-                    case 4:
-                      _spaceship->AddWeapon(glm::vec3(0.2, 1, 0),
-                                            AssetLoader->LoadMesh("Projectile"),
-                                            glm::normalize(glm::vec3(0.2, 1, 0)),
-                                            10.0,
-                                            34.0);
-                      break;
-                    default:
-                      materialuse = 0;
-                      break;
-                    }
-                  if(materialuse > 0)
-                    UseMaterial(0, materialuse);
-                  w->SetText(std::string("Weapon count: ") + std::to_string(_spaceship->GetWeaponCount()));
-                }
+              _spaceship->AddWeapon();
+              for(unsigned int i = 0; i < 3; i++)
+                UseMaterial(i, costs[i]);
+              w->SetText(std::string("Weapon count: ") + std::to_string(_spaceship->GetWeaponCount()));
             }
+          if(!CanBuy())
+            buybutton->Destroy();
         });
       }
 

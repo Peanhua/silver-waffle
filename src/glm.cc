@@ -34,6 +34,19 @@ std::ostream & operator<<(std::ostream & out, const glm::vec3 & v)
 }
 
 
+std::ostream & operator<<(std::ostream & out, const glm::vec4 & v)
+{
+  const char delimiter = ' ';
+
+  out << v.x << delimiter;
+  out << v.y << delimiter;
+  out << v.z << delimiter;
+  out << v.w << delimiter;
+
+  return out;
+}
+
+
 std::ostream & operator<<(std::ostream & out, const glm::mat4 & m)
 {
   char delimiter = ' ';

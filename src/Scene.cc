@@ -108,11 +108,7 @@ ObjectSpaceship * Scene::CreatePlayer()
     assert(mesh);
     _player->SetMesh(mesh);
   }
-  _player->AddWeapon(glm::vec3(0, 1, 0),
-                     AssetLoader->LoadMesh("Projectile"),
-                     glm::vec3(0, 1, 0),
-                     10.0,
-                     34.0);
+  _player->AddWeapon();
   _player->AddEngine(glm::vec3(-1, 0, 0), 20.0);
   _player->AddEngine(glm::vec3( 1, 0, 0), 20.0);
 
@@ -323,11 +319,7 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
   assert(mesh);
   invader->SetMesh(mesh);
       
-  invader->AddWeapon(glm::vec3(0, -1, 0),
-                     AssetLoader->LoadMesh("Projectile"),
-                     glm::vec3(0, -1, 0),
-                     5.0,
-                     34.0);
+  invader->AddWeapon();
 
   delete _invaders[ind];
   _invaders[ind] = invader;

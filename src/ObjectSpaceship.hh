@@ -43,6 +43,7 @@ public:
   void Tick(double deltatime) override;
   void Hit(double damage, const glm::vec3 & impulse) override;
 
+  unsigned int AddWeapon();
   unsigned int AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
   unsigned int GetWeaponCount() const;
   double       GetWeaponHeat(unsigned int weapon_id) const;

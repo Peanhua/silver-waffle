@@ -70,6 +70,19 @@ unsigned int ObjectSpaceship::AddEngine(const glm::vec3 & thrust_direction, doub
 }
 
 
+unsigned int ObjectSpaceship::AddWeapon()
+{
+  float id = (GetWeaponCount() + 1) / 2;
+  float sign = (GetWeaponCount() % 2) == 0 ? 1 : -1;
+
+  return AddWeapon(glm::vec3(sign * id * 0.1, 1, 0),
+                   AssetLoader->LoadMesh("Projectile"),
+                   glm::normalize(glm::vec3(sign * id * 0.1, 1, 0)),
+                   10.0,
+                   34.0);
+}
+
+
 unsigned int ObjectSpaceship::AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
 {
   auto weapon = new Weapon();
@@ -102,10 +115,12 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
   auto bonus = GetUpgrade(Upgrade::Type::BONUS_DAMAGE);
   if(bonus->IsActive() > 0.0)
     damage *= bonus->GetValue();
-  
+
+  auto location = glm::vec4(weapon->_location, 1) * glm::toMat4(GetOrientation());
+  auto direction = glm::vec4(weapon->_projectile_direction, 1) * glm::toMat4(GetOrientation());
   _scene->AddProjectile(this,
-                        GetPosition() + weapon->_location,
-                        GetVelocity() * 0.5f + weapon->_projectile_direction * static_cast<float>(weapon->_projectile_initial_velocity),
+                        GetPosition() + location.xyz(),
+                        GetVelocity() * 0.5f + direction.xyz() * static_cast<float>(weapon->_projectile_initial_velocity),
                         damage,
                         10.0);
   weapon->_heat += 0.03;
