@@ -31,17 +31,10 @@ GameStateGame::GameStateGame()
     _lives(3),
     _pausebutton(nullptr)
 {
-#if 1
   _camera = new Camera();
   _scene = new Scene();
   _fov = 60.0;
-# define CAMERA_SPEED 0.5
-#else
-  _camera = new Camera2();
-  _scene = new Scene2();
-  _fov = 120.0;
-# define CAMERA_SPEED 1
-#endif
+#define CAMERA_SPEED 0.5
 
   _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::ATTACK,   "Material A"));
   _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::DEFENSE,  "Material D"));
@@ -348,21 +341,6 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
         _camera->MoveRight(CAMERA_SPEED * 2.0);
       break;
       
-#else
-    case SDLK_LEFT:
-      _scene->GetPlayer()->SetEnginePower(0, pressed ? 1.0 : 0.0);
-      break;
-      
-    case SDLK_RIGHT:
-      _scene->GetPlayer()->SetEnginePower(1, pressed ? 1.0 : 0.0);
-      break;
-
-    case SDLK_SPACE:
-      for(unsigned int i = 0; i < _scene->GetPlayer()->GetWeaponCount(); i++)
-        _scene->GetPlayer()->SetWeaponAutofire(i, pressed);
-      break;
-#endif
-      
     case SDLK_UP:
       if(pressed)
         _camera->MoveForward(CAMERA_SPEED);
@@ -403,38 +381,21 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
         }
       break;
 
-    case SDLK_x:
-      if(pressed)
-        {
-          /*
-          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(1, 0, 0));
-          _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
-          */
-          _scene->GetPlayer()->RotateRoll(10.0);
-        }
-      break;
-
-    case SDLK_y:
-      if(pressed)
-        {
-          /*
-          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(0, 1, 0));
-          _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
-          */
-          _scene->GetPlayer()->RotatePitch(10.0);
-        }
+#else
+    case SDLK_LEFT:
+      _scene->GetPlayer()->SetEnginePower(0, pressed ? 1.0 : 0.0);
       break;
       
-    case SDLK_z:
-      if(pressed)
-        {
-          /*
-          auto transform = glm::rotate(glm::mat4(1), static_cast<float>(glm::radians(10.0)), glm::vec3(0, 0, 1));
-          _scene->GetPlayer()->GetMesh()->ApplyTransform(transform);
-          */
-          _scene->GetPlayer()->RotateYaw(10.0);
-        }
+    case SDLK_RIGHT:
+      _scene->GetPlayer()->SetEnginePower(1, pressed ? 1.0 : 0.0);
       break;
+
+    case SDLK_SPACE:
+      for(unsigned int i = 0; i < _scene->GetPlayer()->GetWeaponCount(); i++)
+        _scene->GetPlayer()->SetWeaponAutofire(i, pressed);
+      break;
+#endif
+
 
     case SDLK_q:
       if(pressed)

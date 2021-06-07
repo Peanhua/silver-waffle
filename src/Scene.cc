@@ -278,30 +278,6 @@ void Scene::SetOnCollectibleCollected(on_collectible_collected_t callback)
 }
 
 
-#if 0
-void Scene2::Initialize(double difficulty)
-{
-  assert(difficulty == difficulty);
-  #if 0
-  glm::vec3 zeropos(0, 0, 4);
-
-  for(int y = 0; y < 8; y++)
-    for(int x = 0; x < 12; x++)
-      {
-        glm::vec3 pos = glm::rotateY(zeropos, static_cast<float>(glm::radians(360.0 / 12.0 * static_cast<double>(x))));
-        pos.y = static_cast<float>(y);
-        auto invader = new Object(pos);
-        if((x + y) % 3 == 0)
-          invader->SetMesh(new MeshCube2());
-        else
-          invader->SetMesh(new MeshCube());
-        AddChild(invader);
-      }
-  #endif
-}
-#endif
-
-
 ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
 {
   if(Settings->GetBool("cheat_no_enemies"))
