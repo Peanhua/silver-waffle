@@ -27,6 +27,7 @@ public:
 
   void    SetImage(Image * image);
   void    SetImage(const std::string & name);
+  void    SetImageColor(const glm::vec4 & color);
   Image * GetImage() const;
 
   Font * GetFont() const;
@@ -73,7 +74,9 @@ private:
   glm::ivec2 _size;
   glm::vec2  _scale;
 
-  Mesh * _imagemesh;
+  Mesh *    _imagemesh;
+  glm::vec4 _image_color;
+  
   Mesh * _focused_borders_mesh;
 
   Font *      _font;

@@ -6,6 +6,7 @@
 #include "UpgradeMaterial.hh"
 #include "WidgetButton.hh"
 #include "WidgetShopItem.hh"
+#include "WidgetUpgradeMaterial.hh"
 #include <iostream>
 
 
@@ -16,7 +17,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
     _spaceship(spaceship)
 {
   auto font = AssetLoader->LoadFont(20);
-  auto font_weight = 0.5f;
+  auto font_weight = 0.45f;
   auto font_color = glm::vec3(0, 1, 1);
   
   SetImage("PanelBorders");
@@ -46,20 +47,73 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
     w->SetText(t);
     w->SetTextFontWeight(font_weight);
     w->SetIsFocusable(false);
-    y += w->GetSize().y + 4;
+    y += w->GetSize().y;
   }
 
-  std::vector<SpaceshipUpgrade::Type> types
+  y += 20;
+  {
     {
-      SpaceshipUpgrade::Type::WEAPON,
-      SpaceshipUpgrade::Type::WEAPON_COOLER,
-      SpaceshipUpgrade::Type::ENGINE_UPGRADE,
-    };
-  for(auto t : types)
-    {
-      auto w = new WidgetShopItem(this, glm::ivec2(x, y), glm::ivec2(200, 30),
-                                  _spaceship, materials, _spaceship->GetUpgrade(t));
-      y += w->GetSize().y + 4;
+      auto label = new Widget(this, glm::ivec2(x, y), glm::ivec2(350, 30));
+      std::string labeltext("Upgrade modules:");
+      label->SetTextFont(font);
+      label->SetTextColor(font_color);
+      label->SetText(labeltext);
+      label->SetTextFontWeight(font_weight);
+      label->SetIsFocusable(false);
+      y += label->GetSize().y;
     }
+    std::vector<SpaceshipUpgrade::Type> types
+      {
+        SpaceshipUpgrade::Type::WEAPON,
+        SpaceshipUpgrade::Type::WEAPON_COOLER,
+        SpaceshipUpgrade::Type::ENGINE_UPGRADE,
+      };
+    for(auto t : types)
+      {
+        auto w = new WidgetShopItem(this, glm::ivec2(x + 20, y), glm::ivec2(200, 30),
+                                    _spaceship, materials, _spaceship->GetUpgrade(t));
+        y += w->GetSize().y;
+      }
+  }
+  
+  y += 20;
+  {
+    auto label = new Widget(this, glm::ivec2(x, y), glm::ivec2(350, 30));
+    std::string labeltext("Materials:");
+    label->SetTextFont(font);
+    label->SetTextColor(font_color);
+    label->SetText(labeltext);
+    label->SetTextFontWeight(font_weight);
+    label->SetIsFocusable(false);
+    y += label->GetSize().y;
+  }    
+  for(auto m : materials)
+    {
+      Observe(m);
+      
+      auto label = new Widget(this, glm::ivec2(x + 20, y), glm::ivec2(50, 30));
+      std::string labeltext(m->GetName() + ":");
+      label->SetTextFont(font);
+      label->SetTextColor(font_color);
+      label->SetText(labeltext);
+      label->SetTextFontWeight(font_weight);
+      label->SetIsFocusable(false);
+        
+      auto w = new WidgetUpgradeMaterial(this, glm::ivec2(x + 20 + 50 + 4, y + 2), glm::ivec2(50, 25), m->GetType());
+      w->SetUpgradeMaterialAmount(m->GetAmount());
+      w->SetIsFocusable(false);
+      _available_material_widgets.push_back(w);
+      
+      y += label->GetSize().y;
+  }
+  
+}
+
+
+void WidgetSpaceshipMaintenance::OnNotifyUpdate(UpgradeMaterial * material)
+{
+  for(auto w : _available_material_widgets)
+    if(w->GetUpgradeMaterialType() == material->GetType())
+      w->SetUpgradeMaterialAmount(material->GetAmount());
 }
 

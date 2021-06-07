@@ -11,13 +11,14 @@ Widget::Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & 
   : _parent(parent),
     _position(position),
     _size(size),
-    _scale(glm::vec3(1, 1, 1)),
+    _scale(1, 1),
     _imagemesh(nullptr),
+    _image_color(1, 1, 1, 1),
     _focused_borders_mesh(nullptr),
     _font(nullptr),
     _textmesh(nullptr),
-    _textcolor(glm::vec3(1, 1, 1)),
-    _textpadding(glm::vec2(0, 0)),
+    _textcolor(1, 1, 1),
+    _textpadding(0, 0),
     _text_font_weight(0.6f),
     _visible(true),
     _focused(false),
@@ -201,23 +202,28 @@ void Widget::SetImage(Image * image)
 {
   if(!_imagemesh)
     {
-      _imagemesh = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
+      _imagemesh = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_COLOR | Mesh::OPTION_COLOR_ALPHA | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
       assert(_imagemesh);
-      _imagemesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
+      _imagemesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-ColorTexture"));
 
-      std::vector<glm::vec2> texcoords {
-        glm::vec2(1, 0),
-        glm::vec2(1, 1),
-        glm::vec2(0, 1),
-        glm::vec2(0, 0) 
-      };
+      std::vector<glm::vec2> texcoords
+        {
+          glm::vec2(1, 0),
+          glm::vec2(1, 1),
+          glm::vec2(0, 1),
+          glm::vec2(0, 0) 
+        };
       for(auto tc : texcoords)
-        _imagemesh->AddTexCoord(tc);
+        {
+          _imagemesh->AddTexCoord(tc);
+          _imagemesh->AddColor(_image_color);
+        }
       
-      std::vector<unsigned int> indices {
-        0, 1, 3,
-        1, 2, 3
-      };
+      std::vector<unsigned int> indices
+        {
+          0, 1, 3,
+          1, 2, 3
+        };
       for(auto i : indices)
         _imagemesh->AddElement(i);
     }
@@ -225,6 +231,19 @@ void Widget::SetImage(Image * image)
 
   _imagemesh->SetTexture(image);
   OnSizeUpdated();
+}
+
+
+void Widget::SetImageColor(const glm::vec4 & color)
+{
+  _image_color = color;
+  if(_imagemesh)
+    {
+      _imagemesh->ClearColors();
+      for(int i = 0; i < 4; i++)
+        _imagemesh->AddColor(_image_color);
+      _imagemesh->UpdateGPU();
+    }
 }
 
 

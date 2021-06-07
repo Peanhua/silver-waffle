@@ -1,6 +1,7 @@
 #include "SpaceshipUpgrade.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
+#include "SubsystemSettings.hh"
 #include <map>
 
 
@@ -110,6 +111,14 @@ double SpaceshipUpgrade::GetTimer() const
 
 unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_material) const
 {
+  if(Settings->GetBool("cheat_cheap_upgrades"))
+    {
+      if(for_material == UpgradeMaterial::Type::ATTACK)
+        return 1;
+      else
+        return 0;
+    }
+  
   std::map<UpgradeMaterial::Type, unsigned int> costs;
   switch(_type)
     {

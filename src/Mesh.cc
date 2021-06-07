@@ -124,6 +124,12 @@ void Mesh::ClearVertices()
 }
 
 
+void Mesh::ClearColors()
+{
+  _colors.clear();
+}
+
+
 void Mesh::Clear()
 {
   _vertices.clear();

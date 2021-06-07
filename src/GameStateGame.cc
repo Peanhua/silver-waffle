@@ -539,8 +539,15 @@ void GameStateGame::ChangeState(State new_state)
         const auto height = Settings->GetInt("screen_height");
         const glm::ivec2 panelsize(600, 500);
 
+        auto panelbackground = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(width, height));
+        panelbackground->SetImage("White");
+        panelbackground->SetImageColor(glm::vec4(0, 0, 0, 0.5));
+        
+        new WidgetSpaceshipMaintenance(panelbackground, glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(), _upgradematerials);
+
+
         assert(!_pausebutton);
-        _pausebutton = new WidgetSpaceshipMaintenance(GetRootWidget(), glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(), _upgradematerials);
+        _pausebutton = panelbackground;
         SetModalWidget(_pausebutton);
       }
       break;

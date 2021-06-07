@@ -57,6 +57,7 @@ public:
 
   void Clear();
   void ClearVertices();
+  void ClearColors();
   void AddVertex(const glm::vec2 & vertex);
   void AddVertex(const glm::vec3 & vertex);
   void AddVertex(const glm::vec4 & vertex);

@@ -4,6 +4,7 @@
 #include "SpaceshipUpgrade.hh"
 #include "SubsystemAssetLoader.hh"
 #include "WidgetButton.hh"
+#include "WidgetUpgradeMaterial.hh"
 
 
 WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size,
@@ -31,12 +32,26 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
     w->SetText(t);
     w->SetTextFontWeight(font_weight);
     w->SetIsFocusable(false);
+    x += 300;
+
+    std::vector<UpgradeMaterial::Type> types
+      {
+        UpgradeMaterial::Type::ATTACK,
+        UpgradeMaterial::Type::DEFENSE,
+        UpgradeMaterial::Type::PHYSICAL
+      };
+    for(auto type : types)
+      {
+        auto wum = new WidgetUpgradeMaterial(this, glm::ivec2(x, y), glm::ivec2(50, 25), type);
+        wum->SetUpgradeMaterialAmount(_upgrade->GetNextPurchaseCost(type));
+        x += wum->GetSize().x + 2;
+      }
     
     if(CanBuy())
       {
         const std::string bt("Buy");
         const double buytlen = font->GetWidth(bt);
-        auto buybutton = new WidgetButton(this, glm::ivec2(x + w->GetSize().x + 20, y), glm::ivec2(buytlen, 30));
+        auto buybutton = new WidgetButton(this, glm::ivec2(x, y), glm::ivec2(buytlen, 30));
         buybutton->SetTextColor(font_color);
         buybutton->SetTextFont(font);
         buybutton->SetText(bt);
@@ -58,7 +73,6 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
         });
       }
 
-    y += w->GetSize().y + 4;
   }
 }
 

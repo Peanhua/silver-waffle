@@ -54,6 +54,7 @@ silverwaffle_SOURCES =				\
 	SubsystemInput.cc			\
 	SubsystemSettings.cc			\
 	TextureRenderer.cc			\
+	UpgradeMaterial.cc			\
 	Widget.cc				\
 	WidgetButton.cc				\
 	WidgetPlayerShip.cc			\
@@ -61,6 +62,7 @@ silverwaffle_SOURCES =				\
 	WidgetSpaceshipMaintenance.cc		\
 	WidgetSpaceshipStatus.cc		\
 	WidgetWeaponStatus.cc			\
+	WidgetUpgradeMaterial.cc		\
 	WormholeWall.cc				\
 	glm.cc					\
 	main.cc
