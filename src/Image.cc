@@ -351,15 +351,16 @@ void Image::ToSignedDistanceField(double shrink_min, double shrink_max)
       {
         glm::dvec2 curpos(x, y);
         glm::dvec2 closest(-1, -1);
-        double     closest_distance = std::max(_width, _height);
+        double     closest_distance = glm::distance(glm::dvec2(0, 0), glm::dvec2(_width, _height));
         bool       found = false;
+        bool       isout = _data[(x + y * _width) * _bytes_per_pixel + channel] == 0;
         
         for(unsigned int y2 = 0; y2 < _height; y2++)
           for(unsigned int x2 = 0; x2 < _width; x2++)
             if(y2 != y || x2 != x)
               {
                 unsigned int pos = (x2 + y2 * _width) * _bytes_per_pixel + channel;
-                if(this->_data[pos])
+                if((isout && _data[pos]) || (!isout && !_data[pos]))
                   {
                     double distance = glm::distance(curpos, glm::dvec2(x2, y2));
                     if(distance < closest_distance)
@@ -372,7 +373,7 @@ void Image::ToSignedDistanceField(double shrink_min, double shrink_max)
               }
         assert(found);
 
-        if(this->_data[(x + y * _width) * _bytes_per_pixel + channel] == 0)
+        if(isout)
           closest_distance = -closest_distance;
 
         distances[x + y * _width] = closest_distance;
@@ -403,6 +404,6 @@ void Image::ToSignedDistanceField(double shrink_min, double shrink_max)
         assert(value <= 1.0);
         value *= 255.0;
 
-        this->_data[(x + y * _width) * _bytes_per_pixel + channel] = static_cast<uint8_t>(value);
+        _data[(x + y * _width) * _bytes_per_pixel + channel] = static_cast<uint8_t>(value);
       }
 }

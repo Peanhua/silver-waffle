@@ -73,7 +73,7 @@ Font::Font(const std::string & name, unsigned int font_size)
                   assert(false);
 
                 /* Add some padding to it. */
-                const unsigned int padding = 4;
+                const unsigned int padding = 2;
                 unsigned int padding_left = padding + static_cast<unsigned int>(face->glyph->bitmap_left);
                 unsigned int padding_top  = font_size - static_cast<unsigned int>(face->glyph->bitmap_top);
                 Image padded_glyph(glyph.GetWidth() + padding_left + padding, glyph.GetHeight() + padding_top + padding, 1, false);
