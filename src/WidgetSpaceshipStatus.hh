@@ -10,11 +10,11 @@ class ObjectSpaceship;
 class WidgetSpaceshipStatus : public Widget
 {
 public:
-  WidgetSpaceshipStatus(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
+  WidgetSpaceshipStatus(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, ObjectSpaceship * spaceship);
 
   void Draw() const override;
 
-  void              SetSpaceship(ObjectSpaceship * spaceship);
+  virtual void      SetSpaceship(ObjectSpaceship * spaceship);
   ObjectSpaceship * GetSpaceship() const;
 
 protected:

@@ -5,9 +5,9 @@
 #include "SubsystemAssetLoader.hh"
 
 
-WidgetSpaceshipStatus::WidgetSpaceshipStatus(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size)
+WidgetSpaceshipStatus::WidgetSpaceshipStatus(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, ObjectSpaceship * spaceship)
   : Widget(parent, position, size),
-    _spaceship(nullptr)
+    _spaceship(spaceship)
 {
   _meter = new MeshProgressBar(static_cast<float>(GetSize().x), static_cast<float>(GetSize().y), glm::vec3(0, 1, 0));
 }

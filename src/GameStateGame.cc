@@ -201,13 +201,11 @@ GameStateGame::GameStateGame()
   }
   
   {
-    auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 160), glm::ivec2(20, 100));
-    w->SetSpaceship(_scene->GetPlayer());
+    auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 160), glm::ivec2(20, 100), _scene->GetPlayer());
     _player_status_widgets.push_back(w);
   }
   {
-    auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 160), glm::ivec2(20, 100));
-    w->SetSpaceship(_scene->GetPlayer());
+    auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 160), glm::ivec2(20, 100), _scene->GetPlayer());
     _player_status_widgets.push_back(w);
   }
   {

@@ -51,7 +51,7 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
       {
         const std::string bt("Buy");
         const double buytlen = font->GetWidth(bt);
-        auto buybutton = new WidgetButton(this, glm::ivec2(x, y), glm::ivec2(buytlen, 30));
+        auto buybutton = new WidgetButton(this, glm::ivec2(x, y), glm::ivec2(buytlen, 25));
         buybutton->SetTextColor(font_color);
         buybutton->SetTextFont(font);
         buybutton->SetText(bt);
