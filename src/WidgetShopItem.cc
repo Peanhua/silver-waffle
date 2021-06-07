@@ -24,7 +24,7 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
   int y = 0;
 
   {
-    const std::string t(_upgrade->GetName() + ": " + std::to_string(_upgrade->GetIntValue()));
+    const std::string t(_upgrade->GetName() + ": " + std::to_string(_upgrade->GetIntValue()) + "/" + std::to_string(_upgrade->GetMaxIntValue()));
     const double tlen = font->GetWidth(t);
     auto w = new Widget(this, glm::ivec2(x, y), glm::ivec2(tlen, 30));
     w->SetTextColor(font_color);
@@ -66,7 +66,8 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
               for(auto m : _available_materials)
                 m->Use(_upgrade->GetNextPurchaseCost(m->GetType()));
               _upgrade->Add(1, 0);
-              w->SetText(_upgrade->GetName() + ": " + std::to_string(_upgrade->GetIntValue()));
+              const std::string t2(_upgrade->GetName() + ": " + std::to_string(_upgrade->GetIntValue()) + "/" + std::to_string(_upgrade->GetMaxIntValue()));
+              w->SetText(t2);
             }
           if(!CanBuy())
             buybutton->Destroy();

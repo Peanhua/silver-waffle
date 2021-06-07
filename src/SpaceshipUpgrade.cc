@@ -26,26 +26,7 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
 
 bool SpaceshipUpgrade::CanAdd() const
 {
-  switch(_type)
-    {
-    case Type::BONUS_DAMAGE:
-    case Type::SHIELD:
-      return true;
-
-    case Type::WEAPON:
-      return _spaceship->GetWeaponCount() < 5;
-
-    case Type::WEAPON_COOLER:
-      return GetIntValue() < static_cast<int>(_spaceship->GetWeaponCount());
-
-    case Type::ENGINE_UPGRADE:
-      return GetIntValue() < 3;
-
-    case Type::HULL_UPGRADE:
-      return GetIntValue() < 1;
-    }
-  assert(false);
-  return false;
+  return GetIntValue() < GetMaxIntValue();
 }
 
 
@@ -113,6 +94,28 @@ int SpaceshipUpgrade::GetIntValue() const
   return _int_value;
 }
 
+
+
+int SpaceshipUpgrade::GetMaxIntValue() const
+{
+  switch(_type)
+    {
+    case Type::BONUS_DAMAGE:
+      return 1;
+    case Type::SHIELD:
+      return 1;
+    case Type::WEAPON:
+      return 5;
+    case Type::WEAPON_COOLER:
+      return static_cast<int>(_spaceship->GetWeaponCount());
+    case Type::ENGINE_UPGRADE:
+      return 3;
+    case Type::HULL_UPGRADE:
+      return 1;
+    }
+  assert(false);
+  return 0;
+}
 
 
 double SpaceshipUpgrade::GetTimer() const

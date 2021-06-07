@@ -27,11 +27,12 @@ public:
   void Tick(double deltatime);
   void AddFromCollectible(ObjectCollectible * collectible);
 
-  bool   IsActive()    const;
-  Type   GetType()     const;
-  double GetValue()    const;
-  int    GetIntValue() const;
-  double GetTimer()    const;
+  bool   IsActive()       const;
+  Type   GetType()        const;
+  double GetValue()       const;
+  int    GetIntValue()    const;
+  double GetTimer()       const;
+  int    GetMaxIntValue() const;
   unsigned int GetNextPurchaseCost(UpgradeMaterial::Type for_material) const;
   const std::string & GetName() const;
     
