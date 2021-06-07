@@ -26,6 +26,8 @@ public:
   bool   IsAlive() const;
   double GetHealth() const;
   void   SetHealth(double health);
+  double GetMaxHealth() const;
+  void   SetMaxHealth(double health);
 
   void            SetPosition(const glm::vec3 & position);
   void            Translate(const glm::vec3 & translation);
@@ -48,6 +50,7 @@ private:
   glm::quat _orientation;
   Mesh *    _mesh;
   double    _health;
+  double    _max_health;
 };
 
 #endif

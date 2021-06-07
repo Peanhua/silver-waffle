@@ -8,7 +8,8 @@ Object::Object(Scene * scene)
     _position(0, 0, 0),
     _orientation(1, 0, 0, 0),
     _mesh(nullptr),
-    _health(100.0)
+    _health(100.0),
+    _max_health(_health)
 {
 }
 
@@ -102,6 +103,19 @@ void Object::SetHealth(double health)
 {
   _health = health;
 }
+
+
+double Object::GetMaxHealth() const
+{
+  return _max_health;
+}
+
+
+void Object::SetMaxHealth(double health)
+{
+  _max_health = health;
+}
+
 
 
 bool Object::IsAlive() const

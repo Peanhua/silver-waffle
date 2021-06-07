@@ -14,11 +14,12 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
 {
   switch(_type)
     {
-    case Type::BONUS_DAMAGE:   _name = "Bonus damage";  break;
-    case Type::SHIELD:         _name = "Shield";        break;
-    case Type::WEAPON:         _name = "Weapon";        break;
-    case Type::WEAPON_COOLER:  _name = "Weapon cooler"; break;
+    case Type::BONUS_DAMAGE:   _name = "Bonus damage";   break;
+    case Type::SHIELD:         _name = "Shield";         break;
+    case Type::WEAPON:         _name = "Weapon";         break;
+    case Type::WEAPON_COOLER:  _name = "Weapon cooler";  break;
     case Type::ENGINE_UPGRADE: _name = "Engine upgrade"; break;
+    case Type::HULL_UPGRADE:   _name = "Hull upgrade";   break;
     }
 }
 
@@ -39,6 +40,9 @@ bool SpaceshipUpgrade::CanAdd() const
 
     case Type::ENGINE_UPGRADE:
       return GetIntValue() < 3;
+
+    case Type::HULL_UPGRADE:
+      return GetIntValue() < 1;
     }
   assert(false);
   return false;
@@ -68,6 +72,14 @@ void SpaceshipUpgrade::Add(double amount, double time)
     case Type::ENGINE_UPGRADE:
       _int_value++;
       _spaceship->UpgradeEngines(1.5);
+      break;
+    case Type::HULL_UPGRADE:
+      {
+        _int_value++;
+        double hp = _spaceship->GetHealth() / _spaceship->GetMaxHealth();
+        _spaceship->SetMaxHealth(_spaceship->GetMaxHealth() * 2.0);
+        _spaceship->SetHealth(hp * _spaceship->GetMaxHealth());
+      }
       break;
     }
   if(_value < 0.0001)
@@ -143,6 +155,11 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::DEFENSE]  =  5;
       costs[UpgradeMaterial::Type::PHYSICAL] =  2;
       break;
+    case Type::HULL_UPGRADE:
+      costs[UpgradeMaterial::Type::ATTACK]   =  0;
+      costs[UpgradeMaterial::Type::DEFENSE]  = 10;
+      costs[UpgradeMaterial::Type::PHYSICAL] = 20;
+      break;
     }
   return costs[for_material];
 }
@@ -167,6 +184,7 @@ bool SpaceshipUpgrade::IsActive() const
     case Type::WEAPON:
     case Type::WEAPON_COOLER:
     case Type::ENGINE_UPGRADE:
+    case Type::HULL_UPGRADE:
       uses_timer = false;
       break;
     }
@@ -190,11 +208,11 @@ void SpaceshipUpgrade::AddFromCollectible(ObjectCollectible * collectible)
       if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
         Add(std::max(_value, collectible->GetBonus(ObjectCollectible::TYPE_SHIELD)), 30.0);
       break;
+      // The Following are not available from ObjectCollectible:
     case Type::WEAPON:
-      break;
     case Type::WEAPON_COOLER:
-      break;
     case Type::ENGINE_UPGRADE:
+    case Type::HULL_UPGRADE:
       break;
     }
 }

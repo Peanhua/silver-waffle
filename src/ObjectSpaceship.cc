@@ -17,6 +17,7 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene)
       SpaceshipUpgrade::Type::WEAPON,
       SpaceshipUpgrade::Type::WEAPON_COOLER,
       SpaceshipUpgrade::Type::ENGINE_UPGRADE,
+      SpaceshipUpgrade::Type::HULL_UPGRADE,
     };
   for(auto t : types)
     {
