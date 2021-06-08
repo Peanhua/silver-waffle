@@ -394,11 +394,12 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       break;
 
     case SDLK_c:
-      {
-        auto em = _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
-        if(em->CanActivate())
-          em->Activate(4.0);
-      }
+      if(pressed)
+        {
+          auto em = _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
+          if(em->CanActivate())
+            em->Activate(4.0);
+        }
       break;
 #endif
 

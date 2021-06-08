@@ -42,6 +42,8 @@ public:
   void Activate(double value, double time);
   void ActivateFromCollectible(ObjectCollectible * collectible);
   bool IsActive() const;
+
+  void Dump() const;
   
 private:
   ObjectSpaceship * _spaceship;

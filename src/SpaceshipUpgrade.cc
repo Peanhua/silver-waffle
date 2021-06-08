@@ -3,6 +3,7 @@
 #include "ObjectSpaceship.hh"
 #include "SubsystemSettings.hh"
 #include <map>
+#include <iostream>
 
 
 SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
@@ -231,7 +232,7 @@ const std::string & SpaceshipUpgrade::GetName() const
 
 bool SpaceshipUpgrade::CanActivate() const
 {
-  if(!IsActive())
+  if(IsActive())
     return false;
 
   if(_cooldown > 0.0)
@@ -261,3 +262,21 @@ void SpaceshipUpgrade::AdjustValue(double amount)
   if(_value < 0.00001)
     _activated = false;
 }
+
+
+void SpaceshipUpgrade::Dump() const
+{
+  std::cout << this << ": SpaceshipUpgrade: ";
+  std::cout << ", _spaceship=" << _spaceship;
+  std::cout << ", _type=" << static_cast<int>(_type);
+  std::cout << ", _name=" << _name;
+  std::cout << ", _value=" << _value;
+  std::cout << ", _install_count=" << _install_count;
+  std::cout << ", _always_activated=" << _always_activated;
+  std::cout << ", _activated=" << _activated;
+  std::cout << ", _timer=" << _timer;
+  std::cout << ", _cooldown=" << _cooldown;
+  std::cout << std::endl;
+}
+
+
