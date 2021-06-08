@@ -9,62 +9,61 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
   : _spaceship(spaceship),
     _type(type),
     _value(0),
-    _int_value(0),
-    _timer(0)
+    _install_count(0),
+    _activated(false),
+    _timer(0),
+    _cooldown(0)
 {
   switch(_type)
     {
-    case Type::BONUS_DAMAGE:   _name = "Bonus damage";   break;
-    case Type::SHIELD:         _name = "Shield";         break;
-    case Type::WEAPON:         _name = "Weapon";         break;
-    case Type::WEAPON_COOLER:  _name = "Weapon cooler";  break;
-    case Type::ENGINE_UPGRADE: _name = "Engine upgrade"; break;
-    case Type::HULL_UPGRADE:   _name = "Hull upgrade";   break;
+    case Type::BONUS_DAMAGE:     _name = "Bonus damage";   _always_activated = false; break;
+    case Type::SHIELD:           _name = "Shield";         _always_activated = false; break;
+    case Type::WEAPON:           _name = "Weapon";         _always_activated = true;  break;
+    case Type::WEAPON_COOLER:    _name = "Weapon cooler";  _always_activated = true;  break;
+    case Type::ENGINE_UPGRADE:   _name = "Engine upgrade"; _always_activated = true;  break;
+    case Type::HULL_UPGRADE:     _name = "Hull upgrade";   _always_activated = true;  break;
+    case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; break;
     }
 }
 
 
-bool SpaceshipUpgrade::CanAdd() const
+bool SpaceshipUpgrade::CanBeInstalled() const
 {
-  return GetIntValue() < GetMaxIntValue();
+  return GetInstallCount() < GetMaxInstalls();
 }
 
 
-
-void SpaceshipUpgrade::Add(double amount, double time)
+void SpaceshipUpgrade::Install()
 {
   switch(_type)
     {
     case Type::BONUS_DAMAGE:
-      _value = amount;
-      _timer = time;
-      break;
     case Type::SHIELD:
-      _value = amount;
-      _timer += time;
+      assert(false);
       break;
     case Type::WEAPON:
       _spaceship->AddWeapon();
-      //_int_value = static_cast<int>(_spaceship->GetWeaponCount()); handled in getter
+      //_install_count = static_cast<int>(_spaceship->GetWeaponCount()); handled in getter
       break;
     case Type::WEAPON_COOLER:
-      _int_value++;
+      _install_count++;
       break;
     case Type::ENGINE_UPGRADE:
-      _int_value++;
+      _install_count++;
       _spaceship->UpgradeEngines(1.5);
       break;
     case Type::HULL_UPGRADE:
       {
-        _int_value++;
+        _install_count++;
         double hp = _spaceship->GetHealth() / _spaceship->GetMaxHealth();
         _spaceship->SetMaxHealth(_spaceship->GetMaxHealth() * 2.0);
         _spaceship->SetHealth(hp * _spaceship->GetMaxHealth());
       }
       break;
+    case Type::EVASION_MANEUVER:
+      _install_count++;
+      break;
     }
-  if(_value < 0.0001)
-    _timer = 0;
 }
 
 
@@ -83,35 +82,27 @@ double SpaceshipUpgrade::GetValue() const
 }
 
 
-int SpaceshipUpgrade::GetIntValue() const
+int SpaceshipUpgrade::GetInstallCount() const
 {
-  if(!IsActive())
-    return 0;
-
   if(_type == Type::WEAPON)
     return static_cast<int>(_spaceship->GetWeaponCount());
   
-  return _int_value;
+  return _install_count;
 }
 
 
 
-int SpaceshipUpgrade::GetMaxIntValue() const
+int SpaceshipUpgrade::GetMaxInstalls() const
 {
   switch(_type)
     {
-    case Type::BONUS_DAMAGE:
-      return 1;
-    case Type::SHIELD:
-      return 1;
-    case Type::WEAPON:
-      return 5;
-    case Type::WEAPON_COOLER:
-      return static_cast<int>(_spaceship->GetWeaponCount());
-    case Type::ENGINE_UPGRADE:
-      return 3;
-    case Type::HULL_UPGRADE:
-      return 1;
+    case Type::BONUS_DAMAGE:     return 1;
+    case Type::SHIELD:           return 1;
+    case Type::WEAPON:           return 5;
+    case Type::WEAPON_COOLER:    return static_cast<int>(_spaceship->GetWeaponCount());
+    case Type::ENGINE_UPGRADE:   return 3;
+    case Type::HULL_UPGRADE:     return 1;
+    case Type::EVASION_MANEUVER: return 1;
     }
   assert(false);
   return 0;
@@ -163,6 +154,11 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::DEFENSE]  = 10;
       costs[UpgradeMaterial::Type::PHYSICAL] = 20;
       break;
+    case Type::EVASION_MANEUVER:
+      costs[UpgradeMaterial::Type::ATTACK]   =  5;
+      costs[UpgradeMaterial::Type::DEFENSE]  =  0;
+      costs[UpgradeMaterial::Type::PHYSICAL] = 10;
+      break;
     }
   return costs[for_material];
 }
@@ -170,52 +166,58 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
 
 void SpaceshipUpgrade::Tick(double deltatime)
 {
-  if(IsActive() && _timer > 0.0)
-    _timer -= deltatime;
+  if(IsActive())
+    {
+      if(_timer > 0.0)
+        {
+          _timer -= deltatime;
+          
+          if(_type == Type::EVASION_MANEUVER)
+            {
+              if(_timer > 0.0)
+                _spaceship->RotateRoll(1200 * deltatime);
+              else
+                {
+                  auto o = glm::angleAxis(0.0f, _spaceship->GetForwardVector());
+                  _spaceship->SetOrientation(o);
+                }
+            }
+        }
+      else
+        {
+          _activated = false;
+        }
+    }
+
+  if(_cooldown > 0.0)
+    _cooldown -= deltatime;
 }
 
 
 bool SpaceshipUpgrade::IsActive() const
 {
-  bool uses_timer;
-  switch(_type)
-    {
-    case Type::BONUS_DAMAGE:
-    case Type::SHIELD:
-      uses_timer = true;
-      break;
-    case Type::WEAPON:
-    case Type::WEAPON_COOLER:
-    case Type::ENGINE_UPGRADE:
-    case Type::HULL_UPGRADE:
-      uses_timer = false;
-      break;
-    }
-
-  if(uses_timer)
-    return _timer > 0.0;
-  else
-    return true;
+  return _always_activated || _activated;
 }
 
 
-void SpaceshipUpgrade::AddFromCollectible(ObjectCollectible * collectible)
+void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
 {
   switch(_type)
     {
     case Type::BONUS_DAMAGE:
       if(collectible->HasBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER))
-        Add(collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER), 30.0);
+        Activate(collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER), 30.0);
       break;
     case Type::SHIELD:
       if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
-        Add(std::max(_value, collectible->GetBonus(ObjectCollectible::TYPE_SHIELD)), 30.0);
+        Activate(std::max(_value, collectible->GetBonus(ObjectCollectible::TYPE_SHIELD)), 30.0);
       break;
       // The Following are not available from ObjectCollectible:
     case Type::WEAPON:
     case Type::WEAPON_COOLER:
     case Type::ENGINE_UPGRADE:
     case Type::HULL_UPGRADE:
+    case Type::EVASION_MANEUVER:
       break;
     }
 }
@@ -224,4 +226,38 @@ void SpaceshipUpgrade::AddFromCollectible(ObjectCollectible * collectible)
 const std::string & SpaceshipUpgrade::GetName() const
 {
   return _name;
+}
+
+
+bool SpaceshipUpgrade::CanActivate() const
+{
+  if(!IsActive())
+    return false;
+
+  if(_cooldown > 0.0)
+    return false;
+
+  return true;
+}
+
+
+void SpaceshipUpgrade::Activate(double value, double time)
+{
+  _activated = true;
+  _value = value;
+  _timer = time;
+  _cooldown = 30.0;
+}
+
+void SpaceshipUpgrade::Activate(double time)
+{
+  Activate(_value, time);
+}
+
+
+void SpaceshipUpgrade::AdjustValue(double amount)
+{
+  _value += amount;
+  if(_value < 0.00001)
+    _activated = false;
 }

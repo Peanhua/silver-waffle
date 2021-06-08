@@ -41,6 +41,7 @@ public:
   void RotateYaw(double angle);
   void Rotate(const glm::quat & rotation);
   const glm::quat & GetOrientation() const;
+  void SetOrientation(const glm::quat & orientation);
 
 protected:
   Scene *   _scene;

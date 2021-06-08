@@ -381,16 +381,24 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
 #else
     case SDLK_LEFT:
-      _scene->GetPlayer()->SetEnginePower(0, pressed ? 1.0 : 0.0);
+      _scene->GetPlayer()->SetEngineThrottle(0, pressed ? 1.0 : 0.0);
       break;
       
     case SDLK_RIGHT:
-      _scene->GetPlayer()->SetEnginePower(1, pressed ? 1.0 : 0.0);
+      _scene->GetPlayer()->SetEngineThrottle(1, pressed ? 1.0 : 0.0);
       break;
 
     case SDLK_SPACE:
       for(unsigned int i = 0; i < _scene->GetPlayer()->GetWeaponCount(); i++)
         _scene->GetPlayer()->SetWeaponAutofire(i, pressed);
+      break;
+
+    case SDLK_c:
+      {
+        auto em = _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
+        if(em->CanActivate())
+          em->Activate(4.0);
+      }
       break;
 #endif
 

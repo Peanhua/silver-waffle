@@ -18,7 +18,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
 {
   auto font = AssetLoader->LoadFont(20);
   auto font_weight = 0.45f;
-  auto font_color = glm::vec3(0, 1, 1);
+  auto font_color = glm::vec3(0.2, 1, 0.2);
   
   SetImage("PanelBorders");
   SetIsFocusable(false);
@@ -68,6 +68,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
         SpaceshipUpgrade::Type::WEAPON_COOLER,
         SpaceshipUpgrade::Type::ENGINE_UPGRADE,
         SpaceshipUpgrade::Type::HULL_UPGRADE,
+        SpaceshipUpgrade::Type::EVASION_MANEUVER,
       };
     for(auto t : types)
       {
@@ -86,28 +87,20 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
     label->SetText(labeltext);
     label->SetTextFontWeight(font_weight);
     label->SetIsFocusable(false);
-    y += label->GetSize().y;
-  }    
-  for(auto m : materials)
-    {
-      Observe(m);
-      
-      auto label = new Widget(this, glm::ivec2(x + 20, y), glm::ivec2(50, 30));
-      std::string labeltext(m->GetName() + ":");
-      label->SetTextFont(font);
-      label->SetTextColor(font_color);
-      label->SetText(labeltext);
-      label->SetTextFontWeight(font_weight);
-      label->SetIsFocusable(false);
+
+    for(unsigned int i = 0; i < materials.size(); i++)
+      {
+        auto m = materials[i];
         
-      auto w = new WidgetUpgradeMaterial(this, glm::ivec2(x + 20 + 50 + 4, y + 2), glm::ivec2(50, 25), m->GetType());
-      w->SetUpgradeMaterialAmount(m->GetAmount());
-      w->SetIsFocusable(false);
-      _available_material_widgets.push_back(w);
-      
-      y += label->GetSize().y;
+        Observe(m);
+        
+        auto w = new WidgetUpgradeMaterial(this, glm::ivec2(x + 20 + 300 + static_cast<int>(i) * (50 + 2), y + 2), glm::ivec2(50, 25), m->GetType());
+        w->SetUpgradeMaterialAmount(m->GetAmount());
+        w->SetIsFocusable(false);
+        _available_material_widgets.push_back(w);
+      }
+    y += label->GetSize().y;
   }
-  
 }
 
 

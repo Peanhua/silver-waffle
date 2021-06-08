@@ -18,6 +18,7 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene)
       SpaceshipUpgrade::Type::WEAPON_COOLER,
       SpaceshipUpgrade::Type::ENGINE_UPGRADE,
       SpaceshipUpgrade::Type::HULL_UPGRADE,
+      SpaceshipUpgrade::Type::EVASION_MANEUVER,
     };
   for(auto t : types)
     {
@@ -41,7 +42,8 @@ void ObjectSpaceship::Tick(double deltatime)
 
   if(_engines.size() > 0 && !engines_on)
     { // todo: separate controls and use the engines to slow down
-      double engine_strength = 0.25 + 2.75 * static_cast<double>(GetUpgrade(SpaceshipUpgrade::Type::ENGINE_UPGRADE)->GetIntValue()) / 3.0;
+      auto engineup = GetUpgrade(SpaceshipUpgrade::Type::ENGINE_UPGRADE);
+      double engine_strength = 0.25 + 2.75 * static_cast<double>(engineup->GetInstallCount()) / static_cast<double>(engineup->GetMaxInstalls());
       const auto vel = GetVelocity();
       if(std::abs(vel.x) < 0.1f)
         SetVelocity(glm::vec3(0, vel.y, vel.z));
@@ -51,7 +53,7 @@ void ObjectSpaceship::Tick(double deltatime)
         AddImpulse(glm::vec3(engine_strength * -20.0 * deltatime, 0, 0));
     }
 
-  int weaponcoolercount = GetUpgrade(SpaceshipUpgrade::Type::WEAPON_COOLER)->GetIntValue();
+  int weaponcoolercount = GetUpgrade(SpaceshipUpgrade::Type::WEAPON_COOLER)->GetInstallCount();
   for(unsigned int i = 0; i < _weapons.size(); i++)
     {
       auto weapon = _weapons[i];
@@ -123,9 +125,13 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
   if(weapon->_heat > 1.0)
     return false;
 
+  auto em = _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
+  if(em->IsActive())
+    return false;
+  
   auto damage = weapon->_projectile_damage;
   auto bonus = GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE);
-  if(bonus->IsActive() > 0.0)
+  if(bonus->IsActive())
     damage *= bonus->GetValue();
 
   auto location = glm::vec4(weapon->_location, 1) * glm::toMat4(GetOrientation());
@@ -156,7 +162,7 @@ double ObjectSpaceship::GetWeaponHeat(unsigned int weapon_id) const
 }
 
 
-void ObjectSpaceship::SetEnginePower(unsigned int engine_id, double throttle)
+void ObjectSpaceship::SetEngineThrottle(unsigned int engine_id, double throttle)
 {
   assert(engine_id < _engines.size());
   _engines[engine_id]->_throttle = throttle;
@@ -177,7 +183,7 @@ void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
     {
       double reduction = std::min(shield->GetValue(), damage);
       
-      shield->Add(-reduction, 0);
+      shield->AdjustValue(-reduction);
      
       damage -= reduction;
     }
@@ -215,19 +221,5 @@ void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection,
 void ObjectSpaceship::UpgradeFromCollectible(ObjectCollectible * collectible)
 {
   for(auto u : _upgrades)
-    u->AddFromCollectible(collectible);
+    u->ActivateFromCollectible(collectible);
 }
-
-// todo: remove these two:
-void ObjectSpaceship::AddUpgrade(SpaceshipUpgrade::Type type, double value, double time)
-{
-  auto upgrade = GetUpgrade(type);
-  upgrade->Add(value, time);
-}
-bool ObjectSpaceship::CanAddUpgrade(SpaceshipUpgrade::Type type) const
-{
-  auto upgrade = GetUpgrade(type);
-  return upgrade->CanAdd();
-}
-
-

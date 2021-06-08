@@ -24,7 +24,7 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
   int y = 0;
 
   {
-    const std::string t(_upgrade->GetName() + ": " + std::to_string(_upgrade->GetIntValue()) + "/" + std::to_string(_upgrade->GetMaxIntValue()));
+    const std::string t(_upgrade->GetName() + ": " + std::to_string(_upgrade->GetInstallCount()) + "/" + std::to_string(_upgrade->GetMaxInstalls()));
     const double tlen = font->GetWidth(t);
     auto w = new Widget(this, glm::ivec2(x, y), glm::ivec2(tlen, 30));
     w->SetTextColor(font_color);
@@ -65,8 +65,8 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
             {
               for(auto m : _available_materials)
                 m->Use(_upgrade->GetNextPurchaseCost(m->GetType()));
-              _upgrade->Add(1, 0);
-              const std::string t2(_upgrade->GetName() + ": " + std::to_string(_upgrade->GetIntValue()) + "/" + std::to_string(_upgrade->GetMaxIntValue()));
+              _upgrade->Install();
+              const std::string t2(_upgrade->GetName() + ": " + std::to_string(_upgrade->GetInstallCount()) + "/" + std::to_string(_upgrade->GetMaxInstalls()));
               w->SetText(t2);
             }
           if(!CanBuy())
@@ -80,7 +80,7 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
 
 bool WidgetShopItem::CanBuy() const
 {
-  if(!_spaceship->CanAddUpgrade(_upgrade->GetType()))
+  if(!_upgrade->CanBeInstalled())
     return false;
   for(auto m : _available_materials)
     if(m->GetAmount() < _upgrade->GetNextPurchaseCost(m->GetType()))

@@ -25,11 +25,9 @@ public:
   void         SetWeaponAutofire(unsigned int weapon_id, bool enabled);
   
   unsigned int AddEngine(const glm::vec3 & thrust_direction, double power);
-  void         SetEnginePower(unsigned int engine_id, double throttle);
+  void         SetEngineThrottle(unsigned int engine_id, double throttle);
   void         UpgradeEngines(double power_multiplier);
 
-  void               AddUpgrade(SpaceshipUpgrade::Type type, double value, double time);
-  bool               CanAddUpgrade(SpaceshipUpgrade::Type type) const;
   void               UpgradeFromCollectible(ObjectCollectible * collectible);
   SpaceshipUpgrade * GetUpgrade(SpaceshipUpgrade::Type type) const;
   

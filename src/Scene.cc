@@ -132,6 +132,8 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
 
 void Scene::Tick(double deltatime)
 {
+  bool evading = _player->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER)->GetTimer() > 0.0;
+  
   if(_player->IsAlive())
     _player->Tick(deltatime);
   
@@ -143,7 +145,7 @@ void Scene::Tick(double deltatime)
     if(i && i->IsAlive())
       {
         glm::vec3 hitdir;
-        if(i->CheckCollision(*_player, hitdir))
+        if(!evading && i->CheckCollision(*_player, hitdir))
           {
             hitdir.y = 0;
 
@@ -181,7 +183,7 @@ void Scene::Tick(double deltatime)
         collectible->Tick(deltatime);
 
         glm::vec3 hitdir;
-        if(collectible->CheckCollision(*_player, hitdir))
+        if(!evading && collectible->CheckCollision(*_player, hitdir))
           {
             AddExplosion(collectible->GetPosition(), -hitdir);
             if(_on_collectible_collected_callback)
@@ -216,7 +218,7 @@ void Scene::Tick(double deltatime)
           }
         else
           {
-            if(projectile->CheckCollision(*_player, hitdir))
+            if(!evading && projectile->CheckCollision(*_player, hitdir))
               {
                 hitdir.y = 0.0f;
                 target = _player;

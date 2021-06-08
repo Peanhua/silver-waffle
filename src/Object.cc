@@ -150,13 +150,13 @@ void Object::RotateRoll(double angle)
 
 void Object::RotatePitch(double angle)
 {
-  _orientation = glm::angleAxis(glm::radians(static_cast<float>(angle)), glm::vec3(1, 0, 0));
+  _orientation *= glm::angleAxis(glm::radians(static_cast<float>(angle)), glm::vec3(1, 0, 0));
 }
 
 
 void Object::RotateYaw(double angle)
 {
-  _orientation = glm::angleAxis(glm::radians(static_cast<float>(angle)), glm::vec3(0, 0, 1));
+  _orientation *= glm::angleAxis(glm::radians(static_cast<float>(angle)), glm::vec3(0, 0, 1));
 }
 
 
@@ -170,4 +170,11 @@ const glm::quat & Object::GetOrientation() const
 {
   return _orientation;
 }
+
+
+void Object::SetOrientation(const glm::quat & orientation)
+{
+  _orientation = orientation;
+}
+
 
