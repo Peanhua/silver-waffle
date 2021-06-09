@@ -1,13 +1,15 @@
 #include "MeshProgressBar.hh"
+#include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 
 MeshProgressBar::MeshProgressBar(float width, float height, const glm::vec3 & color)
-  : Mesh(OPTION_ELEMENT | OPTION_COLOR),
+  : Mesh(OPTION_ELEMENT),
     _width(width),
     _height(height),
+    _color(color),
     _value(0.0)
 {
-  SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
+  SetShaderProgram(AssetLoader->LoadShaderProgram("ProgressBar"));
 
   {
     std::vector<glm::vec3> vertices
@@ -17,12 +19,8 @@ MeshProgressBar::MeshProgressBar(float width, float height, const glm::vec3 & co
         glm::vec3(0, 0, 0),
         glm::vec3(0, 1, 0),
       };
-  
     for(auto v : vertices)
-      {
         AddVertex(v);
-        AddColor(color);
-      }
 
     std::vector<unsigned int> indices
       {
@@ -90,3 +88,14 @@ float MeshProgressBar::GetValue() const
   return _value;
 }
 
+
+void MeshProgressBar::SetColor(const glm::vec3 & color)
+{
+  _color = color;
+}
+
+
+void MeshProgressBar::PreDrawSetupShader(ShaderProgram * shader_program) const
+{
+  shader_program->SetVec("in_color", glm::vec4(_color, 1));
+}

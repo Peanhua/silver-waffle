@@ -36,7 +36,10 @@ public:
   double GetValue()        const;
   void   AdjustValue(double amount);
   double GetTimer()        const;
+  double GetTimerMax()     const;
   const std::string & GetName() const;
+  double GetCooldownRemaining() const;
+  double GetCooldownMax() const;
 
   bool CanActivate() const;
   void Activate(double time);
@@ -55,6 +58,7 @@ private:
   bool        _always_activated;
   bool        _activated;
   double      _timer;
+  double      _timer_max;
   double      _cooldown;
 };
 

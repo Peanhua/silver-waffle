@@ -17,6 +17,7 @@
 #include "WidgetPlayerShip.hh"
 #include "WidgetSpaceshipMaintenance.hh"
 #include "WidgetSpaceshipStatus.hh"
+#include "WidgetSpaceshipUpgradeStatus.hh"
 #include "WidgetWeaponStatus.hh"
 #include <iostream>
 
@@ -39,6 +40,9 @@ GameStateGame::GameStateGame()
   _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::ATTACK,   "Material A"));
   _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::DEFENSE,  "Material D"));
   _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::PHYSICAL, "Material P"));
+  if(Settings->GetBool("cheat_cheap_upgrades"))
+    for(auto u : _upgradematerials)
+      u->Add(9999);
   
   _camera->SetFOV(_fov);
   _camera->SetClippingPlanes(0.01, 10000.0);
@@ -203,10 +207,29 @@ GameStateGame::GameStateGame()
   {
     auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 160), glm::ivec2(20, 100), _scene->GetPlayer());
     _player_status_widgets.push_back(w);
+    auto l = new Widget(root, w->GetPosition() + glm::ivec2(0, w->GetSize().y), glm::ivec2(20, 20));
+    l->SetText("H");
+    l->SetTextFont(AssetLoader->LoadFont(12));
+    l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
+    l->SetTextPaddingCentered(true, true);
   }
   {
     auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 160), glm::ivec2(20, 100), _scene->GetPlayer());
     _player_status_widgets.push_back(w);
+    auto l = new Widget(root, w->GetPosition() + glm::ivec2(0, w->GetSize().y), glm::ivec2(20, 20));
+    l->SetText("W");
+    l->SetTextFont(AssetLoader->LoadFont(12));
+    l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
+    l->SetTextPaddingCentered(true, true);
+  }
+  {
+    auto w = new WidgetSpaceshipUpgradeStatus(root, glm::ivec2(width - 32 - 24 - 24, 160), glm::ivec2(20, 100), _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER));
+    _player_upgrade_status_widgets.push_back(w);
+    auto l = new Widget(root, w->GetPosition() + glm::ivec2(0, w->GetSize().y), glm::ivec2(20, 20));
+    l->SetText("E");
+    l->SetTextFont(AssetLoader->LoadFont(12));
+    l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
+    l->SetTextPaddingCentered(true, true);
   }
   {
     std::vector<std::string> imagenames
@@ -444,6 +467,8 @@ void GameStateGame::NextLifeOrQuit()
       _scene->CreatePlayer();
       for(auto w : _player_status_widgets)
         w->SetSpaceship(_scene->GetPlayer());
+      for(auto w : _player_upgrade_status_widgets)
+        w->SetUpgrade(_scene->GetPlayer()->GetUpgrade(w->GetUpgrade()->GetType()));
     }
   else
     Quit();

@@ -77,6 +77,12 @@ Mesh::Mesh(const Mesh & other)
 }
 
 
+void Mesh::PreDrawSetupShader(ShaderProgram * shader_program) const
+{
+  assert(shader_program == shader_program);
+}
+
+
 void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program) const
 {
   const glm::mat4 mymvp(mvp * _transform);
@@ -102,6 +108,7 @@ void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4
       shader->SetMatrix("in_view",       view);
       shader->SetMatrix("in_projection", projection);
       shader->SetMatrix("in_mvp",        mymvp);
+      PreDrawSetupShader(shader);
       
       glBindVertexArray(_vao);
       if(_options & OPTION_ELEMENT)

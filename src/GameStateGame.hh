@@ -16,6 +16,7 @@ class SpaceParticles;
 class UpgradeMaterial;
 class WidgetPlayerShip;
 class WidgetSpaceshipStatus;
+class WidgetSpaceshipUpgradeStatus;
 
 
 class GameStateGame : public GameState
@@ -54,6 +55,7 @@ private:
   unsigned int          _lives;
   std::vector<Widget *> _lives_widgets;
   std::vector<WidgetSpaceshipStatus *> _player_status_widgets;
+  std::vector<WidgetSpaceshipUpgradeStatus *> _player_upgrade_status_widgets;
   std::vector<Widget *> _active_bonus_widgets;
   Widget * _pausebutton;
   std::vector<Widget *> _upgradematerial_widgets;

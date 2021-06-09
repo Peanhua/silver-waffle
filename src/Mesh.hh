@@ -39,7 +39,7 @@ public:
   
 
   Mesh(unsigned int options);
-  ~Mesh();
+  virtual ~Mesh();
   Mesh(const Mesh &);
   Mesh(Mesh &&)                  = delete; // todo: move constructor
   Mesh & operator=(const Mesh &) = delete; // todo: copy assignment
@@ -51,8 +51,9 @@ public:
   void   CalculateBoundingSphereRadius(const glm::mat4 & transform = glm::mat4(1));
   void   ApplyTransform(const glm::mat4 & transform);
   void   SetTransform(const glm::mat4 & transform);
-  
-  void   Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
+
+  virtual void PreDrawSetupShader(ShaderProgram * shader_program) const;
+  void Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
   double GetBoundingSphereRadius()   const;
 
   void Clear();

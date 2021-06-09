@@ -13,6 +13,7 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     _install_count(0),
     _activated(false),
     _timer(0),
+    _timer_max(0),
     _cooldown(0)
 {
   switch(_type)
@@ -116,6 +117,12 @@ double SpaceshipUpgrade::GetTimer() const
 }
 
 
+double SpaceshipUpgrade::GetTimerMax() const
+{
+  return _timer_max;
+}
+
+
 unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_material) const
 {
   if(Settings->GetBool("cheat_cheap_upgrades"))
@@ -156,9 +163,9 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::PHYSICAL] = 20;
       break;
     case Type::EVASION_MANEUVER:
-      costs[UpgradeMaterial::Type::ATTACK]   =  5;
-      costs[UpgradeMaterial::Type::DEFENSE]  =  0;
-      costs[UpgradeMaterial::Type::PHYSICAL] = 10;
+      costs[UpgradeMaterial::Type::ATTACK]   =  0;
+      costs[UpgradeMaterial::Type::DEFENSE]  =  7;
+      costs[UpgradeMaterial::Type::PHYSICAL] =  5;
       break;
     case Type::REPAIR_DROID:
       costs[UpgradeMaterial::Type::ATTACK]   = 10;
@@ -177,35 +184,34 @@ void SpaceshipUpgrade::Tick(double deltatime)
   
   if(IsActive())
     {
+      if(_timer > 0.0)
+        _timer -= deltatime;
+      else
+        _activated = false;
+      
       if(_type == Type::REPAIR_DROID)
         {
           double repair = glm::clamp(_spaceship->GetMaxHealth() - _spaceship->GetHealth(), 0.0, 3.0);
           if(repair > 0.0)
             _spaceship->SetHealth(_spaceship->GetHealth() + repair * deltatime);
         }
-      if(_timer > 0.0)
-        {
-          _timer -= deltatime;
           
-          if(_type == Type::EVASION_MANEUVER)
+      if(_type == Type::EVASION_MANEUVER)
+        {
+          if(_timer > 0.0)
+            _spaceship->RotateRoll(1200 * deltatime);
+          else
             {
-              if(_timer > 0.0)
-                _spaceship->RotateRoll(1200 * deltatime);
-              else
-                {
-                  auto o = glm::angleAxis(0.0f, _spaceship->GetForwardVector());
-                  _spaceship->SetOrientation(o);
-                }
+              auto o = glm::angleAxis(0.0f, _spaceship->GetForwardVector());
+              _spaceship->SetOrientation(o);
             }
         }
-      else
-        {
-          _activated = false;
-        }
     }
-
-  if(_cooldown > 0.0)
-    _cooldown -= deltatime;
+  else
+    {
+      if(_cooldown > 0.0)
+        _cooldown -= deltatime;
+    }
 }
 
 
@@ -265,6 +271,7 @@ void SpaceshipUpgrade::Activate(double value, double time)
   _activated = true;
   _value = value;
   _timer = time;
+  _timer_max = time;
   _cooldown = 30.0;
 }
 
@@ -293,8 +300,20 @@ void SpaceshipUpgrade::Dump() const
   std::cout << ", _always_activated=" << _always_activated;
   std::cout << ", _activated=" << _activated;
   std::cout << ", _timer=" << _timer;
+  std::cout << ", _timer_max=" << _timer_max;
   std::cout << ", _cooldown=" << _cooldown;
   std::cout << std::endl;
 }
 
+
+double SpaceshipUpgrade::GetCooldownRemaining() const
+{
+  return _cooldown;
+}
+
+
+double SpaceshipUpgrade::GetCooldownMax() const
+{
+  return 30.0;
+}
 

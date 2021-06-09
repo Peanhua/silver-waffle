@@ -54,7 +54,7 @@ void Explosion::Draw(const glm::mat4 & view, const glm::mat4 & projection, const
 {
   _mesh->GetShaderProgram()->Use();
   _mesh->GetShaderProgram()->SetFloat("in_time", static_cast<float>(_time));
-  _mesh->GetShaderProgram()->SetVec3("in_velocity", _velocity);
+  _mesh->GetShaderProgram()->SetVec("in_velocity", _velocity);
   _mesh->Draw(glm::mat4(1), view, projection, vp);
 }
 

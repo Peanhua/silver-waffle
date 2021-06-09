@@ -119,7 +119,7 @@ void Widget::Draw() const
     {
       auto shader = _textmesh->GetShaderProgram();
       shader->Use();
-      shader->SetVec3("in_font_color", _textcolor);
+      shader->SetVec("in_font_color", _textcolor);
       shader->SetFloat("in_font_weight", _text_font_weight);
       glm::mat4 model(1);
       model = glm::translate(model, glm::vec3(_textpadding, 0));
