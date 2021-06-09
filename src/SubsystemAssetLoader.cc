@@ -106,9 +106,11 @@ json11::Json * SubsystemAssetLoader::LoadJson(const std::string & filename)
 }
 
 
-Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
+Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::string & shader_prefix)
 {
-  auto it = _meshes.find(name);
+  auto key = name + "-" + shader_prefix;
+  
+  auto it = _meshes.find(key);
   if(it != _meshes.end())
     return (*it).second;
 
@@ -116,12 +118,12 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name)
   
   auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL);
   assert(mesh);
-  
-  if(mesh->LoadFromFile("3d-models/" + name + ".dae"))
+
+  if(mesh->LoadFromFile("3d-models/" + name + ".dae", shader_prefix))
     {
       mesh->UpdateGPU();
       mesh->CalculateBoundingSphereRadius();
-      _meshes[name] = mesh;
+      _meshes[key] = mesh;
     }
 
   if(config)

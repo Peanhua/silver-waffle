@@ -1,5 +1,6 @@
 #include "ScoreReel.hh"
 #include "Mesh.hh"
+#include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include <cassert>
@@ -17,7 +18,6 @@ ScoreReel::ScoreReel(unsigned int drum_count)
     {
       auto n = nums->FindChild(std::string("Number") + i);
       assert(n);
-      n->SetShaderProgram(AssetLoader->LoadShaderProgram("ScoreReel"));
       numbers.push_back(n);
     }
   
@@ -87,7 +87,12 @@ void ScoreReel::Tick(double deltatime)
 
 void ScoreReel::Draw() const
 {
-  glViewport(0, Settings->GetInt("screen_height") - 150, 300, 200);
+  auto shader = AssetLoader->LoadShaderProgram("SceneObject-Color");
+  assert(shader);
+  shader->Use();
+  shader->SetVec("in_light_color", glm::vec3(1.00, 0.59, 0.19));
+
+        glViewport(0, Settings->GetInt("screen_height") - 150, 300, 200);
   glm::mat4 proj = glm::perspective(glm::radians(30.0), 300.0 / 200.0, 0.001, 1000.0);
   glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -static_cast<float>(_drum_count) - 2.0f, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
   glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.5f * -static_cast<float>(_drum_count) * static_cast<float>(_drum_width), 0, 0));

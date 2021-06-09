@@ -7,7 +7,7 @@
 static glm::mat4 ToGLM(const aiMatrix4x4 & from);
 
 
-bool Mesh::LoadFromFile(const std::string & filename)
+bool Mesh::LoadFromFile(const std::string & filename, const std::string & shader_prefix)
 {
   Assimp::Importer importer;
 
@@ -18,17 +18,17 @@ bool Mesh::LoadFromFile(const std::string & filename)
       return false;
     }
 
-  return LoadFromAssimpNode(scene, scene->mRootNode, true);
+  return LoadFromAssimpNode(scene, scene->mRootNode, true, shader_prefix);
 }
 
 
-bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
+bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first, const std::string & shader_prefix)
 {
   /* The first empty node contains rotation matrix rotating the model to +y = up,
   ** so the first node can be skipped.
   */
   if(first && node->mNumMeshes == 0 && node->mNumChildren == 1)
-    return LoadFromAssimpNode(scene, node->mChildren[0], false);
+    return LoadFromAssimpNode(scene, node->mChildren[0], false, shader_prefix);
   
   if(!first)
     _transform = ToGLM(node->mTransformation);
@@ -107,9 +107,9 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
     }
 
   if(_options & OPTION_TEXTURE)
-    SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
+    SetShaderProgram(AssetLoader->LoadShaderProgram(shader_prefix + "-Texture"));
   else
-    SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
+    SetShaderProgram(AssetLoader->LoadShaderProgram(shader_prefix + "-Color"));
 
   
   for(unsigned int i = 0; success && i < node->mNumChildren; i++)
@@ -119,7 +119,7 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first)
         {
           auto child = new Mesh(_options);
           assert(child);
-          success = child->LoadFromAssimpNode(scene, childnode, false);
+          success = child->LoadFromAssimpNode(scene, childnode, false, shader_prefix);
           assert(success);
           _children.push_back(child);
         }

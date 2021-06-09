@@ -45,7 +45,7 @@ public:
   Mesh & operator=(const Mesh &) = delete; // todo: copy assignment
   Mesh & operator=(Mesh &&)      = delete; // todo: move assignment
   
-  bool   LoadFromFile(const std::string & filename);
+  bool   LoadFromFile(const std::string & filename, const std::string & shader_prefix);
   void   UpdateGPU();
   void   UpdateGPU(unsigned int update_options, unsigned int first, unsigned int count);
   void   CalculateBoundingSphereRadius(const glm::mat4 & transform = glm::mat4(1));
@@ -54,8 +54,9 @@ public:
 
   virtual void PreDrawSetupShader(ShaderProgram * shader_program) const;
   void Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
-  double GetBoundingSphereRadius()   const;
-
+  double       GetBoundingSphereRadius() const;
+  unsigned int GetOptions(unsigned int interested_in) const;
+  
   void Clear();
   void ClearVertices();
   void ClearColors();
@@ -123,7 +124,7 @@ private:
 
   std::vector<Mesh *> _children;
 
-  bool LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first);
+  bool LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first, const std::string & shader_prefix);
 };
 
 #endif

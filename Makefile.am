@@ -1,1 +1,1 @@
-SUBDIRS = src Images
+SUBDIRS = src Images Shaders

@@ -26,7 +26,7 @@ public:
   const std::string & LoadText(const std::string & filename);
   json11::Json *      LoadJson(const std::string & filename);
   ShaderProgram *     LoadShaderProgram(const std::string & name);
-  Mesh *              LoadMesh(const std::string & name);
+  Mesh *              LoadMesh(const std::string & name, const std::string & shader_prefix = "SceneObject");
   Image *             LoadImage(const std::string & name);
   SolarSystemObject * LoadSolarSystemObject(int type, unsigned int index);
   ObjectCollectible * LoadObjectCollectible(int type);

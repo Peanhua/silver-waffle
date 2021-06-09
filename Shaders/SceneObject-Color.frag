@@ -2,14 +2,20 @@
 
 #version 330
 
+uniform mat4 in_mvp;
+uniform mat4 in_view;
+uniform mat4 in_model;
+uniform vec3 in_light_color;
+uniform sampler2D texture0;
+
 in vec3 v2f_position;
 in vec3 v2f_normal;
 in vec3 v2f_color;
+in vec2 v2f_texcoord;
 
 out vec4 out_color;
 
 const vec3 sun_position = vec3(0, 0, 100);
-const vec3 light_color = vec3(1.0, 0.59, 0.19);
 const vec3 ambient = vec3(0.1f, 0.1f, 0.1f);
 const float material_shininess = 16.0f;
 
@@ -29,9 +35,18 @@ void main()
       specular = pow(specular_angle, material_shininess);
     }
 
+  vec3 basecolor = v2f_color;
+#ifdef USE_TEXTURE
+  basecolor *= texture(texture0, v2f_texcoord).rgb;
+#endif
+  
   vec3 color = ambient;
-  color += v2f_color * lambertian * light_color;
-  color += v2f_color * specular * light_color;
-    
-  out_color = vec4(color, 1);
+  color += basecolor * lambertian * in_light_color;
+  color += basecolor * specular * in_light_color;
+#if false
+  const float gamma = 2.2;
+  out_color = vec4(pow(color, vec3(1.0 / gamma)), 1.0);
+#else
+  out_color = vec4(color, 1.0);
+#endif
 }

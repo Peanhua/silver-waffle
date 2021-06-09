@@ -6,6 +6,7 @@
 #include "ObjectInvader.hh"
 #include "ObjectProjectile.hh"
 #include "ObjectSpaceship.hh"
+#include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "Widget.hh"
@@ -41,6 +42,21 @@ Scene::Scene()
 
 void Scene::Draw(const Camera & camera) const
 {
+  {
+    std::vector<std::string> shadernames
+      {
+        "SceneObject-Color",
+        "SceneObject-Texture",
+      };
+    for(auto name : shadernames)
+      {
+        auto shader = AssetLoader->LoadShaderProgram(name);
+        assert(shader);
+        shader->Use();
+        shader->SetVec("in_light_color", glm::vec3(1, 1, 1));
+      }
+  }
+      
   const glm::mat4 & view       = camera.GetView();
   const glm::mat4 & projection = camera.GetProjection();
   const glm::mat4 & vp         = camera.GetViewProjection();

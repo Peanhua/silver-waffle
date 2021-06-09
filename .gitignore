@@ -59,6 +59,8 @@ stamp-h1
 # Generated files
 /Images/*-low.jpg
 /Images/*-low.png
+/Shaders/SceneObject-Texture.vert
+/Shaders/SceneObject-Texture.frag
 
 # Other
 .bash_history

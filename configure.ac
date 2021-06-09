@@ -35,5 +35,5 @@ fi
 
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile Images/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile Images/Makefile Shaders/Makefile])
 AC_OUTPUT

@@ -7,7 +7,7 @@
 ObjectPlanet::ObjectPlanet(Scene * scene, Image * planet_texture, double planet_size)
   : ObjectMovable(scene)
 {
-  auto planet = new Mesh(*AssetLoader->LoadMesh("Planet"));
+  auto planet = new Mesh(*AssetLoader->LoadMesh("Planet", "Generic"));
   assert(planet);
   planet->ApplyTransform(glm::scale(glm::vec3(planet_size, planet_size, planet_size)));
   planet->SetTexture(planet_texture, true);

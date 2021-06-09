@@ -27,7 +27,7 @@ void WidgetPlayerShip::Tick(double deltatime)
   glm::mat4 model = glm::rotate(glm::mat4(1), glm::radians(90.0f), glm::vec3(0, 0, 1));
   model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(0, 1, 0));
   model = glm::translate(model, glm::vec3(0.1, -0.4, 0));
-  _mesh->Draw(model, view, proj, proj * view * model, AssetLoader->LoadShaderProgram("ScoreReel"));
+  _mesh->Draw(model, view, proj, proj * view * model);
   _texture_renderer->EndRender();
 
   auto image = GetImage();
