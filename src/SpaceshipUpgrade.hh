@@ -19,6 +19,7 @@ public:
       ENGINE_UPGRADE,
       HULL_UPGRADE,
       EVASION_MANEUVER,
+      REPAIR_DROID,
     };
   
   SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type);

@@ -17,13 +17,14 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
 {
   switch(_type)
     {
-    case Type::BONUS_DAMAGE:     _name = "Bonus damage";   _always_activated = false; break;
-    case Type::SHIELD:           _name = "Shield";         _always_activated = false; break;
+    case Type::BONUS_DAMAGE:     _name = "Bonus damage";   _always_activated = false; _install_count = 1; break;
+    case Type::SHIELD:           _name = "Shield";         _always_activated = false; _install_count = 1; break;
     case Type::WEAPON:           _name = "Weapon";         _always_activated = true;  break;
     case Type::WEAPON_COOLER:    _name = "Weapon cooler";  _always_activated = true;  break;
     case Type::ENGINE_UPGRADE:   _name = "Engine upgrade"; _always_activated = true;  break;
     case Type::HULL_UPGRADE:     _name = "Hull upgrade";   _always_activated = true;  break;
     case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; break;
+    case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  break;
     }
 }
 
@@ -36,6 +37,7 @@ bool SpaceshipUpgrade::CanBeInstalled() const
 
 void SpaceshipUpgrade::Install()
 {
+  _install_count++;
   switch(_type)
     {
     case Type::BONUS_DAMAGE:
@@ -44,25 +46,22 @@ void SpaceshipUpgrade::Install()
       break;
     case Type::WEAPON:
       _spaceship->AddWeapon();
-      //_install_count = static_cast<int>(_spaceship->GetWeaponCount()); handled in getter
       break;
     case Type::WEAPON_COOLER:
-      _install_count++;
       break;
     case Type::ENGINE_UPGRADE:
-      _install_count++;
       _spaceship->UpgradeEngines(1.5);
       break;
     case Type::HULL_UPGRADE:
       {
-        _install_count++;
         double hp = _spaceship->GetHealth() / _spaceship->GetMaxHealth();
         _spaceship->SetMaxHealth(_spaceship->GetMaxHealth() * 2.0);
         _spaceship->SetHealth(hp * _spaceship->GetMaxHealth());
       }
       break;
     case Type::EVASION_MANEUVER:
-      _install_count++;
+      break;
+    case Type::REPAIR_DROID:
       break;
     }
 }
@@ -104,6 +103,7 @@ int SpaceshipUpgrade::GetMaxInstalls() const
     case Type::ENGINE_UPGRADE:   return 3;
     case Type::HULL_UPGRADE:     return 1;
     case Type::EVASION_MANEUVER: return 1;
+    case Type::REPAIR_DROID:     return 1;
     }
   assert(false);
   return 0;
@@ -160,6 +160,11 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::DEFENSE]  =  0;
       costs[UpgradeMaterial::Type::PHYSICAL] = 10;
       break;
+    case Type::REPAIR_DROID:
+      costs[UpgradeMaterial::Type::ATTACK]   = 10;
+      costs[UpgradeMaterial::Type::DEFENSE]  = 10;
+      costs[UpgradeMaterial::Type::PHYSICAL] = 10;
+      break;
     }
   return costs[for_material];
 }
@@ -167,8 +172,17 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
 
 void SpaceshipUpgrade::Tick(double deltatime)
 {
+  if(!_spaceship->IsAlive())
+    return;
+  
   if(IsActive())
     {
+      if(_type == Type::REPAIR_DROID)
+        {
+          double repair = glm::clamp(_spaceship->GetMaxHealth() - _spaceship->GetHealth(), 0.0, 3.0);
+          if(repair > 0.0)
+            _spaceship->SetHealth(_spaceship->GetHealth() + repair * deltatime);
+        }
       if(_timer > 0.0)
         {
           _timer -= deltatime;
@@ -197,7 +211,7 @@ void SpaceshipUpgrade::Tick(double deltatime)
 
 bool SpaceshipUpgrade::IsActive() const
 {
-  return _always_activated || _activated;
+  return GetInstallCount() > 0 && (_always_activated || _activated);
 }
 
 
@@ -219,6 +233,7 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
     case Type::ENGINE_UPGRADE:
     case Type::HULL_UPGRADE:
     case Type::EVASION_MANEUVER:
+    case Type::REPAIR_DROID:
       break;
     }
 }
@@ -232,6 +247,9 @@ const std::string & SpaceshipUpgrade::GetName() const
 
 bool SpaceshipUpgrade::CanActivate() const
 {
+  if(GetInstallCount() == 0)
+    return false;
+  
   if(IsActive())
     return false;
 
