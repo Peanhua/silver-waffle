@@ -313,7 +313,7 @@ void GameStateGame::Tick(double deltatime)
   _texture_renderer->EndRender();
 
   glDisable(GL_DEPTH_TEST);
-  auto tid_glow = _blur->Blur(5, _texture_renderer->GetTextureId(1));
+  auto tid_glow = _blur->Blur(3, _texture_renderer->GetTextureId(1));
   _blender->Blend(_texture_renderer->GetTextureId(0), tid_glow);
   glEnable(GL_DEPTH_TEST);
   

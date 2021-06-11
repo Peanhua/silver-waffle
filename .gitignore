@@ -59,8 +59,12 @@ stamp-h1
 # Generated files
 /Images/*-low.jpg
 /Images/*-low.png
-/Shaders/SceneObject-Texture.vert
+/Shaders/GaussianBlur-Horizontal.frag
+/Shaders/GaussianBlur-Horizontal.vert
+/Shaders/GaussianBlur-Vertical.frag
+/Shaders/GaussianBlur-Vertical.vert
 /Shaders/SceneObject-Texture.frag
+/Shaders/SceneObject-Texture.vert
 
 # Other
 .bash_history
