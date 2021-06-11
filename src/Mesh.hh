@@ -87,8 +87,8 @@ public:
   void            SetShaderProgram(ShaderProgram * shader_program);
   ShaderProgram * GetShaderProgram() const;
 
-  void            SetTexture(Image * texture_image, bool set_children = false);
-  Image *         GetTexture() const;
+  void            SetTexture(unsigned int index, Image * texture_image, bool set_children = false);
+  Image *         GetTexture(unsigned int index = 0) const;
 
   void   AddChild(Mesh * child);
   Mesh * FindChild(const std::string & name);
@@ -118,7 +118,7 @@ private:
   std::vector<GLfloat> _generic_vec3s;
 
   ShaderProgram * _shader_program;
-  Image *         _texture;
+  std::vector<Image *> _textures;
 
   double _bounding_sphere_radius;
 

@@ -2,6 +2,7 @@
 
 INPUTFILENAME=${1}
 OUTPUTFILENAME=${2}
+HASHDEFINE="${3}"
 
 if [ ! -f ${INPUTFILENAME} ]; then
     echo "${0}: File '${INPUTFILENAME}' not found error."
@@ -15,5 +16,5 @@ if [ -z "${VERSION}" ]; then
 fi
 
 echo "${VERSION}" >${OUTPUTFILENAME} || exit 1
-echo '#define USE_TEXTURE' >>${OUTPUTFILENAME} || exit 1
+echo "${HASHDEFINE}" >>${OUTPUTFILENAME} || exit 1
 grep -vE '^#version ' ${INPUTFILENAME} >>${OUTPUTFILENAME} || exit 1

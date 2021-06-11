@@ -1,51 +1,77 @@
 shadersdir = $(pkgdatadir)/Shaders
 
+GaussianBlur-Horizontal.vert : GaussianBlur.vert
+	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define HORIZONTAL'
+
+GaussianBlur-Horizontal.frag : GaussianBlur.frag
+	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define HORIZONTAL'
+
+GaussianBlur-Vertical.vert : GaussianBlur.vert
+	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define VERTICAL'
+
+GaussianBlur-Vertical.frag : GaussianBlur.frag
+	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define VERTICAL'
+
 SceneObject-Texture.vert : SceneObject-Color.vert
-	$(AM_V_GEN) ./generate-variants.sh $< $@
+	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define USE_TEXTURE'
 
 SceneObject-Texture.frag : SceneObject-Color.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@
+	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define USE_TEXTURE'
 
 shaders_DATA = \
-	SceneObject-Color.vert		\
-	SceneObject-Color.frag		\
-	SceneObject-Texture.vert	\
-	SceneObject-Texture.frag	\
-	Explosion.vert			\
+	AdditiveBlending.frag		\
+	AdditiveBlending.vert		\
 	Explosion.frag			\
-	Font.vert			\
+	Explosion.vert			\
 	Font.frag			\
-	Generic-Color.vert		\
+	Font.vert			\
+	GaussianBlur-Horizontal.frag	\
+	GaussianBlur-Horizontal.vert	\
+	GaussianBlur-Vertical.frag	\
+	GaussianBlur-Vertical.vert	\
 	Generic-Color.frag		\
+	Generic-Color.vert		\
+	Generic-Texture.frag		\
+	Generic-Texture.frag		\
 	Generic-Texture.vert		\
-	Generic-Texture.frag		\
-	Generic-Texture.frag		\
-	Mask.vert			\
 	Mask.frag			\
-	ProgressBar.vert		\
+	Mask.vert			\
 	ProgressBar.frag		\
-	Star.vert			\
-	Star.frag			
+	ProgressBar.vert		\
+	SceneObject-Color.frag		\
+	SceneObject-Color.vert		\
+	SceneObject-Texture.frag	\
+	SceneObject-Texture.vert	\
+	Star.frag			\
+	Star.vert			
 
 CLEANFILES = \
-	SceneObject-Texture.vert	\
-	SceneObject-Texture.frag	
+	GaussianBlur-Horizontal.frag	\
+	GaussianBlur-Horizontal.vert	\
+	GaussianBlur-Vertical.frag	\
+	GaussianBlur-Vertical.vert	\
+	SceneObject-Texture.frag	\
+	SceneObject-Texture.vert	
 
 EXTRA_DIST = \
-	SceneObject-Color.vert		\
-	SceneObject-Color.frag		\
-	Explosion.vert			\
+	AdditiveBlending.frag		\
+	AdditiveBlending.vert		\
 	Explosion.frag			\
-	Font.vert			\
+	Explosion.vert			\
 	Font.frag			\
-	Generic-Color.vert		\
+	Font.vert			\
+	GaussianBlur.frag		\
+	GaussianBlur.vert		\
 	Generic-Color.frag		\
+	Generic-Color.vert		\
+	Generic-Texture.frag		\
+	Generic-Texture.frag		\
 	Generic-Texture.vert		\
-	Generic-Texture.frag		\
-	Generic-Texture.frag		\
-	Mask.vert			\
 	Mask.frag			\
-	ProgressBar.vert		\
+	Mask.vert			\
 	ProgressBar.frag		\
-	Star.vert			\
-	Star.frag			
+	ProgressBar.vert		\
+	SceneObject-Color.frag		\
+	SceneObject-Color.vert		\
+	Star.frag			\
+	Star.vert			

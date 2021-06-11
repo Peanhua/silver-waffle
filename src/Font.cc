@@ -196,7 +196,7 @@ void Font::Render(const glm::vec3 & position, const std::string & text, Mesh & m
           pos.x += width;
         }
     }
-  mesh.SetTexture(_image);
+  mesh.SetTexture(0, _image);
 }
 
 

@@ -7,7 +7,7 @@
 Milkyway::Milkyway()
 {
   _mesh = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
-  _mesh->SetTexture(AssetLoader->LoadImage("8k_stars_milky_way"));
+  _mesh->SetTexture(0, AssetLoader->LoadImage("8k_stars_milky_way"));
   _mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
 
   std::vector<glm::vec3> vertices {

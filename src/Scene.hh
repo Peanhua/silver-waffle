@@ -8,11 +8,13 @@
 class Camera;
 class Explosion;
 class Mesh;
+class Milkyway;
 class Object;
 class ObjectCollectible;
 class ObjectInvader;
 class ObjectProjectile;
 class ObjectSpaceship;
+class SpaceParticles;
 class WormholeWall;
 
 
@@ -76,6 +78,8 @@ private:
   Container<Explosion *>          _explosions;
   on_destroyed_t                  _on_destroyed_callback;
   on_collectible_collected_t      _on_collectible_collected_callback;
+  Milkyway *                      _milkyway;
+  SpaceParticles *                _particles;
   WormholeWall *                  _wall;
   std::vector<Object *>           _planets;
 };

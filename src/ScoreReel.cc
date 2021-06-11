@@ -91,8 +91,9 @@ void ScoreReel::Draw() const
   assert(shader);
   shader->Use();
   shader->SetVec("in_light_color", glm::vec3(1.00, 0.59, 0.19));
+  shader->SetVec("in_glow", glm::vec3(0.0, 0.0, 0.0));
 
-        glViewport(0, Settings->GetInt("screen_height") - 150, 300, 200);
+  glViewport(0, Settings->GetInt("screen_height") - 150, 300, 200);
   glm::mat4 proj = glm::perspective(glm::radians(30.0), 300.0 / 200.0, 0.001, 1000.0);
   glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -static_cast<float>(_drum_count) - 2.0f, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
   glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.5f * -static_cast<float>(_drum_count) * static_cast<float>(_drum_width), 0, 0));

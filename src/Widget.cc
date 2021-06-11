@@ -229,7 +229,7 @@ void Widget::SetImage(Image * image)
     }
   assert(_imagemesh);
 
-  _imagemesh->SetTexture(image);
+  _imagemesh->SetTexture(0, image);
   OnSizeUpdated();
 }
 

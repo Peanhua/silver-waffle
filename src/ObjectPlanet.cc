@@ -10,7 +10,7 @@ ObjectPlanet::ObjectPlanet(Scene * scene, Image * planet_texture, double planet_
   auto planet = new Mesh(*AssetLoader->LoadMesh("Planet", "Generic"));
   assert(planet);
   planet->ApplyTransform(glm::scale(glm::vec3(planet_size, planet_size, planet_size)));
-  planet->SetTexture(planet_texture, true);
+  planet->SetTexture(0, planet_texture, true);
   planet->UpdateGPU();
   SetMesh(planet);
   auto f = AssetLoader->LoadImage("White");
@@ -23,7 +23,7 @@ void ObjectPlanet::AddPlanetRing(float start, float end)
 {
   Mesh * ring = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
   ring->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
-  ring->SetTexture(AssetLoader->LoadImage("8k_saturn_ring_alpha"));
+  ring->SetTexture(0, AssetLoader->LoadImage("8k_saturn_ring_alpha"));
 
   const auto PI = 4.0f * std::atan(1.0f);
   const auto step = 2.0f * PI / 128.0f;

@@ -20,16 +20,19 @@ silverwaffle_LDADD =       \
 	$(FREETYPE2_LIBS)
 
 silverwaffle_SOURCES =				\
+	AdditiveBlending.cc			\
 	Camera.cc				\
 	Explosion.cc				\
 	Font.cc					\
 	GameState.cc				\
 	GameStateGame.cc			\
 	GameStateTitle.cc			\
+	GaussianBlur.cc				\
 	Image.cc				\
 	Level.cc				\
 	Mesh.cc					\
 	Mesh_LoadFromFile.cc			\
+	MeshOverlay.cc				\
 	MeshProgressBar.cc			\
 	Milkyway.cc				\
 	Object.cc				\

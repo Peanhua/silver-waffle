@@ -261,17 +261,17 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
       break;
     case ObjectCollectible::TYPE_DAMAGE_MULTIPLIER:
       collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
-      collectible->GetMesh()->SetTexture(LoadImage("BonusIcon-2xDamage"), true);
+      collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-2xDamage"), true);
       collectible->GetMesh()->UpdateGPU();
       break;
     case ObjectCollectible::TYPE_SCORE_MULTIPLIER:
       collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
-      collectible->GetMesh()->SetTexture(LoadImage("BonusIcon-2xScore"), true);
+      collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-2xScore"), true);
       collectible->GetMesh()->UpdateGPU();
       break;
     case ObjectCollectible::TYPE_SHIELD:
       collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
-      collectible->GetMesh()->SetTexture(LoadImage("BonusIcon-Shield"), true);
+      collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-Shield"), true);
       collectible->GetMesh()->UpdateGPU();
       break;
     case ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK:

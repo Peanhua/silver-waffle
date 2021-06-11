@@ -1,17 +1,19 @@
 #include "GameStateGame.hh"
+#include "AdditiveBlending.hh"
 #include "Camera.hh"
 #include "Font.hh"
+#include "GaussianBlur.hh"
+#include "Image.hh"
 #include "Level.hh"
-#include "Mesh.hh"
-#include "Milkyway.hh"
+#include "MeshOverlay.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScoreReel.hh"
 #include "SolarSystemObject.hh"
-#include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
+#include "TextureRenderer.hh"
 #include "UpgradeMaterial.hh"
 #include "WidgetButton.hh"
 #include "WidgetPlayerShip.hh"
@@ -34,6 +36,15 @@ GameStateGame::GameStateGame()
 {
   _camera = new Camera();
   _scene = new Scene();
+  _texture_renderer = new TextureRenderer(static_cast<unsigned int>(Settings->GetInt("screen_width")),
+                                          static_cast<unsigned int>(Settings->GetInt("screen_height")),
+                                          2);
+  _overlay_mesh = new MeshOverlay();
+  _overlay_mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
+
+  _blur = new GaussianBlur();
+  _blender = new AdditiveBlending();
+    
   _fov = 60.0;
 #define CAMERA_SPEED 0.5
 
@@ -254,10 +265,6 @@ GameStateGame::GameStateGame()
       }
   }
     
-  _particles = new SpaceParticles(5.0, 50.0, 0);
-
-  _milkyway = new Milkyway();
-
   OnLevelChanged();
 }
 
@@ -273,7 +280,6 @@ void GameStateGame::Tick(double deltatime)
 {
   auto level = _levels[_current_level];
   
-  _particles->Tick(deltatime);
   _score_reel->Tick(deltatime);
 
   if(_state != State::FULL_PAUSE)
@@ -302,12 +308,15 @@ void GameStateGame::Tick(double deltatime)
   _active_bonus_widgets[ObjectCollectible::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_score_multiplier_timer > 0.0);
   _active_bonus_widgets[ObjectCollectible::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->IsActive());
 
-  glDisable(GL_DEPTH_TEST);
-  _milkyway->Draw(*_camera);
-  
-  glEnable(GL_DEPTH_TEST);
-  _particles->Draw(*_camera);
+  _texture_renderer->BeginRender();
   _scene->Draw(*_camera);
+  _texture_renderer->EndRender();
+
+  glDisable(GL_DEPTH_TEST);
+  auto tid_glow = _blur->Blur(5, _texture_renderer->GetTextureId(1));
+  _blender->Blend(_texture_renderer->GetTextureId(0), tid_glow);
+  glEnable(GL_DEPTH_TEST);
+  
   _score_reel->Draw();
   
   GameState::Tick(deltatime);

@@ -17,7 +17,6 @@ Mesh::Mesh(unsigned int options)
     _generic_vec3_vbo(0),
     _primitive_type(GL_TRIANGLES),
     _shader_program(nullptr),
-    _texture(nullptr),
     _bounding_sphere_radius(0)
 {
 }
@@ -66,7 +65,6 @@ Mesh::Mesh(const Mesh & other)
     _generic_vec2s(other._generic_vec2s),
     _generic_vec3s(other._generic_vec3s),
     _shader_program(other._shader_program),
-    _texture(other._texture),
     _bounding_sphere_radius(other._bounding_sphere_radius)
 {
   for(auto c : other._children)
@@ -96,9 +94,14 @@ void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4
 
       if(_options & OPTION_TEXTURE)
         {
-          assert(_texture);
+          assert(_textures.size() > 0);
+          for(unsigned int i = 0; i < _textures.size(); i++)
+            {
+              glActiveTexture(GL_TEXTURE0 + i);
+              glBindTexture(GL_TEXTURE_2D, _textures[i]->GetTextureId());
+              shader->SetInt("texture" + std::to_string(i), static_cast<int>(i));
+            }
           glActiveTexture(GL_TEXTURE0);
-          glBindTexture(GL_TEXTURE_2D, _texture->GetTextureId());
         }
 
       if(_options & OPTION_BLEND)
@@ -505,19 +508,26 @@ void Mesh::SetTransform(const glm::mat4 & transform)
 }
 
 
-void Mesh::SetTexture(Image * texture_image, bool set_children)
+void Mesh::SetTexture(unsigned int index, Image * texture_image, bool set_children)
 {
+  assert(index <= _textures.size());
   assert(texture_image);
-  _texture = texture_image;
+  
+  if(index == _textures.size())
+    _textures.push_back(texture_image);
+  else
+    _textures[index] = texture_image;
+  
   if(set_children)
     for(auto child : _children)
-      child->SetTexture(texture_image, true);
+      child->SetTexture(index, texture_image, true);
 }
 
 
-Image * Mesh::GetTexture() const
+Image * Mesh::GetTexture(unsigned int index) const
 {
-  return _texture;
+  assert(index < _textures.size());
+  return _textures[index];
 }
 
 

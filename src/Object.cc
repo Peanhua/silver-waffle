@@ -1,6 +1,7 @@
 #include "Object.hh"
 #include "Camera.hh"
 #include "Mesh.hh"
+#include "ShaderProgram.hh"
 
 
 Object::Object(Scene * scene)
@@ -29,6 +30,10 @@ void Object::Draw(const glm::mat4 & view, const glm::mat4 & projection, const gl
 {
   if(_mesh)
     {
+      auto shader = _mesh->GetShaderProgram();
+      shader->Use();
+      shader->SetVec("in_glow", glm::vec3(0.0, 0.0, 0.0));
+
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);
       _mesh->Draw(model, view, projection, mvp);

@@ -67,7 +67,7 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first, 
           assert(x == aiReturn_SUCCESS);
           auto texture = AssetLoader->LoadImage(path.C_Str());
           assert(texture);
-          SetTexture(texture);
+          SetTexture(0, texture);
         }
       
       for(unsigned int vi = 0; vi < mesh->mNumVertices; vi++)

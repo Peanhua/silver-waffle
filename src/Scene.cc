@@ -2,11 +2,13 @@
 #include "Camera.hh"
 #include "Explosion.hh"
 #include "Mesh.hh"
+#include "Milkyway.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectInvader.hh"
 #include "ObjectProjectile.hh"
 #include "ObjectSpaceship.hh"
 #include "ShaderProgram.hh"
+#include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "Widget.hh"
@@ -36,6 +38,10 @@ Scene::Scene()
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
 
+  _milkyway = new Milkyway();
+
+  _particles = new SpaceParticles(5.0, 50.0, 0);
+
   _wall = new WormholeWall(100, 4);
 }
 
@@ -61,11 +67,15 @@ void Scene::Draw(const Camera & camera) const
   const glm::mat4 & projection = camera.GetProjection();
   const glm::mat4 & vp         = camera.GetViewProjection();
 
+  glDisable(GL_DEPTH_TEST);
+  _milkyway->Draw(camera);
   glEnable(GL_DEPTH_TEST);
 
   for(auto p : _planets)
     p->Draw(view, projection, vp);
   glClear(GL_DEPTH_BUFFER_BIT);
+
+  _particles->Draw(camera);
   
   if(_player->IsAlive())
     _player->Draw(view, projection, vp);
@@ -266,6 +276,7 @@ void Scene::Tick(double deltatime)
     if(e->IsAlive())
       e->Tick(deltatime);
 
+  _particles->Tick(deltatime);
   _wall->Tick(deltatime);
 
   if(_player->IsAlive())

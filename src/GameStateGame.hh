@@ -5,14 +5,15 @@
 #include <vector>
 #include <random>
 
+class AdditiveBlending;
 class Camera;
+class GaussianBlur;
 class Image;
 class Level;
 class Mesh;
-class Milkyway;
 class Scene;
 class ScoreReel;
-class SpaceParticles;
+class TextureRenderer;
 class UpgradeMaterial;
 class WidgetPlayerShip;
 class WidgetSpaceshipStatus;
@@ -43,9 +44,11 @@ private:
   double      _fov;
   Camera *    _camera;
   Scene *     _scene;
+  TextureRenderer * _texture_renderer;
+  Mesh *      _overlay_mesh;
+  GaussianBlur * _blur;
+  AdditiveBlending * _blender;
   ScoreReel * _score_reel;
-  SpaceParticles * _particles;
-  Milkyway *       _milkyway;
   std::vector<Level *> _levels;
   unsigned int         _current_level;
   unsigned int _score_multiplier;

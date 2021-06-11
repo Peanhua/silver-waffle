@@ -1,11 +1,12 @@
 // Blinn-Phong adaptation from https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model
 
-#version 330
+#version 330 core
 
 uniform mat4 in_mvp;
 uniform mat4 in_view;
 uniform mat4 in_model;
 uniform vec3 in_light_color;
+uniform vec3 in_glow;
 uniform sampler2D texture0;
 
 in vec3 v2f_position;
@@ -13,7 +14,8 @@ in vec3 v2f_normal;
 in vec3 v2f_color;
 in vec2 v2f_texcoord;
 
-out vec4 out_color;
+layout (location = 0) out vec4 out_color;
+layout (location = 1) out vec4 out_glow;
 
 const vec3 sun_position = vec3(0, 0, 100);
 const vec3 ambient = vec3(0.1f, 0.1f, 0.1f);
@@ -43,10 +45,13 @@ void main()
   vec3 color = ambient;
   color += basecolor * lambertian * in_light_color;
   color += basecolor * specular * in_light_color;
+
 #if false
   const float gamma = 2.2;
   out_color = vec4(pow(color, vec3(1.0 / gamma)), 1.0);
 #else
   out_color = vec4(color, 1.0);
 #endif
+  
+  out_glow = vec4(in_glow, 1.0);
 }

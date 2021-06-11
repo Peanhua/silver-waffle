@@ -204,24 +204,19 @@ SpaceshipUpgrade * ObjectSpaceship::GetUpgrade(SpaceshipUpgrade::Type type) cons
 
 void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
 {
-#if 0
   auto mesh = GetMesh();
   if(mesh)
     {
       const glm::mat4 model(glm::translate(glm::mat4(1), GetPosition()) * glm::toMat4(GetOrientation()));
       const glm::mat4 mvp(vp * model);
 
-      auto shader = AssetLoader->LoadShaderProgram("Spaceship");
+      auto shader = mesh->GetShaderProgram();
       shader->Use();
       auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-      shader->SetInt("in_shields", shield->IsActive() ? 1 : 0);
-      shader->SetFloat("in_time", static_cast<float>(shield->GetTimer() - std::floor(shield->GetTimer())));
+      shader->SetVec("in_glow", shield->IsActive() ? glm::vec3(0.5, 0.5, 1.0) : glm::vec3(0.0, 0.0, 0.0));
 
       mesh->Draw(model, view, projection, mvp, shader);
     }
-#else
-  Object::Draw(view, projection, vp);
-#endif
 }
 
 
