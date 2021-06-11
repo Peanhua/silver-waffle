@@ -5,9 +5,11 @@ in FRAGMENT_DATA
   vec4 color;
 } g2f;
 
-out vec4 final_colour;
+layout (location = 0) out vec4 out_color;
+layout (location = 1) out vec4 out_glow;
 
 void main()
 {
-  final_colour = g2f.color;
+  out_color = g2f.color;
+  out_glow  = g2f.color;
 }
