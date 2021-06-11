@@ -67,6 +67,9 @@ void ObjectSpaceship::Tick(double deltatime)
         cooling += 0.05;
       
       weapon->_heat = std::max(0.0, weapon->_heat - cooling * deltatime);
+
+      if(weapon->_last_fire_timer > 0.0)
+        weapon->_last_fire_timer -= deltatime;
     }
 
   for(auto u : _upgrades)
@@ -100,13 +103,7 @@ unsigned int ObjectSpaceship::AddWeapon()
 
 unsigned int ObjectSpaceship::AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
 {
-  auto weapon = new Weapon();
-  weapon->_location = location;
-  weapon->_autofire = false;
-  weapon->_projectile = projectile;
-  weapon->_projectile_direction = projectile_direction;
-  weapon->_projectile_initial_velocity = projectile_initial_velocity;
-  weapon->_projectile_damage = projectile_damage;
+  auto weapon = new Weapon(location, projectile, projectile_direction, projectile_initial_velocity, projectile_damage);
   _weapons.push_back(weapon);
   return static_cast<unsigned int>(_weapons.size());
 }
@@ -123,6 +120,10 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
 {
   assert(weapon_id < _weapons.size());
   auto weapon = _weapons[weapon_id];
+
+  if(weapon->_last_fire_timer > 0.0)
+    return false;
+  
   if(weapon->_heat > 1.0)
     return false;
 
@@ -143,6 +144,8 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
                         damage,
                         10.0);
   weapon->_heat += 0.03;
+  weapon->_last_fire_timer = weapon->_minimum_firing_interval;
+  
   return true;
 }
 
@@ -224,4 +227,18 @@ void ObjectSpaceship::UpgradeFromCollectible(ObjectCollectible * collectible)
 {
   for(auto u : _upgrades)
     u->ActivateFromCollectible(collectible);
+}
+
+
+ObjectSpaceship::Weapon::Weapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
+  : _location(location),
+    _autofire(false),
+    _heat(0),
+    _last_fire_timer(0),
+    _minimum_firing_interval(0.02),
+    _projectile(projectile),
+    _projectile_direction(projectile_direction),
+    _projectile_initial_velocity(projectile_initial_velocity),
+    _projectile_damage(projectile_damage)
+{
 }

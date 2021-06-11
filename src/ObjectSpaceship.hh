@@ -44,9 +44,13 @@ private:
   class Weapon
   {
   public:
+    Weapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
+    
     glm::vec3 _location;
     bool      _autofire;
     double    _heat;
+    double    _last_fire_timer;
+    double    _minimum_firing_interval;
     Mesh *    _projectile;
     glm::vec3 _projectile_direction;
     double    _projectile_initial_velocity;
