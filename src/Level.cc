@@ -156,7 +156,7 @@ void Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator
       if(invader && rand() < 0.2f)
         {
           auto u = invader->GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-          u->Activate(50, 9999);
+          u->Activate(50.0 + 150.0 * rand(), 9999);
         }
     }
 }
