@@ -6,7 +6,7 @@ BEGIN{
     includefn = substr($2, 2, length($2) - 2);
     printf("/****************************************************************************/\n");
     printf("/* BEGIN %s */\n", $0);
-    rv = system(sprintf("cat %s", includefn));
+    rv = system(sprintf("awk -f includes.awk <%s", includefn));
     if(rv)
         exit rv;
     printf("/* END %s */\n", $0);

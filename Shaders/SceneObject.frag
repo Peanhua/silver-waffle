@@ -1,33 +1,17 @@
 #version 330 core
 
-uniform mat4 in_mvp;
-uniform mat4 in_view;
-uniform mat4 in_model;
-uniform vec3 in_light_color;
-uniform vec3 in_glow;
-#ifdef USE_TEXTURE
-uniform sampler2D texture0;
-#endif
-
-in vec3 v2f_position;
-in vec3 v2f_normal;
-in vec3 v2f_color;
-#ifdef USE_TEXTURE
-in vec2 v2f_texcoord;
-#endif
-
-layout (location = 0) out vec4 out_color;
-layout (location = 1) out vec4 out_glow;
-
+#include "Include/Input.frag"
+#include "Include/Output.frag"
+#include "Include/Uniforms.glsl"
 
 #include "Include/DirectionalLight.frag"
 
 
 void main()
 {
-  vec3 basecolor = v2f_color;
+  vec3 basecolor = fin.color;
 #ifdef USE_TEXTURE
-  basecolor *= texture(texture0, v2f_texcoord).rgb;
+  basecolor *= texture(texture0, fin.texcoord).rgb;
 #endif
   
   const vec3 light_position = vec3(0, 0, 100);
@@ -35,8 +19,8 @@ void main()
   const float material_shininess = 16.0f;
   vec3 color = DirectionalLight(light_position,
                                 ambient,
-                                v2f_position,
-                                normalize(v2f_normal),
+                                fin.position,
+                                normalize(fin.normal),
                                 basecolor,
                                 material_shininess);
 

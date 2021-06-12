@@ -22,7 +22,7 @@ for option in ${OPTIONS} ; do
 done
 grep -vE '^#version ' ${INPUTFILENAME} >>${TMPFILENAME} || exit 1
 
-awk -f includes.awk < ${TMPFILENAME} > ${OUTPUTFILENAME} || exit 1
+awk -f includes.awk <${TMPFILENAME} >${OUTPUTFILENAME} || exit 1
 
 rm ${TMPFILENAME}
 exit 0
