@@ -1,4 +1,5 @@
 // Blinn-Phong adaptation from https://en.wikipedia.org/wiki/Blinn%E2%80%93Phong_reflection_model
+
 vec3 DirectionalLight(vec3 light_position,
                       vec3 ambient_color,
                       vec3 position,

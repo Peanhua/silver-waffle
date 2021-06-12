@@ -15,13 +15,13 @@ GaussianBlur-Vertical.frag : GaussianBlur.frag
 SceneObject-Color.vert : SceneObject.vert
 	$(AM_V_GEN) ./generate-variants.sh $< $@ ''
 
-SceneObject-Color.frag : SceneObject.frag
+SceneObject-Color.frag : SceneObject.frag Include/DirectionalLight.frag
 	$(AM_V_GEN) ./generate-variants.sh $< $@ ''
 
 SceneObject-Texture.vert : SceneObject.vert
 	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_TEXTURE'
 
-SceneObject-Texture.frag : SceneObject.frag
+SceneObject-Texture.frag : SceneObject.frag Include/DirectionalLight.frag
 	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_TEXTURE'
 
 shaders_DATA = \
