@@ -1,22 +1,28 @@
 shadersdir = $(pkgdatadir)/Shaders
 
 GaussianBlur-Horizontal.vert : GaussianBlur.vert
-	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define HORIZONTAL'
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'HORIZONTAL'
 
 GaussianBlur-Horizontal.frag : GaussianBlur.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define HORIZONTAL'
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'HORIZONTAL'
 
 GaussianBlur-Vertical.vert : GaussianBlur.vert
-	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define VERTICAL'
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'VERTICAL'
 
 GaussianBlur-Vertical.frag : GaussianBlur.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define VERTICAL'
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'VERTICAL'
 
-SceneObject-Texture.vert : SceneObject-Color.vert
-	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define USE_TEXTURE'
+SceneObject-Color.vert : SceneObject.vert
+	$(AM_V_GEN) ./generate-variants.sh $< $@ ''
 
-SceneObject-Texture.frag : SceneObject-Color.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@ '#define USE_TEXTURE'
+SceneObject-Color.frag : SceneObject.frag
+	$(AM_V_GEN) ./generate-variants.sh $< $@ ''
+
+SceneObject-Texture.vert : SceneObject.vert
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_TEXTURE'
+
+SceneObject-Texture.frag : SceneObject.frag
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_TEXTURE'
 
 shaders_DATA = \
 	AdditiveBlending.frag		\
@@ -71,7 +77,7 @@ EXTRA_DIST = \
 	Mask.vert			\
 	ProgressBar.frag		\
 	ProgressBar.vert		\
-	SceneObject-Color.frag		\
-	SceneObject-Color.vert		\
+	SceneObject.frag		\
+	SceneObject.vert		\
 	Star.frag			\
 	Star.vert			

@@ -63,6 +63,8 @@ stamp-h1
 /Shaders/GaussianBlur-Horizontal.vert
 /Shaders/GaussianBlur-Vertical.frag
 /Shaders/GaussianBlur-Vertical.vert
+/Shaders/SceneObject-Color.frag
+/Shaders/SceneObject-Color.vert
 /Shaders/SceneObject-Texture.frag
 /Shaders/SceneObject-Texture.vert
 

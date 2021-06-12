@@ -1,7 +1,8 @@
-#include <cassert>
 #include "ShaderProgram.hh"
 #include "Shader.hh"
 #include "Mesh.hh"
+#include <cassert>
+#include <iostream>
 
 
 ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, const std::vector<std::string> & fragment_shaders, const std::vector<std::string> & geometry_shaders)
@@ -37,6 +38,48 @@ ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, co
   glBindAttribLocation(_program, Mesh::ALOC_GENERIC_VEC3, "in_generic_vec3");
 
   glLinkProgram(_program);
+
+  GLint status;
+  glGetProgramiv(_program, GL_LINK_STATUS, &status);
+  if(status == GL_FALSE)
+    {
+      char buf[4096];
+      GLsizei len;
+
+      glGetProgramInfoLog(this->_program, (sizeof buf) - 1, &len, buf);
+      std::cerr << "Failed to link shader program: " << buf << "\n";
+      std::string delimiter = "###############################################################################\n";
+
+      std::cerr << delimiter;
+      std::cerr << "# Dumping vertex shader:\n";
+      std::cerr << delimiter;
+      for(auto src : vertex_shaders)
+        std::cerr << src << "\n";
+      std::cerr << delimiter;
+      std::cerr << "# End of Vertex shader.\n";
+      std::cerr << delimiter << "\n";
+      
+      std::cerr << delimiter;
+      std::cerr << "# Dumping Fragment shader:\n";
+      std::cerr << delimiter;
+      for(auto src : fragment_shaders)
+        std::cerr << src << "\n";
+      std::cerr << delimiter;
+      std::cerr << "# End of Fragment shader.\n";
+      std::cerr << delimiter << "\n";
+      
+      std::cerr << delimiter;
+      std::cerr << "# Dumping Geometry shader:\n";
+      std::cerr << delimiter;
+      for(auto src : geometry_shaders)
+        std::cerr << src << "\n";
+      std::cerr << delimiter;
+      std::cerr << "# End of Geometry shader.\n";
+      std::cerr << delimiter;
+      
+      std::cerr << std::flush;
+    }      
+  assert(status == GL_TRUE);
 }
 
 
@@ -103,5 +146,3 @@ void ShaderProgram::Use() const
   assert(_program);
   glUseProgram(_program);
 }
-
-
