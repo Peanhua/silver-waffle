@@ -18,14 +18,12 @@ public:
       OPTION_ELEMENT            = 1<<1,
       OPTION_TEXTURE            = 1<<2,
       OPTION_BLEND              = 1<<3,
-      OPTION_BLEND_DISCARD      = 1<<4,
-      OPTION_GENERIC_VEC3_INPUT = 1<<5,
-      OPTION_NORMAL             = 1<<6,
-      OPTION_COLOR_ALPHA        = 1<<7,
-      OPTION_VERTEX_W           = 1<<8,
-      OPTION_GENERIC_VEC2_INPUT = 1<<9,
-      OPTION_VERTEX             = 1<<10,
-      OPTION_DYNAMIC_VERTEX     = 1<<11,
+      OPTION_GENERIC_VEC3_INPUT = 1<<4,
+      OPTION_NORMAL             = 1<<5,
+      OPTION_VERTEX_W           = 1<<6,
+      OPTION_GENERIC_VEC2_INPUT = 1<<7,
+      OPTION_VERTEX             = 1<<8,
+      OPTION_DYNAMIC_VERTEX     = 1<<9,
     };
   enum AttribLocation
     {
@@ -71,6 +69,7 @@ public:
   void AddColor(const glm::vec3 & color);
   void AddColor(const glm::vec4 & color);
   void SetAllColor(const glm::vec3 & color, bool children = true);
+  void SetAllColor(const glm::vec4 & color, bool children = true);
   void AddTexCoord(const glm::vec2 & coord);
   void AddNormal(const glm::vec3 & normal);
   void AddElement(unsigned int index);
@@ -84,7 +83,7 @@ public:
   GLenum GetPrimitiveType() const;
   void   SetPrimitiveType(const GLenum primitive_type);
   
-  void            SetShaderProgram(ShaderProgram * shader_program);
+  void            SetShaderProgram(ShaderProgram * shader_program, bool set_children = false);
   ShaderProgram * GetShaderProgram() const;
 
   void            SetTexture(unsigned int index, Image * texture_image, bool set_children = false);

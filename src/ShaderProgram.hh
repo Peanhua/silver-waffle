@@ -9,9 +9,9 @@
 class ShaderProgram
 {
 public:
-  ShaderProgram(const std::vector<std::string> & vertex_shaders,
-                const std::vector<std::string> & fragment_shaders,
-                const std::vector<std::string> & geometry_shaders);
+  ShaderProgram(const std::string & vertex_shader,
+                const std::string & fragment_shader,
+                const std::string & geometry_shader);
   ~ShaderProgram();
 
   void Use() const;

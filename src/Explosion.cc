@@ -19,7 +19,7 @@ Explosion::Explosion(std::minstd_rand & random)
       {
         float f = static_cast<float>(j) / static_cast<float>(rounds);
         _mesh->AddGenericVecInput(glm::normalize(glm::vec3(rand() - 0.5, rand() - 0.5, rand() - 0.5)) * f);
-        _mesh->AddColor(glm::vec3(rand(), rand(), rand()));
+        _mesh->AddColor(glm::vec4(rand(), rand(), rand(), 1.0));
       }
   _mesh->SetPrimitiveType(GL_POINTS);
   _mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Explosion"));

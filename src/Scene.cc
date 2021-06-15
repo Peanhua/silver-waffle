@@ -20,8 +20,7 @@ Scene::Scene()
   : _random_generator(0),
     _play_area_size(glm::vec2(20, 60)),
     _player(nullptr),
-    _on_destroyed_callback(nullptr),
-    _on_collectible_collected_callback(nullptr)
+    _time(0)
 {
   std::uniform_real_distribution<float> rdist(0, 1);
   for(int i = 0; i < 300; i++)
@@ -30,6 +29,11 @@ Scene::Scene()
 
       auto rotangle = glm::normalize(glm::vec3(rdist(_random_generator), rdist(_random_generator), rdist(_random_generator)));
       b->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(rdist(_random_generator)) * 10.0);
+      {
+        const auto m = GetPlayAreaSize();
+        b->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
+                             glm::vec3( m.x * 0.5f, m.y,         0));
+      }
 
       _projectiles.push_back(b);
     }
@@ -43,6 +47,16 @@ Scene::Scene()
   _particles = new SpaceParticles(5.0, 50.0, 0);
 
   _wall = new WormholeWall(100, 4);
+
+  CreatePlayer();
+
+  for(int i = 0; i < 200; i++)
+    _invaders.push_back(nullptr);
+
+  for(int i = 0; i < 50; i++)
+    _collectibles.push_back(nullptr);
+
+  _time = 0;
 }
 
 
@@ -53,6 +67,7 @@ void Scene::Draw(const Camera & camera) const
       {
         "SceneObject-Color",
         "SceneObject-Texture",
+        "BonusLevelEntrance",
       };
     for(auto name : shadernames)
       {
@@ -60,6 +75,7 @@ void Scene::Draw(const Camera & camera) const
         assert(shader);
         shader->Use();
         shader->SetVec("in_light_color", glm::vec3(1, 1, 1));
+        shader->SetFloat("in_time", static_cast<float>(_time));
       }
   }
       
@@ -74,6 +90,10 @@ void Scene::Draw(const Camera & camera) const
   for(auto p : _planets)
     p->Draw(view, projection, vp);
   glClear(GL_DEPTH_BUFFER_BIT);
+
+  for(auto o : _objects)
+    if(o && o->IsAlive())
+      o->Draw(view, projection, vp);
 
   _particles->Draw(camera);
   
@@ -108,25 +128,13 @@ void Scene::Draw(const Camera & camera) const
     }
 }
 
-void Scene::Initialize(double difficulty)
-{
-  assert(difficulty == difficulty);
-
-  CreatePlayer();
-
-  for(int i = 0; i < 200; i++)
-    _invaders.push_back(nullptr);
-
-  for(int i = 0; i < 50; i++)
-    _collectibles.push_back(nullptr);
-}
-
 
 ObjectSpaceship * Scene::CreatePlayer()
 {
   delete _player;
   
   _player = new ObjectSpaceship(this);
+  _player->EnableVelocity(true, false, false);
   _player->SetPosition(glm::vec3(0, 40 - 53, 0));
   _player->SetHorizontalPositionLimit(GetPlayAreaSize().x * 0.5f);
   {
@@ -158,11 +166,14 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
 
 void Scene::Tick(double deltatime)
 {
+  _time += deltatime;
+  
   bool evading = _player->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER)->GetTimer() > 0.0;
   
   if(_player->IsAlive())
     _player->Tick(deltatime);
-  
+
+  // todo: fix all into one loop with collision masks
   for(auto i : _invaders)
     if(i && i->IsAlive())
       i->Tick(deltatime);
@@ -173,33 +184,8 @@ void Scene::Tick(double deltatime)
         glm::vec3 hitdir;
         if(!evading && i->CheckCollision(*_player, hitdir))
           {
-            hitdir.y = 0;
-
-            auto vel = i->GetVelocity();
-            i->Hit(50, -hitdir);
-            if(!i->IsAlive())
-              {
-                AddExplosion(i->GetPosition(), vel);
-                if(_on_destroyed_callback)
-                  _on_destroyed_callback(_player, i);
-              }
-
-            vel = _player->GetVelocity();
-            _player->Hit(50, hitdir);
-            if(!_player->IsAlive())
-              {
-                AddExplosion(_player->GetPosition(), vel);
-                if(_on_destroyed_callback)
-                  _on_destroyed_callback(i, _player);
-              }
-            
-          }
-
-        if(i->IsAlive())
-          {
-            const auto max_x = GetPlayAreaSize().x * 0.5f + 0.75f;
-            if(std::abs(i->GetPosition().x) > max_x || i->GetPosition().y < 40.0f - 53.0f - 2.0f)
-              i->Hit(99999, -glm::normalize(i->GetVelocity()));
+            i->OnCollision(*_player, -hitdir);
+            _player->OnCollision(*i, hitdir);
           }
       }
 
@@ -211,15 +197,8 @@ void Scene::Tick(double deltatime)
         glm::vec3 hitdir;
         if(!evading && collectible->CheckCollision(*_player, hitdir))
           {
-            AddExplosion(collectible->GetPosition(), -hitdir);
-            if(_on_collectible_collected_callback)
-              _on_collectible_collected_callback(collectible);
-            collectible->Hit(99999, -hitdir);
-          }
-        else
-          {
-            if(std::abs(collectible->GetPosition().x) > GetPlayAreaSize().x * 0.5f || collectible->GetPosition().y < 40.0f - 53.0f - 2.0f)
-              collectible->Hit(99999, -glm::normalize(collectible->GetVelocity()));
+            collectible->OnCollision(*_player, -hitdir);
+            _player->OnCollision(*collectible, hitdir);
           }
       }
 
@@ -245,30 +224,13 @@ void Scene::Tick(double deltatime)
         else
           {
             if(!evading && projectile->CheckCollision(*_player, hitdir))
-              {
-                hitdir.y = 0.0f;
-                target = _player;
-              }
+              target = _player;
           }
 
         if(target)
           {
-            auto vel = target->GetVelocity();
-            target->Hit(projectile->GetDamage(), hitdir);
-            projectile->Hit(projectile->GetDamage(), -hitdir);
-
-            if(!target->IsAlive())
-              {
-                AddExplosion(target->GetPosition(), vel);
-                if(_on_destroyed_callback)
-                  _on_destroyed_callback(projectile->GetOwner(), target);
-              }
-          }
-        else
-          {
-            const auto max_x = GetPlayAreaSize().x * 0.5f + 0.75f;
-            if(std::abs(projectile->GetPosition().x) > max_x)
-              projectile->Hit(99999, -glm::normalize(projectile->GetVelocity()));
+            projectile->OnCollision(*target, -hitdir);
+            target->OnCollision(*projectile, hitdir);
           }
       }
 
@@ -280,8 +242,23 @@ void Scene::Tick(double deltatime)
   _wall->Tick(deltatime);
 
   if(_player->IsAlive())
-    for(auto p : _planets)
-      p->Tick(deltatime);
+    {
+      for(auto object : _objects)
+        if(object && object->IsAlive())
+          {
+            object->Tick(deltatime);
+
+            glm::vec3 hitdir;
+            if(!evading && object->CheckCollision(*_player, hitdir))
+              {
+                object->OnCollision(*_player, -hitdir);
+                _player->OnCollision(*object, hitdir);
+              }
+          }
+
+      for(auto p : _planets)
+        p->Tick(deltatime);
+    }
 }
 
 
@@ -290,20 +267,6 @@ void Scene::AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity)
   auto ind = _explosions.GetNextFreeIndex();
   if(ind < _explosions.size())
     _explosions[ind]->Activate(position, velocity);
-}
-
-
-void Scene::SetOnDestroyed(on_destroyed_t callback)
-{
-  assert(!_on_destroyed_callback);
-  _on_destroyed_callback = callback;
-}
-
-
-void Scene::SetOnCollectibleCollected(on_collectible_collected_t callback)
-{
-  assert(!_on_collectible_collected_callback);
-  _on_collectible_collected_callback = callback;
 }
 
 
@@ -326,6 +289,13 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
       
   invader->AddWeapon();
 
+
+  {
+    const auto m = GetPlayAreaSize();
+    invader->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
+                               glm::vec3( m.x * 0.5f, m.y,         0));
+  }
+  
   delete _invaders[ind];
   _invaders[ind] = invader;
 
@@ -335,19 +305,55 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
 
 bool Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity)
 {
+  assert(collectible->IsAlive());
+  
   auto ind = _collectibles.GetNextFreeIndex();
   if(ind >= _collectibles.size())
     return false;
 
+  collectible->SetScene(this);
   collectible->SetPosition(position);
-  collectible->AddImpulse(velocity);
+  collectible->SetVelocity(velocity);
   collectible->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0)), 1.0f);
 
+  {
+    const auto m = GetPlayAreaSize();
+    collectible->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
+                                   glm::vec3( m.x * 0.5f, m.y,         0));
+  }
+  
   delete _collectibles[ind];
   _collectibles[ind] = collectible;
 
   return true;
 }
+
+
+bool Scene::AddObject(Object * object, const glm::vec3 & position)
+{
+  assert(object->IsAlive());
+
+  auto ind = _objects.GetNextFreeIndex();
+  if(ind < _objects.size())
+    {
+      delete _objects[ind];
+      _objects[ind] = object;
+    }
+  else
+    _objects.push_back(object);
+
+  object->SetScene(this);
+  object->SetPosition(position);
+
+  {
+    const auto m = GetPlayAreaSize();
+    object->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - object->GetMesh()->GetBoundingSphereRadius(), 1),
+                              glm::vec3( m.x * 0.5f,                                                    9999999, 0));
+  }
+  
+  return true;
+}
+
 
 
 const glm::vec2 & Scene::GetPlayAreaSize() const
@@ -366,4 +372,27 @@ void Scene::AddPlanet(Object * planet)
 {
   assert(planet);
   _planets.push_back(planet);
+}
+
+
+std::vector<ObjectMovable *> * Scene::GetNearbyObjects(const glm::vec3 & position, float radius)
+{
+  auto rv = new std::vector<ObjectMovable *>();
+  assert(rv);
+
+  if(_player && _player->IsAlive())
+    if(glm::distance(position, _player->GetPosition()) < radius)
+      rv->push_back(_player);
+
+  for(auto o : _invaders)
+    if(o && o->IsAlive())
+      if(glm::distance(position, o->GetPosition()) < radius)
+        rv->push_back(o);
+
+  for(auto o : _collectibles)
+    if(o && o->IsAlive())
+      if(glm::distance(position, o->GetPosition()) < radius)
+        rv->push_back(o);
+
+  return rv;
 }

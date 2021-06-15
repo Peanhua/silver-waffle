@@ -1,14 +1,15 @@
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
-
 #include "Mesh.hh"
+#include "ObjectBonusLevelEntrance.hh"
 #include "ObjectCollectible.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 
 
 ObjectSpaceship::ObjectSpaceship(Scene * scene)
-  : ObjectMovable(scene)
+  : ObjectMovable(scene),
+    _gamestats(nullptr)
 {
   std::vector<SpaceshipUpgrade::Type> types
     {
@@ -127,7 +128,7 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
   if(weapon->_heat > 1.0)
     return false;
 
-  auto em = _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
+  auto em = GetScene()->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
   if(em->IsActive())
     return false;
   
@@ -138,11 +139,11 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
 
   auto location = glm::vec4(weapon->_location, 1) * glm::toMat4(GetOrientation());
   auto direction = glm::vec4(weapon->_projectile_direction, 1) * glm::toMat4(GetOrientation());
-  _scene->AddProjectile(this,
-                        GetPosition() + location.xyz(),
-                        GetVelocity() * 0.5f + direction.xyz() * static_cast<float>(weapon->_projectile_initial_velocity),
-                        damage,
-                        10.0);
+  GetScene()->AddProjectile(this,
+                            GetPosition() + location.xyz(),
+                            GetVelocity() * 0.5f + direction.xyz() * static_cast<float>(weapon->_projectile_initial_velocity),
+                            damage,
+                            10.0);
   weapon->_heat += 0.03;
   weapon->_last_fire_timer = weapon->_minimum_firing_interval;
   
@@ -180,7 +181,7 @@ void ObjectSpaceship::UpgradeEngines(double power_multiplier)
 }
 
 
-void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
+void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx)
 {
   auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
   if(shield->IsActive())
@@ -191,7 +192,7 @@ void ObjectSpaceship::Hit(double damage, const glm::vec3 & impulse)
      
       damage -= reduction;
     }
-  ObjectMovable::Hit(damage, impulse);
+  ObjectMovable::Hit(perpetrator, damage, impulse, use_fx);
 }
 
 
@@ -241,4 +242,42 @@ ObjectSpaceship::Weapon::Weapon(const glm::vec3 & location, Mesh * projectile, c
     _projectile_initial_velocity(projectile_initial_velocity),
     _projectile_damage(projectile_damage)
 {
+}
+
+
+void ObjectSpaceship::SetOwnerGameStats(GameStats * gamestats)
+{
+  _gamestats = gamestats;
+}
+
+
+GameStats * ObjectSpaceship::GetOwnerGameStats() const
+{
+  return _gamestats;
+}
+
+
+void ObjectSpaceship::OnCollision(Object & other, const glm::vec3 & hit_direction)
+{
+  auto ble = dynamic_cast<ObjectBonusLevelEntrance *>(&other); // todo: fix by using collision masks
+  if(ble)
+    return;
+
+  ObjectMovable::OnCollision(other, hit_direction);
+}
+
+
+void ObjectSpaceship::CopyUpgrades(const ObjectSpaceship & source)
+{
+  _engines.clear();
+  for(auto e : source._engines)
+    _engines.push_back(new Engine(*e));
+
+  _weapons.clear();
+  for(auto w : source._weapons)
+    _weapons.push_back(new Weapon(*w));
+
+  _upgrades.clear();
+  for(auto u : source._upgrades)
+    _upgrades.push_back(new SpaceshipUpgrade(*u));
 }

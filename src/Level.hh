@@ -11,22 +11,23 @@ class Image;
 class Mesh;
 class ObjectPlanet;
 class Scene;
-class SolarSystemObject;
 
 
 class Level
 {
 public:
-  Level(Scene * scene, const SolarSystemObject * planet);
-
-  void   Start();
-  void   Tick(double deltatime);
-
-  bool   IsFinished()   const;
-  double GetTotalTime() const;
-  double GetTime()      const;
+  Level(Scene * scene);
+  virtual ~Level();
   
-private:
+  virtual void   Start();
+  virtual void   Tick(double deltatime);
+
+  virtual bool   IsFinished()   const = 0;
+  virtual double GetTotalTime() const = 0;
+
+  double GetTime() const;
+  
+protected:
   class ProgramEntry
   {
   public:
@@ -48,9 +49,6 @@ private:
   
   std::mt19937_64 _random_generator;
 
-  double         _planet_size;
-  double         _planet_position_start;
-  ObjectPlanet * _planet;
   double         _time;
 
   std::vector<ProgramEntry *> _program;

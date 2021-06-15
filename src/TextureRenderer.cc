@@ -33,7 +33,7 @@ TextureRenderer::TextureRenderer(unsigned int width, unsigned int height, unsign
   std::vector<GLenum> buffers;
   for(unsigned int i = 0; i < output_buffer_count; i++)
     buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
-  glDrawBuffers(output_buffer_count, buffers.data());
+  glDrawBuffers(static_cast<GLsizei>(output_buffer_count), buffers.data());
 
   assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 

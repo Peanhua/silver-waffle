@@ -1,5 +1,6 @@
 #include "WidgetSpaceshipMaintenance.hh"
 #include "Font.hh"
+#include "GameStats.hh"
 #include "ObjectSpaceship.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
@@ -11,7 +12,7 @@
 
 
 WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size,
-                                                       ObjectSpaceship * spaceship, std::vector<UpgradeMaterial *> & materials)
+                                                       ObjectSpaceship * spaceship, GameStats * gamestats)
 
   : Widget(parent, position, size),
     _spaceship(spaceship)
@@ -74,7 +75,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
     for(auto t : types)
       {
         auto w = new WidgetShopItem(this, glm::ivec2(x + 20, y), glm::ivec2(200, 30),
-                                    _spaceship, materials, _spaceship->GetUpgrade(t));
+                                    _spaceship, gamestats->GetUpgradeMaterials(), _spaceship->GetUpgrade(t));
         y += w->GetSize().y;
       }
   }
@@ -89,26 +90,14 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
     label->SetTextFontWeight(font_weight);
     label->SetIsFocusable(false);
 
-    for(unsigned int i = 0; i < materials.size(); i++)
+    int xx = x + 20 + 300;
+    for(auto m : gamestats->GetUpgradeMaterials())
       {
-        auto m = materials[i];
-        
-        Observe(m);
-        
-        auto w = new WidgetUpgradeMaterial(this, glm::ivec2(x + 20 + 300 + static_cast<int>(i) * (50 + 2), y + 2), glm::ivec2(50, 25), m->GetType());
-        w->SetUpgradeMaterialAmount(m->GetAmount());
+        auto w = new WidgetUpgradeMaterial(this, glm::ivec2(xx, y + 2), glm::ivec2(50, 25), *m);
         w->SetIsFocusable(false);
-        _available_material_widgets.push_back(w);
+        xx += 50 + 2;
       }
+    
     y += label->GetSize().y;
   }
 }
-
-
-void WidgetSpaceshipMaintenance::OnNotifyUpdate(UpgradeMaterial * material)
-{
-  for(auto w : _available_material_widgets)
-    if(w->GetUpgradeMaterialType() == material->GetType())
-      w->SetUpgradeMaterialAmount(material->GetAmount());
-}
-

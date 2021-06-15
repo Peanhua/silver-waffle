@@ -4,7 +4,7 @@
 #include "Font.hh"
 #include "GaussianBlur.hh"
 #include "Image.hh"
-#include "Level.hh"
+#include "MainLevel.hh"
 #include "MeshOverlay.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
@@ -20,22 +20,24 @@
 #include "WidgetSpaceshipMaintenance.hh"
 #include "WidgetSpaceshipStatus.hh"
 #include "WidgetSpaceshipUpgradeStatus.hh"
+#include "WidgetUpgradeMaterial.hh"
 #include "WidgetWeaponStatus.hh"
 #include <iostream>
 
 
-GameStateGame::GameStateGame()
+GameStateGame::GameStateGame(GameStats * gamestats)
   : GameState(),
     _state(State::RUNNING),
     _random(0),
     _rdist(0, 1),
     _current_level(0),
-    _score_multiplier_timer(0),
-    _lives(3),
+    _gamestats(gamestats),
     _pausebutton(nullptr)
 {
   _camera = new Camera();
   _scene = new Scene();
+  if(!_gamestats)
+    _gamestats = new GameStats();
   _texture_renderer = new TextureRenderer(static_cast<unsigned int>(Settings->GetInt("screen_width")),
                                           static_cast<unsigned int>(Settings->GetInt("screen_height")),
                                           2);
@@ -48,139 +50,16 @@ GameStateGame::GameStateGame()
   _fov = 60.0;
 #define CAMERA_SPEED 0.5
 
-  _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::ATTACK,   "Material A"));
-  _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::DEFENSE,  "Material D"));
-  _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::PHYSICAL, "Material P"));
-  if(Settings->GetBool("cheat_cheap_upgrades"))
-    for(auto u : _upgradematerials)
-      u->Add(9999);
-  
   _camera->SetFOV(_fov);
   _camera->SetClippingPlanes(0.01, 10000.0);
   _camera->UpdateProjection();
   
-  _scene->Initialize(1.0);
-  
-  _scene->SetOnDestroyed([this](Object * destroyer, Object * target)
+  _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
+  _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
   {
-    if(destroyer == _scene->GetPlayer() && target != _scene->GetPlayer())
-      {
-        {
-          unsigned int score = 1;
-          if(_score_multiplier_timer > 0.0)
-            score *= _score_multiplier;
-          _score_reel->SetScore(_score_reel->GetScore() + score);
-        }
-
-        ObjectCollectible::Type bonustype = ObjectCollectible::TYPE_NONE;
-        double bonus;
-        bool dorandomrotation = false;
-
-        auto r = _rdist(_random);
-        if(r < 0.10f)
-          {
-            bonustype = ObjectCollectible::TYPE_SCORE_BONUS;
-            bonus = 5.0f + _rdist(_random) * 5.0f;
-            dorandomrotation = true;
-          }
-        else if(r < 0.15f)
-          {
-            bonustype = ObjectCollectible::TYPE_DAMAGE_MULTIPLIER;
-            bonus = 2.0;
-          }
-        else if(r < 0.20f)
-          {
-            bonustype = ObjectCollectible::TYPE_SCORE_MULTIPLIER;
-            bonus = 2.0;
-          }
-        else if(r < 0.30f)
-          {
-            bonustype = ObjectCollectible::TYPE_SHIELD;
-            bonus = 100.0;
-          }
-        else if(r < 0.50f)
-          {
-            bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK;
-            bonus = 1.0;
-            dorandomrotation = true;
-          }
-        else if(r < 0.70f)
-          {
-            bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE;
-            bonus = 1.0;
-            dorandomrotation = true;
-          }
-        else if(r < 0.90f)
-          {
-            bonustype = ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL;
-            bonus = 1.0;
-            dorandomrotation = true;
-          }
-
-        if(bonustype != ObjectCollectible::TYPE_NONE)
-          {
-            auto c = AssetLoader->LoadObjectCollectible(bonustype);
-            assert(c);
-            auto coll = new ObjectCollectible(*c);
-            coll->SetBonus(bonustype, bonus);
-            _scene->AddCollectible(coll, target->GetPosition(), glm::vec3(0, -5, 0));
-            if(dorandomrotation)
-              {
-                auto rotangle = glm::normalize(glm::vec3(_rdist(_random) * 2.0f - 1.0f,
-                                                         _rdist(_random) * 2.0f - 1.0f,
-                                                         _rdist(_random) * 2.0f - 1.0f));
-                coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(_rdist(_random)) * 10.0);
-              }
-          }
-      }
-    else if(target == _scene->GetPlayer())
-      OnPlayerDies();
+    assert(destroyer == destroyer);
+    OnPlayerDies();
   });
-
-  _scene->SetOnCollectibleCollected([this](ObjectCollectible * collectible)
-  {
-    _scene->GetPlayer()->UpgradeFromCollectible(collectible);
-
-    if(collectible->HasBonus(ObjectCollectible::TYPE_SCORE_BONUS))
-      {
-        auto score = static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_BONUS));
-        if(_score_multiplier_timer > 0.0)
-          score *= _score_multiplier;
-        _score_reel->SetScore(_score_reel->GetScore() + score);
-      }
-    if(collectible->HasBonus(ObjectCollectible::TYPE_SCORE_MULTIPLIER))
-      {
-        _score_multiplier = static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_SCORE_MULTIPLIER));
-        _score_multiplier_timer = 30.0;
-      }
-    if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK))
-      {
-        _upgradematerials[0]->Add(static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK)));
-        _upgradematerial_widgets[0]->SetText(std::to_string(_upgradematerials[0]->GetAmount()));
-      }
-    if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE))
-      {
-        _upgradematerials[1]->Add(static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE)));
-        _upgradematerial_widgets[1]->SetText(std::to_string(_upgradematerials[1]->GetAmount()));
-      }
-    if(collectible->HasBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL))
-      {
-        _upgradematerials[2]->Add(static_cast<unsigned int>(collectible->GetBonus(ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL)));
-        _upgradematerial_widgets[2]->SetText(std::to_string(_upgradematerials[2]->GetAmount()));
-      }
-  });
-  
-  {
-    bool done = false;
-    for(unsigned int i = 0; !done; i++)
-      {
-        auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::TYPE_PLANET, i);
-        if(sobj)
-          _levels.push_back(new Level(_scene, sobj));
-        else
-          done = true;
-      }
-  }
 
   _score_reel = new ScoreReel(10);
 
@@ -200,21 +79,14 @@ GameStateGame::GameStateGame()
   OnLivesUpdated();
 
   {
-    auto w = new Widget(root, glm::ivec2(width - 100, 70), glm::ivec2(100, 30));
-    w->SetTextColor(glm::vec3(1, 0, 0));
-    _upgradematerial_widgets.push_back(w);
+    int y = 70;
+    for(auto um : _gamestats->GetUpgradeMaterials())
+      {
+        auto w = new WidgetUpgradeMaterial(root, glm::ivec2(width - 50, y), glm::ivec2(50, 25), *um);
+        _upgradematerial_widgets.push_back(w);
+        y += 25;
+      }
   }
-  {
-    auto w = new Widget(root, glm::ivec2(width - 100, 100), glm::ivec2(100, 30));
-    w->SetTextColor(glm::vec3(0, 0, 1));
-    _upgradematerial_widgets.push_back(w);
-  }
-  {
-    auto w = new Widget(root, glm::ivec2(width - 100, 130), glm::ivec2(100, 30));
-    w->SetTextColor(glm::vec3(1, 0.612, 0));
-    _upgradematerial_widgets.push_back(w);
-  }
-  
   {
     auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 160), glm::ivec2(20, 100), _scene->GetPlayer());
     _player_status_widgets.push_back(w);
@@ -264,12 +136,10 @@ GameStateGame::GameStateGame()
         _active_bonus_widgets.push_back(w);
       }
   }
-    
-  OnLevelChanged();
 }
 
 
-GameStateGame::~GameStateGame()
+  GameStateGame::~GameStateGame()
 {
   delete _scene;
   delete _camera;
@@ -280,13 +150,13 @@ void GameStateGame::Tick(double deltatime)
 {
   auto level = _levels[_current_level];
   
+  _score_reel->SetScore(_gamestats->GetScore());
   _score_reel->Tick(deltatime);
 
   if(_state != State::FULL_PAUSE)
     {
+      _gamestats->Tick(deltatime);
       _scene->Tick(deltatime);
-      if(_score_multiplier_timer > 0.0)
-        _score_multiplier_timer -= deltatime;
     }
 
   if(_state == State::RUNNING)
@@ -304,9 +174,9 @@ void GameStateGame::Tick(double deltatime)
         }
     }
   
-  _active_bonus_widgets[ObjectCollectible::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
-  _active_bonus_widgets[ObjectCollectible::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_score_multiplier_timer > 0.0);
-  _active_bonus_widgets[ObjectCollectible::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->IsActive());
+  _active_bonus_widgets[ObjectCollectible::Type::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
+  _active_bonus_widgets[ObjectCollectible::Type::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_gamestats->GetScoreMultiplier() > 1);
+  _active_bonus_widgets[ObjectCollectible::Type::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->IsActive());
 
   _texture_renderer->BeginRender();
   _scene->Draw(*_camera);
@@ -447,10 +317,10 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
 void GameStateGame::OnLivesUpdated()
 {
-  unsigned int used = 0;
+  int used = 0;
   for(auto w : _lives_widgets)
     {
-      w->SetIsVisible(used < _lives);
+      w->SetIsVisible(used < _gamestats->GetLives());
       used++;
     }
 }
@@ -467,13 +337,19 @@ void GameStateGame::NextLifeOrQuit()
 {
   assert(_state == State::DEATH_PAUSE);
   assert(_pausebutton);
-  
-  _lives--;
+
+  _gamestats->AdjustLives(-1);
   OnLivesUpdated();
   
-  if(_lives > 0)
+  if(_gamestats->GetLives() > 0)
     {
       _scene->CreatePlayer();
+      _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
+      _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
+      {
+        assert(destroyer == destroyer);
+        OnPlayerDies();
+      });
       for(auto w : _player_status_widgets)
         w->SetSpaceship(_scene->GetPlayer());
       for(auto w : _player_upgrade_status_widgets)
@@ -493,6 +369,22 @@ void GameStateGame::OnLevelChanged()
 }
 
 
+void GameStateGame::SetupLevels()
+{
+  bool done = false;
+  for(unsigned int i = 0; !done; i++)
+    {
+      auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::TYPE_PLANET, i);
+      if(sobj)
+        _levels.push_back(new MainLevel(_scene, sobj));
+      else
+        done = true;
+    }
+
+  OnLevelChanged();
+}
+
+
 void GameStateGame::ChangeState(State new_state)
 {
   assert(_state != new_state);
@@ -505,8 +397,9 @@ void GameStateGame::ChangeState(State new_state)
           _pausebutton->Destroy();
           _pausebutton = nullptr;
 
-          for(unsigned int i = 0; i < 3; i++)
-            _upgradematerial_widgets[i]->SetText(std::to_string(_upgradematerials[i]->GetAmount()));
+          _upgradematerial_widgets[0]->SetText(std::to_string(_gamestats->GetUpgradeMaterial(UpgradeMaterial::Type::ATTACK)->GetAmount()));
+          _upgradematerial_widgets[1]->SetText(std::to_string(_gamestats->GetUpgradeMaterial(UpgradeMaterial::Type::DEFENSE)->GetAmount()));
+          _upgradematerial_widgets[2]->SetText(std::to_string(_gamestats->GetUpgradeMaterial(UpgradeMaterial::Type::PHYSICAL)->GetAmount()));
         }
       break;
       
@@ -545,7 +438,7 @@ void GameStateGame::ChangeState(State new_state)
         panelbackground->SetImage("White");
         panelbackground->SetImageColor(glm::vec4(0, 0, 0, 0.5));
         
-        new WidgetSpaceshipMaintenance(panelbackground, glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(), _upgradematerials);
+        new WidgetSpaceshipMaintenance(panelbackground, glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(), _gamestats);
 
 
         assert(!_pausebutton);
@@ -557,3 +450,16 @@ void GameStateGame::ChangeState(State new_state)
   
   _state = new_state;
 }
+
+
+GameStats * GameStateGame::GetGameStats() const
+{
+  return _gamestats;
+}
+
+
+Scene * GameStateGame::GetScene() const
+{
+  return _scene;
+}
+

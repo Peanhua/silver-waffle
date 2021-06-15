@@ -12,6 +12,7 @@ class Milkyway;
 class Object;
 class ObjectCollectible;
 class ObjectInvader;
+class ObjectMovable;
 class ObjectProjectile;
 class ObjectSpaceship;
 class SpaceParticles;
@@ -21,12 +22,18 @@ class WormholeWall;
 class Scene
 {
 public:
-  typedef std::function<void(Object * destroyer, Object * target)> on_destroyed_t;
-  typedef std::function<void(ObjectCollectible * collectible)>     on_collectible_collected_t;
 
   template<typename T> class Container : public std::vector<T>
   {
   public:
+    // Constructor to silence Valgrind:
+    Container()
+      : std::vector<T>(),
+        _pos(0)
+    {
+    }
+
+    
     unsigned int GetNextFreeIndex()
     {
       for(unsigned int i = 0; i < std::vector<T>::size(); i++)
@@ -51,8 +58,6 @@ public:
   void              Draw(const Camera & camera) const;
   void              Tick(double deltatime);
 
-  void              Initialize(double difficulty);
-
   const glm::vec2 & GetPlayAreaSize() const;
 
   ObjectSpaceship * CreatePlayer();
@@ -65,8 +70,9 @@ public:
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
   bool              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity);
-  void              SetOnDestroyed(on_destroyed_t callback);
-  void              SetOnCollectibleCollected(on_collectible_collected_t callback);
+  bool              AddObject(Object * object, const glm::vec3 & position);
+
+  std::vector<ObjectMovable *> * GetNearbyObjects(const glm::vec3 & position, float radius);
   
 private:
   std::mt19937_64                 _random_generator;
@@ -75,13 +81,13 @@ private:
   Container<ObjectInvader *>      _invaders;
   Container<ObjectProjectile *>   _projectiles;
   Container<ObjectCollectible *>  _collectibles;
+  Container<Object *>             _objects;
   Container<Explosion *>          _explosions;
-  on_destroyed_t                  _on_destroyed_callback;
-  on_collectible_collected_t      _on_collectible_collected_callback;
   Milkyway *                      _milkyway;
   SpaceParticles *                _particles;
   WormholeWall *                  _wall;
   std::vector<Object *>           _planets;
+  double                          _time;
 };
 
 

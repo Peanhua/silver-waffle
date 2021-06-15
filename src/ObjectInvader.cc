@@ -1,4 +1,8 @@
 #include "ObjectInvader.hh"
+#include "GameStats.hh"
+#include "ObjectCollectible.hh"
+#include "Scene.hh"
+#include "SubsystemAssetLoader.hh"
 
 
 ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed)
@@ -46,3 +50,83 @@ void ObjectInvader::Tick(double deltatime)
   ObjectSpaceship::Tick(deltatime);
 }
 
+
+void ObjectInvader::OnDestroyed(Object * destroyer)
+{
+  auto player = dynamic_cast<ObjectSpaceship *>(destroyer);
+  if(player)
+    {
+      auto gamestats = player->GetOwnerGameStats();
+      gamestats->AddScore(1);
+      SpawnRandomCollectible();
+    }
+
+  ObjectMovable::OnDestroyed(destroyer);
+}
+
+
+void ObjectInvader::SpawnRandomCollectible()
+{
+  ObjectCollectible::Type bonustype = ObjectCollectible::Type::TYPE_NONE;
+  double bonus;
+  bool dorandomrotation = false;
+
+  auto rand = [this] { return static_cast<double>(_random_generator() - _random_generator.min()) / static_cast<double>(_random_generator.max()); };
+  
+  double r = rand();
+  if(r < 0.10)
+    {
+      bonustype = ObjectCollectible::Type::TYPE_SCORE_BONUS;
+      bonus = 5.0 + rand() * 5.0;
+      dorandomrotation = true;
+    }
+  else if(r < 0.15)
+    {
+      bonustype = ObjectCollectible::Type::TYPE_DAMAGE_MULTIPLIER;
+      bonus = 2.0;
+    }
+  else if(r < 0.20)
+    {
+      bonustype = ObjectCollectible::Type::TYPE_SCORE_MULTIPLIER;
+      bonus = 2.0;
+    }
+  else if(r < 0.30)
+    {
+      bonustype = ObjectCollectible::Type::TYPE_SHIELD;
+      bonus = 100.0;
+    }
+  else if(r < 0.50)
+    {
+      bonustype = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_ATTACK;
+      bonus = 1.0;
+      dorandomrotation = true;
+    }
+  else if(r < 0.70)
+    {
+      bonustype = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_DEFENSE;
+      bonus = 1.0;
+      dorandomrotation = true;
+    }
+  else if(r < 0.90)
+    {
+      bonustype = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_PHYSICAL;
+      bonus = 1.0;
+      dorandomrotation = true;
+    }
+
+  if(bonustype != ObjectCollectible::Type::TYPE_NONE)
+    {
+      auto c = AssetLoader->LoadObjectCollectible(bonustype);
+      assert(c);
+      auto coll = new ObjectCollectible(*c);
+      coll->SetBonus(bonustype, bonus);
+      GetScene()->AddCollectible(coll, GetPosition(), glm::vec3(0, -5, 0));
+      if(dorandomrotation)
+        {
+          auto rotangle = glm::normalize(glm::vec3(rand() * 2.0 - 1.0,
+                                                   rand() * 2.0 - 1.0,
+                                                   rand() * 2.0 - 1.0));
+          coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + rand() * 10.0);
+        }
+    }
+}

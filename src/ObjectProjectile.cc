@@ -42,3 +42,8 @@ double ObjectProjectile::GetDamage() const
 {
   return _damage;
 }
+
+void ObjectProjectile::OnCollision(Object & other, const glm::vec3 & hit_direction)
+{
+  other.Hit(_owner, GetDamage(), -hit_direction);
+}

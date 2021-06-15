@@ -51,6 +51,7 @@ const std::string & SubsystemAssetLoader::LoadText(const std::string & filename)
 
       if(fp.eof())
         {
+          std::cout << "Loaded text '" << filename << "'.\n";
           _text_assets[filename] = text;
           return _text_assets[filename];
         }
@@ -72,11 +73,9 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   auto vs = LoadText("Shaders/" + name + ".vert");
   auto fs = LoadText("Shaders/" + name + ".frag");
   auto gs = LoadText("Shaders/" + name + ".geom");
-  std::vector<std::string> vss({vs});
-  std::vector<std::string> fss({fs});
-  std::vector<std::string> gss({gs});
-  auto sp = new ShaderProgram(vss, fss, gss);
+  auto sp = new ShaderProgram(vs, fs, gs);
   assert(sp);
+  std::cout << "Loaded shader '" << name << "'.\n";
   _shader_programs[name] = sp;
   return sp;
 }
@@ -93,7 +92,9 @@ json11::Json * SubsystemAssetLoader::LoadJson(const std::string & filename)
     {
       std::string err;
       *json = json11::Json::parse(json_string, err);
-      if(!json->is_object())
+      if(json->is_object())
+        std::cout << "Loaded json '" << filename << "'.\n";
+      else
         {
           std::cerr << "Error while parsing '" << filename << ".json': " << err << std::endl;
           delete json;
@@ -115,12 +116,17 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
     return (*it).second;
 
   auto config = LoadJson("3d-models/" + name);
-  
-  auto mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL);
+
+  unsigned int mesh_options = Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL;
+  if(config && (*config)["blending"].is_bool() && (*config)["blending"].bool_value())
+    mesh_options |= Mesh::OPTION_BLEND;
+    
+  auto mesh = new Mesh(mesh_options);
   assert(mesh);
 
   if(mesh->LoadFromFile("3d-models/" + name + ".dae", shader_prefix))
     {
+      std::cout << "Loaded mesh '" << name << "'.\n";
       mesh->UpdateGPU();
       mesh->CalculateBoundingSphereRadius();
       _meshes[key] = mesh;
@@ -175,6 +181,7 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
      rv->Load(std::string("Images/") + stripped_name +           ".png") ||
      rv->Load(std::string("Images/") + stripped_name +           ".jpg"))
     {
+      std::cout << "Loaded image '" << name << "'.\n";
       rv->UpdateGPU(true, true);
       _images[name] = rv;
     }
@@ -245,11 +252,11 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
 {
   if(type == ObjectCollectible::TYPE_NONE)
     return nullptr;
-  
+  /*
   auto it = _collectibles.find(type);
   if(it != _collectibles.end())
     return (*it).second;
-
+  */
   auto collectible = new ObjectCollectible(nullptr);
   switch(static_cast<ObjectCollectible::Type>(type))
     {
@@ -291,7 +298,7 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
       break;
     }
 
-  _collectibles[type] = collectible;
+  //_collectibles[type] = collectible;
   return collectible;
 }
 
@@ -302,7 +309,9 @@ Font * SubsystemAssetLoader::LoadFont(float size)
   if(it != _fonts.end())
     return (*it).second;
 
-  auto font = new Font("Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf", static_cast<unsigned int>(size * 1.15f));
+  std::string name("Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf");
+  auto font = new Font(name, static_cast<unsigned int>(size * 1.15f));
+  std::cout << "Loaded font '" << name << "' size " << size << ".\n";
   _fonts[size] = font;
   return font;
 }

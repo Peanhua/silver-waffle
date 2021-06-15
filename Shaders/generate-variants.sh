@@ -17,6 +17,9 @@ fi
 
 TMPFILENAME="${OUTPUTFILENAME}.tmp"
 echo "${VERSION}" >${TMPFILENAME} || exit 1
+echo "" >>${TMPFILENAME}
+echo "// Generated with: ${0} ${*}" >>${TMPFILENAME}
+echo "" >>${TMPFILENAME}
 for option in ${OPTIONS} ; do
     echo "#define ${option}" >>${TMPFILENAME} || exit 1
 done

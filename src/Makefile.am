@@ -21,21 +21,26 @@ silverwaffle_LDADD =       \
 
 silverwaffle_SOURCES =				\
 	AdditiveBlending.cc			\
+	BonusLevel.cc				\
 	Camera.cc				\
 	Explosion.cc				\
 	Font.cc					\
 	GameState.cc				\
+	GameStateBonusLevel.cc			\
 	GameStateGame.cc			\
 	GameStateTitle.cc			\
+	GameStats.cc				\
 	GaussianBlur.cc				\
 	Image.cc				\
 	Level.cc				\
+	MainLevel.cc				\
 	Mesh.cc					\
 	Mesh_LoadFromFile.cc			\
 	MeshOverlay.cc				\
 	MeshProgressBar.cc			\
 	Milkyway.cc				\
 	Object.cc				\
+	ObjectBonusLevelEntrance.cc		\
 	ObjectCollectible.cc			\
 	ObjectInvader.cc			\
 	ObjectMovable.cc			\

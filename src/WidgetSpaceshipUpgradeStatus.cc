@@ -18,7 +18,7 @@ void WidgetSpaceshipUpgradeStatus::Draw() const
     value = 1.0 - _upgrade->GetTimer() / _upgrade->GetTimerMax();
   else
     value = _upgrade->GetCooldownRemaining() / _upgrade->GetCooldownMax();
-  value = glm::clamp(value, 0.0, 1.0);
+  value = std::clamp(value, 0.0, 1.0);
   _meter->SetValue(static_cast<float>(value));
 
   const glm::vec3 low_colors[] =

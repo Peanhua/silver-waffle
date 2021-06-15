@@ -6,7 +6,7 @@
 
 WormholeWall::WormholeWall(double length, double height)
 {
-  _mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_COLOR_ALPHA | Mesh::OPTION_BLEND);
+  _mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_BLEND);
   _mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Color"));
   
   std::vector<glm::vec3> vertices {

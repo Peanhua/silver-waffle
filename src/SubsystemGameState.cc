@@ -2,6 +2,9 @@
 #include "GameStateTitle.hh"
 
 
+SubsystemGameState * GameStateManager = nullptr;
+
+
 SubsystemGameState::SubsystemGameState()
   : Subsystem("GameState"),
     _root_gamestate(nullptr)
@@ -11,6 +14,9 @@ SubsystemGameState::SubsystemGameState()
 
 bool SubsystemGameState::Start()
 {
+  assert(!GameStateManager);
+  GameStateManager = this;
+  
   _root_gamestate = new GameStateTitle();
   return GetGameState();
 }
@@ -20,6 +26,10 @@ void SubsystemGameState::Stop()
 {
   while(auto state = GetGameState())
     state->Quit();
+  
+  if(GameStateManager == this)
+    GameStateManager = nullptr;
+  
   _root_gamestate = nullptr;
 }
 

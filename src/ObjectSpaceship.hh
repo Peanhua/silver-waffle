@@ -6,6 +6,7 @@
 #include <vector>
 
 class ObjectCollectible;
+class GameStats;
 
 
 class ObjectSpaceship : public ObjectMovable
@@ -15,7 +16,8 @@ public:
 
   void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const override;
   void Tick(double deltatime) override;
-  void Hit(double damage, const glm::vec3 & impulse) override;
+  void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx) override;
+  void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
 
   unsigned int AddWeapon();
   unsigned int AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
@@ -30,6 +32,11 @@ public:
 
   void               UpgradeFromCollectible(ObjectCollectible * collectible);
   SpaceshipUpgrade * GetUpgrade(SpaceshipUpgrade::Type type) const;
+
+  void        SetOwnerGameStats(GameStats * gamestats);
+  GameStats * GetOwnerGameStats() const;
+
+  void CopyUpgrades(const ObjectSpaceship & source);
   
 private:
   class Engine
@@ -58,7 +65,7 @@ private:
   private:
   };
 
-  
+  GameStats *            _gamestats;
   std::vector<Engine *>  _engines;
   std::vector<Weapon *>  _weapons;
   std::vector<SpaceshipUpgrade *> _upgrades;

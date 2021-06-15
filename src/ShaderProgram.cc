@@ -5,30 +5,27 @@
 #include <iostream>
 
 
-ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, const std::vector<std::string> & fragment_shaders, const std::vector<std::string> & geometry_shaders)
+ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::string & fragment_shader, const std::string & geometry_shader)
 {
   _program = glCreateProgram();
-  for(auto src : vertex_shaders)
+  {
+    auto shader = new Shader(GL_VERTEX_SHADER, vertex_shader);
+    assert(shader != 0);
+    glAttachShader(_program, shader->GetShader());
+  }
+
+  {
+    auto shader = new Shader(GL_FRAGMENT_SHADER, fragment_shader);
+    assert(shader != 0);
+    glAttachShader(_program, shader->GetShader());
+  }
+
+  if(geometry_shader.size() > 0)
     {
-      auto shader = new Shader(GL_VERTEX_SHADER, src);
+      auto shader = new Shader(GL_GEOMETRY_SHADER, geometry_shader);
       assert(shader != 0);
       glAttachShader(_program, shader->GetShader());
     }
-
-  for(auto src : fragment_shaders)
-    {
-      auto shader = new Shader(GL_FRAGMENT_SHADER, src);
-      assert(shader != 0);
-      glAttachShader(_program, shader->GetShader());
-    }
-
-  for(auto src : geometry_shaders)
-    if(src.size() > 0)
-      {
-        auto shader = new Shader(GL_GEOMETRY_SHADER, src);
-        assert(shader != 0);
-        glAttachShader(_program, shader->GetShader());
-      }
 
   glBindAttribLocation(_program, Mesh::ALOC_VERTEX,       "in_vertex");
   glBindAttribLocation(_program, Mesh::ALOC_COLOR,        "in_color");
@@ -53,8 +50,7 @@ ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, co
       std::cerr << delimiter;
       std::cerr << "# Dumping vertex shader:\n";
       std::cerr << delimiter;
-      for(auto src : vertex_shaders)
-        std::cerr << src << "\n";
+      std::cerr << vertex_shader << "\n";
       std::cerr << delimiter;
       std::cerr << "# End of Vertex shader.\n";
       std::cerr << delimiter << "\n";
@@ -62,8 +58,7 @@ ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, co
       std::cerr << delimiter;
       std::cerr << "# Dumping Fragment shader:\n";
       std::cerr << delimiter;
-      for(auto src : fragment_shaders)
-        std::cerr << src << "\n";
+      std::cerr << fragment_shader << "\n";
       std::cerr << delimiter;
       std::cerr << "# End of Fragment shader.\n";
       std::cerr << delimiter << "\n";
@@ -71,8 +66,7 @@ ShaderProgram::ShaderProgram(const std::vector<std::string> & vertex_shaders, co
       std::cerr << delimiter;
       std::cerr << "# Dumping Geometry shader:\n";
       std::cerr << delimiter;
-      for(auto src : geometry_shaders)
-        std::cerr << src << "\n";
+      std::cerr << geometry_shader << "\n";
       std::cerr << delimiter;
       std::cerr << "# End of Geometry shader.\n";
       std::cerr << delimiter;

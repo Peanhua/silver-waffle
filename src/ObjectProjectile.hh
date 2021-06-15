@@ -9,6 +9,7 @@ public:
   ObjectProjectile(Scene * scene);
 
   void Tick(double deltatime) override;
+  void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
 
   void Activate(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
 

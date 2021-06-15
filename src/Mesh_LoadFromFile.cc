@@ -79,7 +79,7 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first, 
           if(_options & OPTION_BLEND)
             AddColor(diffuse_color);
           else
-            AddColor(diffuse_color.xyz());
+            AddColor(diffuse_color.rgb());
           
           AddNormal(glm::vec3(mesh->mNormals[vi].x,
                               mesh->mNormals[vi].y,
@@ -106,11 +106,15 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first, 
         }
     }
 
+  std::string suffix;
   if(_options & OPTION_TEXTURE)
-    SetShaderProgram(AssetLoader->LoadShaderProgram(shader_prefix + "-Texture"));
+    suffix += "-Texture";
   else
-    SetShaderProgram(AssetLoader->LoadShaderProgram(shader_prefix + "-Color"));
-
+    suffix += "-Color";
+  /*  if(_options & OPTION_BLEND)
+    suffix += "-Color4";
+  */
+  SetShaderProgram(AssetLoader->LoadShaderProgram(shader_prefix + suffix));  
   
   for(unsigned int i = 0; success && i < node->mNumChildren; i++)
     {

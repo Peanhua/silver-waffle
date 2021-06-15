@@ -77,7 +77,11 @@ GameStateTitle::GameStateTitle()
     assert(button == button);
     assert(position == position);
     if(!pressed)
-      SetChildState(new GameStateGame());
+      {
+        auto s = new GameStateGame(nullptr);
+        s->SetupLevels();
+        SetChildState(s);
+      }
   });
   
   w = new WidgetButton(root, glm::ivec2((width - bw) / 2, height - bh * 2), glm::ivec2(bw, bh));

@@ -12,21 +12,30 @@ GaussianBlur-Vertical.vert : GaussianBlur.vert
 GaussianBlur-Vertical.frag : GaussianBlur.frag
 	$(AM_V_GEN) ./generate-variants.sh $< $@ 'VERTICAL'
 
-SceneObject-Color.vert : SceneObject.vert Include/Data.glsl
+SceneObject-Color.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
 	$(AM_V_GEN) ./generate-variants.sh $< $@ ''
 
-SceneObject-Color.frag : SceneObject.frag Include/Data.glsl Include/DirectionalLight.frag
+SceneObject-Color.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
 	$(AM_V_GEN) ./generate-variants.sh $< $@ ''
 
-SceneObject-Texture.vert : SceneObject.vert Include/Data.glsl 
+SceneObject-Texture.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl 
 	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_TEXTURE'
 
-SceneObject-Texture.frag : SceneObject.frag Include/Data.glsl Include/DirectionalLight.frag
+SceneObject-Texture.frag : SceneObject.frag Include/Data.glsl Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
 	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_TEXTURE'
+
+BonusLevelEntrance.vert : SceneObject.vert  Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
+
+BonusLevelEntrance.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
+
 
 shaders_DATA = \
 	AdditiveBlending.frag		\
 	AdditiveBlending.vert		\
+	BonusLevelEntrance.frag		\
+	BonusLevelEntrance.vert		\
 	Explosion.frag			\
 	Explosion.vert			\
 	Font.frag			\
@@ -52,10 +61,14 @@ shaders_DATA = \
 	Star.vert			
 
 CLEANFILES = \
+	BonusLevelEntrance.frag		\
+	BonusLevelEntrance.vert		\
 	GaussianBlur-Horizontal.frag	\
 	GaussianBlur-Horizontal.vert	\
 	GaussianBlur-Vertical.frag	\
 	GaussianBlur-Vertical.vert	\
+	SceneObject-Color.frag		\
+	SceneObject-Color.vert		\
 	SceneObject-Texture.frag	\
 	SceneObject-Texture.vert	
 
@@ -78,6 +91,7 @@ EXTRA_DIST = \
 	ProgressBar.frag		\
 	ProgressBar.vert		\
 	SceneObject.frag		\
+	SceneObject.geom		\
 	SceneObject.vert		\
 	Star.frag			\
 	Star.vert			

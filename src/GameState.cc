@@ -45,6 +45,7 @@ bool GameState::IsRunning() const
 void GameState::Quit()
 {
   _running = false;
+  OnQuit();
 }
 
 
@@ -144,3 +145,7 @@ void GameState::SetModalWidget(Widget * widget)
   _modal_widget = widget;
 }
 
+
+void GameState::OnQuit()
+{
+}

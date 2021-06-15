@@ -9,6 +9,9 @@ ObjectMovable::ObjectMovable(Scene * scene)
     _angular_velocity(0, 0, 0, 0),
     _angular_velocity_magnitude(0)
 {
+  _velocity_enabled[0] =
+    _velocity_enabled[1] =
+    _velocity_enabled[2] = true;
 }
 
 
@@ -53,19 +56,20 @@ void ObjectMovable::SetHorizontalPositionLimit(double limit)
   
 
 
-void ObjectMovable::Hit(double damage, const glm::vec3 & impulse)
+void ObjectMovable::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx)
 {
-  Object::Hit(damage, impulse);
+  Object::Hit(perpetrator, damage, impulse, use_fx);
   AddImpulse(impulse);
 }
 
 
 void ObjectMovable::AddImpulse(const glm::vec3 & impulse)
 {
-  _velocity += impulse;
-  double speed = glm::length(_velocity);
+  auto v = _velocity + impulse;
+  double speed = glm::length(v);
   if(speed > _max_velocity)
-    _velocity = _velocity / static_cast<float>((1.0 + (speed - _max_velocity) / _max_velocity));
+    v = v / static_cast<float>((1.0 + (speed - _max_velocity) / _max_velocity));
+  SetVelocity(v);
 }
 
 
@@ -78,6 +82,9 @@ void ObjectMovable::SetMaxVelocity(double max_velocity)
 void ObjectMovable::SetVelocity(const glm::vec3 & velocity)
 {
   _velocity = velocity;
+  if(!_velocity_enabled[0]) _velocity.x = 0;
+  if(!_velocity_enabled[1]) _velocity.y = 0;
+  if(!_velocity_enabled[2]) _velocity.z = 0;
 }
 
 
@@ -92,3 +99,12 @@ void ObjectMovable::SetAngularVelocity(const glm::quat & angular_velocity, doubl
   _angular_velocity = angular_velocity;
   _angular_velocity_magnitude = magnitude;
 }
+
+
+void ObjectMovable::EnableVelocity(bool x, bool y, bool z)
+{
+  _velocity_enabled[0] = x;
+  _velocity_enabled[1] = y;
+  _velocity_enabled[2] = z;
+}
+

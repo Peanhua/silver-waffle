@@ -202,7 +202,7 @@ void Widget::SetImage(Image * image)
 {
   if(!_imagemesh)
     {
-      _imagemesh = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_COLOR | Mesh::OPTION_COLOR_ALPHA | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
+      _imagemesh = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_COLOR | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
       assert(_imagemesh);
       _imagemesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-ColorTexture"));
 

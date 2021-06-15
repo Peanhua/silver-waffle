@@ -223,21 +223,22 @@ glm::vec4 Mesh::GetVertex4(unsigned int index) const
 void Mesh::AddColor(const glm::vec3 & color)
 {
   assert(_options & OPTION_COLOR);
-  assert(!(_options & OPTION_COLOR_ALPHA));
-  _colors.push_back(color.x);
-  _colors.push_back(color.y);
-  _colors.push_back(color.z);
+  assert(!(_options & OPTION_BLEND));
+  _colors.push_back(color.r);
+  _colors.push_back(color.g);
+  _colors.push_back(color.b);
+  _colors.push_back(1.0f);
 }
 
 
 void Mesh::AddColor(const glm::vec4 & color)
 {
   assert(_options & OPTION_COLOR);
-  assert(_options & OPTION_COLOR_ALPHA);
-  _colors.push_back(color.x);
-  _colors.push_back(color.y);
-  _colors.push_back(color.z);
-  _colors.push_back(color.w);
+  assert(_options & OPTION_BLEND);
+  _colors.push_back(color.r);
+  _colors.push_back(color.g);
+  _colors.push_back(color.b);
+  _colors.push_back(color.a);
 }
 
 
@@ -250,6 +251,18 @@ void Mesh::SetAllColor(const glm::vec3 & color, bool children)
   if(children)
     for(auto c : _children)
       c->SetAllColor(color, children);
+}
+
+
+void Mesh::SetAllColor(const glm::vec4 & color, bool children)
+{
+  _colors.clear();
+  for(unsigned int i = 0; i < _vertices.size(); i++)
+    AddColor(color);
+
+  if(children)
+    for(auto c : _children)
+      c->SetAllColor(color, true);
 }
 
 
@@ -376,7 +389,7 @@ void Mesh::UpdateGPU()
         glGenBuffers(1, &_color_vbo);
       assert(_color_vbo != 0);
 
-      const unsigned int components = _options & OPTION_COLOR_ALPHA ? 4 : 3;
+      const unsigned int components = 4; //_options & OPTION_BLEND ? 4 : 3;
       assert(_colors.size() % components == 0);
 
       glBindBuffer(GL_ARRAY_BUFFER, _color_vbo);
@@ -457,9 +470,13 @@ void Mesh::UpdateGPU(unsigned int update_options, unsigned int first, unsigned i
 }
 
 
-void Mesh::SetShaderProgram(ShaderProgram * shader_program)
+void Mesh::SetShaderProgram(ShaderProgram * shader_program, bool set_children)
 {
   _shader_program = shader_program;
+
+  if(set_children)
+    for(auto c : _children)
+      c->SetShaderProgram(shader_program, true);
 }
 
 
@@ -549,3 +566,10 @@ void Mesh::AddChild(Mesh * child)
   assert(child);
   _children.push_back(child);
 }
+
+
+unsigned int Mesh::GetOptions(unsigned int interested_in) const
+{
+  return _options & interested_in;
+}
+

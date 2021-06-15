@@ -3,9 +3,20 @@
 
 
 WidgetUpgradeMaterial::WidgetUpgradeMaterial(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size,
+                                             UpgradeMaterial & upgradematerial)
+  : WidgetUpgradeMaterial(parent, position, size, upgradematerial.GetType())
+{
+  _upgradematerial = &upgradematerial;
+  Observe(&upgradematerial);
+  SetUpgradeMaterialAmount(upgradematerial.GetAmount());
+}
+
+
+WidgetUpgradeMaterial::WidgetUpgradeMaterial(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size,
                                              UpgradeMaterial::Type type)
   : Widget(parent, position, size),
-    _type(type)
+    _type(type),
+    _upgradematerial(nullptr)
 {
   SetImage("UpgradeMaterial");
   SetTextFont(AssetLoader->LoadFont(10));
@@ -40,5 +51,12 @@ void WidgetUpgradeMaterial::SetUpgradeMaterialAmount(unsigned int amount)
 UpgradeMaterial::Type WidgetUpgradeMaterial::GetUpgradeMaterialType() const
 {
   return _type;
+}
+
+
+void WidgetUpgradeMaterial::OnNotifyUpdate(UpgradeMaterial * material)
+{
+  if(material->GetType() == _type)
+    SetUpgradeMaterialAmount(material->GetAmount());
 }
 

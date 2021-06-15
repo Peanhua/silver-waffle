@@ -2,6 +2,7 @@
 #include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
 #include "SubsystemSettings.hh"
+#include <algorithm>
 #include <map>
 #include <iostream>
 
@@ -191,7 +192,7 @@ void SpaceshipUpgrade::Tick(double deltatime)
       
       if(_type == Type::REPAIR_DROID)
         {
-          double repair = glm::clamp(_spaceship->GetMaxHealth() - _spaceship->GetHealth(), 0.0, 3.0);
+          double repair = std::clamp(_spaceship->GetMaxHealth() - _spaceship->GetHealth(), 0.0, 3.0);
           if(repair > 0.0)
             _spaceship->SetHealth(_spaceship->GetHealth() + repair * deltatime);
         }

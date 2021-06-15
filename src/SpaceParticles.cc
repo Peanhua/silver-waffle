@@ -23,7 +23,7 @@ SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned lo
   for(unsigned int i = 0; i < _star_count; i++)
     {
       _mesh->AddVertex(glm::vec4(0, -100, 0, 0));
-      _mesh->AddColor(glm::vec3(GetRandom(0.65), GetRandom(0.65), GetRandom(0.65)));
+      _mesh->AddColor(glm::vec4(GetRandom(0.65), GetRandom(0.65), GetRandom(0.65), 1.0));
 
       double speed = min_speed + GetRandom() * (max_speed - min_speed);
       _mesh->AddGenericVecInput(glm::vec2(speed, GetRandom()));

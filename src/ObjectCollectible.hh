@@ -23,6 +23,8 @@ public:
   
   ObjectCollectible(Scene * scene);
 
+  void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
+  
   void   SetBonus(Type type, double amount);
   bool   HasBonus(Type type) const;
   double GetBonus(Type type) const;

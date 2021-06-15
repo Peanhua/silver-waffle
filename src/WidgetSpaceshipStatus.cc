@@ -15,7 +15,7 @@ WidgetSpaceshipStatus::WidgetSpaceshipStatus(Widget * parent, const glm::ivec2 &
 
 void WidgetSpaceshipStatus::Draw() const
 {
-  _meter->SetValue(static_cast<float>(glm::clamp(_spaceship->GetHealth() / _spaceship->GetMaxHealth(), 0.0, 1.0)));
+  _meter->SetValue(static_cast<float>(std::clamp(_spaceship->GetHealth() / _spaceship->GetMaxHealth(), 0.0, 1.0)));
   _meter->Draw(GetModel(), GetView(), GetProjection(), GetMVP());
   
   Widget::Draw();

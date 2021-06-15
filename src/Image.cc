@@ -308,7 +308,7 @@ bool Image::Expand(unsigned int new_width, unsigned int new_height)
 
   auto bpp = _bytes_per_pixel;
 
-  auto newdata = static_cast<uint8_t *>(std::malloc(new_width * new_height * bpp));
+  auto newdata = new uint8_t[new_width * new_height * bpp];
   assert(newdata != NULL);
   if(newdata != NULL)
     {
@@ -325,7 +325,7 @@ bool Image::Expand(unsigned int new_width, unsigned int new_height)
       _width  = new_width;
       _height = new_height;
       
-      free(_data);
+      delete [] _data;
       _data = newdata;
 
       rv = true;

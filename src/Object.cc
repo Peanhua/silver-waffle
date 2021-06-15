@@ -1,6 +1,7 @@
 #include "Object.hh"
 #include "Camera.hh"
 #include "Mesh.hh"
+#include "Scene.hh"
 #include "ShaderProgram.hh"
 
 
@@ -10,7 +11,10 @@ Object::Object(Scene * scene)
     _orientation(1, 0, 0, 0),
     _mesh(nullptr),
     _health(100.0),
-    _max_health(_health)
+    _max_health(_health),
+    _collision_sphere_radius(-1),
+    _destroybox_low(1, 1, 1),
+    _destroybox_high(0, 0, 0)
 {
 }
 
@@ -44,6 +48,12 @@ void Object::Draw(const glm::mat4 & view, const glm::mat4 & projection, const gl
 void Object::Tick(double deltatime)
 {
   assert(deltatime == deltatime);
+  if((_destroybox_low.x < _destroybox_high.x && (_position.x < _destroybox_low.x || _position.x > _destroybox_high.x)) ||
+     (_destroybox_low.y < _destroybox_high.y && (_position.y < _destroybox_low.y || _position.y > _destroybox_high.y)) ||
+     (_destroybox_low.z < _destroybox_high.z && (_position.z < _destroybox_low.z || _position.z > _destroybox_high.z))   )
+    {
+      Hit(nullptr, 99999, glm::vec3(0, 0, 0), false);
+    }
 }
 
 
@@ -77,13 +87,31 @@ void Object::SetMesh(Mesh * mesh)
 }
 
 
+void Object::SetCollisionSphereRadius(double radius)
+{
+  _collision_sphere_radius = radius;
+}
+
+
+double Object::GetCollisionSphereRadius() const
+{
+  if(_collision_sphere_radius > 0)
+    return _collision_sphere_radius;
+  else
+    {
+      assert(_mesh);
+      return _mesh->GetBoundingSphereRadius();
+    }
+}
+
+
 bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction) const
 {
   if(!IsAlive() || !other.IsAlive())
     return false;
   
   auto distance = glm::distance(GetPosition(), other.GetPosition());
-  if(distance > static_cast<float>(GetMesh()->GetBoundingSphereRadius() + other.GetMesh()->GetBoundingSphereRadius()))
+  if(distance > static_cast<float>(GetCollisionSphereRadius() + other.GetCollisionSphereRadius()))
     return false;
 
   out_hit_direction = glm::normalize(other.GetPosition() - GetPosition());
@@ -91,10 +119,24 @@ bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction)
 }
 
 
-void Object::Hit(double damage, const glm::vec3 & impulse)
+void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx)
 {
-  assert(impulse == impulse);
+  assert(IsAlive());
   _health -= damage;
+
+  if(!IsAlive())
+    {
+      if(use_fx) // todo: make this decision using the perpetrator
+        _scene->AddExplosion(GetPosition(), impulse);
+      OnDestroyed(perpetrator);
+    }
+}
+
+
+void Object::OnDestroyed(Object * destroyer)
+{
+  for(auto callback : _on_destroyed)
+    callback(destroyer);
 }
 
 
@@ -182,4 +224,34 @@ void Object::SetOrientation(const glm::quat & orientation)
   _orientation = orientation;
 }
 
+
+Scene * Object::GetScene() const
+{
+  return _scene;
+}
+
+
+void Object::SetScene(Scene * scene)
+{
+  _scene = scene;
+}
+
+
+void Object::OnCollision(Object & other, const glm::vec3 & hit_direction)
+{
+  other.Hit(this, 50, -hit_direction);
+}
+ 
+
+void Object::SetAutoDestroyBox(const glm::vec3 & low, const glm::vec3 & high)
+{
+  _destroybox_low = low;
+  _destroybox_high = high;
+}
+
+
+void Object::SetOnDestroyed(on_destroyed_t callback)
+{
+  _on_destroyed.push_back(callback);
+}
 

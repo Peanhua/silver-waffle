@@ -22,5 +22,7 @@ private:
   GameState * _root_gamestate;
 };
 
+extern SubsystemGameState * GameStateManager;
+
 #endif
 
