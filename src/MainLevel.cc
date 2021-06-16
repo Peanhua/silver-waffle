@@ -6,7 +6,7 @@
 #include "SolarSystemObject.hh"
 
 
-#define SCALE = 100.0;
+#define SCALE 100.0
 
 
 MainLevel::MainLevel(Scene * scene, const SolarSystemObject * planet)
