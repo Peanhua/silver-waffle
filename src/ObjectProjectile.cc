@@ -7,6 +7,9 @@ ObjectProjectile::ObjectProjectile(Scene * scene)
 {
   SetMesh(AssetLoader->LoadMesh("Projectile"));
   SetHealth(0);
+  AddToCollisionChannel(CollisionChannel::PROJECTILE);
+  AddCollidesWithChannel(CollisionChannel::PLAYER);
+  AddCollidesWithChannel(CollisionChannel::ENEMY);
 }
 
 

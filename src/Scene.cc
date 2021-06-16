@@ -135,6 +135,9 @@ ObjectSpaceship * Scene::CreatePlayer()
   delete _player;
   
   _player = new ObjectSpaceship(this);
+  _player->AddToCollisionChannel(Object::CollisionChannel::PLAYER);
+  _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
+  _player->AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
   _player->EnableVelocity(true, false, false);
   _player->SetPosition(glm::vec3(0, 40 - 53, 0));
   _player->SetHorizontalPositionLimit(GetPlayAreaSize().x * 0.5f);

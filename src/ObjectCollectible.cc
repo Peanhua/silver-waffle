@@ -9,6 +9,8 @@ ObjectCollectible::ObjectCollectible(Scene * scene)
   : ObjectMovable(scene)
 {
   SetHealth(1);
+  AddToCollisionChannel(CollisionChannel::COLLECTIBLE);
+  AddCollidesWithChannel(CollisionChannel::PLAYER);
 }
 
 

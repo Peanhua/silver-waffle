@@ -56,9 +56,9 @@ void ObjectMovable::SetHorizontalPositionLimit(double limit)
   
 
 
-void ObjectMovable::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx)
+void ObjectMovable::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
-  Object::Hit(perpetrator, damage, impulse, use_fx);
+  Object::Hit(perpetrator, damage, impulse);
   AddImpulse(impulse);
 }
 

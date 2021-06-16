@@ -12,6 +12,14 @@ class Scene;
 class Object
 {
 public:
+  enum class CollisionChannel
+    {
+      PLAYER,
+      ENEMY,
+      PROJECTILE,
+      COLLECTIBLE,
+    };
+  
   //  typedef std::function<void(const Object & other, const glm::vec3 & hit_direction)> on_collision_t;
   typedef std::function<void(Object * destroyer)> on_destroyed_t;
   
@@ -22,7 +30,7 @@ public:
   void         Draw(const Camera & camera) const;
   virtual void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
   virtual void Tick(double deltatime);
-  virtual void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx = true);
+  virtual void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse);
   virtual void OnDestroyed(Object * destroyer);
   void         SetOnDestroyed(on_destroyed_t callback);
 
@@ -33,6 +41,9 @@ public:
   virtual void OnCollision(Object & other, const glm::vec3 & hit_direction);
   // void AddOnCollision(on_collision_t callback);
 
+  void AddToCollisionChannel(CollisionChannel channel);
+  void AddCollidesWithChannel(CollisionChannel channel);
+  
   bool   IsAlive() const;
   double GetHealth() const;
   void   SetHealth(double health);
@@ -70,6 +81,8 @@ private:
   double    _health;
   double    _max_health;
   double    _collision_sphere_radius;
+  uint64_t  _collision_channels; // Collision channels this object belongs to.
+  uint64_t  _collision_mask;     // Collision channels this object collides with.
   glm::vec3 _destroybox_low;
   glm::vec3 _destroybox_high;
   

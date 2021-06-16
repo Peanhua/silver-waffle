@@ -9,7 +9,7 @@ public:
   ObjectMovable(Scene * scene);
 
   void Tick(double deltatime) override;
-  void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx) override;
+  void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
 
   void SetHorizontalPositionLimit(double limit);
   void AddImpulse(const glm::vec3 & impulse);

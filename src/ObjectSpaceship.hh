@@ -16,8 +16,7 @@ public:
 
   void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const override;
   void Tick(double deltatime) override;
-  void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx) override;
-  void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
+  void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
 
   unsigned int AddWeapon();
   unsigned int AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);

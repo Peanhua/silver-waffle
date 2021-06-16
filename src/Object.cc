@@ -52,7 +52,7 @@ void Object::Tick(double deltatime)
      (_destroybox_low.y < _destroybox_high.y && (_position.y < _destroybox_low.y || _position.y > _destroybox_high.y)) ||
      (_destroybox_low.z < _destroybox_high.z && (_position.z < _destroybox_low.z || _position.z > _destroybox_high.z))   )
     {
-      Hit(nullptr, 99999, glm::vec3(0, 0, 0), false);
+      Hit(nullptr, 99999, glm::vec3(0, 0, 0));
     }
 }
 
@@ -109,6 +109,9 @@ bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction)
 {
   if(!IsAlive() || !other.IsAlive())
     return false;
+
+  if(!(_collision_mask & other._collision_channels))
+    return false;
   
   auto distance = glm::distance(GetPosition(), other.GetPosition());
   if(distance > static_cast<float>(GetCollisionSphereRadius() + other.GetCollisionSphereRadius()))
@@ -119,14 +122,26 @@ bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction)
 }
 
 
-void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx)
+void Object::AddToCollisionChannel(CollisionChannel channel)
+{
+  _collision_channels |= static_cast<uint64_t>(1) << static_cast<uint64_t>(channel);
+}
+
+
+void Object::AddCollidesWithChannel(CollisionChannel channel)
+{
+  _collision_mask |= static_cast<uint64_t>(1) << static_cast<uint64_t>(channel);
+}
+
+
+void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
   assert(IsAlive());
   _health -= damage;
 
   if(!IsAlive())
     {
-      if(use_fx) // todo: make this decision using the perpetrator
+      if(perpetrator)
         _scene->AddExplosion(GetPosition(), impulse);
       OnDestroyed(perpetrator);
     }

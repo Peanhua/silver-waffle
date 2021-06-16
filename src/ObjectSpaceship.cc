@@ -181,7 +181,7 @@ void ObjectSpaceship::UpgradeEngines(double power_multiplier)
 }
 
 
-void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse, bool use_fx)
+void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
   auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
   if(shield->IsActive())
@@ -192,7 +192,7 @@ void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 &
      
       damage -= reduction;
     }
-  ObjectMovable::Hit(perpetrator, damage, impulse, use_fx);
+  ObjectMovable::Hit(perpetrator, damage, impulse);
 }
 
 
@@ -254,16 +254,6 @@ void ObjectSpaceship::SetOwnerGameStats(GameStats * gamestats)
 GameStats * ObjectSpaceship::GetOwnerGameStats() const
 {
   return _gamestats;
-}
-
-
-void ObjectSpaceship::OnCollision(Object & other, const glm::vec3 & hit_direction)
-{
-  auto ble = dynamic_cast<ObjectBonusLevelEntrance *>(&other); // todo: fix by using collision masks
-  if(ble)
-    return;
-
-  ObjectMovable::OnCollision(other, hit_direction);
 }
 
 
