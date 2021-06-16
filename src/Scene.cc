@@ -138,6 +138,7 @@ ObjectSpaceship * Scene::CreatePlayer()
   _player->AddToCollisionChannel(Object::CollisionChannel::PLAYER);
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
   _player->AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
+  _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);
   _player->EnableVelocity(true, false, false);
   _player->SetPosition(glm::vec3(0, 40 - 53, 0));
   _player->SetHorizontalPositionLimit(GetPlayAreaSize().x * 0.5f);
@@ -171,99 +172,61 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
 void Scene::Tick(double deltatime)
 {
   _time += deltatime;
-  
-  bool evading = _player->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER)->GetTimer() > 0.0;
-  
-  if(_player->IsAlive())
-    _player->Tick(deltatime);
 
-  // todo: fix all into one loop with collision masks
-  for(auto i : _invaders)
-    if(i && i->IsAlive())
-      i->Tick(deltatime);
+  std::vector<Object *> objects;
+
+  if(_player && _player->IsAlive())
+    objects.push_back(_player);
 
   for(auto i : _invaders)
     if(i && i->IsAlive())
-      {
-        glm::vec3 hitdir;
-        if(!evading && i->CheckCollision(*_player, hitdir))
-          {
-            i->OnCollision(*_player, -hitdir);
-            _player->OnCollision(*i, hitdir);
-          }
-      }
+      objects.push_back(i);
 
-  for(auto collectible : _collectibles)
-    if(collectible && collectible->IsAlive())
-      {
-        collectible->Tick(deltatime);
+  for(auto c : _collectibles)
+    if(c && c->IsAlive())
+      objects.push_back(c);
+  
+  for(auto p : _projectiles)
+    if(p && p->IsAlive())
+      objects.push_back(p);
 
-        glm::vec3 hitdir;
-        if(!evading && collectible->CheckCollision(*_player, hitdir))
-          {
-            collectible->OnCollision(*_player, -hitdir);
-            _player->OnCollision(*collectible, hitdir);
-          }
-      }
+  if(_player && _player->IsAlive())
+    {
+      for(auto o : _objects)
+        if(o && o->IsAlive())
+          objects.push_back(o);
+      
+      for(auto p : _planets)
+        if(p && p->IsAlive())
+          objects.push_back(p);
+    }
 
-  for(auto projectile : _projectiles)
-    if(projectile->IsAlive())
-      {
-        projectile->Tick(deltatime);
-        
-        ObjectMovable * target = nullptr;
-        glm::vec3 hitdir;
-        
-        if(projectile->GetOwner() == _player)
-          {
-            for(auto i : _invaders)
-              if(i && i->IsAlive())
-                if(projectile->CheckCollision(*i, hitdir))
-                  {
-                    target = i;
-                    hitdir = glm::normalize(hitdir + projectile->GetVelocity() + target->GetVelocity());
-                    break;
-                  }
-          }
-        else
-          {
-            if(!evading && projectile->CheckCollision(*_player, hitdir))
-              target = _player;
-          }
+  for(auto o : objects)
+    {
+      o->Tick(deltatime);
 
-        if(target)
-          {
-            projectile->OnCollision(*target, -hitdir);
-            target->OnCollision(*projectile, hitdir);
-          }
-      }
+      for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
+        {
+          auto oo = objects[i];
+          if(o != oo && oo->IsAlive())
+            {
+              glm::vec3 hitdir;
+              if(o->CheckCollision(*oo, hitdir))
+                {
+                  o->OnCollision(*oo, -hitdir);
+                  oo->OnCollision(*o, hitdir);
+                }
+            }
+        }
+    }
+
 
   for(auto e : _explosions)
-    if(e->IsAlive())
+    if(e && e->IsAlive())
       e->Tick(deltatime);
 
   _particles->Tick(deltatime);
   _wall->Tick(deltatime);
-
-  if(_player->IsAlive())
-    {
-      for(auto object : _objects)
-        if(object && object->IsAlive())
-          {
-            object->Tick(deltatime);
-
-            glm::vec3 hitdir;
-            if(!evading && object->CheckCollision(*_player, hitdir))
-              {
-                object->OnCollision(*_player, -hitdir);
-                _player->OnCollision(*object, hitdir);
-              }
-          }
-
-      for(auto p : _planets)
-        if(p && p->IsAlive())
-          p->Tick(deltatime);
-    }
 }
 
 

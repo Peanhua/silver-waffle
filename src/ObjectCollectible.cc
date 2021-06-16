@@ -10,7 +10,6 @@ ObjectCollectible::ObjectCollectible(Scene * scene)
 {
   SetHealth(1);
   AddToCollisionChannel(CollisionChannel::COLLECTIBLE);
-  AddCollidesWithChannel(CollisionChannel::PLAYER);
 }
 
 

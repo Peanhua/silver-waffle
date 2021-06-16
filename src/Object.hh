@@ -43,6 +43,8 @@ public:
 
   void AddToCollisionChannel(CollisionChannel channel);
   void AddCollidesWithChannel(CollisionChannel channel);
+  virtual uint64_t GetCollisionChannels() const;
+  virtual uint64_t GetCollidesWithChannels() const;
   
   bool   IsAlive() const;
   double GetHealth() const;

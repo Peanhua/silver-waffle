@@ -13,6 +13,8 @@ Object::Object(Scene * scene)
     _health(100.0),
     _max_health(_health),
     _collision_sphere_radius(-1),
+    _collision_channels(0),
+    _collision_mask(0),
     _destroybox_low(1, 1, 1),
     _destroybox_high(0, 0, 0)
 {
@@ -110,7 +112,7 @@ bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction)
   if(!IsAlive() || !other.IsAlive())
     return false;
 
-  if(!(_collision_mask & other._collision_channels))
+  if(!(GetCollidesWithChannels() & other.GetCollisionChannels()))
     return false;
   
   auto distance = glm::distance(GetPosition(), other.GetPosition());
@@ -131,6 +133,18 @@ void Object::AddToCollisionChannel(CollisionChannel channel)
 void Object::AddCollidesWithChannel(CollisionChannel channel)
 {
   _collision_mask |= static_cast<uint64_t>(1) << static_cast<uint64_t>(channel);
+}
+
+
+uint64_t Object::GetCollisionChannels() const
+{
+  return _collision_channels;
+}
+
+
+uint64_t Object::GetCollidesWithChannels() const
+{
+  return _collision_mask;
 }
 
 

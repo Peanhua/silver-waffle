@@ -10,6 +10,7 @@ public:
 
   void Tick(double deltatime) override;
   void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
+  uint64_t GetCollisionChannels() const override;
 
   void Activate(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
 

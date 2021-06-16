@@ -8,8 +8,6 @@ ObjectProjectile::ObjectProjectile(Scene * scene)
   SetMesh(AssetLoader->LoadMesh("Projectile"));
   SetHealth(0);
   AddToCollisionChannel(CollisionChannel::PROJECTILE);
-  AddCollidesWithChannel(CollisionChannel::PLAYER);
-  AddCollidesWithChannel(CollisionChannel::ENEMY);
 }
 
 
@@ -46,7 +44,15 @@ double ObjectProjectile::GetDamage() const
   return _damage;
 }
 
+
 void ObjectProjectile::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
   other.Hit(_owner, GetDamage(), -hit_direction);
+}
+
+
+uint64_t ObjectProjectile::GetCollisionChannels() const
+{
+  assert(_owner);
+  return _owner->GetCollisionChannels();
 }

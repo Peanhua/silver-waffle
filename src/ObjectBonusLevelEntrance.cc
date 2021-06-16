@@ -51,7 +51,7 @@ void ObjectBonusLevelEntrance::Tick(double deltatime)
 
 void ObjectBonusLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
-  assert(hit_direction == hit_direction);
+  assert(&hit_direction == &hit_direction);
 
   if(_used)
     return;

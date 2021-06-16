@@ -60,7 +60,9 @@ void ObjectInvader::OnDestroyed(Object * destroyer)
   if(player)
     {
       auto gamestats = player->GetOwnerGameStats();
+      assert(gamestats);
       gamestats->AddScore(1);
+          
       SpawnRandomCollectible();
     }
 

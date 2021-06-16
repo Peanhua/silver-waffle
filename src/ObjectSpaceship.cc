@@ -271,3 +271,16 @@ void ObjectSpaceship::CopyUpgrades(const ObjectSpaceship & source)
   for(auto u : source._upgrades)
     _upgrades.push_back(new SpaceshipUpgrade(*u));
 }
+
+
+uint64_t ObjectSpaceship::GetCollidesWithChannels() const
+{
+  bool evading = GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER)->GetTimer() > 0.0;
+
+  uint64_t rv = 0;
+  if(!evading)
+    rv = ObjectMovable::GetCollidesWithChannels();
+
+  return rv;
+}
+
