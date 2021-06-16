@@ -507,6 +507,12 @@ void Mesh::CalculateBoundingSphereRadius(const glm::mat4 & transform)
 }
 
 
+void Mesh::SetBoundingSphereRadius(double radius)
+{
+  _bounding_sphere_radius = radius;
+}
+
+
 double Mesh::GetBoundingSphereRadius() const
 {
   return _bounding_sphere_radius;

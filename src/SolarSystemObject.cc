@@ -2,7 +2,7 @@
 #include "ObjectPlanet.hh"
 #include "SubsystemAssetLoader.hh"
 
-#include <iostream>
+
 SolarSystemObject::SolarSystemObject(Type type, const std::string & texture, double radius, const glm::vec2 & ring)
   : _type(type),
     _relative_size(radius / 6371.0),

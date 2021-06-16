@@ -86,7 +86,7 @@ private:
   Milkyway *                      _milkyway;
   SpaceParticles *                _particles;
   WormholeWall *                  _wall;
-  std::vector<Object *>           _planets;
+  Container<Object *>             _planets;
   double                          _time;
 };
 

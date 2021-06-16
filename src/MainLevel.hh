@@ -16,9 +16,9 @@ public:
   double GetTotalTime() const override;
   
 private:
-  double         _planet_size;
-  double         _planet_position_start;
-  ObjectPlanet * _planet;
+  const SolarSystemObject * _solar_system_object;
+  double _planet_size;
+  double _planet_position_start;
 };
 
 #endif

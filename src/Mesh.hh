@@ -52,6 +52,7 @@ public:
 
   virtual void PreDrawSetupShader(ShaderProgram * shader_program) const;
   void Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
+  void         SetBoundingSphereRadius(double radius);
   double       GetBoundingSphereRadius() const;
   unsigned int GetOptions(unsigned int interested_in) const;
   

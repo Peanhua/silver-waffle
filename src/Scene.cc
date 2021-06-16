@@ -5,6 +5,7 @@
 #include "Milkyway.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectInvader.hh"
+#include "ObjectPlanet.hh"
 #include "ObjectProjectile.hh"
 #include "ObjectSpaceship.hh"
 #include "ShaderProgram.hh"
@@ -257,7 +258,8 @@ void Scene::Tick(double deltatime)
           }
 
       for(auto p : _planets)
-        p->Tick(deltatime);
+        if(p && p->IsAlive())
+          p->Tick(deltatime);
     }
 }
 
@@ -368,10 +370,24 @@ void Scene::ClearPlanets()
 }
 
 
-void Scene::AddPlanet(Object * planet)
+void Scene::AddPlanet(Object * object)
 {
-  assert(planet);
-  _planets.push_back(planet);
+  assert(object);
+  auto ind = _planets.GetNextFreeIndex();
+  if(ind < _planets.size())
+    _planets[ind] = object;
+  else
+    _planets.push_back(object);
+
+  auto bsr = object->GetMesh()->GetBoundingSphereRadius();
+
+  auto planet = dynamic_cast<ObjectPlanet *>(object);
+  if(planet)
+    bsr *= 2.0; // todo: query the exact ring size
+
+  const auto m = GetPlayAreaSize();
+  planet->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - bsr, 1),
+                            glm::vec3( m.x * 0.5f,           9999999, 0));
 }
 
 

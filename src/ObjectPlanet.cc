@@ -12,6 +12,7 @@ ObjectPlanet::ObjectPlanet(Scene * scene, Image * planet_texture, double planet_
   planet->ApplyTransform(glm::scale(glm::vec3(planet_size, planet_size, planet_size)));
   planet->SetTexture(0, planet_texture, true);
   planet->UpdateGPU();
+  planet->SetBoundingSphereRadius(planet_size);
   SetMesh(planet);
   auto f = AssetLoader->LoadImage("White");
   assert(f);
