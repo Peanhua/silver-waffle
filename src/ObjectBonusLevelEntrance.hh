@@ -10,6 +10,7 @@ class ObjectBonusLevelEntrance : public ObjectMovable
 public:
   ObjectBonusLevelEntrance(Scene * scene, double enemy_difficulty, double warp_fuel_bonus);
 
+  void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
   void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
   
 private:

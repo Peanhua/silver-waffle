@@ -23,6 +23,14 @@ ObjectBonusLevelEntrance::ObjectBonusLevelEntrance(Scene * scene, double enemy_d
 }
 
 
+void ObjectBonusLevelEntrance::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
+{
+  assert(perpetrator == perpetrator);
+  assert(damage == damage);
+  assert(&impulse == &impulse);
+}
+
+
 #if 0
 void ObjectBonusLevelEntrance::Tick(double deltatime)
 {

@@ -33,6 +33,7 @@ public:
   virtual void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse);
   virtual void OnDestroyed(Object * destroyer);
   void         SetOnDestroyed(on_destroyed_t callback);
+  void         Destroy(Object * destroyer);
 
   Mesh * GetMesh() const;
   void   SetMesh(Mesh * mesh);
@@ -45,7 +46,8 @@ public:
   void AddCollidesWithChannel(CollisionChannel channel);
   virtual uint64_t GetCollisionChannels() const;
   virtual uint64_t GetCollidesWithChannels() const;
-  
+
+  void   SetUseHealth(bool enable);
   bool   IsAlive() const;
   double GetHealth() const;
   void   SetHealth(double health);
@@ -80,6 +82,8 @@ private:
   glm::vec3 _position;
   glm::quat _orientation;
   Mesh *    _mesh;
+  bool      _destroyed;
+  bool      _use_health;
   double    _health;
   double    _max_health;
   double    _collision_sphere_radius;

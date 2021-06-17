@@ -10,6 +10,8 @@ Object::Object(Scene * scene)
     _position(0, 0, 0),
     _orientation(1, 0, 0, 0),
     _mesh(nullptr),
+    _destroyed(false),
+    _use_health(true),
     _health(100.0),
     _max_health(_health),
     _collision_sphere_radius(-1),
@@ -54,7 +56,7 @@ void Object::Tick(double deltatime)
      (_destroybox_low.y < _destroybox_high.y && (_position.y < _destroybox_low.y || _position.y > _destroybox_high.y)) ||
      (_destroybox_low.z < _destroybox_high.z && (_position.z < _destroybox_low.z || _position.z > _destroybox_high.z))   )
     {
-      Hit(nullptr, 99999, glm::vec3(0, 0, 0));
+      Destroy(nullptr);
     }
 }
 
@@ -150,6 +152,9 @@ uint64_t Object::GetCollidesWithChannels() const
 
 void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
+  if(!_use_health)
+    return;
+  
   assert(IsAlive());
   _health -= damage;
 
@@ -157,8 +162,15 @@ void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
     {
       if(perpetrator)
         _scene->AddExplosion(GetPosition(), impulse);
-      OnDestroyed(perpetrator);
+      Destroy(perpetrator);
     }
+}
+
+
+void Object::Destroy(Object * destroyer)
+{
+  _destroyed = true;
+  OnDestroyed(destroyer);
 }
 
 
@@ -193,10 +205,18 @@ void Object::SetMaxHealth(double health)
 }
 
 
+void Object::SetUseHealth(bool enable)
+{
+  _use_health = enable;
+}
+
 
 bool Object::IsAlive() const
 {
-  return _health > 0.0;
+  if(_destroyed)
+    return false;
+  
+  return !_use_health || _health > 0.0;
 }
 
 
