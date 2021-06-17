@@ -83,7 +83,7 @@ GameStateGame::GameStateGame(GameStats * gamestats)
     for(auto um : _gamestats->GetUpgradeMaterials())
       {
         auto w = new WidgetUpgradeMaterial(root, glm::ivec2(width - 50, y), glm::ivec2(50, 25), *um);
-        _upgradematerial_widgets.push_back(w);
+        assert(w);
         y += 25;
       }
   }
@@ -160,7 +160,7 @@ void GameStateGame::Tick(double deltatime)
   if(_state == State::RUNNING)
     _gamestats->Tick(deltatime);
 
-  if(_state != State::FULL_PAUSE)
+  if(_state == State::RUNNING || _state == State::DEATH_PAUSE)
     _scene->Tick(deltatime);
 
   if(_state == State::RUNNING)
@@ -175,6 +175,36 @@ void GameStateGame::Tick(double deltatime)
             }
           else
             Quit();
+        }
+    }
+  else if(_state == State::GAMESTATE_TRANSITION)
+    {
+      if(_gamestatetransition_timer > 0.0)
+        {
+          _gamestatetransition_timer -= deltatime;
+
+          auto fmt = [](double v)
+          {
+            auto rv = std::to_string(v);
+            return rv.substr(0, rv.find('.') + 2);
+          };
+          _pausebutton->SetText(_gamestatetransition_text + " " + fmt(_gamestatetransition_timer));
+          _pausebutton->SetTextPaddingCentered(true, true);
+
+          if(_gamestatetransition_timer < 0.0)
+            { // Enter the new gamestate.
+              SetChildState(_gamestatetransition_new_gamestate);
+              _gamestatetransition_new_gamestate = nullptr;
+            }
+          else if(_gamestatetransition_timer < 1.0)
+            {
+              auto amount = 1.0 - _gamestatetransition_timer / 1.0;
+              _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
+            }
+        }
+      else
+        { // Resumed from the new gamestate.
+          ChangeState(State::RUNNING);
         }
     }
   
@@ -230,6 +260,9 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
         ChangeState(State::RUNNING);
       return;
     }
+
+  if(_state == State::GAMESTATE_TRANSITION)
+    return;
 
   assert(_state == State::RUNNING);
   switch(key)
@@ -408,10 +441,6 @@ void GameStateGame::ChangeState(State new_state)
           SetModalWidget(nullptr);
           _pausebutton->Destroy();
           _pausebutton = nullptr;
-
-          _upgradematerial_widgets[0]->SetText(std::to_string(_gamestats->GetUpgradeMaterial(UpgradeMaterial::Type::ATTACK)->GetAmount()));
-          _upgradematerial_widgets[1]->SetText(std::to_string(_gamestats->GetUpgradeMaterial(UpgradeMaterial::Type::DEFENSE)->GetAmount()));
-          _upgradematerial_widgets[2]->SetText(std::to_string(_gamestats->GetUpgradeMaterial(UpgradeMaterial::Type::PHYSICAL)->GetAmount()));
         }
       break;
       
@@ -458,6 +487,16 @@ void GameStateGame::ChangeState(State new_state)
         SetModalWidget(_pausebutton);
       }
       break;
+
+    case State::GAMESTATE_TRANSITION:
+      {
+        assert(!_pausebutton);
+        _pausebutton = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(Settings->GetInt("screen_width"), Settings->GetInt("screen_height")));
+        _pausebutton->SetImage(AssetLoader->LoadImage("White"));
+        _pausebutton->SetImageColor(glm::vec4(0, 0, 0, 0));
+        SetModalWidget(_pausebutton);
+      }
+      break;
     }
   
   _state = new_state;
@@ -473,5 +512,15 @@ GameStats * GameStateGame::GetGameStats() const
 Scene * GameStateGame::GetScene() const
 {
   return _scene;
+}
+
+
+void GameStateGame::TransitionToGameState(GameState * new_gamestate, const std::string & message)
+{
+  _gamestatetransition_new_gamestate = new_gamestate;
+  _gamestatetransition_timer = 3.0;
+  _gamestatetransition_text = message;
+  
+  ChangeState(State::GAMESTATE_TRANSITION);
 }
 

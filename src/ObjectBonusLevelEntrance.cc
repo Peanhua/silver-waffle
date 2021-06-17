@@ -66,6 +66,8 @@ void ObjectBonusLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit
     {
       auto ns = new GameStateBonusLevel(current, _enemy_difficulty, _warp_fuel_bonus);
       ns->SetupLevels();
-      GameStateManager->GetGameState()->SetChildState(ns);
+      auto gs = dynamic_cast<GameStateGame *>(GameStateManager->GetGameState());
+      assert(gs);
+      gs->TransitionToGameState(ns, "Entering bonus level...");
     }
 }

@@ -34,6 +34,7 @@ public:
 
   GameStats * GetGameStats() const;
   Scene *     GetScene()     const;
+  void TransitionToGameState(GameState * new_gamestate, const std::string & message);
 
   void OnLivesUpdated();
   
@@ -48,7 +49,8 @@ private:
     {
       RUNNING,
       DEATH_PAUSE,
-      FULL_PAUSE
+      FULL_PAUSE,
+      GAMESTATE_TRANSITION
     };
   
   State _state;
@@ -64,13 +66,16 @@ private:
   ScoreReel *        _score_reel;
   unsigned int       _current_level;
   GameStats *        _gamestats;
+
+  GameState * _gamestatetransition_new_gamestate;
+  double      _gamestatetransition_timer;
+  std::string _gamestatetransition_text;
   
   std::vector<Widget *> _lives_widgets;
   std::vector<WidgetSpaceshipStatus *> _player_status_widgets;
   std::vector<WidgetSpaceshipUpgradeStatus *> _player_upgrade_status_widgets;
   std::vector<Widget *> _active_bonus_widgets;
   Widget *              _pausebutton;
-  std::vector<Widget *> _upgradematerial_widgets;
   Widget *              _levelinfo_widget;
 
   void ChangeState(State new_state);
