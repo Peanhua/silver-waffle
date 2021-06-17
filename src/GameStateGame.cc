@@ -183,28 +183,35 @@ void GameStateGame::Tick(double deltatime)
         {
           _gamestatetransition_timer -= deltatime;
 
-          auto fmt = [](double v)
           {
-            auto rv = std::to_string(v);
-            return rv.substr(0, rv.find('.') + 2);
-          };
-          _pausebutton->SetText(_gamestatetransition_text + " " + fmt(_gamestatetransition_timer));
+            auto v = 1.0 - _gamestatetransition_timer / 4.0;
+            _pausebutton->SetTextColor(glm::vec3(v, v, v));
+          }
+          _pausebutton->SetText(_gamestatetransition_text);
           _pausebutton->SetTextPaddingCentered(true, true);
-
+          
           if(_gamestatetransition_timer < 0.0)
             { // Enter the new gamestate.
               SetChildState(_gamestatetransition_new_gamestate);
               _gamestatetransition_new_gamestate = nullptr;
+              _pausebutton->SetText("");
             }
-          else if(_gamestatetransition_timer < 1.0)
+          else if(_gamestatetransition_timer < 1.5)
             {
-              auto amount = 1.0 - _gamestatetransition_timer / 1.0;
+              auto amount = std::clamp(1.0 - (_gamestatetransition_timer - 0.5), 0.0, 1.0);
               _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
             }
         }
       else
         { // Resumed from the new gamestate.
-          ChangeState(State::RUNNING);
+          _gamestatetransition_timer -= deltatime;
+          if(_gamestatetransition_timer < -1.0)
+            ChangeState(State::RUNNING);
+          else
+            {
+              auto amount = std::clamp(1.0 - std::abs(_gamestatetransition_timer), 0.0, 1.0);
+              _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
+            }
         }
     }
   
@@ -494,6 +501,10 @@ void GameStateGame::ChangeState(State new_state)
         _pausebutton = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(Settings->GetInt("screen_width"), Settings->GetInt("screen_height")));
         _pausebutton->SetImage(AssetLoader->LoadImage("White"));
         _pausebutton->SetImageColor(glm::vec4(0, 0, 0, 0));
+#if 1
+        _pausebutton->SetText(_gamestatetransition_text);
+        _pausebutton->SetTextPaddingCentered(true, true);
+#endif
         SetModalWidget(_pausebutton);
       }
       break;
@@ -518,7 +529,7 @@ Scene * GameStateGame::GetScene() const
 void GameStateGame::TransitionToGameState(GameState * new_gamestate, const std::string & message)
 {
   _gamestatetransition_new_gamestate = new_gamestate;
-  _gamestatetransition_timer = 3.0;
+  _gamestatetransition_timer = 4.0;
   _gamestatetransition_text = message;
   
   ChangeState(State::GAMESTATE_TRANSITION);
