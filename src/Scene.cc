@@ -203,7 +203,8 @@ void Scene::Tick(double deltatime)
 
   for(auto o : objects)
     {
-      o->Tick(deltatime);
+      if(o->IsAlive())
+        o->Tick(deltatime);
 
       for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
         {
