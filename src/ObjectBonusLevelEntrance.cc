@@ -17,7 +17,6 @@ ObjectBonusLevelEntrance::ObjectBonusLevelEntrance(Scene * scene, double enemy_d
   GetMesh()->SetShaderProgram(AssetLoader->LoadShaderProgram("BonusLevelEntrance"), true);
   SetCollisionSphereRadius(0.5);
   AddToCollisionChannel(CollisionChannel::COLLECTIBLE);
-  AddCollidesWithChannel(CollisionChannel::PLAYER);
 
   GetMesh()->SetAllColor(glm::vec4(enemy_difficulty, 0.0f, warp_fuel_bonus, 0.2f), true);
   GetMesh()->UpdateGPU();
