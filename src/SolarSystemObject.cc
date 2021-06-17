@@ -3,8 +3,9 @@
 #include "SubsystemAssetLoader.hh"
 
 
-SolarSystemObject::SolarSystemObject(Type type, const std::string & texture, double radius, const glm::vec2 & ring)
+SolarSystemObject::SolarSystemObject(Type type, const std::string & name, const std::string & texture, double radius, const glm::vec2 & ring)
   : _type(type),
+    _name(name),
     _relative_size(radius / 6371.0),
     _ring(ring)
 {
@@ -26,5 +27,11 @@ Object * SolarSystemObject::CreateSceneObject(Scene * scene, double scale) const
     obj->AddPlanetRing(_ring.x, _ring.y);
 
   return obj;
+}
+
+
+const std::string & SolarSystemObject::GetName() const
+{
+  return _name;
 }
 

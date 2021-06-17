@@ -11,24 +11,27 @@ class Scene;
 class SolarSystemObject
 {
 public:
-  enum Type
+  enum class Type
     {
-      TYPE_STAR,
-      TYPE_PLANET
+      STAR,
+      PLANET
     };
 
-  SolarSystemObject(Type type, const std::string & texture, double radius, const glm::vec2 & ring = glm::vec2(0, 0));
+  SolarSystemObject(Type type, const std::string & name, const std::string & texture, double radius, const glm::vec2 & ring = glm::vec2(0, 0));
 
   double   GetRelativeSize() const;
+  Type     GetType() const;
+  const std::string & GetName() const;
   
   Object * CreateSceneObject(Scene * scene, double scale) const;
 
   
 private:
-  Type      _type;
-  double    _relative_size;
-  glm::vec2 _ring;
-  Image *   _texture;
+  Type        _type;
+  std::string _name;
+  double      _relative_size;
+  glm::vec2   _ring;
+  Image *     _texture;
 };
 
 #endif

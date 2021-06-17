@@ -196,7 +196,7 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
 }
 
 
-SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(int type, unsigned int index)
+SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(SolarSystemObject::Type type, unsigned int index)
 {
   auto it = _solar_system_objects.find(type);
   if(it == _solar_system_objects.end())
@@ -205,11 +205,10 @@ SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(int type, unsign
       assert(config);
 
       std::string arrname = "unknown";
-      auto typ = static_cast<SolarSystemObject::Type>(type);
-      switch(typ)
+      switch(type)
         {
-        case SolarSystemObject::TYPE_STAR:   arrname = "stars";   break;
-        case SolarSystemObject::TYPE_PLANET: arrname = "planets"; break;
+        case SolarSystemObject::Type::STAR:   arrname = "stars";   break;
+        case SolarSystemObject::Type::PLANET: arrname = "planets"; break;
         }
       assert((*config)[arrname].is_array());
       
@@ -225,7 +224,8 @@ SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(int type, unsign
               ring.y = static_cast<float>(a[1].number_value());
             }
           
-          auto obj = new SolarSystemObject(typ,
+          auto obj = new SolarSystemObject(type,
+                                           data["name"].string_value(),
                                            data["texture"].string_value(),
                                            data["radius"].number_value(),
                                            ring);

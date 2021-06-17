@@ -2,6 +2,7 @@
 #define SUBSYSTEM_ASSET_LOADER_HH_
 
 #include "Subsystem.hh"
+#include "SolarSystemObject.hh"
 #include <json11.hpp>
 #include <map>
 #include <vector>
@@ -11,7 +12,6 @@ class Image;
 class Mesh;
 class ObjectCollectible;
 class ShaderProgram;
-class SolarSystemObject;
 
 
 class SubsystemAssetLoader : public Subsystem
@@ -28,7 +28,7 @@ public:
   ShaderProgram *     LoadShaderProgram(const std::string & name);
   Mesh *              LoadMesh(const std::string & name, const std::string & shader_prefix = "SceneObject");
   Image *             LoadImage(const std::string & name);
-  SolarSystemObject * LoadSolarSystemObject(int type, unsigned int index);
+  SolarSystemObject * LoadSolarSystemObject(SolarSystemObject::Type type, unsigned int index);
   ObjectCollectible * LoadObjectCollectible(int type);
 
 private:
@@ -37,7 +37,7 @@ private:
   std::map<std::string, ShaderProgram *> _shader_programs;
   std::map<std::string, Mesh *>          _meshes;
   std::map<std::string, Image *>         _images;
-  std::map<int, std::vector<SolarSystemObject *> *> _solar_system_objects;
+  std::map<SolarSystemObject::Type, std::vector<SolarSystemObject *> *> _solar_system_objects;
   std::map<int, ObjectCollectible *>     _collectibles;
   std::map<float, Font *>                _fonts;
 };

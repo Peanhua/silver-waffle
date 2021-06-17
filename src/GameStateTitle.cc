@@ -30,7 +30,7 @@ GameStateTitle::GameStateTitle()
   auto z = -11.0f;
   auto distance = 0.0;
   {
-    auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::TYPE_STAR, 0);
+    auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::Type::STAR, 0);
     assert(sobj);
     _planets.push_back(sobj->CreateSceneObject(nullptr, 0.2));
     _planets[_planets.size() - 1]->SetPosition(glm::vec3(distance, startdist, z));
@@ -41,7 +41,7 @@ GameStateTitle::GameStateTitle()
     bool done = false;
     for(unsigned int i = 0; !done; i++)
       {
-        auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::TYPE_PLANET, i);
+        auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::Type::PLANET, i);
         if(sobj)
           {
             distance += sobj->GetRelativeSize() * 1.1;

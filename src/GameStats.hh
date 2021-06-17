@@ -14,6 +14,8 @@ public:
 
   int          GetLives() const;
   void         AdjustLives(int amount);
+
+  double       GetTime() const;
   
   unsigned int GetScore() const;
   void         AddScore(unsigned int amount);
@@ -25,6 +27,8 @@ public:
 
 private:
   int _lives;
+
+  double _time;
   
   unsigned int _score;
   unsigned int _score_multiplier;

@@ -25,6 +25,7 @@ public:
   virtual bool   IsFinished()   const = 0;
   virtual double GetTotalTime() const = 0;
 
+  const std::string & GetName() const;
   double GetTime() const;
   
 protected:
@@ -49,6 +50,7 @@ protected:
   
   std::mt19937_64 _random_generator;
 
+  std::string    _name;
   double         _time;
 
   std::vector<ProgramEntry *> _program;

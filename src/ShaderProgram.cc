@@ -134,7 +134,6 @@ void ShaderProgram::SetInt(const std::string & name, int value)
 }
 
 
-
 void ShaderProgram::Use() const
 {
   assert(_program);

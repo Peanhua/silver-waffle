@@ -71,6 +71,7 @@ private:
   std::vector<Widget *> _active_bonus_widgets;
   Widget *              _pausebutton;
   std::vector<Widget *> _upgradematerial_widgets;
+  Widget *              _levelinfo_widget;
 
   void ChangeState(State new_state);
   void OnPlayerDies();

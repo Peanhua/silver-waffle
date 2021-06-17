@@ -20,6 +20,7 @@ GameStats::GameStats()
 
 void GameStats::Tick(double deltatime)
 {
+  _time += deltatime;
   if(_score_multiplier_timer > 0.0)
     _score_multiplier_timer -= deltatime;
 }
@@ -83,3 +84,8 @@ void GameStats::AdjustLives(int amount)
   _lives += amount;
 }
 
+
+double GameStats::GetTime() const
+{
+  return _time;
+}

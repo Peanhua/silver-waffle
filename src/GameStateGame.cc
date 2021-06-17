@@ -136,10 +136,14 @@ GameStateGame::GameStateGame(GameStats * gamestats)
         _active_bonus_widgets.push_back(w);
       }
   }
+
+  _levelinfo_widget = new Widget(root, glm::ivec2(10, 10), glm::ivec2(300, 25));
+  _levelinfo_widget->SetTextColor(glm::vec3(1.00, 0.88, 0.00));
+  _levelinfo_widget->SetTextFont(AssetLoader->LoadFont(12));
 }
 
 
-  GameStateGame::~GameStateGame()
+GameStateGame::~GameStateGame()
 {
   delete _scene;
   delete _camera;
@@ -153,11 +157,11 @@ void GameStateGame::Tick(double deltatime)
   _score_reel->SetScore(_gamestats->GetScore());
   _score_reel->Tick(deltatime);
 
+  if(_state == State::RUNNING)
+    _gamestats->Tick(deltatime);
+
   if(_state != State::FULL_PAUSE)
-    {
-      _gamestats->Tick(deltatime);
-      _scene->Tick(deltatime);
-    }
+    _scene->Tick(deltatime);
 
   if(_state == State::RUNNING)
     {
@@ -177,6 +181,14 @@ void GameStateGame::Tick(double deltatime)
   _active_bonus_widgets[ObjectCollectible::Type::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
   _active_bonus_widgets[ObjectCollectible::Type::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_gamestats->GetScoreMultiplier() > 1);
   _active_bonus_widgets[ObjectCollectible::Type::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->IsActive());
+
+  auto fmt = [](double v)
+  {
+    auto rv = std::to_string(v);
+    return rv.substr(0, rv.find('.') + 2);
+  };
+  
+  _levelinfo_widget->SetText(level->GetName() + "   " + fmt(level->GetTime()) + " (" + fmt(_gamestats->GetTime()) + ")");
 
   _texture_renderer->BeginRender();
   _scene->Draw(*_camera);
@@ -374,7 +386,7 @@ void GameStateGame::SetupLevels()
   bool done = false;
   for(unsigned int i = 0; !done; i++)
     {
-      auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::TYPE_PLANET, i);
+      auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::Type::PLANET, i);
       if(sobj)
         _levels.push_back(new MainLevel(_scene, sobj));
       else

@@ -15,7 +15,7 @@ MainLevel::MainLevel(Scene * scene, const SolarSystemObject * planet)
 {
   _planet_size = planet->GetRelativeSize() * SCALE;
   _planet_position_start = 200.0 + _planet_size * 9.0;
-
+  _name = planet->GetName();
 
   auto end_of_time = _planet_position_start - 2.0 * (10 + 53.0); // 2.0 is the speed of an invader, 53 is distance from invader spawn to player, 10 extra
   

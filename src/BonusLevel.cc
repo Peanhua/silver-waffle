@@ -7,6 +7,8 @@ BonusLevel::BonusLevel(Scene * scene, double enemy_difficulty, double warp_fuel_
 {
   assert(enemy_difficulty == enemy_difficulty);
   assert(warp_fuel_bonus == warp_fuel_bonus);
+
+  _name = "Bonus Level " + std::to_string(enemy_difficulty) + "/" + std::to_string(warp_fuel_bonus);
   
   auto e = new ProgramEntry();
   e->SetStartTime(0.0);

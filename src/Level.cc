@@ -98,3 +98,10 @@ void Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator
         }
     }
 }
+
+
+const std::string & Level::GetName() const
+{
+  return _name;
+}
+
