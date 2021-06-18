@@ -24,7 +24,7 @@ void ObjectProjectile::Tick(double deltatime)
 void ObjectProjectile::Activate(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime)
 {
   assert(!IsAlive());
-  SetHealth(1);
+  Revive(1);
   SetPosition(position);
   SetVelocity(velocity);
   _owner = owner;

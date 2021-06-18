@@ -34,6 +34,7 @@ public:
   virtual void OnDestroyed(Object * destroyer);
   void         SetOnDestroyed(on_destroyed_t callback);
   void         Destroy(Object * destroyer);
+  void         Revive(unsigned int health);
 
   Mesh * GetMesh() const;
   void   SetMesh(Mesh * mesh);

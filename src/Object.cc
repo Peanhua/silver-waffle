@@ -174,6 +174,13 @@ void Object::Destroy(Object * destroyer)
 }
 
 
+void Object::Revive(unsigned int health)
+{
+  _destroyed = false;
+  SetHealth(health);
+}
+
+
 void Object::OnDestroyed(Object * destroyer)
 {
   for(auto callback : _on_destroyed)
