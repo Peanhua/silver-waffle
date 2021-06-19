@@ -220,6 +220,7 @@ void GameStateGame::Tick(double deltatime)
           if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
             {
               _scene->GetPlayer()->SetPosition(glm::vec3(_scene->GetPlayer()->GetPosition().x, 40 - 53, 0));
+              _scene->GetPlayer()->SetOrientation(glm::quat(1, 0, 0, 0));
               ChangeState(State::RUNNING);
             }
         }
