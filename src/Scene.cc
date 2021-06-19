@@ -254,14 +254,7 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
   auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
   invader->SetPosition(position);
   invader->RotateYaw(180.0);
-      
-  auto mesh = AssetLoader->LoadMesh("Invader1");
-  assert(mesh);
-  invader->SetMesh(mesh);
-      
-  invader->AddWeapon();
-
-
+  
   {
     const auto m = GetPlayAreaSize();
     invader->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),

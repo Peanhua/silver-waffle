@@ -17,15 +17,7 @@ MainLevel::MainLevel(Scene * scene, const SolarSystemObject * planet)
   _planet_size = planet->GetRelativeSize() * SCALE;
   _name = planet->GetName();
 
-  auto levelconfig = AssetLoader->LoadJson("Data/Level-" + _name);
-  assert(levelconfig);
-  if(levelconfig)
-    {
-      auto spawns = (*levelconfig)["spawns"];
-      assert(spawns.is_array());
-      for(auto spawn : spawns.array_items())
-        _program.push_back(new ProgramEntry(spawn));
-    }
+  LoadConfig("Data/Level-" + _name);
 
   double len = 0.0;
   for(auto p : _program)

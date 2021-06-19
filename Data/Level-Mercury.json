@@ -30,8 +30,7 @@
             "next":
             {
               "start": 0.0,
-              "stop":  30.0,
-              "interval": -1
+              "stop":  30.0
             }
           }
         }

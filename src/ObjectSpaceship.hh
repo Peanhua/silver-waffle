@@ -20,6 +20,7 @@ public:
   void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
   uint64_t GetCollidesWithChannels() const override;
 
+  void RemoveWeapons();
   unsigned int AddWeapon();
   unsigned int AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
   unsigned int GetWeaponCount() const;

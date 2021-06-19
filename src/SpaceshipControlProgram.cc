@@ -174,7 +174,8 @@ void SCP_ChanceToFire::PTick(double deltatime)
       _cooldown += 0.1;
       double r = static_cast<double>(_random_generator() - _random_generator.min()) / static_cast<double>(_random_generator.max());
       if(r < _chance)
-        _spaceship->FireWeapon(0);
+        for(unsigned int i = 0; i < _spaceship->GetWeaponCount(); i++)
+          _spaceship->FireWeapon(i);
     }
 }
 

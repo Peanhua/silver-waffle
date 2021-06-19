@@ -114,6 +114,15 @@ unsigned int ObjectSpaceship::AddWeapon(const glm::vec3 & location, Mesh * proje
   return static_cast<unsigned int>(_weapons.size());
 }
 
+
+void ObjectSpaceship::RemoveWeapons()
+{
+  for(auto w : _weapons)
+    delete w;
+  _weapons.clear();
+}
+
+
   
 unsigned int ObjectSpaceship::GetWeaponCount() const
 {
@@ -416,8 +425,8 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
     }
   else if(name == "boss")
     {
-      AddControlProgram(new SCP_MoveForward(this, 5, 10));
-      AddControlProgram(new SCP_Delay(this, 999));
+      AddControlProgram(new SCP_MoveForward(this, 5, 5));
+      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
     }
   else
     assert(false);

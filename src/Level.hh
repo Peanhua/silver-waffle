@@ -49,6 +49,7 @@ protected:
     double _invader_spawn_interval;
     std::string _invader_control_program;
     bool   _boss;
+    int    _invader_type;
     unsigned int _bosses_alive;
     ProgramEntry * _next;
   };
@@ -61,6 +62,8 @@ protected:
   double         _time;
 
   std::vector<ProgramEntry *> _program;
+
+  void LoadConfig(const std::string & filename);
 };
 
 #endif

@@ -1,17 +1,16 @@
 {
   "spawns": [
     {
-      "start":  0.0,
-      "stop":  30.0,
-      "interval": 0.5,
-      "invader_type": 0,
+      "start": 10.0,
+      "stop":  15.0,
+      "interval": 0.5001,
+      "invader_type": 1,
       "boss": true,
       "control_program": "boss",
       "next":
       {
         "start": 0.0,
-        "stop":  10.0,
-        "interval": -1
+        "stop":  10.0
       }
     }
   ]

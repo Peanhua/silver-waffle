@@ -2,6 +2,7 @@
 #include "Camera.hh"
 #include "ObjectInvader.hh"
 #include "Scene.hh"
+#include "SubsystemAssetLoader.hh"
 #include <cassert>
 
 
@@ -45,8 +46,9 @@ Level::ProgramEntry::ProgramEntry()
   : _invader_spawn_timer(0),
     _invader_spawn_start_time(0),
     _invader_spawn_stop_time(999999),
-    _invader_spawn_interval(1.0),
+    _invader_spawn_interval(-1),
     _boss(false),
+    _invader_type(0),
     _bosses_alive(0),
     _next(nullptr)
 {
@@ -61,10 +63,10 @@ Level::ProgramEntry::ProgramEntry(const json11::Json & config)
     SetStopTime(config["stop"].number_value());
   if(config["interval"].is_number())
     SetSpawnInterval(config["interval"].number_value());
+  _invader_type = config["invader_type"].int_value();
   if(config["control_program"].is_string())
     SetInvaderControlProgram(config["control_program"].string_value());
-  if(config["boss"].is_bool())
-    _boss = config["boss"].bool_value();
+  _boss = config["boss"].bool_value();
   if(config["next"].is_object())
     SetNext(new ProgramEntry(config["next"]));
 }
@@ -151,6 +153,7 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 &
           const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
           auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
           assert(invader);
+          invader->SetInvaderType(_invader_type);
           if(rand() < 0.2f)
             {
               auto u = invader->GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
@@ -163,6 +166,7 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 &
               _bosses_alive++;
               invader->SetOnDestroyed([this](Object * destroyer)
               {
+                assert(destroyer == destroyer);
                 _bosses_alive--;
               });
             }
@@ -177,3 +181,16 @@ const std::string & Level::GetName() const
   return _name;
 }
 
+
+void Level::LoadConfig(const std::string & filename)
+{
+  auto levelconfig = AssetLoader->LoadJson(filename);
+  assert(levelconfig);
+  if(levelconfig)
+    {
+      auto spawns = (*levelconfig)["spawns"];
+      assert(spawns.is_array());
+      for(auto spawn : spawns.array_items())
+        _program.push_back(new ProgramEntry(spawn));
+    }
+}
