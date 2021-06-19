@@ -21,7 +21,7 @@ bool SubsystemSettings::Start()
   _int_values["screen_height"] = 768;
   
   _bool_values["cheat_no_enemies"] = false;
-  _bool_values["cheat_cheap_upgrades"] = true;
+  _bool_values["cheat_cheap_upgrades"] = false;
   
   return true;
 }
