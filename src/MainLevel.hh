@@ -13,7 +13,6 @@ public:
 
   void   Start()              override;
   bool   IsFinished()   const override;
-  double GetTotalTime() const override;
   
 private:
   const SolarSystemObject * _solar_system_object;

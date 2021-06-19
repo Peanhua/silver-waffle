@@ -15,7 +15,6 @@ MainLevel::MainLevel(Scene * scene, const SolarSystemObject * planet)
     _solar_system_object(planet)
 {
   _planet_size = planet->GetRelativeSize() * SCALE;
-  _planet_position_start = 200.0 + _planet_size * 9.0;
   _name = planet->GetName();
 
   auto levelconfig = AssetLoader->LoadJson("Data/Level-" + _name);
@@ -27,19 +26,23 @@ MainLevel::MainLevel(Scene * scene, const SolarSystemObject * planet)
       for(auto spawn : spawns.array_items())
         _program.push_back(new ProgramEntry(spawn));
     }
+
+  double len = 0.0;
+  for(auto p : _program)
+    if(p)
+      len = std::max(len, p->GetRemainingTime());
+  _planet_position_start = len;
 }
 
 
 bool MainLevel::IsFinished() const
 {
-  return GetTime() > GetTotalTime();
+  for(auto p : _program)
+    if(p)
+      return false;
+  return true;
 }
 
-
-double MainLevel::GetTotalTime() const
-{
-  return 20.0 + _planet_position_start + _planet_size * 0.35;
-}
 
 
 void MainLevel::Start()

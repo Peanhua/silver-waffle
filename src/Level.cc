@@ -105,7 +105,6 @@ double Level::ProgramEntry::GetRemainingTime() const
 }
 
 
-
 Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime)
 {
   if(_invader_spawn_stop_time < 0.0)
@@ -118,26 +117,29 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 &
       return this;
     }
 
-  _invader_spawn_timer += deltatime;
-  if(_invader_spawn_timer > _invader_spawn_interval)
+  if(_invader_spawn_interval > 0.0)
     {
-      _invader_spawn_timer -= _invader_spawn_interval;
-      
-      auto rand = [&random_generator]()
-      {
-        return (static_cast<float>(random_generator()) - static_cast<float>(random_generator.min())) / static_cast<float>(random_generator.max());
-      };
-      
-      const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
-      auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
-      assert(invader);
-      if(rand() < 0.2f)
+      _invader_spawn_timer += deltatime;
+      if(_invader_spawn_timer > _invader_spawn_interval)
         {
-          auto u = invader->GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-          u->Activate(50.0f + 150.0f * rand(), 9999);
+          _invader_spawn_timer -= _invader_spawn_interval;
+          
+          auto rand = [&random_generator]()
+          {
+            return (static_cast<float>(random_generator()) - static_cast<float>(random_generator.min())) / static_cast<float>(random_generator.max());
+          };
+          
+          const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
+          auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
+          assert(invader);
+          if(rand() < 0.2f)
+            {
+              auto u = invader->GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
+              u->Activate(50.0f + 150.0f * rand(), 9999);
+            }
+          if(!_invader_control_program.empty())
+            invader->AddNamedControlProgram(_invader_control_program);
         }
-      if(!_invader_control_program.empty())
-        invader->AddNamedControlProgram(_invader_control_program);
     }
   return this;
 }

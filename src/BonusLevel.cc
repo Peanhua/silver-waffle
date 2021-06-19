@@ -22,9 +22,3 @@ bool BonusLevel::IsFinished() const
 {
   return false;
 }
-
-
-double BonusLevel::GetTotalTime() const
-{
-  return -1;
-}

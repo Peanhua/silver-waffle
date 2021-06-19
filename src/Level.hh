@@ -24,7 +24,6 @@ public:
   virtual void   Tick(double deltatime);
 
   virtual bool   IsFinished()   const = 0;
-  virtual double GetTotalTime() const = 0;
 
   const std::string & GetName() const;
   double GetTime() const;

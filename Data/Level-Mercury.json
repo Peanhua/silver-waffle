@@ -23,24 +23,30 @@
           "next":
           {
             "start": 20.0,
-            "stop":  500.0,
+            "stop":  100.0,
             "interval": 0.5,
             "invader_type": 0,
-            "control_program": "snake-stepping-forward"
+            "control_program": "snake-stepping-forward",
+            "next":
+            {
+              "start": 0.0,
+              "stop":  30.0,
+              "interval": -1
+            }
           }
         }
       }
     },
     {
       "start":  150.0,
-      "stop":  500.0,
+      "stop":  250.0,
       "interval": 0.5,
       "invader_type": 0,
       "control_program": "erratic-forward"
     },
     {
-      "start":  300.0,
-      "stop":  500.0,
+      "start":  200.0,
+      "stop":  250.0,
       "interval": 0.5,
       "invader_type": 0,
       "control_program": "snake-forward"
