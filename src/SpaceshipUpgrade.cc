@@ -52,7 +52,7 @@ void SpaceshipUpgrade::Install()
     case Type::WEAPON_COOLER:
       break;
     case Type::ENGINE_UPGRADE:
-      _spaceship->UpgradeEngines(1.5);
+      _spaceship->UpgradeEngines(1.6);
       break;
     case Type::HULL_UPGRADE:
       {

@@ -50,9 +50,9 @@ void ObjectSpaceship::Tick(double deltatime)
   if(_engines.size() > 0 && !engines_on)
     { // todo: separate controls and use the engines to slow down
       auto engineup = GetUpgrade(SpaceshipUpgrade::Type::ENGINE_UPGRADE);
-      double engine_strength = 0.25 + 2.75 * static_cast<double>(engineup->GetInstallCount()) / static_cast<double>(engineup->GetMaxInstalls());
+      double engine_strength = 0.5 + 1.5 * static_cast<double>(engineup->GetInstallCount()) / static_cast<double>(engineup->GetMaxInstalls());
       const auto vel = GetVelocity();
-      if(std::abs(vel.x) < 0.1f)
+      if(std::abs(vel.x) < 0.2f)
         SetVelocity(glm::vec3(0, vel.y, vel.z));
       else if(vel.x < 0.0f)
         AddImpulse(glm::vec3(engine_strength *  20.0 * deltatime, 0, 0));
