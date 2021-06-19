@@ -1,0 +1,49 @@
+{
+  "spawns": [
+    {
+      "start":  0.0,
+      "stop":  30.0,
+      "interval": 0.5,
+      "invader_type": 0,
+      "control_program": "forward",
+      "next":
+      {
+        "start": 20.0,
+        "stop":  50.0,
+        "interval": 0.5,
+        "invader_type": 0,
+        "control_program": "snake-forward",
+        "next":
+        {
+          "start": 20.0,
+          "stop":  50.0,
+          "interval": 0.5,
+          "invader_type": 0,
+          "control_program": "stepping-forward",
+          "next":
+          {
+            "start": 20.0,
+            "stop":  500.0,
+            "interval": 0.5,
+            "invader_type": 0,
+            "control_program": "snake-stepping-forward"
+          }
+        }
+      }
+    },
+    {
+      "start":  150.0,
+      "stop":  500.0,
+      "interval": 0.5,
+      "invader_type": 0,
+      "control_program": "erratic-forward"
+    },
+    {
+      "start":  300.0,
+      "stop":  500.0,
+      "interval": 0.5,
+      "invader_type": 0,
+      "control_program": "snake-forward"
+    }
+  ]
+}

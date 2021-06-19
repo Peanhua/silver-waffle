@@ -88,7 +88,7 @@ json11::Json * SubsystemAssetLoader::LoadJson(const std::string & filename)
 
   auto json = new json11::Json();
   std::string json_string = LoadText(filename + ".json");
-  if(json_string.size() > 0)
+  if(!json_string.empty())
     {
       std::string err;
       *json = json11::Json::parse(json_string, err);
@@ -101,6 +101,8 @@ json11::Json * SubsystemAssetLoader::LoadJson(const std::string & filename)
           json = nullptr;
         }
     }
+  else
+    std::cout << "Warning, empty json '" << filename << "'." << std::endl;
   _jsons[filename] = json;
 
   return json;

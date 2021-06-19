@@ -11,6 +11,7 @@
 #include "Scene.hh"
 #include "ScoreReel.hh"
 #include "SolarSystemObject.hh"
+#include "SpaceshipControlProgram.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "TextureRenderer.hh"
@@ -179,38 +180,47 @@ void GameStateGame::Tick(double deltatime)
     }
   else if(_state == State::GAMESTATE_TRANSITION)
     {
-      if(_gamestatetransition_timer > 0.0)
-        {
-          _gamestatetransition_timer -= deltatime;
+      _scene->GetPlayer()->Tick(deltatime);
+      _gamestatetransition_timer += deltatime;
 
+      if(_gamestatetransition_new_gamestate)
+        {
           {
-            auto v = 1.0 - _gamestatetransition_timer / 4.0;
+            auto amount = std::clamp(_gamestatetransition_timer - 0.5, 0.0, 1.0);
+            _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
+            double v = 0;
+            if(_gamestatetransition_timer < 2.0)
+              v = std::clamp(1.0 - _gamestatetransition_timer / 2.0, 0.0, 1.0);
             _pausebutton->SetTextColor(glm::vec3(v, v, v));
+            _pausebutton->SetText(_gamestatetransition_text);
+            _pausebutton->SetTextPaddingCentered(true, true);
           }
-          _pausebutton->SetText(_gamestatetransition_text);
-          _pausebutton->SetTextPaddingCentered(true, true);
           
-          if(_gamestatetransition_timer < 0.0)
+          if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
             { // Enter the new gamestate.
               SetChildState(_gamestatetransition_new_gamestate);
               _gamestatetransition_new_gamestate = nullptr;
               _pausebutton->SetText("");
-            }
-          else if(_gamestatetransition_timer < 1.5)
-            {
-              auto amount = std::clamp(1.0 - (_gamestatetransition_timer - 0.5), 0.0, 1.0);
-              _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
+              _gamestatetransition_timer = 0;
+              { // Set resume animation here.
+                auto player = _scene->GetPlayer();
+                
+                auto p = new SCP_Pitch(player, 180, 0.5);
+                player->AddControlProgram(p);
+              }
             }
         }
       else
         { // Resumed from the new gamestate.
-          _gamestatetransition_timer -= deltatime;
-          if(_gamestatetransition_timer < -1.0)
-            ChangeState(State::RUNNING);
-          else
+          if(_gamestatetransition_timer < 0.5)
             {
-              auto amount = std::clamp(1.0 - std::abs(_gamestatetransition_timer), 0.0, 1.0);
+              auto amount = std::clamp(1.0 - _gamestatetransition_timer / 0.5, 0.0, 1.0);
               _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
+            }
+          if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
+            {
+              _scene->GetPlayer()->SetPosition(glm::vec3(_scene->GetPlayer()->GetPosition().x, 40 - 53, 0));
+              ChangeState(State::RUNNING);
             }
         }
     }
@@ -501,11 +511,22 @@ void GameStateGame::ChangeState(State new_state)
         _pausebutton = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(Settings->GetInt("screen_width"), Settings->GetInt("screen_height")));
         _pausebutton->SetImage(AssetLoader->LoadImage("White"));
         _pausebutton->SetImageColor(glm::vec4(0, 0, 0, 0));
-#if 1
         _pausebutton->SetText(_gamestatetransition_text);
         _pausebutton->SetTextPaddingCentered(true, true);
-#endif
         SetModalWidget(_pausebutton);
+
+        _scene->GetPlayer()->ClearControlPrograms();
+
+        {
+          auto player = _scene->GetPlayer();
+          
+          SpaceshipControlProgram * p = new SCP_MoveForward(player, 4, 2.5);
+          player->AddControlProgram(p);
+          
+          p = new SCP_Pitch(_scene->GetPlayer(), -90, 1);
+          player->AddControlProgram(p);
+        }
+        _gamestatetransition_timer = 0.0;
       }
       break;
     }
@@ -529,7 +550,6 @@ Scene * GameStateGame::GetScene() const
 void GameStateGame::TransitionToGameState(GameState * new_gamestate, const std::string & message)
 {
   _gamestatetransition_new_gamestate = new_gamestate;
-  _gamestatetransition_timer = 4.0;
   _gamestatetransition_text = message;
   
   ChangeState(State::GAMESTATE_TRANSITION);

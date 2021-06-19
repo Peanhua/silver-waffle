@@ -132,7 +132,8 @@ void Scene::Draw(const Camera & camera) const
 
 ObjectSpaceship * Scene::CreatePlayer()
 {
-  delete _player;
+  if(_player && _player->IsAlive())
+    _player->Destroy(nullptr);
   
   _player = new ObjectSpaceship(this);
   _player->AddToCollisionChannel(Object::CollisionChannel::PLAYER);
@@ -164,6 +165,7 @@ ObjectSpaceship * Scene::GetPlayer() const
 void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime)
 {
   auto ind = _projectiles.GetNextFreeIndex();
+  assert(ind < _projectiles.size());
   if(ind < _projectiles.size())
     _projectiles[ind]->Activate(owner, position, velocity, damage, lifetime);
 }
@@ -245,6 +247,7 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
     return nullptr;
 
   auto ind = _invaders.GetNextFreeIndex();
+  assert(ind < _invaders.size());
   if(ind >= _invaders.size())
     return nullptr;
   

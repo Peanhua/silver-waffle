@@ -7,6 +7,7 @@
 
 class ObjectCollectible;
 class GameStats;
+class SpaceshipControlProgram;
 
 
 class ObjectSpaceship : public ObjectMovable
@@ -37,6 +38,11 @@ public:
   GameStats * GetOwnerGameStats() const;
 
   void CopyUpgrades(const ObjectSpaceship & source);
+
+  void         ClearControlPrograms();
+  void         AddControlProgram(SpaceshipControlProgram * program);
+  void         AddNamedControlProgram(const std::string & name);
+  unsigned int GetActiveControlProgramCount() const;
   
 private:
   class Engine
@@ -69,6 +75,7 @@ private:
   std::vector<Engine *>  _engines;
   std::vector<Weapon *>  _weapons;
   std::vector<SpaceshipUpgrade *> _upgrades;
+  std::vector<SpaceshipControlProgram *> _control_programs;
 };
 
 #endif

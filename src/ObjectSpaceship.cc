@@ -4,6 +4,7 @@
 #include "ObjectBonusLevelEntrance.hh"
 #include "ObjectCollectible.hh"
 #include "ShaderProgram.hh"
+#include "SpaceshipControlProgram.hh"
 #include "SubsystemAssetLoader.hh"
 
 
@@ -34,6 +35,10 @@ void ObjectSpaceship::Tick(double deltatime)
 {
   ObjectMovable::Tick(deltatime);
 
+  for(unsigned int i = 0; i < _control_programs.size(); i++)
+    if(_control_programs[i])
+      _control_programs[i] = _control_programs[i]->Tick(deltatime);
+  
   bool engines_on = false;
   for(auto engine : _engines)
     if(engine->_throttle > 0.01)
@@ -282,5 +287,134 @@ uint64_t ObjectSpaceship::GetCollidesWithChannels() const
     rv = ObjectMovable::GetCollidesWithChannels();
 
   return rv;
+}
+
+
+void ObjectSpaceship::ClearControlPrograms()
+{
+  _control_programs.clear();
+}
+
+
+void ObjectSpaceship::AddControlProgram(SpaceshipControlProgram * program)
+{
+  _control_programs.push_back(program);
+}
+
+
+unsigned int ObjectSpaceship::GetActiveControlProgramCount() const
+{
+  unsigned int count = 0;
+  for(auto p : _control_programs)
+    if(p)
+      count++;
+  
+  return count;
+}
+
+
+
+
+void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
+{
+  if(name == "test1")
+    {
+      SpaceshipControlProgram * p = new SCP_MoveForward(this, 2, 5);
+      AddControlProgram(p);
+
+      for(int i = 0; i < 10; i++)
+        {
+          SpaceshipControlProgram * pp = new SCP_Delay(this, 5);
+          p->SetNext(pp);
+
+          p = new SCP_MoveForward(this, 2, 5);
+          pp->SetNext(p);
+        }
+
+
+      p = new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 9999);
+      AddControlProgram(p);
+    }
+  else if(name == "test2")
+    {
+      SpaceshipControlProgram * p = new SCP_MoveForward(this, 2, 500);
+      AddControlProgram(p);
+      p = new SCP_MoveSidewaysSin(this, 1.0, 5.0, 9999);
+      AddControlProgram(p);
+    }
+  else if(name == "passive-forward")
+    {
+      AddControlProgram(new SCP_MoveForward(this, 2, 999));
+    }
+  else if(name == "forward")
+    {
+      AddControlProgram(new SCP_MoveForward(this, 2, 999));
+      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+    }
+  else if(name == "snake-forward")
+    {
+      AddControlProgram(new SCP_MoveForward(this, 2, 999));
+      AddControlProgram(new SCP_MoveSidewaysSin(this, 1.5, 1.5, 999));
+      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+    }
+  else if(name == "erratic-forward")
+    {
+      SpaceshipControlProgram * p = new SCP_MoveForward(this, 1, 999);
+      AddControlProgram(p);
+
+      p = new SCP_MoveForward(this, 1, 1);
+      AddControlProgram(p);
+      for(int i = 0; i < 100; i++)
+        {
+          SpaceshipControlProgram * pp = new SCP_MoveRight(this, 1, 1);
+          p->SetNext(pp);
+          p = pp;
+          
+          pp = new SCP_MoveRight(this, -2, 1);
+          p->SetNext(pp);
+          p = pp;
+          
+          pp = new SCP_MoveRight(this, 1, 1);
+          p->SetNext(pp);
+          p = pp;
+        }
+
+      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+    }
+  else if(name == "stepping-forward")
+    {
+      SpaceshipControlProgram * p = new SCP_MoveForward(this, 2, 5);
+      AddControlProgram(p);
+
+      for(int i = 0; i < 10; i++)
+        {
+          SpaceshipControlProgram * pp = new SCP_Delay(this, 5);
+          p->SetNext(pp);
+
+          p = new SCP_MoveForward(this, 2, 5);
+          pp->SetNext(p);
+        }
+
+      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+    }
+  else if(name == "snake-stepping-forward")
+    {
+      SpaceshipControlProgram * p = new SCP_MoveForward(this, 2, 5);
+      AddControlProgram(p);
+
+      for(int i = 0; i < 10; i++)
+        {
+          SpaceshipControlProgram * pp = new SCP_Delay(this, 5);
+          p->SetNext(pp);
+
+          p = new SCP_MoveForward(this, 2, 5);
+          pp->SetNext(p);
+        }
+      AddControlProgram(new SCP_MoveSidewaysSin(this, 1.0, 5.0, 999));
+
+      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+    }
+  else
+    assert(false);
 }
 

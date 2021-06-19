@@ -53,6 +53,7 @@ silverwaffle_SOURCES =				\
 	ShaderProgram.cc			\
 	SolarSystemObject.cc			\
 	SpaceParticles.cc			\
+	SpaceshipControlProgram.cc		\
 	SpaceshipUpgrade.cc			\
 	Subsystem.cc				\
 	SubsystemAssetLoader.cc			\

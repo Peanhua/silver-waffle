@@ -1,0 +1,11 @@
+{
+  "spawns": [
+    {
+      "start":  0.0,
+      "stop":  30.0,
+      "interval": 0.5,
+      "invader_type": 0,
+      "control_program": "snake-forward"
+    }
+  ]
+}

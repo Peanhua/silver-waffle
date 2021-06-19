@@ -5,6 +5,7 @@
 #include <random>
 #include <string>
 #include <vector>
+#include <json11.hpp>
 
 class Camera;
 class Image;
@@ -33,17 +34,23 @@ protected:
   {
   public:
     ProgramEntry();
+    ProgramEntry(const json11::Json & config);
 
     void SetStartTime(double time);
     void SetStopTime(double time);
     void SetSpawnInterval(double interval);
-    void Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime);
+    void SetInvaderControlProgram(const std::string & program_name);
+    ProgramEntry * Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime);
+    void SetNext(ProgramEntry * next);
+    double GetRemainingTime() const;
     
   private:
     double _invader_spawn_timer;
     double _invader_spawn_start_time;
     double _invader_spawn_stop_time;
     double _invader_spawn_interval;
+    std::string _invader_control_program;
+    ProgramEntry * _next;
   };
   
   Scene * _scene;
