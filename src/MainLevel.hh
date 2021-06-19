@@ -10,9 +10,7 @@ class MainLevel : public Level
 {
 public:
   MainLevel(Scene * scene, const SolarSystemObject * planet);
-
-  void   Start()              override;
-  bool   IsFinished()   const override;
+  void Start() override;
   
 private:
   const SolarSystemObject * _solar_system_object;

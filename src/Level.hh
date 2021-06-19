@@ -23,10 +23,9 @@ public:
   virtual void   Start();
   virtual void   Tick(double deltatime);
 
-  virtual bool   IsFinished()   const = 0;
-
-  const std::string & GetName() const;
-  double GetTime() const;
+  bool                IsFinished() const;
+  const std::string & GetName()    const;
+  double              GetTime()    const;
   
 protected:
   class ProgramEntry
@@ -49,6 +48,8 @@ protected:
     double _invader_spawn_stop_time;
     double _invader_spawn_interval;
     std::string _invader_control_program;
+    bool   _boss;
+    unsigned int _bosses_alive;
     ProgramEntry * _next;
   };
   

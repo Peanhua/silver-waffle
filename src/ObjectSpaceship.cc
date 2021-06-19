@@ -414,6 +414,11 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
 
       AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
     }
+  else if(name == "boss")
+    {
+      AddControlProgram(new SCP_MoveForward(this, 5, 10));
+      AddControlProgram(new SCP_Delay(this, 999));
+    }
   else
     assert(false);
 }

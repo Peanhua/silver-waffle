@@ -35,16 +35,6 @@ MainLevel::MainLevel(Scene * scene, const SolarSystemObject * planet)
 }
 
 
-bool MainLevel::IsFinished() const
-{
-  for(auto p : _program)
-    if(p)
-      return false;
-  return true;
-}
-
-
-
 void MainLevel::Start()
 {
   Level::Start();

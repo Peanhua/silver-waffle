@@ -46,6 +46,8 @@ Level::ProgramEntry::ProgramEntry()
     _invader_spawn_start_time(0),
     _invader_spawn_stop_time(999999),
     _invader_spawn_interval(1.0),
+    _boss(false),
+    _bosses_alive(0),
     _next(nullptr)
 {
 }
@@ -61,6 +63,8 @@ Level::ProgramEntry::ProgramEntry(const json11::Json & config)
     SetSpawnInterval(config["interval"].number_value());
   if(config["control_program"].is_string())
     SetInvaderControlProgram(config["control_program"].string_value());
+  if(config["boss"].is_bool())
+    _boss = config["boss"].bool_value();
   if(config["next"].is_object())
     SetNext(new ProgramEntry(config["next"]));
 }
@@ -105,10 +109,25 @@ double Level::ProgramEntry::GetRemainingTime() const
 }
 
 
+bool Level::IsFinished() const
+{
+  for(auto p : _program)
+    if(p)
+      return false;
+  return true;
+}
+
+
+
 Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime)
 {
   if(_invader_spawn_stop_time < 0.0)
-      return _next;
+    {
+      if(_bosses_alive > 0)
+        return this;
+      else
+        return _next;
+    }
   _invader_spawn_stop_time -= deltatime;
   
   if(_invader_spawn_start_time > 0.0)
@@ -139,6 +158,14 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 &
             }
           if(!_invader_control_program.empty())
             invader->AddNamedControlProgram(_invader_control_program);
+          if(_boss)
+            {
+              _bosses_alive++;
+              invader->SetOnDestroyed([this](Object * destroyer)
+              {
+                _bosses_alive--;
+              });
+            }
         }
     }
   return this;

@@ -1,4 +1,5 @@
 #include "BonusLevel.hh"
+#include "SubsystemAssetLoader.hh"
 #include <cassert>
 
 
@@ -10,15 +11,13 @@ BonusLevel::BonusLevel(Scene * scene, double enemy_difficulty, double warp_fuel_
 
   _name = "Bonus Level " + std::to_string(enemy_difficulty) + "/" + std::to_string(warp_fuel_bonus);
   
-  auto e = new ProgramEntry();
-  e->SetStartTime(0.0);
-  e->SetStopTime(30.0);
-  e->SetSpawnInterval(0.5);
-  _program.push_back(e);
-}
-
-
-bool BonusLevel::IsFinished() const
-{
-  return false;
+  auto levelconfig = AssetLoader->LoadJson("Data/Level-Bonus");
+  assert(levelconfig);
+  if(levelconfig)
+    {
+      auto spawns = (*levelconfig)["spawns"];
+      assert(spawns.is_array());
+      for(auto spawn : spawns.array_items())
+        _program.push_back(new ProgramEntry(spawn));
+    }
 }
