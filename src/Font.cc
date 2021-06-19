@@ -165,7 +165,6 @@ void Font::Render(const std::string & text, Mesh & mesh, float size) const
 
 void Font::Render(const glm::vec3 & position, const std::string & text, Mesh & mesh, float size) const
 {
-  assert(text.length() < 256);
   assert(mesh.GetPrimitiveType() == GL_TRIANGLES);
   assert(mesh.GetShaderProgram() == AssetLoader->LoadShaderProgram("Font"));
 
@@ -179,6 +178,11 @@ void Font::Render(const glm::vec3 & position, const std::string & text, Mesh & m
       ch = static_cast<unsigned int>(text[i]);
       if(ch == ' ')
         pos.x += height / 3.0f;
+      else if(ch == '\n')
+        {
+          pos.x = position.x;
+          pos.y += static_cast<float>(GetHeight());
+        }
       else if(ch >= '!' && ch <= '~')
         {
           ch -= '!';

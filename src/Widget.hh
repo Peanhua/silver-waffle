@@ -31,7 +31,7 @@ public:
   Image * GetImage() const;
 
   Font * GetFont() const;
-  void   SetText(const std::string & text);
+  virtual void SetText(const std::string & text);
   void   SetTextFont(Font * font);
   void   SetTextColor(const glm::vec3 & color);
   void   SetTextFontWeight(float weight);

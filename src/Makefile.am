@@ -71,6 +71,7 @@ silverwaffle_SOURCES =				\
 	WidgetSpaceshipMaintenance.cc		\
 	WidgetSpaceshipStatus.cc		\
 	WidgetSpaceshipUpgradeStatus.cc		\
+	WidgetTeletyper.cc			\
 	WidgetWeaponStatus.cc			\
 	WidgetUpgradeMaterial.cc		\
 	WormholeWall.cc				\

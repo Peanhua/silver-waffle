@@ -8,6 +8,7 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "WidgetButton.hh"
+#include "WidgetTeletyper.hh"
 #include <iostream>
 #include <GL/glew.h>
 
@@ -63,40 +64,67 @@ GameStateTitle::GameStateTitle()
   assert(root);
   SetRootWidget(root);
 
-  int bw = 150;
-  int bh = 60;
-  
-  auto w = new WidgetButton(root, glm::ivec2((width - bw) / 2, height - bh * 4), glm::ivec2(bw, bh));
-  w->SetTextFont(AssetLoader->LoadFont(30));
-  w->SetText("Play");
-  w->SetTextColor(glm::vec3(0.5, 1.0, 0.5));
-  w->SetTextPaddingCentered(true, true);
-  w->SetTextFontWeight(0.5f);
-  w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
   {
-    assert(button == button);
-    assert(position == position);
-    if(!pressed)
-      {
-        auto s = new GameStateGame(nullptr);
-        s->SetupLevels();
-        SetChildState(s);
-      }
-  });
+    int bw = 650;
+    int bh = 250;
   
-  w = new WidgetButton(root, glm::ivec2((width - bw) / 2, height - bh * 2), glm::ivec2(bw, bh));
-  w->SetTextFont(AssetLoader->LoadFont(30));
-  w->SetText("Quit");
-  w->SetTextColor(glm::vec3(1.0, 0.5, 0.5));
-  w->SetTextPaddingCentered(true, true);
-  w->SetTextFontWeight(0.5f);
-  w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+    auto w = new WidgetTeletyper(root, glm::ivec2((width - bw) / 2, (height - bh) / 5), glm::ivec2(bw, bh));
+    w->SetImage("PanelBorders");
+    w->SetImageColor(glm::vec4(0, 1, 0, 1));
+    w->SetTextFont(AssetLoader->LoadFont(14));
+    w->SetCharactersPerSecond(5);
+    w->SetText(R"(Planet Earth, year 3052.          
+  Urgent message from:
+    The headquarters of the United Dystopia of the Earth
+   
+  Evil alien invaders are attacking the Earth.
+   
+  Your mission is to destroy their mothership,
+  located behind the Neptune.
+   
+  Good luck.
+)");
+    w->SetTextColor(glm::vec3(0, 1, 0));
+    w->SetTextPadding(glm::vec2(10, 2));
+    w->SetIsFocusable(false);
+  }
+  
   {
-    assert(button == button);
-    assert(position == position);
-    if(!pressed)
-      Quit();
-  });
+    int bw = 150;
+    int bh = 60;
+  
+    auto w = new WidgetButton(root, glm::ivec2((width - bw) / 2, height - bh * 4), glm::ivec2(bw, bh));
+    w->SetTextFont(AssetLoader->LoadFont(30));
+    w->SetText("Play");
+    w->SetTextColor(glm::vec3(0.5, 1.0, 0.5));
+    w->SetTextPaddingCentered(true, true);
+    w->SetTextFontWeight(0.5f);
+    w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+    {
+      assert(button == button);
+      assert(position == position);
+      if(!pressed)
+        {
+          auto s = new GameStateGame(nullptr);
+          s->SetupLevels();
+          SetChildState(s);
+        }
+    });
+  
+    w = new WidgetButton(root, glm::ivec2((width - bw) / 2, height - bh * 2), glm::ivec2(bw, bh));
+    w->SetTextFont(AssetLoader->LoadFont(30));
+    w->SetText("Quit");
+    w->SetTextColor(glm::vec3(1.0, 0.5, 0.5));
+    w->SetTextPaddingCentered(true, true);
+    w->SetTextFontWeight(0.5f);
+    w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+    {
+      assert(button == button);
+      assert(position == position);
+      if(!pressed)
+        Quit();
+    });
+  }
 }
 
 
