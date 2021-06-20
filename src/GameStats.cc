@@ -5,6 +5,7 @@
 
 GameStats::GameStats()
   : _lives(3),
+    _time(0),
     _score(0),
     _score_multiplier(1),
     _score_multiplier_timer(0)
