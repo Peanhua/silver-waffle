@@ -12,7 +12,7 @@ public:
   void Tick(double deltatime) override;
   void SetText(const std::string & text) override;
   void SetCharactersPerSecond(double characters_per_second);
-  bool TimeFinished() const;
+  double GetTime() const; // negative when still typing, positive after typing has finished
 
 private:
   std::string  _teletypertext;

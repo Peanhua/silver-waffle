@@ -74,7 +74,7 @@ GameStateTitle::GameStateTitle()
     w->SetImage("PanelBorders");
     w->SetImageColor(glm::vec4(0, 1, 0, 1));
     w->SetTextFont(AssetLoader->LoadFont(14));
-    w->SetCharactersPerSecond(5);
+    w->SetCharactersPerSecond(12);
     w->SetTextColor(glm::vec3(0, 1, 0));
     w->SetTextPadding(glm::vec2(10, 2));
     w->SetIsFocusable(false);
@@ -148,111 +148,14 @@ void GameStateTitle::Tick(double deltatime)
 
 void GameStateTitle::TickPlot()
 {
-  switch(_plot_phase)
+  if(_teletyper->GetTime() > 5.0)
     {
-    case 0:
-      _teletyper->SetText(R"(  
-  
-  
-  
-  
-                 Mission:  S I L V E R   W A F F L E  
-  
-  
-  
-  
-UD of the Earth, doc.#3052/9387591-0)");
-      _time = 0.0;
-      _plot_phase++;
-      break;
-      
-    case 1:
-      if(_time > 30.0)
-        {
-          _teletyper->SetText(R"(Planet Earth, year 3052.          
-  Urgent message from:
-    The headquarters of the United Dystopia of the Earth
-   
-  "Evil alien invaders are attacking the Earth.
-   
-   Your mission is to destroy their mothership,
-   located behind the Neptune.
-   
-   Good luck."
-)");
-          _time = 0.0;
-          _plot_phase++;
-        }
-      break;
-      
-    case 2:
-      if(_time > 70.0)
-        {
-          _teletyper->SetText(R"(  Background analysis:
-    The evil alien invaders have built a wormhole,
-    creating a bridge from Neptune to Mercury.
-  
-  You are to infiltrate this wormhole from the rear,
-  and penetrate their defenses before it's too late.
-   
-  Kill all enemies on your way to blast the evil
-  alien mothership into a number of smaller objects.
-  
-  The UD of the Earth is counting on you.)");
-          _time = 0.0;
-          _plot_phase++;
-        }
-      break;
-      
-    case 3:
-      if(_time > 90.0)
-        {
-          _teletyper->SetText(R"(  The high priest Do Stypia from the HQ of UDOTE
-  has sent you a personal message:
-  
-  "As you very well know, the fate of our beautiful
-   Earth, and within it our precious UD of the Earth,
-   is in the hands of this mission.
-  
-   The council of UD will reward generously to whoever
-   is able to bring the justice and slay down our enemy.
-  ")");
-          _time = 0.0;
-          _plot_phase++;
-        }
-      break;
+      auto plot = AssetLoader->LoadText("Data/Plot-Title-" + std::to_string(_plot_phase) + ".txt");
+      _teletyper->SetText(plot.substr(0, plot.length() - 1));
 
-    case 4:
-      if(_time > 90.0)
-        {
-          _teletyper->SetText(" ");
-          _time = 0.0;
-          _plot_phase++;
-        }
-      break;
-
-    case 5:
-      if(_time > 10.0)
-        {
-          _teletyper->SetText(R"(Important special mes\"#$888888"
--------\
-       *****_*_*_*_*
-#       #    #  # #
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
-)");
-          _time = 0.0;
-          _plot_phase++;
-        }
-      break;
-      
-    case 6:
-      if(_time > 30.0)
-        {
-          _time = 0.0;
-          _plot_phase = 0;
-        }
-      break;
+      if(plot.empty())
+        _plot_phase = 0;
+      else
+        _plot_phase++;
     }
 }

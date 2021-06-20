@@ -58,6 +58,8 @@ const std::string & SubsystemAssetLoader::LoadText(const std::string & filename)
       else
         std::cerr << "Failed to read '" << filename << "'" << std::endl;
     }
+  else
+    std::cout << "Warning, file '" << filename << "' not found error.\n";
 
   static std::string nothing;
   return nothing;
