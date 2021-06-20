@@ -1,5 +1,6 @@
 #include "ObjectInvader.hh"
 #include "GameStats.hh"
+#include "Loot.hh"
 #include "ObjectCollectible.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
@@ -67,75 +68,42 @@ void ObjectInvader::OnDestroyed(Object * destroyer)
       assert(gamestats);
       gamestats->AddScore(1);
           
-      SpawnRandomCollectible();
+      SpawnRandomCollectibles();
     }
 
   ObjectMovable::OnDestroyed(destroyer);
 }
 
 
-void ObjectInvader::SpawnRandomCollectible()
+void ObjectInvader::SpawnRandomCollectibles()
 {
-  ObjectCollectible::Type bonustype = ObjectCollectible::Type::TYPE_NONE;
-  double bonus;
-  bool dorandomrotation = false;
-
   auto rand = [this] { return static_cast<double>(_random_generator() - _random_generator.min()) / static_cast<double>(_random_generator.max()); };
-  
-  double r = rand();
-  if(r < 0.10)
-    {
-      bonustype = ObjectCollectible::Type::TYPE_SCORE_BONUS;
-      bonus = 5.0 + rand() * 5.0;
-      dorandomrotation = true;
-    }
-  else if(r < 0.15)
-    {
-      bonustype = ObjectCollectible::Type::TYPE_DAMAGE_MULTIPLIER;
-      bonus = 2.0;
-    }
-  else if(r < 0.20)
-    {
-      bonustype = ObjectCollectible::Type::TYPE_SCORE_MULTIPLIER;
-      bonus = 2.0;
-    }
-  else if(r < 0.30)
-    {
-      bonustype = ObjectCollectible::Type::TYPE_SHIELD;
-      bonus = 100.0;
-    }
-  else if(r < 0.50)
-    {
-      bonustype = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_ATTACK;
-      bonus = 1.0;
-      dorandomrotation = true;
-    }
-  else if(r < 0.70)
-    {
-      bonustype = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_DEFENSE;
-      bonus = 1.0;
-      dorandomrotation = true;
-    }
-  else if(r < 0.90)
-    {
-      bonustype = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_PHYSICAL;
-      bonus = 1.0;
-      dorandomrotation = true;
-    }
 
-  if(bonustype != ObjectCollectible::Type::TYPE_NONE)
+  for(auto loot : _lootset)
     {
-      auto c = AssetLoader->LoadObjectCollectible(bonustype);
-      assert(c);
-      auto coll = new ObjectCollectible(*c);
-      coll->SetBonus(bonustype, bonus);
-      GetScene()->AddCollectible(coll, GetPosition(), glm::vec3(0, -5, 0));
-      if(dorandomrotation)
+      auto item = loot->CreateLootItem(rand(), rand());
+      if(item)
         {
-          auto rotangle = glm::normalize(glm::vec3(rand() * 2.0 - 1.0,
-                                                   rand() * 2.0 - 1.0,
-                                                   rand() * 2.0 - 1.0));
-          coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + rand() * 10.0);
+          auto c = AssetLoader->LoadObjectCollectible(item->_type);
+          assert(c);
+          auto coll = new ObjectCollectible(*c);
+          coll->SetBonus(item->_type, item->_bonus);
+          GetScene()->AddCollectible(coll,
+                                     GetPosition() + 1.0f * glm::vec3(rand() - 0.5, rand() - 0.5, rand() - 0.5),
+                                     glm::vec3(0, -5, 0));
+
+          switch(item->_type)
+            {
+            case ObjectCollectible::Type::TYPE_SCORE_BONUS:
+            case ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_ATTACK:
+            case ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_DEFENSE:
+            case ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_PHYSICAL:
+              auto rotangle = glm::normalize(glm::vec3(rand() * 2.0 - 1.0,
+                                                       rand() * 2.0 - 1.0,
+                                                       rand() * 2.0 - 1.0));
+              coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + rand() * 10.0);
+              break;
+            }
         }
     }
 }
@@ -156,6 +124,10 @@ void ObjectInvader::SetInvaderType(int type)
 
         SetMaxHealth(100.0);
         _disable_hit_impulse = false;
+
+        auto lootjson = AssetLoader->LoadJson("Data/Loot-Invader1");
+        _lootset.clear();
+        _lootset.push_back(new Loot(lootjson));
       }
       break;
     case 1:
@@ -171,6 +143,12 @@ void ObjectInvader::SetInvaderType(int type)
 
         SetMaxHealth(500.0);
         _disable_hit_impulse = true;
+
+        auto lootjson = AssetLoader->LoadJson("Data/Loot-Boss1");
+        _lootset.clear();
+        _lootset.push_back(new Loot(lootjson));
+        _lootset.push_back(new Loot(lootjson));
+        _lootset.push_back(new Loot(lootjson));
       }
       break;
     }

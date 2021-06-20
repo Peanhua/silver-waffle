@@ -1,0 +1,47 @@
+{
+  "definitions":
+  [
+    {
+      "type":          "SCORE_BONUS",
+      "random_chance": 0.10,
+      "bonus_min":     5.00,
+      "bonus_max":    10.00
+    },
+    {
+      "type":          "DAMAGE_MULTIPLIER",
+      "random_chance": 0.05,
+      "bonus_min":     2.00,
+      "bonus_max":     2.00
+    },
+    {
+      "type":          "SCORE_MULTIPLIER",
+      "random_chance": 0.05,
+      "bonus_min":     2.00,
+      "bonus_max":     2.00
+    },
+    {
+      "type":          "SHIELD",
+      "random_chance": 0.10,
+      "bonus_min":   100.00,
+      "bonus_max":   100.00
+    },
+    {
+      "type":          "UPGRADEMATERIAL_ATTACK",
+      "random_chance": 0.20,
+      "bonus_min":     1.00,
+      "bonus_max":     1.00
+    },
+    {
+      "type":          "UPGRADEMATERIAL_DEFENSE",
+      "random_chance": 0.20,
+      "bonus_min":     1.00,
+      "bonus_max":     1.00
+    },
+    {
+      "type":          "UPGRADEMATERIAL_PHYSICAL",
+      "random_chance": 0.20,
+      "bonus_min":     1.00,
+      "bonus_max":     1.00
+    }
+  ]
+}

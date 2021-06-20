@@ -4,6 +4,9 @@
 #include "ObjectSpaceship.hh"
 #include <random>
 
+class Loot;
+
+
 class ObjectInvader : public ObjectSpaceship
 {
 public:
@@ -19,8 +22,9 @@ private:
   double          _time_to_think;
   double          _next_thinking;
   bool            _disable_hit_impulse;
+  std::vector<Loot *> _lootset;
 
-  void SpawnRandomCollectible();
+  void SpawnRandomCollectibles();
 };
 
 #endif

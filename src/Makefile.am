@@ -33,6 +33,7 @@ silverwaffle_SOURCES =				\
 	GaussianBlur.cc				\
 	Image.cc				\
 	Level.cc				\
+	Loot.cc					\
 	MainLevel.cc				\
 	Mesh.cc					\
 	Mesh_LoadFromFile.cc			\
