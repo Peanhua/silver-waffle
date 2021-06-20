@@ -8,6 +8,7 @@ class Camera;
 class Milkyway;
 class Object;
 class SpaceParticles;
+class WidgetTeletyper;
 
 
 class GameStateTitle : public GameState
@@ -16,12 +17,16 @@ public:
   GameStateTitle();
 
   void Tick(double deltatime) override;
+  void TickPlot();
   
 private:
+  double           _time;
   Milkyway *       _milkyway;
   SpaceParticles * _particles;
   Camera *         _camera;
   std::vector<Object *> _planets;
+  WidgetTeletyper * _teletyper;
+  unsigned int      _plot_phase;
 };
 
 #endif

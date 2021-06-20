@@ -12,12 +12,14 @@ public:
   void Tick(double deltatime) override;
   void SetText(const std::string & text) override;
   void SetCharactersPerSecond(double characters_per_second);
+  bool TimeFinished() const;
 
 private:
   std::string  _teletypertext;
   double       _characters_per_second;
   unsigned int _cursor_position;
   double       _timer;
+  double       _time_finished;
 };
 
 #endif

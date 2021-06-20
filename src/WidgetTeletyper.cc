@@ -13,6 +13,8 @@ WidgetTeletyper::WidgetTeletyper(Widget * parent, const glm::ivec2 & position, c
 void WidgetTeletyper::SetText(const std::string & text)
 {
   _teletypertext = text;
+  _cursor_position = 0;
+  _timer = 0;
 }
 
 
