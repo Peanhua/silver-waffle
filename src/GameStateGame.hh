@@ -81,6 +81,9 @@ private:
   void ChangeState(State new_state);
   void OnPlayerDies();
   void NextLifeOrQuit();
+
+  void OpenSpaceshipMaintenanceUI();
+  void OpenPauseUI();
 };
 
 #endif

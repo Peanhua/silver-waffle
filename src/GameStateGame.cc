@@ -287,11 +287,11 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
     {
     case SDLK_ESCAPE:
       if(!pressed)
-        Quit();
+        OpenPauseUI();
       break;
     case SDLK_TAB:
       if(!pressed)
-        ChangeState(State::FULL_PAUSE);
+        OpenSpaceshipMaintenanceUI();
       break;
 #if 0
     case SDLK_LEFT:
@@ -488,22 +488,6 @@ void GameStateGame::ChangeState(State new_state)
       break;
       
     case State::FULL_PAUSE:
-      {
-        const auto width = Settings->GetInt("screen_width");
-        const auto height = Settings->GetInt("screen_height");
-        const glm::ivec2 panelsize(600, 500);
-
-        auto panelbackground = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(width, height));
-        panelbackground->SetImage("White");
-        panelbackground->SetImageColor(glm::vec4(0, 0, 0, 0.5));
-        
-        new WidgetSpaceshipMaintenance(panelbackground, glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(), _gamestats);
-
-
-        assert(!_pausebutton);
-        _pausebutton = panelbackground;
-        SetModalWidget(_pausebutton);
-      }
       break;
 
     case State::GAMESTATE_TRANSITION:
@@ -556,3 +540,86 @@ void GameStateGame::TransitionToGameState(GameState * new_gamestate, const std::
   ChangeState(State::GAMESTATE_TRANSITION);
 }
 
+
+void GameStateGame::OpenSpaceshipMaintenanceUI()
+{
+  ChangeState(State::FULL_PAUSE);
+
+  const auto width = Settings->GetInt("screen_width");
+  const auto height = Settings->GetInt("screen_height");
+  const glm::ivec2 panelsize(600, 500);
+  
+  auto panelbackground = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(width, height));
+  panelbackground->SetImage("White");
+  panelbackground->SetImageColor(glm::vec4(0, 0, 0, 0.5));
+  
+  new WidgetSpaceshipMaintenance(panelbackground, glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(), _gamestats);
+  
+  assert(!_pausebutton);
+  _pausebutton = panelbackground;
+  SetModalWidget(_pausebutton);
+}
+
+
+void GameStateGame::OpenPauseUI()
+{
+  ChangeState(State::FULL_PAUSE);
+
+  const auto width = Settings->GetInt("screen_width");
+  const auto height = Settings->GetInt("screen_height");
+  
+  auto panelbackground = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(width, height));
+  panelbackground->SetImage("White");
+  panelbackground->SetImageColor(glm::vec4(0, 0, 0, 0.5));
+  panelbackground->SetIsFocusable(false);
+  
+  auto panel = panelbackground;
+  
+  glm::ivec2 siz(300, 75);
+  glm::ivec2 pos((width - siz.x) / 2, (height - 3 * (siz.y + 10)) / 2);
+  
+  auto bcont = new WidgetButton(panel, pos, siz);
+  bcont->SetText("Continue");
+  bcont->SetTextPaddingCentered(true, true);
+  bcont->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+  {
+    assert(button == button);
+    assert(position == position);
+    if(!pressed)
+      ChangeState(State::RUNNING);
+  });
+  pos.y += siz.y + 10;
+
+  auto bquit = new WidgetButton(panel, pos, siz);
+  bquit->SetText("Quit game");
+  bquit->SetTextPaddingCentered(true, true);
+  bquit->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+  {
+    assert(button == button);
+    assert(position == position);
+    if(!pressed)
+      Quit();
+  });
+  pos.y += siz.y + 10;
+
+  auto bexit = new WidgetButton(panel, pos, siz);
+  bexit->SetText("Exit to desktop");
+  bexit->SetTextPaddingCentered(true, true);
+  bexit->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+  {
+    assert(button == button);
+    assert(position == position);
+    if(!pressed)
+      {
+        SDL_Event e;
+        e.quit.type = SDL_QUIT;
+        e.quit.timestamp = SDL_GetTicks();
+        SDL_PushEvent(&e);
+      }
+  });
+  pos.y += siz.y + 10;
+  
+  assert(!_pausebutton);
+  _pausebutton = panelbackground;
+  SetModalWidget(_pausebutton);
+}
