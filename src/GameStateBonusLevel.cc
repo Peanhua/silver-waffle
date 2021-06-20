@@ -36,4 +36,7 @@ void GameStateBonusLevel::OnQuit()
   mainplr->CopyUpgrades(*myplr);
   mainplr->SetHealth(myplr->GetHealth());
   _mainlevel->OnLivesUpdated();
+
+  if(_mainlevel->GetGameStats()->GetLives() == 0)
+    _mainlevel->Quit();
 }
