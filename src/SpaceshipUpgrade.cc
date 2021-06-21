@@ -67,7 +67,7 @@ void SpaceshipUpgrade::Install()
     case Type::REPAIR_DROID:
       break;
     case Type::WARP_ENGINE:
-      _value = 5.0;
+      _value = 10.0;
       _timer += 30.0;
       _timer_max += 5.0 * 60.0;
       break;
@@ -244,7 +244,8 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
       break;
     case Type::SHIELD:
       if(collectible->HasBonus(ObjectCollectible::Type::SHIELD))
-        Activate(std::max(_value, collectible->GetBonus(ObjectCollectible::Type::SHIELD)), 30.0);
+        Activate(std::clamp(std::max(_value, collectible->GetBonus(ObjectCollectible::Type::SHIELD)), 0.0, _spaceship->GetMaxHealth()),
+                 30.0);
       break;
     case Type::WARP_ENGINE:
       if(GetInstallCount() > 0)
@@ -299,8 +300,8 @@ void SpaceshipUpgrade::Activate(double value, double time)
     {
       _timer = time;
       _timer_max = time;
+      _cooldown = 30.0;
     }
-  _cooldown = 30.0;
 }
 
 void SpaceshipUpgrade::Activate(double time)

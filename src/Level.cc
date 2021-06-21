@@ -167,13 +167,9 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 &
               auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
               assert(invader);
               invader->SetInvaderType(_invader_type);
-              if(rand() < 0.2f)
-                {
-                  auto u = invader->GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-                  u->Activate(50.0f + 150.0f * rand(), 9999);
-                }
               if(!_invader_control_program.empty())
                 invader->AddNamedControlProgram(_invader_control_program);
+
               if(_boss)
                 {
                   _bosses_alive++;

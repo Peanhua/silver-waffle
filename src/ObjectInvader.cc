@@ -119,9 +119,16 @@ void ObjectInvader::SpawnRandomCollectibles()
 
 void ObjectInvader::SetInvaderType(int type)
 {
+  auto rand = [this]()
+  {
+    return (static_cast<double>(_random_generator()) - static_cast<double>(_random_generator.min())) / static_cast<double>(_random_generator.max());
+  };
+
+  double shield_chance = 0;
+  
   switch(type)
-    {
-    case 0:
+    { // todo: Load definitions from json file.
+    case 0: // First enemy.
       {
         auto mesh = AssetLoader->LoadMesh("Invader1");
         assert(mesh);
@@ -131,6 +138,7 @@ void ObjectInvader::SetInvaderType(int type)
         AddWeapon();
 
         SetMaxHealth(100.0);
+        shield_chance = 0.2;
         _disable_hit_impulse = false;
 
         auto lootjson = AssetLoader->LoadJson("Data/Loot-Invader1");
@@ -138,7 +146,7 @@ void ObjectInvader::SetInvaderType(int type)
         _lootset.push_back(new Loot(lootjson));
       }
       break;
-    case 1:
+    case 1: // First boss.
       {
         auto mesh = AssetLoader->LoadMesh("Invader2");
         assert(mesh);
@@ -150,6 +158,7 @@ void ObjectInvader::SetInvaderType(int type)
         AddWeapon();
 
         SetMaxHealth(500.0);
+        shield_chance = 1.0;
         _disable_hit_impulse = true;
 
         _lootset.clear();
@@ -162,6 +171,13 @@ void ObjectInvader::SetInvaderType(int type)
       }
       break;
     }
+
+  if(rand() < shield_chance)
+    {
+      auto u = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
+      u->Activate(50.0 + GetMaxHealth() * rand(), 9999);
+    }
+  
   SetHealth(GetMaxHealth());
 }
 

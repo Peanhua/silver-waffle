@@ -232,7 +232,7 @@ void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection,
       auto shader = mesh->GetShaderProgram();
       shader->Use();
       auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-      shader->SetVec("in_glow", shield->IsActive() ? glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(shield->GetValue() / 100.0) : glm::vec3(0.0, 0.0, 0.0));
+      shader->SetVec("in_glow", shield->IsActive() ? glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(shield->GetValue() / GetMaxHealth()) : glm::vec3(0.0, 0.0, 0.0));
 
       mesh->Draw(model, view, projection, mvp, shader);
     }
