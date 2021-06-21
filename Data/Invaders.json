@@ -1,0 +1,30 @@
+{
+  "definitions":
+  [
+    {
+      "mesh":          "Invader1",
+      "weapons":       1,
+      "health":        100,
+      "shield_chance": 0.2,
+      "hit_impulse":   true,
+      "loot":
+      [
+        "Invader1"
+      ]
+    },
+    {
+      "mesh":          "Invader2",
+      "weapons":       3,
+      "health":        500,
+      "shield_chance": 1.0,
+      "hit_impulse":   false,
+      "loot":
+      [
+        "Boss1",
+        "Boss1",
+        "Boss1",
+        "WarpFuel"
+      ]
+    }
+  ]
+}

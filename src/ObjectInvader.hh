@@ -15,7 +15,7 @@ public:
   void Tick(double deltatime)          override;
   void OnDestroyed(Object * destroyer) override;
   void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
-  void SetInvaderType(int type);
+  void SetInvaderType(unsigned int type);
   
 private:
   std::mt19937_64 _random_generator;

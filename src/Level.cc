@@ -74,7 +74,7 @@ Level::ProgramEntry::ProgramEntry(const json11::Json & config)
     SetStopTime(config["stop"].number_value());
   if(config["interval"].is_number())
     SetSpawnInterval(config["interval"].number_value());
-  _invader_type = config["invader_type"].int_value();
+  _invader_type = static_cast<unsigned int>(config["invader_type"].int_value());
   if(config["control_program"].is_string())
     SetInvaderControlProgram(config["control_program"].string_value());
   _boss = config["boss"].bool_value();

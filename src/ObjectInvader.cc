@@ -117,62 +117,48 @@ void ObjectInvader::SpawnRandomCollectibles()
 }
 
 
-void ObjectInvader::SetInvaderType(int type)
+void ObjectInvader::SetInvaderType(unsigned int type)
 {
   auto rand = [this]()
   {
     return (static_cast<double>(_random_generator()) - static_cast<double>(_random_generator.min())) / static_cast<double>(_random_generator.max());
   };
 
-  double shield_chance = 0;
+  auto config = AssetLoader->LoadJson("Data/Invaders");
+  assert(config->is_object());
+  assert((*config)["definitions"].is_array());
+  auto defs = (*config)["definitions"].array_items();
+  assert(type < defs.size());
+
+  auto d = defs[type];
   
-  switch(type)
-    { // todo: Load definitions from json file.
-    case 0: // First enemy.
-      {
-        auto mesh = AssetLoader->LoadMesh("Invader1");
-        assert(mesh);
-        SetMesh(mesh);
-        
-        RemoveWeapons();
-        AddWeapon();
+  assert(d["mesh"].is_string());
+  auto mesh = AssetLoader->LoadMesh(d["mesh"].string_value());
+  assert(mesh);
+  SetMesh(mesh);
 
-        SetMaxHealth(100.0);
-        shield_chance = 0.2;
-        _disable_hit_impulse = false;
+  RemoveWeapons();
+  assert(d["weapons"].is_number());
+  for(int i = 0; i < d["weapons"].number_value(); i++)
+    AddWeapon();
 
-        auto lootjson = AssetLoader->LoadJson("Data/Loot-Invader1");
-        _lootset.clear();
-        _lootset.push_back(new Loot(lootjson));
-      }
-      break;
-    case 1: // First boss.
-      {
-        auto mesh = AssetLoader->LoadMesh("Invader2");
-        assert(mesh);
-        SetMesh(mesh);
-        
-        RemoveWeapons();
-        AddWeapon();
-        AddWeapon();
-        AddWeapon();
+  assert(d["health"].is_number());
+  SetMaxHealth(d["health"].number_value());
 
-        SetMaxHealth(500.0);
-        shield_chance = 1.0;
-        _disable_hit_impulse = true;
+  if(d["hit_impulse"].is_bool())
+    _disable_hit_impulse = !d["hit_impulse"].bool_value();
 
-        _lootset.clear();
-        auto lootjson = AssetLoader->LoadJson("Data/Loot-Boss1");
-        _lootset.push_back(new Loot(lootjson));
-        _lootset.push_back(new Loot(lootjson));
-        _lootset.push_back(new Loot(lootjson));
-        lootjson = AssetLoader->LoadJson("Data/Loot-WarpFuel");
-        _lootset.push_back(new Loot(lootjson));
-      }
-      break;
+  _lootset.clear();
+  assert(d["loot"].is_array());
+  auto loots = d["loot"].array_items();
+  for(auto loot : loots)
+    {
+      assert(loot.is_string());
+      auto lootjson = AssetLoader->LoadJson("Data/Loot-" + loot.string_value());
+      _lootset.push_back(new Loot(lootjson));
     }
-
-  if(rand() < shield_chance)
+  assert(d["shield_chance"].is_number());
+  if(rand() < d["shield_chance"].number_value())
     {
       auto u = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
       u->Activate(50.0 + GetMaxHealth() * rand(), 9999);
