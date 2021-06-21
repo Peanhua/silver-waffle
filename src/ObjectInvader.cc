@@ -84,24 +84,32 @@ void ObjectInvader::SpawnRandomCollectibles()
       auto item = loot->CreateLootItem(rand(), rand());
       if(item)
         {
-          auto c = AssetLoader->LoadObjectCollectible(item->_type);
+          auto c = AssetLoader->LoadObjectCollectible(static_cast<int>(item->_type));
           assert(c);
           auto coll = new ObjectCollectible(*c);
           coll->SetBonus(item->_type, item->_bonus);
           GetScene()->AddCollectible(coll,
-                                     GetPosition() + 1.0f * glm::vec3(rand() - 0.5, rand() - 0.5, rand() - 0.5),
+                                     GetPosition() + 0.5f * glm::vec3(rand() - 0.5, rand() - 0.5, 0.0),
                                      glm::vec3(0, -5, 0));
 
           switch(item->_type)
             {
-            case ObjectCollectible::Type::TYPE_SCORE_BONUS:
-            case ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_ATTACK:
-            case ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_DEFENSE:
-            case ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_PHYSICAL:
-              auto rotangle = glm::normalize(glm::vec3(rand() * 2.0 - 1.0,
-                                                       rand() * 2.0 - 1.0,
-                                                       rand() * 2.0 - 1.0));
-              coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + rand() * 10.0);
+            case ObjectCollectible::Type::SCORE_BONUS:
+            case ObjectCollectible::Type::UPGRADEMATERIAL_ATTACK:
+            case ObjectCollectible::Type::UPGRADEMATERIAL_DEFENSE:
+            case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
+            case ObjectCollectible::Type::WARP_FUEL:
+              {
+                auto rotangle = glm::normalize(glm::vec3(rand() * 2.0 - 1.0,
+                                                         rand() * 2.0 - 1.0,
+                                                         rand() * 2.0 - 1.0));
+                coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + rand() * 10.0);
+              }
+              break;
+            case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
+            case ObjectCollectible::Type::SCORE_MULTIPLIER:
+            case ObjectCollectible::Type::SHIELD:
+            case ObjectCollectible::Type::NONE:
               break;
             }
         }
@@ -144,10 +152,12 @@ void ObjectInvader::SetInvaderType(int type)
         SetMaxHealth(500.0);
         _disable_hit_impulse = true;
 
-        auto lootjson = AssetLoader->LoadJson("Data/Loot-Boss1");
         _lootset.clear();
+        auto lootjson = AssetLoader->LoadJson("Data/Loot-Boss1");
         _lootset.push_back(new Loot(lootjson));
         _lootset.push_back(new Loot(lootjson));
+        _lootset.push_back(new Loot(lootjson));
+        lootjson = AssetLoader->LoadJson("Data/Loot-WarpFuel");
         _lootset.push_back(new Loot(lootjson));
       }
       break;

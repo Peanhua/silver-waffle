@@ -14,19 +14,21 @@ Loot::Loot(json11::Json * config)
       assert(def["type"].is_string());
       auto stype = def["type"].string_value();
       if(stype == "SCORE_BONUS")
-        d->_type = ObjectCollectible::Type::TYPE_SCORE_BONUS;
+        d->_type = ObjectCollectible::Type::SCORE_BONUS;
       else if(stype == "DAMAGE_MULTIPLIER")
-        d->_type = ObjectCollectible::Type::TYPE_DAMAGE_MULTIPLIER;
+        d->_type = ObjectCollectible::Type::DAMAGE_MULTIPLIER;
       else if(stype == "SCORE_MULTIPLIER")
-        d->_type = ObjectCollectible::Type::TYPE_SCORE_MULTIPLIER;
+        d->_type = ObjectCollectible::Type::SCORE_MULTIPLIER;
       else if(stype == "SHIELD")
-        d->_type = ObjectCollectible::Type::TYPE_SHIELD;
+        d->_type = ObjectCollectible::Type::SHIELD;
       else if(stype == "UPGRADEMATERIAL_ATTACK")
-        d->_type = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_ATTACK;
+        d->_type = ObjectCollectible::Type::UPGRADEMATERIAL_ATTACK;
       else if(stype == "UPGRADEMATERIAL_DEFENSE")
-        d->_type = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_DEFENSE;
+        d->_type = ObjectCollectible::Type::UPGRADEMATERIAL_DEFENSE;
       else if(stype == "UPGRADEMATERIAL_PHYSICAL")
-        d->_type = ObjectCollectible::Type::TYPE_UPGRADEMATERIAL_PHYSICAL;
+        d->_type = ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL;
+      else if(stype == "WARP_FUEL")
+        d->_type = ObjectCollectible::Type::WARP_FUEL;
       else
         assert(false);
 

@@ -22,6 +22,7 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene)
       SpaceshipUpgrade::Type::HULL_UPGRADE,
       SpaceshipUpgrade::Type::EVASION_MANEUVER,
       SpaceshipUpgrade::Type::REPAIR_DROID,
+      SpaceshipUpgrade::Type::WARP_ENGINE,
     };
   for(auto t : types)
     {

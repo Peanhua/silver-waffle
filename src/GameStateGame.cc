@@ -116,9 +116,17 @@ GameStateGame::GameStateGame(GameStats * gamestats)
     l->SetTextPaddingCentered(true, true);
   }
   {
+    auto w = new WidgetSpaceshipUpgradeStatus(root, glm::ivec2(width - 32 - 24 - 24 - 24, 160), glm::ivec2(20, 100), _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE));
+    _player_upgrade_status_widgets.push_back(w);
+    auto l = new Widget(root, w->GetPosition() + glm::ivec2(0, w->GetSize().y), glm::ivec2(20, 20));
+    l->SetText("Z");
+    l->SetTextFont(AssetLoader->LoadFont(12));
+    l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
+    l->SetTextPaddingCentered(true, true);
+  }
+  {
     std::vector<std::string> imagenames
       {
-        "",
         "BonusIcon-2xDamage",
         "BonusIcon-2xScore",
         "BonusIcon-Shield",
@@ -126,14 +134,10 @@ GameStateGame::GameStateGame(GameStats * gamestats)
     unsigned int x = 10;
     for(auto imagename : imagenames)
       {
-        Widget * w = nullptr;
-        if(imagename.size() > 0)
-          {
-            w = new Widget(root, glm::ivec2(x, 70), glm::ivec2(48, 48));
-            w->SetImage(imagename);
-            w->SetIsVisible(false);
-            x += 50;
-          }
+        auto w = new Widget(root, glm::ivec2(x, 70), glm::ivec2(48, 48));
+        w->SetImage(imagename);
+        w->SetIsVisible(false);
+        x += 50;
         _active_bonus_widgets.push_back(w);
       }
   }
@@ -212,23 +216,30 @@ void GameStateGame::Tick(double deltatime)
         }
       else
         { // Resumed from the new gamestate.
-          if(_gamestatetransition_timer < 0.5)
+          if(GetGameStats()->GetLives() == 0)
+            Quit();
+          else
             {
-              auto amount = std::clamp(1.0 - _gamestatetransition_timer / 0.5, 0.0, 1.0);
-              _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
-            }
-          if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
-            {
-              _scene->GetPlayer()->SetPosition(glm::vec3(_scene->GetPlayer()->GetPosition().x, 40 - 53, 0));
-              _scene->GetPlayer()->SetOrientation(glm::quat(1, 0, 0, 0));
-              ChangeState(State::RUNNING);
+              if(_gamestatetransition_timer < 0.5)
+                {
+                  auto amount = std::clamp(1.0 - _gamestatetransition_timer / 0.5, 0.0, 1.0);
+                  _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
+                }
+              if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
+                {
+                  _scene->GetPlayer()->SetPosition(glm::vec3(_scene->GetPlayer()->GetPosition().x, 40 - 53, 0));
+                  _scene->GetPlayer()->SetOrientation(glm::quat(1, 0, 0, 0));
+                  RefreshUI();
+                  OnLivesUpdated();
+                  ChangeState(State::RUNNING);
+                }
             }
         }
     }
   
-  _active_bonus_widgets[ObjectCollectible::Type::TYPE_DAMAGE_MULTIPLIER]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
-  _active_bonus_widgets[ObjectCollectible::Type::TYPE_SCORE_MULTIPLIER]->SetIsVisible(_gamestats->GetScoreMultiplier() > 1);
-  _active_bonus_widgets[ObjectCollectible::Type::TYPE_SHIELD]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->IsActive());
+  _active_bonus_widgets[0]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
+  _active_bonus_widgets[1]->SetIsVisible(_gamestats->GetScoreMultiplier() > 1);
+  _active_bonus_widgets[2]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->IsActive());
 
   auto fmt = [](double v)
   {
@@ -283,6 +294,13 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
     return;
 
   assert(_state == State::RUNNING);
+  auto player = _scene->GetPlayer();
+  bool warpspeed = false;
+  if(player && player->IsAlive())
+    {
+      auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+      warpspeed = u->IsActive();
+    }
   switch(key)
     {
     case SDLK_ESCAPE:
@@ -346,24 +364,43 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
 #else
     case SDLK_LEFT:
-      _scene->GetPlayer()->SetEngineThrottle(0, pressed ? 1.0 : 0.0);
+      if(!warpspeed)
+        player->SetEngineThrottle(0, pressed ? 1.0 : 0.0);
       break;
       
     case SDLK_RIGHT:
-      _scene->GetPlayer()->SetEngineThrottle(1, pressed ? 1.0 : 0.0);
+      if(!warpspeed)
+        player->SetEngineThrottle(1, pressed ? 1.0 : 0.0);
       break;
 
     case SDLK_SPACE:
-      for(unsigned int i = 0; i < _scene->GetPlayer()->GetWeaponCount(); i++)
-        _scene->GetPlayer()->SetWeaponAutofire(i, pressed);
+      if(!warpspeed)
+        for(unsigned int i = 0; i < _scene->GetPlayer()->GetWeaponCount(); i++)
+          player->SetWeaponAutofire(i, pressed);
       break;
 
     case SDLK_c:
-      if(pressed)
+      if(!warpspeed && pressed)
         {
-          auto em = _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
+          auto em = player->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
           if(em->CanActivate())
             em->Activate(4.0);
+        }
+      break;
+
+    case SDLK_w:
+      if(pressed)
+        {
+          auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+          if(u->IsActive())
+            {
+              u->Deactivate();
+            }
+          else
+            {
+              if(u->CanActivate())
+                u->Activate();
+            }
         }
       break;
 #endif
@@ -371,7 +408,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
     case SDLK_q:
       if(pressed)
-        std::cout << _scene->GetPlayer()->GetPosition() << std::endl;
+        std::cout << player->GetPosition() << std::endl;
       break;
     }
 
@@ -413,15 +450,21 @@ void GameStateGame::NextLifeOrQuit()
         assert(destroyer == destroyer);
         OnPlayerDies();
       });
-      for(auto w : _player_status_widgets)
-        w->SetSpaceship(_scene->GetPlayer());
-      for(auto w : _player_upgrade_status_widgets)
-        w->SetUpgrade(_scene->GetPlayer()->GetUpgrade(w->GetUpgrade()->GetType()));
+      RefreshUI();
     }
   else
     Quit();
 
   ChangeState(State::RUNNING);
+}
+
+
+void GameStateGame::RefreshUI()
+{ // Todo: Fix the widgets to listen for changes and get rid of this.
+  for(auto w : _player_status_widgets)
+    w->SetSpaceship(_scene->GetPlayer());
+  for(auto w : _player_upgrade_status_widgets)
+    w->SetUpgrade(_scene->GetPlayer()->GetUpgrade(w->GetUpgrade()->GetType()));
 }
 
 

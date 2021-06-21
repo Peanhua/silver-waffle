@@ -43,6 +43,7 @@ protected:
   std::vector<Level *> _levels;
 
   void OnLevelChanged();
+  void RefreshUI();
   
 private:
   enum class State

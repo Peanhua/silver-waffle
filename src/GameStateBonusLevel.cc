@@ -17,6 +17,7 @@ GameStateBonusLevel::GameStateBonusLevel(GameStateGame * mainlevel, double enemy
   auto mainplr = _mainlevel->GetScene()->GetPlayer();
   myplr->CopyUpgrades(*mainplr);
   myplr->SetHealth(mainplr->GetHealth());
+  RefreshUI();
 }
 
   
@@ -35,8 +36,4 @@ void GameStateBonusLevel::OnQuit()
   auto mainplr = _mainlevel->GetScene()->GetPlayer();
   mainplr->CopyUpgrades(*myplr);
   mainplr->SetHealth(myplr->GetHealth());
-  _mainlevel->OnLivesUpdated();
-
-  if(_mainlevel->GetGameStats()->GetLives() == 0)
-    _mainlevel->Quit();
 }

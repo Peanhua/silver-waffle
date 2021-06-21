@@ -27,6 +27,7 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     case Type::HULL_UPGRADE:     _name = "Hull upgrade";   _always_activated = true;  break;
     case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; break;
     case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  break;
+    case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; break;
     }
 }
 
@@ -64,6 +65,11 @@ void SpaceshipUpgrade::Install()
     case Type::EVASION_MANEUVER:
       break;
     case Type::REPAIR_DROID:
+      break;
+    case Type::WARP_ENGINE:
+      _value = 5.0;
+      _timer += 30.0;
+      _timer_max += 5.0 * 60.0;
       break;
     }
 }
@@ -106,6 +112,7 @@ int SpaceshipUpgrade::GetMaxInstalls() const
     case Type::HULL_UPGRADE:     return 1;
     case Type::EVASION_MANEUVER: return 1;
     case Type::REPAIR_DROID:     return 1;
+    case Type::WARP_ENGINE:      return 1;
     }
   assert(false);
   return 0;
@@ -173,6 +180,11 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::DEFENSE]  = 10;
       costs[UpgradeMaterial::Type::PHYSICAL] = 10;
       break;
+    case Type::WARP_ENGINE:
+      costs[UpgradeMaterial::Type::ATTACK]   =  1;
+      costs[UpgradeMaterial::Type::DEFENSE]  =  1;
+      costs[UpgradeMaterial::Type::PHYSICAL] =  2;
+      break;
     }
   return costs[for_material];
 }
@@ -227,12 +239,21 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
   switch(_type)
     {
     case Type::BONUS_DAMAGE:
-      if(collectible->HasBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER))
-        Activate(collectible->GetBonus(ObjectCollectible::TYPE_DAMAGE_MULTIPLIER), 30.0);
+      if(collectible->HasBonus(ObjectCollectible::Type::DAMAGE_MULTIPLIER))
+        Activate(collectible->GetBonus(ObjectCollectible::Type::DAMAGE_MULTIPLIER), 30.0);
       break;
     case Type::SHIELD:
-      if(collectible->HasBonus(ObjectCollectible::TYPE_SHIELD))
-        Activate(std::max(_value, collectible->GetBonus(ObjectCollectible::TYPE_SHIELD)), 30.0);
+      if(collectible->HasBonus(ObjectCollectible::Type::SHIELD))
+        Activate(std::max(_value, collectible->GetBonus(ObjectCollectible::Type::SHIELD)), 30.0);
+      break;
+    case Type::WARP_ENGINE:
+      if(GetInstallCount() > 0)
+        if(collectible->HasBonus(ObjectCollectible::Type::WARP_FUEL))
+          {
+            _timer += collectible->GetBonus(ObjectCollectible::Type::WARP_FUEL);
+            if(_timer > _timer_max)
+              _timer = _timer_max;
+          }
       break;
       // The Following are not available from ObjectCollectible:
     case Type::WEAPON:
@@ -263,6 +284,9 @@ bool SpaceshipUpgrade::CanActivate() const
   if(_cooldown > 0.0)
     return false;
 
+  if(_type == Type::WARP_ENGINE && _timer < 0.01)
+    return false;
+
   return true;
 }
 
@@ -271,8 +295,11 @@ void SpaceshipUpgrade::Activate(double value, double time)
 {
   _activated = true;
   _value = value;
-  _timer = time;
-  _timer_max = time;
+  if(_type != Type::WARP_ENGINE)
+    {
+      _timer = time;
+      _timer_max = time;
+    }
   _cooldown = 30.0;
 }
 
@@ -280,6 +307,12 @@ void SpaceshipUpgrade::Activate(double time)
 {
   Activate(_value, time);
 }
+
+void SpaceshipUpgrade::Activate()
+{
+  Activate(_value, _timer);
+}
+
 
 
 void SpaceshipUpgrade::AdjustValue(double amount)
@@ -318,3 +351,8 @@ double SpaceshipUpgrade::GetCooldownMax() const
   return 30.0;
 }
 
+
+void SpaceshipUpgrade::Deactivate()
+{
+  _activated = false;
+}

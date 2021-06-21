@@ -1,0 +1,11 @@
+{
+  "definitions":
+  [
+    {
+      "type":          "WARP_FUEL",
+      "random_chance": 1.0,
+      "bonus_min":     100.0,
+      "bonus_max":     120.0
+    }
+  ]
+}

@@ -22,11 +22,25 @@ Level::~Level()
 
 void Level::Tick(double deltatime)
 {
-  _time += deltatime;
+  bool warpspeed = false;
+  double warpspeedmult = 0.0;
+  auto player = _scene->GetPlayer();
+  if(player && player->IsAlive())
+    {
+      auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+      warpspeed = u->IsActive();
+      warpspeedmult = u->GetValue();
+    }
+  
+  if(warpspeed)
+    _time += deltatime * warpspeedmult;
+  else
+    _time += deltatime;
 
-  for(unsigned int i = 0; i < _program.size(); i++)
-    if(_program[i])
-      _program[i] = _program[i]->Tick(_scene, _random_generator, deltatime);
+  if(!warpspeed)
+    for(unsigned int i = 0; i < _program.size(); i++)
+      if(_program[i])
+        _program[i] = _program[i]->Tick(_scene, _random_generator, deltatime);
 }
 
 

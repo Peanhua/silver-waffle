@@ -39,8 +39,14 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
   font = AssetLoader->LoadFont(16);
   font_weight = 0.25f;
   font_color = glm::vec3(0, 1, 0);
+
+  auto fmt = [](double v)
   {
-    const std::string t("Hull health: " + std::to_string(static_cast<int>(_spaceship->GetHealth())));
+    auto rv = std::to_string(v);
+    return rv.substr(0, rv.find('.') + 2);
+  };
+  {
+    const std::string t("Hull health: " + fmt(_spaceship->GetHealth()));
     const double tlen = font->GetWidth(t);
     auto w = new Widget(this, glm::ivec2(x, y), glm::ivec2(tlen, 30));
     w->SetTextFont(font);
@@ -49,6 +55,21 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
     w->SetTextFontWeight(font_weight);
     w->SetIsFocusable(false);
     y += w->GetSize().y;
+  }
+  {
+    auto u = _spaceship->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+    if(u->GetInstallCount() > 0)
+      {
+        const std::string t("Warp fuel: " + fmt(u->GetTimer()) + " / " + fmt(u->GetTimerMax()));
+        const double tlen = font->GetWidth(t);
+        auto w = new Widget(this, glm::ivec2(x, y), glm::ivec2(tlen, 30));
+        w->SetTextFont(font);
+        w->SetTextColor(font_color);
+        w->SetText(t);
+        w->SetTextFontWeight(font_weight);
+        w->SetIsFocusable(false);
+        y += w->GetSize().y;
+      }
   }
 
   y += 20;
@@ -71,6 +92,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
         SpaceshipUpgrade::Type::HULL_UPGRADE,
         SpaceshipUpgrade::Type::EVASION_MANEUVER,
         SpaceshipUpgrade::Type::REPAIR_DROID,
+        SpaceshipUpgrade::Type::WARP_ENGINE,
       };
     for(auto t : types)
       {

@@ -173,6 +173,15 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
 
 void Scene::Tick(double deltatime)
 {
+  bool warpspeed = false;
+  double warpspeedmult = 0.0;
+  if(_player && _player->IsAlive())
+    {
+      auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+      warpspeed = u->IsActive();
+      warpspeedmult = u->GetValue();
+    }
+  
   _time += deltatime;
 
   std::vector<Object *> objects;
@@ -203,32 +212,37 @@ void Scene::Tick(double deltatime)
           objects.push_back(p);
     }
 
+  double dtime = deltatime;
+  if(warpspeed)
+    dtime *= warpspeedmult;
+  
   for(auto o : objects)
     {
       if(o->IsAlive())
-        o->Tick(deltatime);
+        o->Tick(dtime); // todo: Add separate method to move the objects when warpspeed is active.
 
-      for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
-        {
-          auto oo = objects[i];
-          if(o != oo && oo->IsAlive())
-            {
-              glm::vec3 hitdir;
-              if(o->CheckCollision(*oo, hitdir))
-                {
-                  o->OnCollision(*oo, -hitdir);
-                  oo->OnCollision(*o, hitdir);
-                }
-            }
-        }
+      if(!warpspeed)
+        for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
+          {
+            auto oo = objects[i];
+            if(o != oo && oo->IsAlive())
+              {
+                glm::vec3 hitdir;
+                if(o->CheckCollision(*oo, hitdir))
+                  {
+                    o->OnCollision(*oo, -hitdir);
+                    oo->OnCollision(*o, hitdir);
+                  }
+              }
+          }
     }
-
+  
 
   for(auto e : _explosions)
     if(e && e->IsAlive())
-      e->Tick(deltatime);
+      e->Tick(dtime); // todo: Add separate method to move the explosions when warpseed is active.
 
-  _particles->Tick(deltatime);
+  _particles->Tick(dtime);
   _wall->Tick(deltatime);
 }
 

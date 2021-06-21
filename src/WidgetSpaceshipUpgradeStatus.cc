@@ -13,11 +13,20 @@ WidgetSpaceshipUpgradeStatus::WidgetSpaceshipUpgradeStatus(Widget * parent, cons
 
 void WidgetSpaceshipUpgradeStatus::Draw() const
 {
-  double value;
-  if(_upgrade->IsActive())
-    value = 1.0 - _upgrade->GetTimer() / _upgrade->GetTimerMax();
-  else
-    value = _upgrade->GetCooldownRemaining() / _upgrade->GetCooldownMax();
+  double value = 0.0;
+  switch(_upgrade->GetType())
+    {
+    case SpaceshipUpgrade::Type::WARP_ENGINE:
+      if(_upgrade->GetTimerMax() > 0.0)
+        value = _upgrade->GetTimer() / _upgrade->GetTimerMax();
+      break;
+    default:
+      if(_upgrade->IsActive())
+        value = 1.0 - _upgrade->GetTimer() / _upgrade->GetTimerMax();
+      else
+        value = _upgrade->GetCooldownRemaining() / _upgrade->GetCooldownMax();
+      break;
+    }
   value = std::clamp(value, 0.0, 1.0);
   _meter->SetValue(static_cast<float>(value));
 

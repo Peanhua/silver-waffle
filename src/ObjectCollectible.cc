@@ -52,14 +52,14 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
   if(!gamestats)
     return;
   
-  if(HasBonus(Type::TYPE_SCORE_BONUS))
+  if(HasBonus(Type::SCORE_BONUS))
     {
-      auto score = static_cast<unsigned int>(GetBonus(Type::TYPE_SCORE_BONUS));
+      auto score = static_cast<unsigned int>(GetBonus(Type::SCORE_BONUS));
       gamestats->AddScore(score);
     }
-  if(HasBonus(Type::TYPE_SCORE_MULTIPLIER))
+  if(HasBonus(Type::SCORE_MULTIPLIER))
     {
-      auto mult = static_cast<unsigned int>(GetBonus(Type::TYPE_SCORE_MULTIPLIER));
+      auto mult = static_cast<unsigned int>(GetBonus(Type::SCORE_MULTIPLIER));
       gamestats->SetScoreMultiplier(mult, 30);
     }
   {
@@ -71,9 +71,9 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
       };
     Type my_types[] =
       {
-        Type::TYPE_UPGRADEMATERIAL_ATTACK,
-        Type::TYPE_UPGRADEMATERIAL_DEFENSE,
-        Type::TYPE_UPGRADEMATERIAL_PHYSICAL
+        Type::UPGRADEMATERIAL_ATTACK,
+        Type::UPGRADEMATERIAL_DEFENSE,
+        Type::UPGRADEMATERIAL_PHYSICAL
       };
     for(int i = 0; i < 3; i++)
       if(HasBonus(my_types[i]))
@@ -83,5 +83,3 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
         }
   }
 }
-
-

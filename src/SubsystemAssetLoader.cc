@@ -254,7 +254,7 @@ SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(SolarSystemObjec
 
 ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
 {
-  if(type == ObjectCollectible::TYPE_NONE)
+  if(type == static_cast<int>(ObjectCollectible::Type::NONE))
     return nullptr;
   /*
   auto it = _collectibles.find(type);
@@ -264,41 +264,44 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
   auto collectible = new ObjectCollectible(nullptr);
   switch(static_cast<ObjectCollectible::Type>(type))
     {
-    case ObjectCollectible::TYPE_NONE:
+    case ObjectCollectible::Type::NONE:
       assert(false);
       break;
-    case ObjectCollectible::TYPE_SCORE_BONUS:
+    case ObjectCollectible::Type::SCORE_BONUS:
       collectible->SetMesh(LoadMesh("ScoreBonus"));
       break;
-    case ObjectCollectible::TYPE_DAMAGE_MULTIPLIER:
+    case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
       collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
       collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-2xDamage"), true);
       collectible->GetMesh()->UpdateGPU();
       break;
-    case ObjectCollectible::TYPE_SCORE_MULTIPLIER:
+    case ObjectCollectible::Type::SCORE_MULTIPLIER:
       collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
       collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-2xScore"), true);
       collectible->GetMesh()->UpdateGPU();
       break;
-    case ObjectCollectible::TYPE_SHIELD:
+    case ObjectCollectible::Type::SHIELD:
       collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
       collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-Shield"), true);
       collectible->GetMesh()->UpdateGPU();
       break;
-    case ObjectCollectible::TYPE_UPGRADEMATERIAL_ATTACK:
+    case ObjectCollectible::Type::UPGRADEMATERIAL_ATTACK:
       collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
       collectible->GetMesh()->SetAllColor(glm::vec3(1, 0, 0));
       collectible->GetMesh()->UpdateGPU();
       break;
-    case ObjectCollectible::TYPE_UPGRADEMATERIAL_DEFENSE:
+    case ObjectCollectible::Type::UPGRADEMATERIAL_DEFENSE:
       collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
       collectible->GetMesh()->SetAllColor(glm::vec3(0, 0, 1));
       collectible->GetMesh()->UpdateGPU();
       break;
-    case ObjectCollectible::TYPE_UPGRADEMATERIAL_PHYSICAL:
+    case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
       collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
       collectible->GetMesh()->SetAllColor(glm::vec3(1, 0.612, 0));
       collectible->GetMesh()->UpdateGPU();
+      break;
+    case ObjectCollectible::Type::WARP_FUEL:
+      collectible->SetMesh(LoadMesh("WarpFuel"));
       break;
     }
 

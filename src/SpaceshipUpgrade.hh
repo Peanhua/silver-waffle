@@ -20,6 +20,7 @@ public:
       HULL_UPGRADE,
       EVASION_MANEUVER,
       REPAIR_DROID,
+      WARP_ENGINE,
     };
   
   SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type);
@@ -42,9 +43,11 @@ public:
   double GetCooldownMax() const;
 
   bool CanActivate() const;
+  void Activate();
   void Activate(double time);
   void Activate(double value, double time);
   void ActivateFromCollectible(ObjectCollectible * collectible);
+  void Deactivate();
   bool IsActive() const;
 
   void Dump() const;

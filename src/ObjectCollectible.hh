@@ -8,17 +8,18 @@
 class ObjectCollectible : public ObjectMovable
 {
 public:
-  enum Type
+  enum class Type
     {
-      TYPE_SCORE_BONUS,
-      TYPE_DAMAGE_MULTIPLIER,
-      TYPE_SCORE_MULTIPLIER,
-      TYPE_SHIELD,
-      TYPE_UPGRADEMATERIAL_ATTACK,
-      TYPE_UPGRADEMATERIAL_DEFENSE,
-      TYPE_UPGRADEMATERIAL_PHYSICAL,
-      TYPE_SIZEOF,
-      TYPE_NONE = TYPE_SIZEOF
+      SCORE_BONUS,
+      DAMAGE_MULTIPLIER,
+      SCORE_MULTIPLIER,
+      SHIELD,
+      UPGRADEMATERIAL_ATTACK,
+      UPGRADEMATERIAL_DEFENSE,
+      UPGRADEMATERIAL_PHYSICAL,
+      WARP_FUEL,
+      SIZEOF_,
+      NONE = SIZEOF_
     };
   
   ObjectCollectible(Scene * scene);
