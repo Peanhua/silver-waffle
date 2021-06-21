@@ -23,24 +23,21 @@ Level::~Level()
 void Level::Tick(double deltatime)
 {
   bool warpspeed = false;
-  double warpspeedmult = 0.0;
+  double dtime = deltatime;
   auto player = _scene->GetPlayer();
   if(player && player->IsAlive())
     {
       auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
       warpspeed = u->IsActive();
-      warpspeedmult = u->GetValue();
+      if(warpspeed)
+        dtime *= u->GetValue();
     }
   
-  if(warpspeed)
-    _time += deltatime * warpspeedmult;
-  else
-    _time += deltatime;
+  _time += dtime;
 
-  if(!warpspeed)
-    for(unsigned int i = 0; i < _program.size(); i++)
-      if(_program[i])
-        _program[i] = _program[i]->Tick(_scene, _random_generator, deltatime);
+  for(unsigned int i = 0; i < _program.size(); i++)
+    if(_program[i])
+      _program[i] = _program[i]->Tick(_scene, _random_generator, dtime, warpspeed);
 }
 
 
@@ -135,7 +132,7 @@ bool Level::IsFinished() const
 
 
 
-Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime)
+Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime, bool disable_spawning)
 {
   if(_invader_spawn_stop_time < 0.0)
     {
@@ -158,31 +155,34 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 &
       if(_invader_spawn_timer > _invader_spawn_interval)
         {
           _invader_spawn_timer -= _invader_spawn_interval;
-          
-          auto rand = [&random_generator]()
-          {
-            return (static_cast<float>(random_generator()) - static_cast<float>(random_generator.min())) / static_cast<float>(random_generator.max());
-          };
-          
-          const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
-          auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
-          assert(invader);
-          invader->SetInvaderType(_invader_type);
-          if(rand() < 0.2f)
+
+          if(!disable_spawning)
             {
-              auto u = invader->GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-              u->Activate(50.0f + 150.0f * rand(), 9999);
-            }
-          if(!_invader_control_program.empty())
-            invader->AddNamedControlProgram(_invader_control_program);
-          if(_boss)
-            {
-              _bosses_alive++;
-              invader->SetOnDestroyed([this](Object * destroyer)
+              auto rand = [&random_generator]()
               {
-                assert(destroyer == destroyer);
-                _bosses_alive--;
-              });
+                return (static_cast<float>(random_generator()) - static_cast<float>(random_generator.min())) / static_cast<float>(random_generator.max());
+              };
+          
+              const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
+              auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
+              assert(invader);
+              invader->SetInvaderType(_invader_type);
+              if(rand() < 0.2f)
+                {
+                  auto u = invader->GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
+                  u->Activate(50.0f + 150.0f * rand(), 9999);
+                }
+              if(!_invader_control_program.empty())
+                invader->AddNamedControlProgram(_invader_control_program);
+              if(_boss)
+                {
+                  _bosses_alive++;
+                  invader->SetOnDestroyed([this](Object * destroyer)
+                  {
+                    assert(destroyer == destroyer);
+                    _bosses_alive--;
+                  });
+                }
             }
         }
     }

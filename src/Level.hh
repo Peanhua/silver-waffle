@@ -38,7 +38,7 @@ protected:
     void SetStopTime(double time);
     void SetSpawnInterval(double interval);
     void SetInvaderControlProgram(const std::string & program_name);
-    ProgramEntry * Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime);
+    ProgramEntry * Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime, bool disable_spawning);
     void SetNext(ProgramEntry * next);
     double GetRemainingTime() const;
     
