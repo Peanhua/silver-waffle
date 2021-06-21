@@ -1,5 +1,7 @@
 #version 330 core
 
+#define GEOM_IN triangles
+#define GEOM_OUT triangle_strip
 #define GEOM_MAX_OUT_VERTICES 3
 
 #include "Include/Input.geom"

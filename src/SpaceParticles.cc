@@ -16,7 +16,7 @@ SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned lo
     _rdist(0, 1)
 {
   _mesh = new Mesh(Mesh::OPTION_COLOR | Mesh::OPTION_BLEND | Mesh::OPTION_VERTEX_W | Mesh::OPTION_GENERIC_VEC2_INPUT | Mesh::OPTION_DYNAMIC_VERTEX);
-  _mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Star"));
+  _mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("SpaceJunk"));
   _mesh->SetPrimitiveType(GL_POINTS);
   const double min_speed = 5.0;
   const double max_speed = 30.0;
