@@ -180,7 +180,10 @@ void Scene::Tick(double deltatime)
         {
           _warp_throttle += static_cast<float>(1.0 / 2.0 * deltatime);
           if(_warp_throttle < 1.0f)
-            _particles->SetMode(true, _warp_throttle);
+            {
+              _particles->SetMode(true, _warp_throttle);
+              _player->SetPosition(glm::vec3(_player->GetPosition().xy(), 1.0f * _warp_throttle));
+            }
           else
             {
               _warp_engine_starting = false;
@@ -190,10 +193,7 @@ void Scene::Tick(double deltatime)
             }
         }
       else
-        {
-          _warp_engine_starting = false;
-          _particles->SetMode(false);
-        }
+        StopWarpEngine();
     }
   
   bool warpspeed = false;
@@ -266,7 +266,7 @@ void Scene::Tick(double deltatime)
       e->Tick(dtime); // todo: Add separate method to move the explosions when warpseed is active.
 
   if(_warp_engine_starting)
-    _particles->Tick(deltatime * (1.0 + static_cast<double>(10.0 * _warp_throttle)));
+    _particles->Tick(deltatime * (1.0 + static_cast<double>(5.0 * _warp_throttle)));
   else
     _particles->Tick(dtime);
   
@@ -439,10 +439,12 @@ void Scene::StartWarpEngine()
 void Scene::StopWarpEngine()
 {
   _warp_engine_starting = false;
+  _warp_throttle = 0;
   _particles->SetMode(false);
 
   if(!_player || !_player->IsAlive())
     return;
+  _player->SetPosition(glm::vec3(_player->GetPosition().xy(), 0));
   auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
   u->Deactivate();
 }
