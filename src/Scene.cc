@@ -428,6 +428,11 @@ void Scene::StartWarpEngine()
     {
       _warp_engine_starting = true;
       _warp_throttle = 0;
+
+      _player->SetEngineThrottle(0, 0.0);
+      _player->SetEngineThrottle(1, 0.0);
+      for(unsigned int i = 0; i < _player->GetWeaponCount(); i++)
+        _player->SetWeaponAutofire(i, false);
     }
 }
 
