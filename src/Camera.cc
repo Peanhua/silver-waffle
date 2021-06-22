@@ -25,6 +25,7 @@ Camera::~Camera()
 void Camera::SetFOV(double fov)
 {
   _fov = fov;
+  UpdateProjection();
 }
 
 
@@ -32,24 +33,28 @@ void Camera::SetClippingPlanes(double near, double far)
 {
   _clippingplane_near = near;
   _clippingplane_far  = far;
+  UpdateProjection();
 }
 
 
 void Camera::SetUp(const glm::vec3 & up)
 {
   _up = up;
+  UpdateView();
 }
 
 
 void Camera::SetPosition(const glm::vec3 & position)
 {
   _position = position;
+  UpdateView();
 }
 
 
 void Camera::SetTargetPosition(const glm::vec3 & position)
 {
   _target_position = position;
+  UpdateView();
 }
 
 

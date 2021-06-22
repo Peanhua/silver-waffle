@@ -25,7 +25,6 @@ GameStateTitle::GameStateTitle()
   _camera = new Camera();
   _camera->SetFOV(90.0);
   _camera->SetClippingPlanes(0.001, 1300.0);
-  _camera->UpdateProjection();
   _camera->SetPosition(glm::vec3(0.0f, -20.0f, 0.0f));
 
 
@@ -135,8 +134,6 @@ void GameStateTitle::Tick(double deltatime)
   _milkyway->Draw(*_camera);
   
   glEnable(GL_DEPTH_TEST);
-  _camera->UpdateView();
-
   for(auto planet : _planets)
     planet->Draw(*_camera);
 

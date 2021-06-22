@@ -24,9 +24,6 @@ public:
   const glm::mat4 & GetProjection() const;
   void              GetDirection(glm::vec3 & direction) const;
 
-  void              UpdateProjection();
-  void              UpdateView(); 
-
 private:
   double    _fov;
   double    _clippingplane_near;
@@ -37,6 +34,9 @@ private:
   glm::mat4 _view_projection;
   glm::mat4 _projection;
   glm::mat4 _view;
+
+  void              UpdateProjection();
+  void              UpdateView();
 };
 
 #endif

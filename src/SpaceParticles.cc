@@ -10,6 +10,7 @@ SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned lo
     _radius_max(radius_max),
     _time(0),
     _add_star_timer(0),
+    _particle_length(0),
     _star_count(400),
     _next_index(0),
     _random(random_seed),
@@ -68,6 +69,17 @@ void SpaceParticles::Tick(double deltatime)
 }
 
 
+void SpaceParticles::SetMode(bool lines, float particle_length)
+{
+  if(lines)
+    _mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("SpaceJunkLines"));
+  else
+    _mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("SpaceJunk"));
+
+  _particle_length = 20.0f * particle_length;
+}
+
+
 void SpaceParticles::ResetStar(unsigned int index)
 {
   double angle = GetRandom() * glm::radians(360.0);
@@ -88,11 +100,9 @@ void SpaceParticles::Draw(const Camera & camera) const
   const glm::mat4 & projection = camera.GetProjection();
   const glm::mat4 & mvp        = camera.GetViewProjection();
     
-  glm::mat4 model(1);
-  model = glm::translate(model, glm::vec3(0, 40 - 53 - 2, 0));
-
   _mesh->GetShaderProgram()->Use();
   _mesh->GetShaderProgram()->SetFloat("in_time", static_cast<float>(_time));
+  _mesh->GetShaderProgram()->SetFloat("in_particle_length", _particle_length);
 
-  _mesh->Draw(model, view, projection, mvp * model);
+  _mesh->Draw(glm::mat4(1), view, projection, mvp);
 }

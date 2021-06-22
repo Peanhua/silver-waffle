@@ -58,7 +58,6 @@ private:
   bool  _state_death_pause_key_eaten;
   std::mt19937_64                       _random;
   std::uniform_real_distribution<float> _rdist;
-  double             _fov;
   Camera *           _camera;
   TextureRenderer *  _texture_renderer;
   Mesh *             _overlay_mesh;

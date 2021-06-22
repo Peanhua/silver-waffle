@@ -34,10 +34,19 @@ SpaceJunk.vert : Star.vert Include/Input.vert Include/Output.vert Include/Data.g
 	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_GENERIC_VEC2 USE_VEC4_IN_VERTEX'
 
 SpaceJunk.frag : Star.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_GENERIC_VEC2'
+	$(AM_V_GEN) ./generate-variants.sh $< $@
 
 SpaceJunk.geom : Star.geom Include/Input.geom Include/Output.geom Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_GENERIC_VEC2'
+	$(AM_V_GEN) ./generate-variants.sh $< $@
+
+SpaceJunkLines.vert : Star.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
+	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_GENERIC_VEC2 USE_VEC4_IN_VERTEX'
+
+SpaceJunkLines.frag : Star.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl
+	$(AM_V_GEN) ./generate-variants.sh $< $@
+
+SpaceJunkLines.geom : StarLines.geom Include/Input.geom Include/Output.geom Include/Data.glsl Include/Uniforms.glsl
+	$(AM_V_GEN) ./generate-variants.sh $< $@
 
 
 
@@ -69,7 +78,10 @@ shaders_DATA = \
 	SceneObject-Texture.vert	\
 	SpaceJunk.frag			\
 	SpaceJunk.geom			\
-	SpaceJunk.vert			
+	SpaceJunk.vert			\
+	SpaceJunkLines.frag		\
+	SpaceJunkLines.geom		\
+	SpaceJunkLines.vert		
 
 CLEANFILES = \
 	BonusLevelEntrance.frag		\
@@ -84,7 +96,10 @@ CLEANFILES = \
 	SceneObject-Texture.vert	\
 	SpaceJunk.frag			\
 	SpaceJunk.geom			\
-	SpaceJunk.vert			
+	SpaceJunk.vert			\
+	SpaceJunkLines.frag		\
+	SpaceJunkLines.geom		\
+	SpaceJunkLines.vert		
 
 EXTRA_DIST = \
 	AdditiveBlending.frag		\
@@ -109,4 +124,5 @@ EXTRA_DIST = \
 	SceneObject.vert		\
 	Star.frag			\
 	Star.geom			\
+	StarLines.geom			\
 	Star.vert			

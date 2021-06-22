@@ -48,12 +48,8 @@ GameStateGame::GameStateGame(GameStats * gamestats)
   _blur = new GaussianBlur();
   _blender = new AdditiveBlending();
     
-  _fov = 60.0;
-#define CAMERA_SPEED 0.5
-
-  _camera->SetFOV(_fov);
+  _camera->SetFOV(60);
   _camera->SetClippingPlanes(0.01, 10000.0);
-  _camera->UpdateProjection();
   
   _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
   _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
@@ -295,11 +291,12 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
   assert(_state == State::RUNNING);
   auto player = _scene->GetPlayer();
-  bool warpspeed = false;
+  bool disablecontrols = _scene->IsWarpEngineStarting();
   if(player && player->IsAlive())
     {
       auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
-      warpspeed = u->IsActive();
+      if(u->IsActive())
+        disablecontrols = true;
     }
   switch(key)
     {
@@ -311,76 +308,24 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       if(!pressed)
         OpenSpaceshipMaintenanceUI();
       break;
-#if 0
     case SDLK_LEFT:
-      if(pressed)
-        _camera->MoveRight(-CAMERA_SPEED * 2.0);
-      break;
-      
-    case SDLK_RIGHT:
-      if(pressed)
-        _camera->MoveRight(CAMERA_SPEED * 2.0);
-      break;
-      
-    case SDLK_UP:
-      if(pressed)
-        _camera->MoveForward(CAMERA_SPEED);
-      break;
-      
-    case SDLK_DOWN:
-      if(pressed)
-        _camera->MoveForward(-CAMERA_SPEED);
-      break;
-      
-    case SDLK_PAGEUP:
-      if(pressed)
-        _camera->MoveUp(CAMERA_SPEED);
-      break;
-      
-    case SDLK_PAGEDOWN:
-      if(pressed)
-        _camera->MoveUp(-CAMERA_SPEED);
-      break;
-      
-    case SDLK_PLUS:
-      if(pressed)
-        {
-          _fov++;
-          std::cout << "fov:" << _fov << std::endl;
-          _camera->SetFOV(_fov);
-          _camera->UpdateProjection();
-        }
-      break;
-      
-    case SDLK_MINUS:
-      if(pressed)
-        {
-          _fov--;
-          std::cout << "fov:" << _fov << std::endl;
-          _camera->SetFOV(_fov);
-          _camera->UpdateProjection();
-        }
-      break;
-
-#else
-    case SDLK_LEFT:
-      if(!warpspeed)
+      if(!disablecontrols)
         player->SetEngineThrottle(0, pressed ? 1.0 : 0.0);
       break;
       
     case SDLK_RIGHT:
-      if(!warpspeed)
+      if(!disablecontrols)
         player->SetEngineThrottle(1, pressed ? 1.0 : 0.0);
       break;
 
     case SDLK_SPACE:
-      if(!warpspeed)
+      if(!disablecontrols)
         for(unsigned int i = 0; i < _scene->GetPlayer()->GetWeaponCount(); i++)
           player->SetWeaponAutofire(i, pressed);
       break;
 
     case SDLK_c:
-      if(!warpspeed && pressed)
+      if(!disablecontrols && pressed)
         {
           auto em = player->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
           if(em->CanActivate())
@@ -390,28 +335,11 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
     case SDLK_w:
       if(pressed)
-        {
-          auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
-          if(u->IsActive())
-            {
-              u->Deactivate();
-            }
-          else
-            {
-              if(u->CanActivate())
-                u->Activate();
-            }
-        }
-      break;
-#endif
-
-
-    case SDLK_q:
-      if(pressed)
-        std::cout << player->GetPosition() << std::endl;
+        _scene->StartWarpEngine();
+      else
+        _scene->StopWarpEngine();
       break;
     }
-
 }
 
 

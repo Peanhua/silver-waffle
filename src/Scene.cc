@@ -21,7 +21,8 @@ Scene::Scene()
   : _random_generator(0),
     _play_area_size(glm::vec2(20, 60)),
     _player(nullptr),
-    _time(0)
+    _time(0),
+    _warp_engine_starting(false)
 {
   std::uniform_real_distribution<float> rdist(0, 1);
   for(int i = 0; i < 300; i++)
@@ -173,6 +174,28 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
 
 void Scene::Tick(double deltatime)
 {
+  if(_warp_engine_starting)
+    {
+      if(_player && _player->IsAlive())
+        {
+          _warp_throttle += static_cast<float>(1.0 / 2.0 * deltatime);
+          if(_warp_throttle < 1.0f)
+            _particles->SetMode(true, _warp_throttle);
+          else
+            {
+              _warp_engine_starting = false;
+              _particles->SetMode(false);
+              auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+              u->Activate();
+            }
+        }
+      else
+        {
+          _warp_engine_starting = false;
+          _particles->SetMode(false);
+        }
+    }
+  
   bool warpspeed = false;
   double warpspeedmult = 0.0;
   if(_player && _player->IsAlive())
@@ -242,7 +265,11 @@ void Scene::Tick(double deltatime)
     if(e && e->IsAlive())
       e->Tick(dtime); // todo: Add separate method to move the explosions when warpseed is active.
 
-  _particles->Tick(dtime);
+  if(_warp_engine_starting)
+    _particles->Tick(deltatime * (1.0 + static_cast<double>(10.0 * _warp_throttle)));
+  else
+    _particles->Tick(dtime);
+  
   _wall->Tick(deltatime);
 }
 
@@ -388,4 +415,35 @@ std::vector<ObjectMovable *> * Scene::GetNearbyObjects(const glm::vec3 & positio
         rv->push_back(o);
 
   return rv;
+}
+
+
+void Scene::StartWarpEngine()
+{
+  if(!_player || !_player->IsAlive())
+    return;
+  
+  auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+  if(u->CanActivate())
+    {
+      _warp_engine_starting = true;
+      _warp_throttle = 0;
+    }
+}
+
+void Scene::StopWarpEngine()
+{
+  _warp_engine_starting = false;
+  _particles->SetMode(false);
+
+  if(!_player || !_player->IsAlive())
+    return;
+  auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+  u->Deactivate();
+}
+
+
+bool Scene::IsWarpEngineStarting() const
+{
+  return _warp_engine_starting;
 }

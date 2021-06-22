@@ -15,13 +15,15 @@ public:
 
   void Tick(double deltatime);
   void Draw(const Camera & camera) const;
-
+  void SetMode(bool lines, float particle_length = 0.0f);
+  
 private:
   double _radius_min;
   double _radius_max;
   Mesh * _mesh;
   double _time;
   double _add_star_timer;
+  float  _particle_length;
   unsigned int _star_count;
   unsigned int _next_index;
   std::mt19937_64                        _random;

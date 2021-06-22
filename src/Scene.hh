@@ -73,6 +73,10 @@ public:
   bool              AddObject(Object * object, const glm::vec3 & position);
 
   std::vector<ObjectMovable *> * GetNearbyObjects(const glm::vec3 & position, float radius);
+
+  void StartWarpEngine();
+  void StopWarpEngine();
+  bool IsWarpEngineStarting() const;
   
 private:
   std::mt19937_64                 _random_generator;
@@ -88,6 +92,8 @@ private:
   WormholeWall *                  _wall;
   Container<Object *>             _planets;
   double                          _time;
+  bool                            _warp_engine_starting;
+  float                           _warp_throttle;
 };
 
 
