@@ -50,6 +50,8 @@ public:
   void Deactivate();
   bool IsActive() const;
 
+  void SetEnabled(bool enabled);
+
   void Dump() const;
   
 private:
@@ -58,6 +60,7 @@ private:
   std::string _name;
   double      _value;
   int         _install_count;
+  bool        _enabled;
   bool        _always_activated;
   bool        _activated;
   double      _timer;

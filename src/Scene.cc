@@ -266,7 +266,7 @@ void Scene::Tick(double deltatime)
       e->Tick(dtime); // todo: Add separate method to move the explosions when warpseed is active.
 
   if(_warp_engine_starting)
-    _particles->Tick(deltatime * (1.0 + static_cast<double>(5.0 * _warp_throttle)));
+    _particles->Tick(deltatime * (1.0 + static_cast<double>(5.0f * _warp_throttle)));
   else
     _particles->Tick(dtime);
   
@@ -434,6 +434,8 @@ void Scene::StartWarpEngine()
       for(unsigned int i = 0; i < _player->GetWeaponCount(); i++)
         _player->SetWeaponAutofire(i, false);
     }
+  else if(u->GetInstallCount() > 0)
+    _player->SystemlogAppend("Warp engine: error\n");
 }
 
 void Scene::StopWarpEngine()

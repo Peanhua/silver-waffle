@@ -12,6 +12,7 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     _type(type),
     _value(0),
     _install_count(0),
+    _enabled(true),
     _activated(false),
     _timer(0),
     _timer_max(0),
@@ -282,6 +283,9 @@ bool SpaceshipUpgrade::CanActivate() const
   if(IsActive())
     return false;
 
+  if(!_enabled)
+    return false;
+
   if(_cooldown > 0.0)
     return false;
 
@@ -294,6 +298,7 @@ bool SpaceshipUpgrade::CanActivate() const
 
 void SpaceshipUpgrade::Activate(double value, double time)
 {
+  assert(_enabled);
   _activated = true;
   _value = value;
   if(_type != Type::WARP_ENGINE)
@@ -356,4 +361,10 @@ double SpaceshipUpgrade::GetCooldownMax() const
 void SpaceshipUpgrade::Deactivate()
 {
   _activated = false;
+}
+
+
+void SpaceshipUpgrade::SetEnabled(bool enabled)
+{
+  _enabled = enabled;
 }

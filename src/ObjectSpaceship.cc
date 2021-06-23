@@ -433,3 +433,21 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
     assert(false);
 }
 
+
+void ObjectSpaceship::SystemlogAppend(const std::string & message)
+{
+  _systemlog += message;
+}
+
+
+const std::string & ObjectSpaceship::SystemlogGet() const
+{
+  return _systemlog;
+}
+
+
+void ObjectSpaceship::SystemlogClear()
+{
+  _systemlog.clear();
+}
+

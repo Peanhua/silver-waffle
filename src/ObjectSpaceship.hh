@@ -44,6 +44,10 @@ public:
   void         AddControlProgram(SpaceshipControlProgram * program);
   void         AddNamedControlProgram(const std::string & name);
   unsigned int GetActiveControlProgramCount() const;
+
+  void                SystemlogAppend(const std::string & message);
+  const std::string & SystemlogGet() const;
+  void                SystemlogClear();
   
 private:
   class Engine
@@ -77,6 +81,8 @@ private:
   std::vector<Weapon *>  _weapons;
   std::vector<SpaceshipUpgrade *> _upgrades;
   std::vector<SpaceshipControlProgram *> _control_programs;
+
+  std::string _systemlog;
 };
 
 #endif

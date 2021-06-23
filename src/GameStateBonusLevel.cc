@@ -14,6 +14,7 @@ GameStateBonusLevel::GameStateBonusLevel(GameStateGame * mainlevel, double enemy
   auto mainplr = _mainlevel->GetScene()->GetPlayer();
   myplr->CopyUpgrades(*mainplr);
   myplr->SetHealth(mainplr->GetHealth());
+  myplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
   RefreshUI();
 }
 
@@ -33,4 +34,5 @@ void GameStateBonusLevel::OnQuit()
   auto mainplr = _mainlevel->GetScene()->GetPlayer();
   mainplr->CopyUpgrades(*myplr);
   mainplr->SetHealth(myplr->GetHealth());
+  mainplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(true);
 }

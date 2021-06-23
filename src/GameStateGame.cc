@@ -140,11 +140,11 @@ GameStateGame::GameStateGame(GameStats * gamestats)
   {
     auto w = new WidgetTeletyper(root, glm::ivec2(10, 120), glm::ivec2(200, 100));
     w->SetTextFont(AssetLoader->LoadFont(10));
-    w->SetCharactersPerSecond(12);
+    w->SetCharactersPerSecond(30);
     w->SetTextColor(glm::vec3(0.0, 0.8, 0.0));
     w->SetIsFocusable(false);
     w->SetText("Spaceship computer online.\n");
-    w->SetPurgingTime(10.0);
+    w->SetPurgingTime(8.0);
     _teletyper = w;
   }
 
@@ -255,6 +255,15 @@ void GameStateGame::Tick(double deltatime)
   
   _levelinfo_widget->SetText(level->GetName() + "   " + fmt(level->GetTime()) + " (" + fmt(_gamestats->GetTime()) + ")");
 
+  {
+    auto player = _scene->GetPlayer();
+    if(player && player->IsAlive())
+      if(player->SystemlogGet().length() > 0)
+        {
+          _teletyper->AppendText(player->SystemlogGet());
+          player->SystemlogClear();
+        }
+  }
   _texture_renderer->BeginRender();
   _scene->Draw(*_camera);
   _texture_renderer->EndRender();
@@ -382,7 +391,7 @@ void GameStateGame::NextLifeOrQuit()
   
   if(_gamestats->GetLives() > 0)
     {
-      _teletyper->AppendText("\n...\nSpaceship computer online.\n");
+      _teletyper->AppendText("\nSpaceship computer online.\n");
       _scene->CreatePlayer();
       _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
       _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
