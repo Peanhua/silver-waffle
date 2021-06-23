@@ -152,6 +152,7 @@ ObjectSpaceship * Scene::CreatePlayer()
   _player->AddWeapon();
   _player->AddEngine(glm::vec3(-1, 0, 0), 20.0);
   _player->AddEngine(glm::vec3( 1, 0, 0), 20.0);
+  _player->SystemlogEnable();
 
   return _player;
 }

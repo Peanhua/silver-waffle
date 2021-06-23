@@ -10,7 +10,8 @@
 
 ObjectSpaceship::ObjectSpaceship(Scene * scene)
   : ObjectMovable(scene),
-    _gamestats(nullptr)
+    _gamestats(nullptr),
+    _systemlog_enabled(false)
 {
   std::vector<SpaceshipUpgrade::Type> types
     {
@@ -198,6 +199,7 @@ void ObjectSpaceship::UpgradeEngines(double power_multiplier)
 
 void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
+  std::string syslog("Hit!");
   auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
   if(shield->IsActive())
     {
@@ -206,7 +208,13 @@ void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 &
       shield->AdjustValue(-reduction);
      
       damage -= reduction;
+
+      if(shield->IsActive())
+        syslog += " Shields hold!";
+      else
+        syslog += " Shields down!";
     }
+  SystemlogAppend(syslog + " Hull damage: " + std::to_string(std::lround(damage)) + "\n");
   ObjectMovable::Hit(perpetrator, damage, impulse);
 }
 
@@ -436,7 +444,8 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
 
 void ObjectSpaceship::SystemlogAppend(const std::string & message)
 {
-  _systemlog += message;
+  if(_systemlog_enabled)
+    _systemlog += message;
 }
 
 
@@ -448,6 +457,12 @@ const std::string & ObjectSpaceship::SystemlogGet() const
 
 void ObjectSpaceship::SystemlogClear()
 {
-  _systemlog.clear();
+  if(_systemlog_enabled)
+    _systemlog.clear();
 }
 
+
+void ObjectSpaceship::SystemlogEnable()
+{
+  _systemlog_enabled = true;
+}

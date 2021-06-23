@@ -45,6 +45,7 @@ public:
   void         AddNamedControlProgram(const std::string & name);
   unsigned int GetActiveControlProgramCount() const;
 
+  void                SystemlogEnable();
   void                SystemlogAppend(const std::string & message);
   const std::string & SystemlogGet() const;
   void                SystemlogClear();
@@ -82,6 +83,7 @@ private:
   std::vector<SpaceshipUpgrade *> _upgrades;
   std::vector<SpaceshipControlProgram *> _control_programs;
 
+  bool        _systemlog_enabled;
   std::string _systemlog;
 };
 
