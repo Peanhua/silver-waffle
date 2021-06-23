@@ -56,11 +56,13 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
     {
       auto score = static_cast<unsigned int>(GetBonus(Type::SCORE_BONUS));
       gamestats->AddScore(score);
+      player->SystemlogAppend("Score +" + std::to_string(score) + "\n");
     }
   if(HasBonus(Type::SCORE_MULTIPLIER))
     {
       auto mult = static_cast<unsigned int>(GetBonus(Type::SCORE_MULTIPLIER));
       gamestats->SetScoreMultiplier(mult, 30);
+      player->SystemlogAppend("Score multiplier: " + std::to_string(mult) + "\n");
     }
   {
     UpgradeMaterial::Type upg_types[] =
@@ -79,7 +81,9 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
       if(HasBonus(my_types[i]))
         {
           auto upgrade = gamestats->GetUpgradeMaterial(upg_types[i]);
-          upgrade->Add(static_cast<unsigned int>(GetBonus(my_types[i])));
+          auto amount = static_cast<unsigned int>(GetBonus(my_types[i]));
+          upgrade->Add(amount);
+          player->SystemlogAppend("Material " + upgrade->GetName() + " +" + std::to_string(amount) + "\n");
         }
   }
 }

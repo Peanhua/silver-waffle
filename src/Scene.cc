@@ -183,7 +183,6 @@ void Scene::Tick(double deltatime)
           if(_warp_throttle < 1.0f)
             {
               _particles->SetMode(true, _warp_throttle);
-              _player->SetPosition(glm::vec3(_player->GetPosition().xy(), 1.0f * _warp_throttle));
             }
           else
             {
@@ -427,6 +426,7 @@ void Scene::StartWarpEngine()
   auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
   if(u->CanActivate())
     {
+      _player->SystemlogAppend("Warp engine: initializing\n");
       _warp_engine_starting = true;
       _warp_throttle = 0;
 
@@ -447,7 +447,7 @@ void Scene::StopWarpEngine()
 
   if(!_player || !_player->IsAlive())
     return;
-  _player->SetPosition(glm::vec3(_player->GetPosition().xy(), 0));
+
   auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
   u->Deactivate();
 }

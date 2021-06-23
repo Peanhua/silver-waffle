@@ -73,6 +73,7 @@ void SpaceshipUpgrade::Install()
       _timer_max += 5.0 * 60.0;
       break;
     }
+  _spaceship->SystemlogAppend("Install " + _name + "\n");
 }
 
 
@@ -201,7 +202,7 @@ void SpaceshipUpgrade::Tick(double deltatime)
       if(_timer > 0.0)
         _timer -= deltatime;
       else
-        _activated = false;
+        Deactivate();
       
       if(_type == Type::REPAIR_DROID)
         {
@@ -252,9 +253,11 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
       if(GetInstallCount() > 0)
         if(collectible->HasBonus(ObjectCollectible::Type::WARP_FUEL))
           {
+            auto prev = _timer;
             _timer += collectible->GetBonus(ObjectCollectible::Type::WARP_FUEL);
             if(_timer > _timer_max)
               _timer = _timer_max;
+            _spaceship->SystemlogAppend("Warp fuel +" + std::to_string(_timer - prev) + "\n");
           }
       break;
       // The Following are not available from ObjectCollectible:
@@ -301,11 +304,16 @@ void SpaceshipUpgrade::Activate(double value, double time)
   assert(_enabled);
   _activated = true;
   _value = value;
-  if(_type != Type::WARP_ENGINE)
+  if(_type == Type::WARP_ENGINE)
+    {
+      _spaceship->SystemlogAppend("Warp engine: Warp speed!\n");
+    }
+  else
     {
       _timer = time;
       _timer_max = time;
       _cooldown = 30.0;
+      _spaceship->SystemlogAppend(_name + " activated\n");
     }
 }
 
@@ -360,11 +368,15 @@ double SpaceshipUpgrade::GetCooldownMax() const
 
 void SpaceshipUpgrade::Deactivate()
 {
+  if(_activated)
+    if(_type == Type::WARP_ENGINE)
+      _spaceship->SystemlogAppend("Warp engine: off\n");
   _activated = false;
 }
 
 
 void SpaceshipUpgrade::SetEnabled(bool enabled)
 {
+  _spaceship->SystemlogAppend(_name + (enabled ? " online" : " offline") + "\n");
   _enabled = enabled;
 }
