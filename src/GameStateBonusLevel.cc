@@ -10,9 +10,6 @@ GameStateBonusLevel::GameStateBonusLevel(GameStateGame * mainlevel, double enemy
     _enemy_difficulty(enemy_difficulty),
     _warp_fuel_bonus(warp_fuel_bonus)
 {
-  SetupLevels();  
-  OnLevelChanged();
-
   auto myplr = _scene->GetPlayer();
   auto mainplr = _mainlevel->GetScene()->GetPlayer();
   myplr->CopyUpgrades(*mainplr);
@@ -20,7 +17,7 @@ GameStateBonusLevel::GameStateBonusLevel(GameStateGame * mainlevel, double enemy
   RefreshUI();
 }
 
-  
+
 void GameStateBonusLevel::SetupLevels()
 {
   _levels.clear();

@@ -73,7 +73,7 @@ GameStateTitle::GameStateTitle()
     w->SetImage("PanelBorders");
     w->SetImageColor(glm::vec4(0, 1, 0, 1));
     w->SetTextFont(AssetLoader->LoadFont(14));
-    w->SetCharactersPerSecond(12);
+    w->SetCharactersPerSecond(15);
     w->SetTextColor(glm::vec3(0, 1, 0));
     w->SetTextPadding(glm::vec2(10, 2));
     w->SetIsFocusable(false);

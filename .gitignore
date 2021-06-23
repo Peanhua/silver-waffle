@@ -72,6 +72,9 @@ stamp-h1
 /Shaders/SpaceJunk.frag
 /Shaders/SpaceJunk.geom
 /Shaders/SpaceJunk.vert
+/Shaders/SpaceJunkLines.frag
+/Shaders/SpaceJunkLines.geom
+/Shaders/SpaceJunkLines.vert
 
 # Other
 .bash_history

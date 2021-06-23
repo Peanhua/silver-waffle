@@ -11,7 +11,9 @@ public:
 
   void Tick(double deltatime) override;
   void SetText(const std::string & text) override;
+  void AppendText(const std::string & text);
   void SetCharactersPerSecond(double characters_per_second);
+  void SetPurgingTime(double time_to_purge_line0);
   double GetTime() const; // negative when still typing, positive after typing has finished
 
 private:
@@ -20,6 +22,9 @@ private:
   unsigned int _cursor_position;
   double       _timer;
   double       _time_finished;
+
+  double       _time_to_purge_line0;
+  double       _purging_timer;
 };
 
 #endif

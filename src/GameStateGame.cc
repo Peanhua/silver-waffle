@@ -6,7 +6,6 @@
 #include "Image.hh"
 #include "MainLevel.hh"
 #include "MeshOverlay.hh"
-#include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScoreReel.hh"
@@ -21,6 +20,7 @@
 #include "WidgetSpaceshipMaintenance.hh"
 #include "WidgetSpaceshipStatus.hh"
 #include "WidgetSpaceshipUpgradeStatus.hh"
+#include "WidgetTeletyper.hh"
 #include "WidgetUpgradeMaterial.hh"
 #include "WidgetWeaponStatus.hh"
 #include <iostream>
@@ -136,6 +136,16 @@ GameStateGame::GameStateGame(GameStats * gamestats)
         x += 50;
         _active_bonus_widgets.push_back(w);
       }
+  }
+  {
+    auto w = new WidgetTeletyper(root, glm::ivec2(10, 120), glm::ivec2(200, 100));
+    w->SetTextFont(AssetLoader->LoadFont(10));
+    w->SetCharactersPerSecond(12);
+    w->SetTextColor(glm::vec3(0.0, 0.8, 0.0));
+    w->SetIsFocusable(false);
+    w->SetText("Spaceship computer online.\n");
+    w->SetPurgingTime(10.0);
+    _teletyper = w;
   }
 
   _levelinfo_widget = new Widget(root, glm::ivec2(10, 10), glm::ivec2(300, 25));
@@ -357,6 +367,7 @@ void GameStateGame::OnLivesUpdated()
 void GameStateGame::OnPlayerDies()
 {
   assert(_state == State::RUNNING);
+  _teletyper->AppendText("Offline.\n");
   ChangeState(State::DEATH_PAUSE);
 }
 
@@ -371,6 +382,7 @@ void GameStateGame::NextLifeOrQuit()
   
   if(_gamestats->GetLives() > 0)
     {
+      _teletyper->AppendText("\n...\nSpaceship computer online.\n");
       _scene->CreatePlayer();
       _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
       _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
@@ -399,6 +411,7 @@ void GameStateGame::RefreshUI()
 void GameStateGame::OnLevelChanged()
 {
   auto level = _levels[_current_level];
+  _teletyper->AppendText("Destination: " + level->GetName() + "\n");
   level->Start();
 }
 
@@ -470,6 +483,8 @@ void GameStateGame::ChangeState(State new_state)
         _pausebutton->SetText(_gamestatetransition_text);
         _pausebutton->SetTextPaddingCentered(true, true);
         SetModalWidget(_pausebutton);
+
+        _teletyper->AppendText(_gamestatetransition_text + '\n');
 
         _scene->GetPlayer()->ClearControlPrograms();
 

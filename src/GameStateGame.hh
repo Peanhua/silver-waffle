@@ -19,6 +19,7 @@ class UpgradeMaterial;
 class WidgetPlayerShip;
 class WidgetSpaceshipStatus;
 class WidgetSpaceshipUpgradeStatus;
+class WidgetTeletyper;
 
 
 class GameStateGame : public GameState
@@ -77,6 +78,7 @@ private:
   std::vector<Widget *> _active_bonus_widgets;
   Widget *              _pausebutton;
   Widget *              _levelinfo_widget;
+  WidgetTeletyper *     _teletyper;
 
   void ChangeState(State new_state);
   void OnPlayerDies();
