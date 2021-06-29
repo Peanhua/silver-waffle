@@ -22,10 +22,11 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
   auto font_color = glm::vec3(0.2, 1, 0.2);
   
   SetImage("PanelBorders");
+  SetImageColor(glm::vec4(font_color * 0.5f, 1.0));
   SetIsFocusable(false);
         
-  int x = 10;
-  int y = 2;
+  int x = 40;
+  int y = 20;
   {
     const std::string t("SPACESHIP MAINTENANCE");
     const double tlen = font->GetWidth(t);
