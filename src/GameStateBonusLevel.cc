@@ -16,6 +16,7 @@ GameStateBonusLevel::GameStateBonusLevel(GameStateGame * mainlevel, double enemy
   myplr->SetHealth(mainplr->GetHealth());
   myplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
   RefreshUI();
+  _scene->EnableTutorialMessages(false);
 }
 
 

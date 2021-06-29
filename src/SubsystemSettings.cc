@@ -19,6 +19,8 @@ bool SubsystemSettings::Start()
 
   _int_values["screen_width"]  = 1024;
   _int_values["screen_height"] = 768;
+
+  _bool_values["tutorial"] = true;
   
   _bool_values["cheat_no_enemies"] = false;
   _bool_values["cheat_cheap_upgrades"] = false;

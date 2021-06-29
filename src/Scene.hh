@@ -77,23 +77,28 @@ public:
   void StartWarpEngine();
   void StopWarpEngine();
   bool IsWarpEngineStarting() const;
+
+  void TutorialMessage(unsigned int id, const std::string & message);
+  void EnableTutorialMessages(bool enabled);
   
 private:
-  std::mt19937_64                 _random_generator;
-  glm::vec2                       _play_area_size;
-  ObjectSpaceship *               _player;
-  Container<ObjectInvader *>      _invaders;
-  Container<ObjectProjectile *>   _projectiles;
-  Container<ObjectCollectible *>  _collectibles;
-  Container<Object *>             _objects;
-  Container<Explosion *>          _explosions;
-  Milkyway *                      _milkyway;
-  SpaceParticles *                _particles;
-  WormholeWall *                  _wall;
-  Container<Object *>             _planets;
-  double                          _time;
-  bool                            _warp_engine_starting;
-  float                           _warp_throttle;
+  std::mt19937_64                _random_generator;
+  glm::vec2                      _play_area_size;
+  ObjectSpaceship *              _player;
+  Container<ObjectInvader *>     _invaders;
+  Container<ObjectProjectile *>  _projectiles;
+  Container<ObjectCollectible *> _collectibles;
+  Container<Object *>            _objects;
+  Container<Explosion *>         _explosions;
+  Milkyway *                     _milkyway;
+  SpaceParticles *               _particles;
+  WormholeWall *                 _wall;
+  Container<Object *>            _planets;
+  double                         _time;
+  bool                           _warp_engine_starting;
+  float                          _warp_throttle;
+  bool                           _tutorialmessages_enabled;
+  std::vector<bool>              _tutorialmessages;
 };
 
 

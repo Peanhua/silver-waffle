@@ -22,7 +22,8 @@ Scene::Scene()
     _play_area_size(glm::vec2(20, 60)),
     _player(nullptr),
     _time(0),
-    _warp_engine_starting(false)
+    _warp_engine_starting(false),
+    _tutorialmessages_enabled(true)
 {
   std::uniform_real_distribution<float> rdist(0, 1);
   for(int i = 0; i < 300; i++)
@@ -331,6 +332,8 @@ bool Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & po
   delete _collectibles[ind];
   _collectibles[ind] = collectible;
 
+  TutorialMessage(2, "A valuable item from the explosion,\ncollect it!\n");
+
   return true;
 }
 
@@ -456,4 +459,35 @@ void Scene::StopWarpEngine()
 bool Scene::IsWarpEngineStarting() const
 {
   return _warp_engine_starting;
+}
+
+
+
+
+void Scene::TutorialMessage(unsigned int id, const std::string & message)
+{
+  if(!_tutorialmessages_enabled)
+    return;
+  
+  if(!Settings->GetBool("tutorial"))
+    return;
+  
+  if(!_player || !_player->IsAlive())
+    return;
+
+  assert(id < 100);
+  while(id >= _tutorialmessages.size())
+    _tutorialmessages.push_back(false);
+  
+  if(!_tutorialmessages[id])
+    {
+      _tutorialmessages[id] = true;
+      _player->SystemlogAppend(message);
+    }
+}
+
+
+void Scene::EnableTutorialMessages(bool enabled)
+{
+  _tutorialmessages_enabled = enabled;
 }

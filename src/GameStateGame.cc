@@ -169,7 +169,11 @@ void GameStateGame::Tick(double deltatime)
   _score_reel->Tick(deltatime);
 
   if(_state == State::RUNNING)
-    _gamestats->Tick(deltatime);
+    {
+      _gamestats->Tick(deltatime);
+      if(GetGameStats()->GetTime() > 6.0)
+        _scene->TutorialMessage(0, "Fire at will.\n");
+    }
 
   if(_state == State::RUNNING || _state == State::DEATH_PAUSE)
     _scene->Tick(deltatime);

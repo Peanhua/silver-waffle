@@ -84,6 +84,7 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
           auto amount = static_cast<unsigned int>(GetBonus(my_types[i]));
           upgrade->Add(amount);
           player->SystemlogAppend("Material " + upgrade->GetName() + " +" + std::to_string(amount) + "\n");
+          GetScene()->TutorialMessage(1, "Press TAB to open the upgrade menu.\n");
         }
   }
 }
