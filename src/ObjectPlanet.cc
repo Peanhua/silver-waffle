@@ -20,6 +20,12 @@ ObjectPlanet::ObjectPlanet(Scene * scene, Image * planet_texture, double planet_
 }
 
 
+ObjectPlanet::~ObjectPlanet()
+{
+  delete GetMesh();
+}
+
+
 void ObjectPlanet::AddPlanetRing(float start, float end)
 {
   Mesh * ring = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);

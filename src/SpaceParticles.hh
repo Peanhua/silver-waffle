@@ -12,7 +12,8 @@ class SpaceParticles
 {
 public:
   SpaceParticles(double radius_min, double radius_max, unsigned long random_seed);
-
+  ~SpaceParticles();
+  
   void Tick(double deltatime);
   void Draw(const Camera & camera) const;
   void SetMode(bool lines, float particle_length = 0.0f);

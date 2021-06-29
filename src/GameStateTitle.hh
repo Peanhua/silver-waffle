@@ -15,7 +15,8 @@ class GameStateTitle : public GameState
 {
 public:
   GameStateTitle();
-
+  ~GameStateTitle();
+  
   void Tick(double deltatime) override;
   void TickPlot();
   

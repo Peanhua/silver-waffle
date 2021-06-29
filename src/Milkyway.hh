@@ -8,6 +8,7 @@ class Milkyway
 {
 public:
   Milkyway();
+  ~Milkyway();
 
   void Draw(const Camera & camera) const;
 

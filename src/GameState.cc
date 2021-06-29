@@ -16,6 +16,8 @@ GameState::GameState()
 
 GameState::~GameState()
 {
+  delete _child;
+  delete _root_widget;
 }
 
 

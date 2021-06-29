@@ -76,6 +76,12 @@ WidgetButton::WidgetButton(Widget * parent, const glm::ivec2 & position, const g
 }
 
 
+WidgetButton::~WidgetButton()
+{
+  delete _mesh_up;
+}
+
+
 void WidgetButton::Draw() const
 {
   if(_mesh_up)

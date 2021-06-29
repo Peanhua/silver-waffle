@@ -36,6 +36,12 @@ SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned lo
 }
 
 
+SpaceParticles::~SpaceParticles()
+{
+  delete _mesh;
+}
+
+
 double SpaceParticles::GetRandom(double min)
 {
   return min + (1.0 - min) * _rdist(_random);

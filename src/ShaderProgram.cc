@@ -12,12 +12,14 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
     auto shader = new Shader(GL_VERTEX_SHADER, vertex_shader);
     assert(shader != 0);
     glAttachShader(_program, shader->GetShader());
+    _shaders.push_back(shader);
   }
 
   {
     auto shader = new Shader(GL_FRAGMENT_SHADER, fragment_shader);
     assert(shader != 0);
     glAttachShader(_program, shader->GetShader());
+    _shaders.push_back(shader);
   }
 
   if(geometry_shader.size() > 0)
@@ -25,6 +27,7 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
       auto shader = new Shader(GL_GEOMETRY_SHADER, geometry_shader);
       assert(shader != 0);
       glAttachShader(_program, shader->GetShader());
+      _shaders.push_back(shader);
     }
 
   glBindAttribLocation(_program, Mesh::ALOC_VERTEX,       "in_vertex");
@@ -79,6 +82,11 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
 
 ShaderProgram::~ShaderProgram()
 {
+  for(auto shader : _shaders)
+    {
+      glDetachShader(_program, shader->GetShader());
+      delete shader;
+    }
   glDeleteProgram(_program);
 }
 

@@ -119,6 +119,16 @@ GameStateTitle::GameStateTitle()
 }
 
 
+GameStateTitle::~GameStateTitle()
+{
+  for(auto o : _planets)
+    delete o;
+  delete _camera;
+  delete _milkyway;
+  delete _particles;
+}
+
+
 void GameStateTitle::Tick(double deltatime)
 {
   _time += deltatime;

@@ -6,6 +6,9 @@
 #include <vector>
 #include "glm.hh"
 
+class Shader;
+
+
 class ShaderProgram
 {
 public:
@@ -29,7 +32,8 @@ public:
   void SetInt(const std::string & name, int value);
   
 private:
-  GLuint _program;
+  GLuint                _program;
+  std::vector<Shader *> _shaders;
 };
 
 #endif

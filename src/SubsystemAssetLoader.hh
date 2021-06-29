@@ -18,12 +18,13 @@ class SubsystemAssetLoader : public Subsystem
 {
 public:
   SubsystemAssetLoader();
+  ~SubsystemAssetLoader();
   
   bool Start() override;
   void Stop() override;
 
   Font *              LoadFont(float size);
-  const std::string & LoadText(const std::string & filename);
+  const std::string & LoadText(const std::string & filename, bool ignore_not_found_error = false);
   json11::Json *      LoadJson(const std::string & filename);
   ShaderProgram *     LoadShaderProgram(const std::string & name);
   Mesh *              LoadMesh(const std::string & name, const std::string & shader_prefix = "SceneObject");

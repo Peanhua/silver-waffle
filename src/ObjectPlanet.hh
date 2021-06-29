@@ -10,6 +10,7 @@ class ObjectPlanet : public ObjectMovable
 {
 public:
   ObjectPlanet(Scene * scene, Image * planet_texture, double planet_size);
+  ~ObjectPlanet();
 
   void AddPlanetRing(float start, float end);
 };

@@ -38,6 +38,12 @@ Milkyway::Milkyway()
 }
 
 
+Milkyway::~Milkyway()
+{
+  delete _mesh;
+}
+
+
 void Milkyway::Draw(const Camera & camera) const
 {
   glm::mat4 model(1);

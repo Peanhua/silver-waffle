@@ -10,6 +10,7 @@ class WidgetButton : public Widget
 {
 public:
   WidgetButton(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
+  ~WidgetButton();
 
   void Draw() const override;
   

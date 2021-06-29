@@ -29,7 +29,8 @@ void SubsystemGameState::Stop()
   
   if(GameStateManager == this)
     GameStateManager = nullptr;
-  
+
+  delete _root_gamestate;
   _root_gamestate = nullptr;
 }
 

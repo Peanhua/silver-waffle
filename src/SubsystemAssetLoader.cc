@@ -19,6 +19,33 @@ SubsystemAssetLoader::SubsystemAssetLoader()
 }
 
 
+SubsystemAssetLoader::~SubsystemAssetLoader()
+{
+  for(auto json : _jsons)
+    delete json.second;
+
+  for(auto objlist : _solar_system_objects)
+    {
+      for(auto sobj : *objlist.second)
+        delete sobj;
+      
+      delete objlist.second;
+    }
+
+  for(auto img : _images)
+    delete img.second;
+
+  for(auto m : _meshes)
+    delete m.second;
+
+  for(auto f : _fonts)
+    delete f.second;
+
+  for(auto p : _shader_programs)
+    delete p.second;
+}
+
+
 bool SubsystemAssetLoader::Start()
 {
   assert(!AssetLoader);
@@ -35,7 +62,7 @@ void SubsystemAssetLoader::Stop()
 }
 
 
-const std::string & SubsystemAssetLoader::LoadText(const std::string & filename)
+const std::string & SubsystemAssetLoader::LoadText(const std::string & filename, bool ignore_not_found_error)
 {
   auto it = _text_assets.find(filename);
   if(it != _text_assets.end())
@@ -59,7 +86,10 @@ const std::string & SubsystemAssetLoader::LoadText(const std::string & filename)
         std::cerr << "Failed to read '" << filename << "'" << std::endl;
     }
   else
-    std::cout << "Warning, file '" << filename << "' not found error.\n";
+    {
+      if(!ignore_not_found_error)
+        std::cout << "Warning, file '" << filename << "' not found error.\n";
+    }
 
   static std::string nothing;
   return nothing;
@@ -74,7 +104,7 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
 
   auto vs = LoadText("Shaders/" + name + ".vert");
   auto fs = LoadText("Shaders/" + name + ".frag");
-  auto gs = LoadText("Shaders/" + name + ".geom");
+  auto gs = LoadText("Shaders/" + name + ".geom", true);
   auto sp = new ShaderProgram(vs, fs, gs);
   assert(sp);
   std::cout << "Loaded shader '" << name << "'.\n";
@@ -89,7 +119,7 @@ json11::Json * SubsystemAssetLoader::LoadJson(const std::string & filename)
     return (*it).second;
 
   auto json = new json11::Json();
-  std::string json_string = LoadText(filename + ".json");
+  std::string json_string = LoadText(filename + ".json", true);
   if(!json_string.empty())
     {
       std::string err;
@@ -103,8 +133,6 @@ json11::Json * SubsystemAssetLoader::LoadJson(const std::string & filename)
           json = nullptr;
         }
     }
-  else
-    std::cout << "Warning, empty json '" << filename << "'." << std::endl;
   _jsons[filename] = json;
 
   return json;
@@ -191,6 +219,7 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
     }
   else
     {
+      std::cout << "Failed to load '" << name << "'.\n";
       delete rv;
       rv = nullptr;
     }

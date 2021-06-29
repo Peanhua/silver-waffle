@@ -35,6 +35,11 @@ Widget::Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & 
 
 Widget::~Widget()
 {
+  for(auto c : _children)
+    delete c;
+  delete _textmesh;
+  delete _imagemesh;
+  delete _focused_borders_mesh;
 }
 
 
@@ -98,12 +103,12 @@ void Widget::Tick(double deltatime)
       c->Tick(deltatime);
 
   for(auto c : _destroyed_children)
-    for(unsigned int i = 0; i < _children.size(); i++)
-      if(_children[i] == c)
-        {
+    {
+      for(unsigned int i = 0; i < _children.size(); i++)
+        if(_children[i] == c)
           _children[i] = nullptr;
-          delete c;
-        }
+      delete c;
+    }
   _destroyed_children.clear();
 }
 

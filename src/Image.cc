@@ -39,16 +39,16 @@ Image::~Image()
 
 bool Image::Load(const std::string & filename)
 {
+  bool rv = false;
+  
   auto bmp = IMG_Load(filename.c_str());
   if(bmp)
     {
-      return Load(*bmp);
+      rv = Load(*bmp);
+      SDL_FreeSurface(bmp);
     }
-  else
-    {
-      std::cout << "Failed to load '" << filename << "': " << SDL_GetError() << std::endl;
-      return false;
-    }
+
+  return rv;
 }
 
 
