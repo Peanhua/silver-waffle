@@ -44,6 +44,7 @@ void WidgetWeaponStatus::UpdateMeter(bool force)
   const auto count = _spaceship->GetWeaponCount();
   if(_weaponcount == count && !force)
     return;
+  _weaponcount = count;
   
   delete _meter;
 
