@@ -25,7 +25,6 @@ void WidgetTeletyper::AppendText(const std::string & text)
 {
   _teletypertext += text;
   _timer = 0;
-  _purging_timer = 0;
 }
 
 
@@ -38,7 +37,6 @@ void WidgetTeletyper::Tick(double deltatime)
       _purging_timer += deltatime;
       if(_purging_timer > _time_to_purge_line0)
         {
-          _purging_timer = 0;
           auto lfpos = _teletypertext.find_first_of('\n');
           if(lfpos == _teletypertext.npos)
             _teletypertext = "";
@@ -52,6 +50,15 @@ void WidgetTeletyper::Tick(double deltatime)
                 _cursor_position = 0;
             }
           update_text = true;
+
+          int linecount = 0;
+          for(auto c : _teletypertext)
+            if(c == '\n')
+              linecount++;
+          if(linecount < 20)
+            _purging_timer = 0;
+          else
+            _purging_timer -= _time_to_purge_line0 * 0.1;
         }
     }
 
