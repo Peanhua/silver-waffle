@@ -31,6 +31,7 @@ silverwaffle_SOURCES =				\
 	GameStateTitle.cc			\
 	GameStats.cc				\
 	GaussianBlur.cc				\
+	HighscoreEntry.cc			\
 	Image.cc				\
 	Level.cc				\
 	Loot.cc					\
@@ -61,12 +62,14 @@ silverwaffle_SOURCES =				\
 	SubsystemGameState.cc			\
 	SubsystemGfx.cc				\
 	SubsystemHandler.cc			\
+	SubsystemHighscores.cc			\
 	SubsystemInput.cc			\
 	SubsystemSettings.cc			\
 	TextureRenderer.cc			\
 	UpgradeMaterial.cc			\
 	Widget.cc				\
 	WidgetButton.cc				\
+	WidgetHighscores.cc			\
 	WidgetPlayerShip.cc			\
 	WidgetShopItem.cc			\
 	WidgetSpaceshipMaintenance.cc		\

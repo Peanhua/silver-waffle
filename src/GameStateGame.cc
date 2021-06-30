@@ -3,6 +3,7 @@
 #include "Camera.hh"
 #include "Font.hh"
 #include "GaussianBlur.hh"
+#include "HighscoreEntry.hh"
 #include "Image.hh"
 #include "MainLevel.hh"
 #include "MeshOverlay.hh"
@@ -12,6 +13,7 @@
 #include "SolarSystemObject.hh"
 #include "SpaceshipControlProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemHighscores.hh"
 #include "SubsystemSettings.hh"
 #include "TextureRenderer.hh"
 #include "UpgradeMaterial.hh"
@@ -189,7 +191,7 @@ void GameStateGame::Tick(double deltatime)
               OnLevelChanged();
             }
           else
-            Quit();
+            GameOver(true);
         }
     }
   else if(_state == State::GAMESTATE_TRANSITION)
@@ -227,7 +229,7 @@ void GameStateGame::Tick(double deltatime)
       else
         { // Resumed from the new gamestate.
           if(GetGameStats()->GetLives() == 0)
-            Quit();
+            GameOver(false);
           else
             {
               if(_gamestatetransition_timer < 0.5)
@@ -406,7 +408,7 @@ void GameStateGame::NextLifeOrQuit()
       RefreshUI();
     }
   else
-    Quit();
+    GameOver(false);
 
   ChangeState(State::RUNNING);
 }
@@ -597,7 +599,7 @@ void GameStateGame::OpenPauseUI()
     assert(button == button);
     assert(position == position);
     if(!pressed)
-      Quit();
+      GameOver(false);
   });
   pos.y += siz.y + 10;
 
@@ -621,4 +623,12 @@ void GameStateGame::OpenPauseUI()
   assert(!_pausebutton);
   _pausebutton = panelbackground;
   SetModalWidget(_pausebutton);
+}
+
+
+void GameStateGame::GameOver(bool game_was_completed)
+{
+  auto hs = new HighscoreEntry(_score_reel->GetScore(), _current_level, _scene, game_was_completed);
+  Highscores->Add(hs);
+  Quit();
 }

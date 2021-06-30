@@ -80,6 +80,8 @@ public:
 
   void TutorialMessage(unsigned int id, const std::string & message);
   void EnableTutorialMessages(bool enabled);
+
+  double GetTime() const;
   
 private:
   std::mt19937_64                _random_generator;

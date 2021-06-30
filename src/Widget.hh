@@ -55,6 +55,8 @@ public:
   void OnClicked(bool pressed);
   void SetOnClicked(on_clicked_t callback);
 
+  void DestroyChildren();
+
 protected:
   const glm::mat4 & GetMVP()        const;
   const glm::mat4 & GetProjection() const;

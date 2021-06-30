@@ -1,6 +1,7 @@
 #include "SubsystemHandler.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemGfx.hh"
+#include "SubsystemHighscores.hh"
 #include "SubsystemInput.hh"
 #include "SubsystemSettings.hh"
 #include <SDL.h>
@@ -27,11 +28,13 @@ int main(int argc, char *argv[])
       {
         SubsystemAssetLoader ass;
         SubsystemSettings    settings;
+        SubsystemHighscores  highscores;
         SubsystemGfx         gfx;
         SubsystemGameState   gs;
         SubsystemInput       inp(gs);
         ssh.Add(&ass);
         ssh.Add(&settings);
+        ssh.Add(&highscores);
         ssh.Add(&inp);
         ssh.Add(&gfx);
         ssh.Add(&gs);

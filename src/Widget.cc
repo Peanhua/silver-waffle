@@ -436,3 +436,11 @@ void Widget::SetTextPaddingCentered(bool horizontally, bool vertically)
     _textpadding.y = (static_cast<float>(_size.y) - static_cast<float>(_font->GetHeight())) / 2.0f;
 }
 
+
+void Widget::DestroyChildren()
+{
+  for(auto c : _children)
+    if(c)
+      c->Destroy();
+  _children.clear();
+}

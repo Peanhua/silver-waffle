@@ -86,6 +86,8 @@ private:
 
   void OpenSpaceshipMaintenanceUI();
   void OpenPauseUI();
+
+  void GameOver(bool game_was_completed);
 };
 
 #endif

@@ -491,3 +491,9 @@ void Scene::EnableTutorialMessages(bool enabled)
 {
   _tutorialmessages_enabled = enabled;
 }
+
+
+double Scene::GetTime() const
+{
+  return _time;
+}

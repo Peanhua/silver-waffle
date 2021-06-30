@@ -8,6 +8,7 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "WidgetButton.hh"
+#include "WidgetHighscores.hh"
 #include "WidgetTeletyper.hh"
 #include <iostream>
 #include <GL/glew.h>
@@ -66,16 +67,16 @@ GameStateTitle::GameStateTitle()
   SetRootWidget(root);
 
   {
-    int bw = 650;
-    int bh = 250;
+    int bw = 670;
+    int bh = 270;
   
     auto w = new WidgetTeletyper(GetRootWidget(), glm::ivec2((width - bw) / 2, (height - bh) / 5), glm::ivec2(bw, bh));
     w->SetImage("PanelBorders");
-    w->SetImageColor(glm::vec4(0, 1, 0, 1));
+    w->SetImageColor(glm::vec4(0, 0.5, 0, 1));
     w->SetTextFont(AssetLoader->LoadFont(14));
     w->SetCharactersPerSecond(15);
     w->SetTextColor(glm::vec3(0, 1, 0));
-    w->SetTextPadding(glm::vec2(10, 2));
+    w->SetTextPadding(glm::vec2(20, 10));
     w->SetIsFocusable(false);
     _teletyper = w;
   }
@@ -115,6 +116,13 @@ GameStateTitle::GameStateTitle()
       if(!pressed)
         Quit();
     });
+  }
+
+  {
+    int bw = 150;
+    int bh = 60;
+  
+    new WidgetHighscores(root, glm::ivec2(20, height / 2 + (height / 2 - bh) / 2), glm::ivec2(bw, bh));
   }
 }
 
