@@ -1,7 +1,7 @@
 #ifndef GAME_STATE_TITLE_HH_
 #define GAME_STATE_TITLE_HH_
 
-#include "GameState.hh"
+#include "Screen.hh"
 #include <vector>
 
 class Camera;
@@ -11,11 +11,11 @@ class SpaceParticles;
 class WidgetTeletyper;
 
 
-class GameStateTitle : public GameState
+class ScreenTitle : public Screen
 {
 public:
-  GameStateTitle();
-  ~GameStateTitle();
+  ScreenTitle();
+  ~ScreenTitle();
   
   void Tick(double deltatime) override;
   void TickPlot();

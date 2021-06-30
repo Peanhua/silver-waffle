@@ -25,10 +25,6 @@ silverwaffle_SOURCES =				\
 	Camera.cc				\
 	Explosion.cc				\
 	Font.cc					\
-	GameState.cc				\
-	GameStateBonusLevel.cc			\
-	GameStateGame.cc			\
-	GameStateTitle.cc			\
 	GameStats.cc				\
 	GaussianBlur.cc				\
 	HighscoreEntry.cc			\
@@ -37,9 +33,9 @@ silverwaffle_SOURCES =				\
 	Loot.cc					\
 	MainLevel.cc				\
 	Mesh.cc					\
-	Mesh_LoadFromFile.cc			\
 	MeshOverlay.cc				\
 	MeshProgressBar.cc			\
+	Mesh_LoadFromFile.cc			\
 	Milkyway.cc				\
 	Object.cc				\
 	ObjectBonusLevelEntrance.cc		\
@@ -51,6 +47,10 @@ silverwaffle_SOURCES =				\
 	ObjectSpaceship.cc			\
 	Scene.cc				\
 	ScoreReel.cc				\
+	Screen.cc				\
+	ScreenBonusLevel.cc			\
+	ScreenMainLevel.cc			\
+	ScreenTitle.cc				\
 	Shader.cc				\
 	ShaderProgram.cc			\
 	SolarSystemObject.cc			\
@@ -59,11 +59,11 @@ silverwaffle_SOURCES =				\
 	SpaceshipUpgrade.cc			\
 	Subsystem.cc				\
 	SubsystemAssetLoader.cc			\
-	SubsystemGameState.cc			\
 	SubsystemGfx.cc				\
 	SubsystemHandler.cc			\
 	SubsystemHighscores.cc			\
 	SubsystemInput.cc			\
+	SubsystemScreen.cc			\
 	SubsystemSettings.cc			\
 	TextureRenderer.cc			\
 	UpgradeMaterial.cc			\
@@ -76,8 +76,8 @@ silverwaffle_SOURCES =				\
 	WidgetSpaceshipStatus.cc		\
 	WidgetSpaceshipUpgradeStatus.cc		\
 	WidgetTeletyper.cc			\
-	WidgetWeaponStatus.cc			\
 	WidgetUpgradeMaterial.cc		\
+	WidgetWeaponStatus.cc			\
 	WormholeWall.cc				\
 	glm.cc					\
 	main.cc

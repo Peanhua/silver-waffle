@@ -1,9 +1,9 @@
 #include "ObjectBonusLevelEntrance.hh"
-#include "GameStateBonusLevel.hh"
+#include "ScreenBonusLevel.hh"
 #include "Mesh.hh"
 #include "ObjectSpaceship.hh"
 #include "SubsystemAssetLoader.hh"
-#include "SubsystemGameState.hh"
+#include "SubsystemScreen.hh"
 
 
 ObjectBonusLevelEntrance::ObjectBonusLevelEntrance(Scene * scene, double enemy_difficulty, double warp_fuel_bonus)
@@ -69,13 +69,13 @@ void ObjectBonusLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit
 
   _used = true;
 
-  auto current = dynamic_cast<GameStateGame *>(GameStateManager->GetGameState());
+  auto current = dynamic_cast<ScreenMainLevel *>(ScreenManager->GetScreen());
   if(current)
     {
-      auto ns = new GameStateBonusLevel(current, _enemy_difficulty, _warp_fuel_bonus);
+      auto ns = new ScreenBonusLevel(current, _enemy_difficulty, _warp_fuel_bonus);
       ns->SetupLevels();
-      auto gs = dynamic_cast<GameStateGame *>(GameStateManager->GetGameState());
+      auto gs = dynamic_cast<ScreenMainLevel *>(ScreenManager->GetScreen());
       assert(gs);
-      gs->TransitionToGameState(ns, "Entering bonus level...");
+      gs->TransitionToScreen(ns, "Entering bonus level...");
     }
 }

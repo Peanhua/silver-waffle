@@ -4,25 +4,25 @@
 #include "Subsystem.hh"
 #include <vector>
 
-class GameState;
+class Screen;
 
-class SubsystemGameState : public Subsystem
+class SubsystemScreen : public Subsystem
 {
 public:
-  SubsystemGameState();
+  SubsystemScreen();
   
   bool Start() override;
   void Stop() override;
   void Tick(double deltatime) override;
   bool IsRunning() const override;
 
-  GameState * GetGameState() const;
+  Screen * GetScreen() const;
   
 private:
-  GameState * _root_gamestate;
+  Screen * _root_screen;
 };
 
-extern SubsystemGameState * GameStateManager;
+extern SubsystemScreen * ScreenManager;
 
 #endif
 

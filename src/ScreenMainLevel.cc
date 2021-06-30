@@ -1,4 +1,4 @@
-#include "GameStateGame.hh"
+#include "ScreenMainLevel.hh"
 #include "AdditiveBlending.hh"
 #include "Camera.hh"
 #include "Font.hh"
@@ -28,8 +28,8 @@
 #include <iostream>
 
 
-GameStateGame::GameStateGame(GameStats * gamestats)
-  : GameState(),
+ScreenMainLevel::ScreenMainLevel(GameStats * gamestats)
+  : Screen(),
     _state(State::RUNNING),
     _random(0),
     _rdist(0, 1),
@@ -156,14 +156,14 @@ GameStateGame::GameStateGame(GameStats * gamestats)
 }
 
 
-GameStateGame::~GameStateGame()
+ScreenMainLevel::~ScreenMainLevel()
 {
   delete _scene;
   delete _camera;
 }
 
 
-void GameStateGame::Tick(double deltatime)
+void ScreenMainLevel::Tick(double deltatime)
 {
   auto level = _levels[_current_level];
   
@@ -194,30 +194,30 @@ void GameStateGame::Tick(double deltatime)
             GameOver(true);
         }
     }
-  else if(_state == State::GAMESTATE_TRANSITION)
+  else if(_state == State::SCREEN_TRANSITION)
     {
       _scene->GetPlayer()->Tick(deltatime);
-      _gamestatetransition_timer += deltatime;
+      _screentransition_timer += deltatime;
 
-      if(_gamestatetransition_new_gamestate)
+      if(_screentransition_new_screen)
         {
           {
-            auto amount = std::clamp(_gamestatetransition_timer - 0.5, 0.0, 1.0);
+            auto amount = std::clamp(_screentransition_timer - 0.5, 0.0, 1.0);
             _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
             double v = 0;
-            if(_gamestatetransition_timer < 2.0)
-              v = std::clamp(1.0 - _gamestatetransition_timer / 2.0, 0.0, 1.0);
+            if(_screentransition_timer < 2.0)
+              v = std::clamp(1.0 - _screentransition_timer / 2.0, 0.0, 1.0);
             _pausebutton->SetTextColor(glm::vec3(v, v, v));
-            _pausebutton->SetText(_gamestatetransition_text);
+            _pausebutton->SetText(_screentransition_text);
             _pausebutton->SetTextPaddingCentered(true, true);
           }
           
           if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
-            { // Enter the new gamestate.
-              SetChildState(_gamestatetransition_new_gamestate);
-              _gamestatetransition_new_gamestate = nullptr;
+            { // Enter the new screen.
+              SetChild(_screentransition_new_screen);
+              _screentransition_new_screen = nullptr;
               _pausebutton->SetText("");
-              _gamestatetransition_timer = 0;
+              _screentransition_timer = 0;
               { // Set resume animation here.
                 auto player = _scene->GetPlayer();
                 
@@ -227,14 +227,14 @@ void GameStateGame::Tick(double deltatime)
             }
         }
       else
-        { // Resumed from the new gamestate.
+        { // Resumed from the new screen.
           if(GetGameStats()->GetLives() == 0)
             GameOver(false);
           else
             {
-              if(_gamestatetransition_timer < 0.5)
+              if(_screentransition_timer < 0.5)
                 {
-                  auto amount = std::clamp(1.0 - _gamestatetransition_timer / 0.5, 0.0, 1.0);
+                  auto amount = std::clamp(1.0 - _screentransition_timer / 0.5, 0.0, 1.0);
                   _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
                 }
               if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
@@ -281,11 +281,11 @@ void GameStateGame::Tick(double deltatime)
   
   _score_reel->Draw();
   
-  GameState::Tick(deltatime);
+  Screen::Tick(deltatime);
 }
 
 
-void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
+void ScreenMainLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 {
   assert(mod == mod);
 
@@ -311,7 +311,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       return;
     }
 
-  if(_state == State::GAMESTATE_TRANSITION)
+  if(_state == State::SCREEN_TRANSITION)
     return;
 
   assert(_state == State::RUNNING);
@@ -368,7 +368,7 @@ void GameStateGame::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 }
 
 
-void GameStateGame::OnLivesUpdated()
+void ScreenMainLevel::OnLivesUpdated()
 {
   int used = 0;
   for(auto w : _lives_widgets)
@@ -379,7 +379,7 @@ void GameStateGame::OnLivesUpdated()
 }
 
 
-void GameStateGame::OnPlayerDies()
+void ScreenMainLevel::OnPlayerDies()
 {
   assert(_state == State::RUNNING);
   _teletyper->AppendText("Offline.\n");
@@ -387,7 +387,7 @@ void GameStateGame::OnPlayerDies()
 }
 
 
-void GameStateGame::NextLifeOrQuit()
+void ScreenMainLevel::NextLifeOrQuit()
 {
   assert(_state == State::DEATH_PAUSE);
   assert(_pausebutton);
@@ -414,7 +414,7 @@ void GameStateGame::NextLifeOrQuit()
 }
 
 
-void GameStateGame::RefreshUI()
+void ScreenMainLevel::RefreshUI()
 { // Todo: Fix the widgets to listen for changes and get rid of this.
   for(auto w : _player_status_widgets)
     w->SetSpaceship(_scene->GetPlayer());
@@ -423,7 +423,7 @@ void GameStateGame::RefreshUI()
 }
 
 
-void GameStateGame::OnLevelChanged()
+void ScreenMainLevel::OnLevelChanged()
 {
   auto level = _levels[_current_level];
   _teletyper->AppendText("Destination: " + level->GetName() + "\n");
@@ -431,7 +431,7 @@ void GameStateGame::OnLevelChanged()
 }
 
 
-void GameStateGame::SetupLevels()
+void ScreenMainLevel::SetupLevels()
 {
   bool done = false;
   for(unsigned int i = 0; !done; i++)
@@ -447,7 +447,7 @@ void GameStateGame::SetupLevels()
 }
 
 
-void GameStateGame::ChangeState(State new_state)
+void ScreenMainLevel::ChangeState(State new_state)
 {
   assert(_state != new_state);
   switch(new_state)
@@ -489,17 +489,17 @@ void GameStateGame::ChangeState(State new_state)
     case State::FULL_PAUSE:
       break;
 
-    case State::GAMESTATE_TRANSITION:
+    case State::SCREEN_TRANSITION:
       {
         assert(!_pausebutton);
         _pausebutton = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(Settings->GetInt("screen_width"), Settings->GetInt("screen_height")));
         _pausebutton->SetImage(AssetLoader->LoadImage("White"));
         _pausebutton->SetImageColor(glm::vec4(0, 0, 0, 0));
-        _pausebutton->SetText(_gamestatetransition_text);
+        _pausebutton->SetText(_screentransition_text);
         _pausebutton->SetTextPaddingCentered(true, true);
         SetModalWidget(_pausebutton);
 
-        _teletyper->AppendText(_gamestatetransition_text + '\n');
+        _teletyper->AppendText(_screentransition_text + '\n');
 
         _scene->GetPlayer()->ClearControlPrograms();
 
@@ -512,7 +512,7 @@ void GameStateGame::ChangeState(State new_state)
           p = new SCP_Pitch(_scene->GetPlayer(), -90, 1);
           player->AddControlProgram(p);
         }
-        _gamestatetransition_timer = 0.0;
+        _screentransition_timer = 0.0;
       }
       break;
     }
@@ -521,28 +521,28 @@ void GameStateGame::ChangeState(State new_state)
 }
 
 
-GameStats * GameStateGame::GetGameStats() const
+GameStats * ScreenMainLevel::GetGameStats() const
 {
   return _gamestats;
 }
 
 
-Scene * GameStateGame::GetScene() const
+Scene * ScreenMainLevel::GetScene() const
 {
   return _scene;
 }
 
 
-void GameStateGame::TransitionToGameState(GameState * new_gamestate, const std::string & message)
+void ScreenMainLevel::TransitionToScreen(Screen * new_screen, const std::string & message)
 {
-  _gamestatetransition_new_gamestate = new_gamestate;
-  _gamestatetransition_text = message;
+  _screentransition_new_screen = new_screen;
+  _screentransition_text = message;
   
-  ChangeState(State::GAMESTATE_TRANSITION);
+  ChangeState(State::SCREEN_TRANSITION);
 }
 
 
-void GameStateGame::OpenSpaceshipMaintenanceUI()
+void ScreenMainLevel::OpenSpaceshipMaintenanceUI()
 {
   ChangeState(State::FULL_PAUSE);
 
@@ -562,7 +562,7 @@ void GameStateGame::OpenSpaceshipMaintenanceUI()
 }
 
 
-void GameStateGame::OpenPauseUI()
+void ScreenMainLevel::OpenPauseUI()
 {
   ChangeState(State::FULL_PAUSE);
 
@@ -626,7 +626,7 @@ void GameStateGame::OpenPauseUI()
 }
 
 
-void GameStateGame::GameOver(bool game_was_completed)
+void ScreenMainLevel::GameOver(bool game_was_completed)
 {
   auto hs = new HighscoreEntry(_score_reel->GetScore(), _current_level, _scene, game_was_completed);
   Highscores->Add(hs);

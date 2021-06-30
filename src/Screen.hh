@@ -1,5 +1,5 @@
-#ifndef GAME_STATE_HH_
-#define GAME_STATE_HH_
+#ifndef SCREEN_HH_
+#define SCREEN_HH_
 
 #include "glm.hh"
 #include <SDL_keyboard.h>
@@ -7,14 +7,14 @@
 class Widget;
 
 
-class GameState
+class Screen
 {
 public:
-  GameState();
-  virtual ~GameState();
+  Screen();
+  virtual ~Screen();
 
-  GameState * GetChildState() const;
-  void SetChildState(GameState * gamestate);
+  Screen * GetChild() const;
+  void SetChild(Screen * screen);
 
   bool IsRunning() const;
   void Quit();
@@ -31,8 +31,8 @@ public:
   virtual void OnQuit();
   
 private:
-  bool        _running;
-  GameState * _child;
+  bool     _running;
+  Screen * _child;
 
   Widget * _root_widget;
   Widget * _focused_widget;

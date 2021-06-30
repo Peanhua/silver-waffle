@@ -2,13 +2,13 @@
 #define SUBSYSTEM_INPUT_HH_
 
 #include "Subsystem.hh"
-#include "SubsystemGameState.hh"
+#include "SubsystemScreen.hh"
 #include <SDL_keyboard.h>
 
 class SubsystemInput : public Subsystem
 {
 public:
-  SubsystemInput(SubsystemGameState & subsystem_gamestate);
+  SubsystemInput();
 
   bool Start() override;
   void Stop() override;
@@ -18,8 +18,7 @@ public:
 
   
 private:
-  bool                 _running;
-  SubsystemGameState & _subsystem_gamestate;
+  bool _running;
 };
 
 #endif

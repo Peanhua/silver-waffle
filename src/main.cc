@@ -30,14 +30,14 @@ int main(int argc, char *argv[])
         SubsystemSettings    settings;
         SubsystemHighscores  highscores;
         SubsystemGfx         gfx;
-        SubsystemGameState   gs;
-        SubsystemInput       inp(gs);
+        SubsystemScreen      screen;
+        SubsystemInput       inp;
         ssh.Add(&ass);
         ssh.Add(&settings);
         ssh.Add(&highscores);
         ssh.Add(&inp);
         ssh.Add(&gfx);
-        ssh.Add(&gs);
+        ssh.Add(&screen);
 
         if(ssh.StartAll())
           {

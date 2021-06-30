@@ -1,10 +1,10 @@
-#include "GameState.hh"
+#include "Screen.hh"
 #include "Widget.hh"
 #include <cassert>
 #include <GL/glew.h>
 
 
-GameState::GameState()
+Screen::Screen()
   : _running(true),
     _child(nullptr),
     _root_widget(nullptr),
@@ -14,44 +14,44 @@ GameState::GameState()
 }
 
 
-GameState::~GameState()
+Screen::~Screen()
 {
   delete _child;
   delete _root_widget;
 }
 
 
-GameState * GameState::GetChildState() const
+Screen * Screen::GetChild() const
 {
   return _child;
 }
 
 
-void GameState::SetChildState(GameState * gamestate)
+void Screen::SetChild(Screen * screen)
 {
-  if(gamestate)
+  if(screen)
     assert(!_child);
   else
     assert(_child);
   
-  _child = gamestate;
+  _child = screen;
 }
 
 
-bool GameState::IsRunning() const
+bool Screen::IsRunning() const
 {
   return _running;
 }
 
 
-void GameState::Quit()
+void Screen::Quit()
 {
   _running = false;
   OnQuit();
 }
 
 
-void GameState::Tick(double deltatime)
+void Screen::Tick(double deltatime)
 {
   if(_root_widget)
     {
@@ -63,7 +63,7 @@ void GameState::Tick(double deltatime)
 }
 
 
-void GameState::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
+void Screen::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 {
   assert(mod == mod);
 
@@ -72,7 +72,7 @@ void GameState::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 }
 
 
-void GameState::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relative_movement)
+void Screen::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relative_movement)
 {
   assert(relative_movement == relative_movement);
   
@@ -104,7 +104,7 @@ void GameState::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & rela
 }
 
 
-void GameState::OnMouseButton(bool pressed, unsigned int button, const glm::ivec2 & position)
+void Screen::OnMouseButton(bool pressed, unsigned int button, const glm::ivec2 & position)
 {
   assert(button == button);
   
@@ -121,7 +121,7 @@ void GameState::OnMouseButton(bool pressed, unsigned int button, const glm::ivec
 }
 
 
-void GameState::SetRootWidget(Widget * widget)
+void Screen::SetRootWidget(Widget * widget)
 {
   if(widget)
     assert(!_root_widget);
@@ -132,13 +132,13 @@ void GameState::SetRootWidget(Widget * widget)
 }
 
 
-Widget * GameState::GetRootWidget() const
+Widget * Screen::GetRootWidget() const
 {
   return _root_widget;
 }
 
 
-void GameState::SetModalWidget(Widget * widget)
+void Screen::SetModalWidget(Widget * widget)
 {
   if(widget)
     assert(!_modal_widget);
@@ -148,6 +148,6 @@ void GameState::SetModalWidget(Widget * widget)
 }
 
 
-void GameState::OnQuit()
+void Screen::OnQuit()
 {
 }

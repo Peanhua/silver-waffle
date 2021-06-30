@@ -1,12 +1,13 @@
 #include "SubsystemInput.hh"
-#include "GameState.hh"
+#include "Screen.hh"
+#include "SubsystemScreen.hh"
 #include <SDL.h>
 #include <cassert>
 
-SubsystemInput::SubsystemInput(SubsystemGameState & subsystem_gamestate)
+
+SubsystemInput::SubsystemInput()
   : Subsystem("Input"),
-    _running(true),
-    _subsystem_gamestate(subsystem_gamestate)
+    _running(true)
 {
 }
 
@@ -25,8 +26,8 @@ void SubsystemInput::Tick(double deltatime)
 {
   assert(deltatime == deltatime);
 
-  auto gamestate = _subsystem_gamestate.GetGameState();
-  if(!gamestate)
+  auto screen = ScreenManager->GetScreen();
+  if(!screen)
     return;
   
   SDL_Event event;
@@ -53,11 +54,11 @@ void SubsystemInput::Tick(double deltatime)
         case SDL_KEYDOWN:
         case SDL_KEYUP:
           if(!event.key.repeat)
-            gamestate->OnKeyboard(event.type == SDL_KEYDOWN, event.key.keysym.sym, static_cast<SDL_Keymod>(event.key.keysym.mod));
+            screen->OnKeyboard(event.type == SDL_KEYDOWN, event.key.keysym.sym, static_cast<SDL_Keymod>(event.key.keysym.mod));
           break;
 
         case SDL_MOUSEMOTION:
-          gamestate->OnMouseMove(glm::ivec2(event.motion.x, event.motion.y), glm::ivec2(event.motion.xrel, event.motion.yrel));
+          screen->OnMouseMove(glm::ivec2(event.motion.x, event.motion.y), glm::ivec2(event.motion.xrel, event.motion.yrel));
           break;
 
         case SDL_MOUSEBUTTONDOWN:
@@ -79,7 +80,7 @@ void SubsystemInput::Tick(double deltatime)
             else /* if(event.type == SDL_MOUSEBUTTONUP) */
               pressed = false;
 
-            gamestate->OnMouseButton(pressed, b, glm::ivec2(event.button.x, event.button.y));
+            screen->OnMouseButton(pressed, b, glm::ivec2(event.button.x, event.button.y));
           }
           break;
         }

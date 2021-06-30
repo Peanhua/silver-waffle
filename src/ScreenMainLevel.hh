@@ -1,7 +1,7 @@
 #ifndef GAME_STATE_GAME_HH_
 #define GAME_STATE_GAME_HH_
 
-#include "GameState.hh"
+#include "Screen.hh"
 #include "GameStats.hh"
 #include <vector>
 #include <random>
@@ -22,11 +22,11 @@ class WidgetSpaceshipUpgradeStatus;
 class WidgetTeletyper;
 
 
-class GameStateGame : public GameState
+class ScreenMainLevel : public Screen
 {
 public:
-  GameStateGame(GameStats * gamestats);
-  ~GameStateGame() override;
+  ScreenMainLevel(GameStats * gamestats);
+  ~ScreenMainLevel() override;
 
   virtual void SetupLevels();
 
@@ -35,7 +35,7 @@ public:
 
   GameStats * GetGameStats() const;
   Scene *     GetScene()     const;
-  void TransitionToGameState(GameState * new_gamestate, const std::string & message);
+  void TransitionToScreen(Screen * new_screen, const std::string & message);
 
   void OnLivesUpdated();
   
@@ -52,7 +52,7 @@ private:
       RUNNING,
       DEATH_PAUSE,
       FULL_PAUSE,
-      GAMESTATE_TRANSITION
+      SCREEN_TRANSITION
     };
   
   State _state;
@@ -68,9 +68,9 @@ private:
   unsigned int       _current_level;
   GameStats *        _gamestats;
 
-  GameState * _gamestatetransition_new_gamestate;
-  double      _gamestatetransition_timer;
-  std::string _gamestatetransition_text;
+  Screen * _screentransition_new_screen;
+  double      _screentransition_timer;
+  std::string _screentransition_text;
   
   std::vector<Widget *> _lives_widgets;
   std::vector<WidgetSpaceshipStatus *> _player_status_widgets;

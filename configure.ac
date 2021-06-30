@@ -33,7 +33,8 @@ if test "x$CONVERT" == "x" ; then
   AC_MSG_ERROR(['convert' not found error, install ImageMagick or alternative.])
 fi
 
+DX_INIT_DOXYGEN([SilverWaffle])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile Images/Makefile Shaders/Makefile])
+AC_CONFIG_FILES([Makefile src/Makefile Images/Makefile Shaders/Makefile Doxyfile])
 AC_OUTPUT

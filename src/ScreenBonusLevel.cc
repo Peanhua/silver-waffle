@@ -1,11 +1,11 @@
-#include "GameStateBonusLevel.hh"
+#include "ScreenBonusLevel.hh"
 #include "BonusLevel.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 
 
-GameStateBonusLevel::GameStateBonusLevel(GameStateGame * mainlevel, double enemy_difficulty, double warp_fuel_bonus)
-  : GameStateGame(mainlevel->GetGameStats()),
+ScreenBonusLevel::ScreenBonusLevel(ScreenMainLevel * mainlevel, double enemy_difficulty, double warp_fuel_bonus)
+  : ScreenMainLevel(mainlevel->GetGameStats()),
     _mainlevel(mainlevel),
     _enemy_difficulty(enemy_difficulty),
     _warp_fuel_bonus(warp_fuel_bonus)
@@ -20,7 +20,7 @@ GameStateBonusLevel::GameStateBonusLevel(GameStateGame * mainlevel, double enemy
 }
 
 
-void GameStateBonusLevel::SetupLevels()
+void ScreenBonusLevel::SetupLevels()
 {
   _levels.clear();
   auto level = new BonusLevel(_scene, _enemy_difficulty, _warp_fuel_bonus);
@@ -29,7 +29,7 @@ void GameStateBonusLevel::SetupLevels()
 }
 
 
-void GameStateBonusLevel::OnQuit()
+void ScreenBonusLevel::OnQuit()
 {
   auto myplr = _scene->GetPlayer();
   auto mainplr = _mainlevel->GetScene()->GetPlayer();

@@ -1,6 +1,6 @@
-#include "GameStateTitle.hh"
+#include "ScreenTitle.hh"
 #include "Camera.hh"
-#include "GameStateGame.hh"
+#include "ScreenMainLevel.hh"
 #include "Milkyway.hh"
 #include "ObjectMovable.hh"
 #include "SolarSystemObject.hh"
@@ -14,8 +14,8 @@
 #include <GL/glew.h>
 
 
-GameStateTitle::GameStateTitle()
-  : GameState(),
+ScreenTitle::ScreenTitle()
+  : Screen(),
     _time(0),
     _plot_phase(0)
 {
@@ -97,9 +97,9 @@ GameStateTitle::GameStateTitle()
       assert(position == position);
       if(!pressed)
         {
-          auto s = new GameStateGame(nullptr);
+          auto s = new ScreenMainLevel(nullptr);
           s->SetupLevels();
-          SetChildState(s);
+          SetChild(s);
         }
     });
   
@@ -127,7 +127,7 @@ GameStateTitle::GameStateTitle()
 }
 
 
-GameStateTitle::~GameStateTitle()
+ScreenTitle::~ScreenTitle()
 {
   for(auto o : _planets)
     delete o;
@@ -137,7 +137,7 @@ GameStateTitle::~GameStateTitle()
 }
 
 
-void GameStateTitle::Tick(double deltatime)
+void ScreenTitle::Tick(double deltatime)
 {
   _time += deltatime;
   TickPlot();
@@ -157,11 +157,11 @@ void GameStateTitle::Tick(double deltatime)
 
   _particles->Draw(*_camera);
   
-  GameState::Tick(deltatime);
+  Screen::Tick(deltatime);
 }
 
 
-void GameStateTitle::TickPlot()
+void ScreenTitle::TickPlot()
 {
   if(_teletyper->GetTime() > 5.0)
     {
