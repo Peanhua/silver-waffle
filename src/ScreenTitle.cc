@@ -71,8 +71,8 @@ ScreenTitle::ScreenTitle()
     int bh = 270;
   
     auto w = new WidgetTeletyper(GetRootWidget(), glm::ivec2((width - bw) / 2, (height - bh) / 5), glm::ivec2(bw, bh));
-    w->SetImage("PanelBorders");
-    w->SetImageColor(glm::vec4(0, 0.5, 0, 1));
+    w->SetImage("White");
+    w->SetImageColor(glm::vec4(0, 0.5, 0, 0.125));
     w->SetTextFont(AssetLoader->LoadFont(14));
     w->SetCharactersPerSecond(15);
     w->SetTextColor(glm::vec3(0, 1, 0));

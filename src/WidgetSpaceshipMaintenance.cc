@@ -94,6 +94,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
         SpaceshipUpgrade::Type::EVASION_MANEUVER,
         SpaceshipUpgrade::Type::REPAIR_DROID,
         SpaceshipUpgrade::Type::WARP_ENGINE,
+        SpaceshipUpgrade::Type::PLANET_LANDER,
       };
     for(auto t : types)
       {

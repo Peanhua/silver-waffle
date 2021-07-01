@@ -65,6 +65,7 @@ public:
 
   void              ClearPlanets();
   void              AddPlanet(Object * planet);
+  Object *          GetClosestPlanet(const glm::vec3 & position) const;
 
   ObjectInvader *   AddInvader(const glm::vec3 & position);
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);

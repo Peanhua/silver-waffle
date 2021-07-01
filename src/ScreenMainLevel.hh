@@ -43,6 +43,7 @@ protected:
   Scene *              _scene;
   std::vector<Level *> _levels;
 
+  void Initialize();
   void OnLevelChanged();
   void RefreshUI();
   

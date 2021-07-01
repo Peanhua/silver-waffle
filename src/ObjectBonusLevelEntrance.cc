@@ -74,8 +74,6 @@ void ObjectBonusLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit
     {
       auto ns = new ScreenBonusLevel(current, _enemy_difficulty, _warp_fuel_bonus);
       ns->SetupLevels();
-      auto gs = dynamic_cast<ScreenMainLevel *>(ScreenManager->GetScreen());
-      assert(gs);
-      gs->TransitionToScreen(ns, "Entering bonus level...");
+      current->TransitionToScreen(ns, "Entering bonus level...");
     }
 }

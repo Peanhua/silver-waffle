@@ -21,7 +21,6 @@ silverwaffle_LDADD =       \
 
 silverwaffle_SOURCES =				\
 	AdditiveBlending.cc			\
-	BonusLevel.cc				\
 	Camera.cc				\
 	Explosion.cc				\
 	Font.cc					\
@@ -30,8 +29,10 @@ silverwaffle_SOURCES =				\
 	HighscoreEntry.cc			\
 	Image.cc				\
 	Level.cc				\
-	Loot.cc					\
+	BonusLevel.cc				\
 	MainLevel.cc				\
+	PlanetLevel.cc				\
+	Loot.cc					\
 	Mesh.cc					\
 	MeshOverlay.cc				\
 	MeshProgressBar.cc			\
@@ -50,6 +51,7 @@ silverwaffle_SOURCES =				\
 	Screen.cc				\
 	ScreenBonusLevel.cc			\
 	ScreenMainLevel.cc			\
+	ScreenPlanetLevel.cc			\
 	ScreenTitle.cc				\
 	Shader.cc				\
 	ShaderProgram.cc			\

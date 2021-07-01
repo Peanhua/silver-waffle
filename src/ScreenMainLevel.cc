@@ -8,7 +8,7 @@
 #include "MainLevel.hh"
 #include "MeshOverlay.hh"
 #include "ObjectSpaceship.hh"
-#include "Scene.hh"
+#include "SceneSpace.hh"
 #include "ScoreReel.hh"
 #include "SolarSystemObject.hh"
 #include "SpaceshipControlProgram.hh"
@@ -38,7 +38,17 @@ ScreenMainLevel::ScreenMainLevel(GameStats * gamestats)
     _pausebutton(nullptr)
 {
   _camera = new Camera();
-  _scene = new Scene();
+  _camera->SetFOV(60);
+  _camera->SetClippingPlanes(0.01, 10000.0);
+  
+  _scene = new SceneSpace();
+
+  Initialize();
+}
+
+
+void ScreenMainLevel::Initialize()
+{
   if(!_gamestats)
     _gamestats = new GameStats();
   _texture_renderer = new TextureRenderer(static_cast<unsigned int>(Settings->GetInt("screen_width")),
@@ -50,9 +60,6 @@ ScreenMainLevel::ScreenMainLevel(GameStats * gamestats)
   _blur = new GaussianBlur();
   _blender = new AdditiveBlending();
     
-  _camera->SetFOV(60);
-  _camera->SetClippingPlanes(0.01, 10000.0);
-  
   _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
   _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
   {
@@ -60,6 +67,7 @@ ScreenMainLevel::ScreenMainLevel(GameStats * gamestats)
     OnPlayerDies();
   });
 
+  // UI:
   _score_reel = new ScoreReel(10);
 
   const double width = Settings->GetInt("screen_width");
@@ -81,7 +89,7 @@ ScreenMainLevel::ScreenMainLevel(GameStats * gamestats)
     int y = 70;
     for(auto um : _gamestats->GetUpgradeMaterials())
       {
-        auto w = new WidgetUpgradeMaterial(root, glm::ivec2(width - 50, y), glm::ivec2(50, 25), *um);
+        auto w = new WidgetUpgradeMaterial(root, glm::ivec2(width - 50 - 5, y), glm::ivec2(50, 25), *um);
         assert(w);
         y += 25;
       }
@@ -142,11 +150,11 @@ ScreenMainLevel::ScreenMainLevel(GameStats * gamestats)
   {
     auto w = new WidgetTeletyper(root, glm::ivec2(10, 120), glm::ivec2(200, 100));
     w->SetTextFont(AssetLoader->LoadFont(10));
-    w->SetCharactersPerSecond(30);
+    w->SetCharactersPerSecond(60);
     w->SetTextColor(glm::vec3(0.0, 0.8, 0.0));
     w->SetIsFocusable(false);
     w->SetText("Spaceship computer online.\n");
-    w->SetPurgingTime(8.0);
+    w->SetPurgingTime(4.0);
     _teletyper = w;
   }
 
@@ -364,6 +372,15 @@ void ScreenMainLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       else
         _scene->StopWarpEngine();
       break;
+
+    case SDLK_s:
+      if(pressed)
+        {
+          auto lander = player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER);
+          if(lander->CanActivate())
+            lander->Activate(3.0);
+        }
+      break;
     }
 }
 
@@ -501,17 +518,18 @@ void ScreenMainLevel::ChangeState(State new_state)
 
         _teletyper->AppendText(_screentransition_text + '\n');
 
-        _scene->GetPlayer()->ClearControlPrograms();
-
         {
           auto player = _scene->GetPlayer();
-          
+
+          player->ClearControlPrograms();
+
           SpaceshipControlProgram * p = new SCP_MoveForward(player, 4, 2.5);
           player->AddControlProgram(p);
           
           p = new SCP_Pitch(_scene->GetPlayer(), -90, 1);
           player->AddControlProgram(p);
         }
+        
         _screentransition_timer = 0.0;
       }
       break;

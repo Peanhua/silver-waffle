@@ -497,3 +497,23 @@ double Scene::GetTime() const
 {
   return _time;
 }
+
+
+Object * Scene::GetClosestPlanet(const glm::vec3 & position) const
+{
+  Object * rv = nullptr;
+  float rvdist = 0.0f;
+
+  for(auto planet : _planets)
+    {
+      auto dist = glm::distance(position, planet->GetPosition());
+      if(!rv || dist < rvdist)
+        {
+          rv = planet;
+          rvdist = dist;
+        }
+    }
+
+  return rv;
+}
+

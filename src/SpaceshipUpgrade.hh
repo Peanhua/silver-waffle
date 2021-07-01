@@ -21,6 +21,7 @@ public:
       EVASION_MANEUVER,
       REPAIR_DROID,
       WARP_ENGINE,
+      PLANET_LANDER,
     };
   
   SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type);

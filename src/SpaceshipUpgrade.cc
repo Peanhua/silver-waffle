@@ -1,6 +1,9 @@
 #include "SpaceshipUpgrade.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
+#include "Scene.hh"
+#include "ScreenPlanetLevel.hh"
+#include "SubsystemScreen.hh"
 #include "SubsystemSettings.hh"
 #include <algorithm>
 #include <map>
@@ -29,6 +32,7 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; break;
     case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  break;
     case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; break;
+    case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; break;
     }
 }
 
@@ -71,6 +75,8 @@ void SpaceshipUpgrade::Install()
       _value = 10.0;
       _timer += 30.0;
       _timer_max += 5.0 * 60.0;
+      break;
+    case Type::PLANET_LANDER:
       break;
     }
   _spaceship->SystemlogAppend("Install " + _name + "\n");
@@ -115,6 +121,7 @@ int SpaceshipUpgrade::GetMaxInstalls() const
     case Type::EVASION_MANEUVER: return 1;
     case Type::REPAIR_DROID:     return 1;
     case Type::WARP_ENGINE:      return 1;
+    case Type::PLANET_LANDER:    return 1;
     }
   assert(false);
   return 0;
@@ -187,6 +194,11 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::DEFENSE]  =  1;
       costs[UpgradeMaterial::Type::PHYSICAL] =  2;
       break;
+    case Type::PLANET_LANDER:
+      costs[UpgradeMaterial::Type::ATTACK]   =  1;
+      costs[UpgradeMaterial::Type::DEFENSE]  =  1;
+      costs[UpgradeMaterial::Type::PHYSICAL] =  3;
+      break;
     }
   return costs[for_material];
 }
@@ -203,16 +215,27 @@ void SpaceshipUpgrade::Tick(double deltatime)
         _timer -= deltatime;
       else
         Deactivate();
-      
-      if(_type == Type::REPAIR_DROID)
+
+      switch(_type)
         {
-          double repair = std::clamp(_spaceship->GetMaxHealth() - _spaceship->GetHealth(), 0.0, 3.0);
-          if(repair > 0.0)
-            _spaceship->SetHealth(_spaceship->GetHealth() + repair * deltatime);
-        }
+        case Type::BONUS_DAMAGE:
+        case Type::SHIELD:
+        case Type::WEAPON:
+        case Type::WEAPON_COOLER:
+        case Type::ENGINE_UPGRADE:
+        case Type::HULL_UPGRADE:
+        case Type::WARP_ENGINE:
+          break;
           
-      if(_type == Type::EVASION_MANEUVER)
-        {
+        case Type::REPAIR_DROID:
+          {
+            double repair = std::clamp(_spaceship->GetMaxHealth() - _spaceship->GetHealth(), 0.0, 3.0);
+            if(repair > 0.0)
+              _spaceship->SetHealth(_spaceship->GetHealth() + repair * deltatime);
+          }
+          break;
+          
+        case Type::EVASION_MANEUVER:
           if(_timer > 0.0)
             _spaceship->RotateRoll(1200 * deltatime);
           else
@@ -220,6 +243,30 @@ void SpaceshipUpgrade::Tick(double deltatime)
               auto o = glm::angleAxis(0.0f, _spaceship->GetForwardVector());
               _spaceship->SetOrientation(o);
             }
+          break;
+          
+        case Type::PLANET_LANDER:
+          {
+            auto playerpos = _spaceship->GetPosition();
+            auto planet = _spaceship->GetScene()->GetClosestPlanet(playerpos);
+            if(planet)
+              {
+                auto distance = std::abs(playerpos.y - planet->GetPosition().y);
+                if(distance < 20)
+                  {
+                    Deactivate();
+
+                    auto current = dynamic_cast<ScreenMainLevel *>(ScreenManager->GetScreen());
+                    if(current)
+                      {
+                        auto ns = new ScreenPlanetLevel(current);
+                        ns->SetupLevels();
+                        current->TransitionToScreen(ns, "Descending to the planet...");
+                      }
+                  }
+              }
+          }
+          break;
         }
     }
   else
@@ -267,6 +314,7 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
     case Type::HULL_UPGRADE:
     case Type::EVASION_MANEUVER:
     case Type::REPAIR_DROID:
+    case Type::PLANET_LANDER:
       break;
     }
 }
@@ -312,7 +360,10 @@ void SpaceshipUpgrade::Activate(double value, double time)
     {
       _timer = time;
       _timer_max = time;
-      _cooldown = 30.0;
+      if(_type == Type::PLANET_LANDER)
+        _cooldown = 1.0;
+      else
+        _cooldown = 30.0;
       _spaceship->SystemlogAppend(_name + " activated\n");
     }
 }
