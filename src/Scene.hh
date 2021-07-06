@@ -8,7 +8,6 @@
 class Camera;
 class Explosion;
 class Mesh;
-class Milkyway;
 class Object;
 class ObjectCollectible;
 class ObjectInvader;
@@ -16,7 +15,6 @@ class ObjectMovable;
 class ObjectProjectile;
 class ObjectSpaceship;
 class SpaceParticles;
-class WormholeWall;
 
 
 class Scene
@@ -54,9 +52,10 @@ public:
   };
   
   Scene();
+  virtual ~Scene();
   
-  void              Draw(const Camera & camera) const;
-  void              Tick(double deltatime);
+  virtual void      Draw(const Camera & camera) const;
+  virtual void      Tick(double deltatime);
 
   const glm::vec2 & GetPlayAreaSize() const;
 
@@ -83,6 +82,9 @@ public:
   void EnableTutorialMessages(bool enabled);
 
   double GetTime() const;
+
+protected:
+  SpaceParticles * _particles;
   
 private:
   std::mt19937_64                _random_generator;
@@ -93,9 +95,6 @@ private:
   Container<ObjectCollectible *> _collectibles;
   Container<Object *>            _objects;
   Container<Explosion *>         _explosions;
-  Milkyway *                     _milkyway;
-  SpaceParticles *               _particles;
-  WormholeWall *                 _wall;
   Container<Object *>            _planets;
   double                         _time;
   bool                           _warp_engine_starting;

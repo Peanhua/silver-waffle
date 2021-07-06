@@ -2,7 +2,6 @@
 #include "Camera.hh"
 #include "Explosion.hh"
 #include "Mesh.hh"
-#include "Milkyway.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectInvader.hh"
 #include "ObjectPlanet.hh"
@@ -13,12 +12,12 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include "Widget.hh"
-#include "WormholeWall.hh"
 #include <iostream>
 
 
 Scene::Scene()
-  : _random_generator(0),
+  : _particles(nullptr),
+    _random_generator(0),
     _play_area_size(glm::vec2(20, 60)),
     _player(nullptr),
     _time(0),
@@ -44,12 +43,6 @@ Scene::Scene()
   std::minstd_rand random(_random_generator());
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
-
-  _milkyway = new Milkyway();
-
-  _particles = new SpaceParticles(5.0, 50.0, 0);
-
-  _wall = new WormholeWall(100, 4);
 
   CreatePlayer();
 
@@ -86,10 +79,6 @@ void Scene::Draw(const Camera & camera) const
   const glm::mat4 & projection = camera.GetProjection();
   const glm::mat4 & vp         = camera.GetViewProjection();
 
-  glDisable(GL_DEPTH_TEST);
-  _milkyway->Draw(camera);
-  glEnable(GL_DEPTH_TEST);
-
   for(auto p : _planets)
     p->Draw(view, projection, vp);
   glClear(GL_DEPTH_BUFFER_BIT);
@@ -98,7 +87,8 @@ void Scene::Draw(const Camera & camera) const
     if(o && o->IsAlive())
       o->Draw(view, projection, vp);
 
-  _particles->Draw(camera);
+  if(_particles)
+    _particles->Draw(camera);
   
   if(_player->IsAlive())
     _player->Draw(view, projection, vp);
@@ -118,17 +108,11 @@ void Scene::Draw(const Camera & camera) const
   for(auto e : _explosions)
     if(e->IsAlive())
       e->Draw(view, projection, vp);
+}
 
-  // Two walls (left and right), todo: test doing a half&full circle of walls, maybe left&right normally, and half/full circle during bonus levels?
-  const auto max_x = GetPlayAreaSize().x * 0.5f + 0.75f; // 0.75 is approximately half of the player ship width, so that the ship never goes through the wall
-  for(int i = 0; i < 360; i += 180)
-    {
-      glm::mat4 model(1);
-      model = glm::rotate(model, glm::radians(static_cast<float>(i)), glm::vec3(0, 1, 0));
-      model = glm::translate(model, glm::vec3(-max_x, 40 - 53 - 1, -4/2));
-      model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 0, 1));
-      _wall->Draw(model, view, projection, vp * model);
-    }
+
+Scene::~Scene()
+{
 }
 
 
@@ -183,12 +167,14 @@ void Scene::Tick(double deltatime)
           _warp_throttle += static_cast<float>(1.0 / 2.0 * deltatime);
           if(_warp_throttle < 1.0f)
             {
-              _particles->SetMode(true, _warp_throttle);
+              if(_particles)
+                _particles->SetMode(true, _warp_throttle);
             }
           else
             {
               _warp_engine_starting = false;
-              _particles->SetMode(false);
+              if(_particles)
+                _particles->SetMode(false);
               auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
               u->Activate();
             }
@@ -266,12 +252,13 @@ void Scene::Tick(double deltatime)
     if(e && e->IsAlive())
       e->Tick(dtime); // todo: Add separate method to move the explosions when warpseed is active.
 
-  if(_warp_engine_starting)
-    _particles->Tick(deltatime * (1.0 + static_cast<double>(5.0f * _warp_throttle)));
-  else
-    _particles->Tick(dtime);
-  
-  _wall->Tick(deltatime);
+  if(_particles)
+    {
+      if(_warp_engine_starting)
+        _particles->Tick(deltatime * (1.0 + static_cast<double>(5.0f * _warp_throttle)));
+      else
+        _particles->Tick(dtime);
+    }
 }
 
 

@@ -46,6 +46,8 @@ Milkyway::~Milkyway()
 
 void Milkyway::Draw(const Camera & camera) const
 {
+  glDisable(GL_DEPTH_TEST);
+
   glm::mat4 model(1);
   model = glm::translate(model, glm::vec3(0, 0, 0.5));
   model = glm::rotate(model, glm::radians(90.0f), glm::vec3(1, 0, 0));
@@ -56,4 +58,6 @@ void Milkyway::Draw(const Camera & camera) const
   glm::mat4 view = glm::lookAt(glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
   
   _mesh->Draw(model, view, proj, proj * view * model);
+
+  glEnable(GL_DEPTH_TEST);
 }

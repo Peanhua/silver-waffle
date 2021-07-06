@@ -47,6 +47,7 @@ silverwaffle_SOURCES =				\
 	ObjectProjectile.cc			\
 	ObjectSpaceship.cc			\
 	Scene.cc				\
+	SceneSpace.cc				\
 	ScoreReel.cc				\
 	Screen.cc				\
 	ScreenLevel.cc				\

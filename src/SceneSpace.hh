@@ -3,9 +3,22 @@
 
 #include "Scene.hh"
 
+class Milkyway;
+class SpaceParticles;
+class WormholeWall;
+
 
 class SceneSpace : public Scene
 {
+public:
+  SceneSpace();
+
+  void Draw(const Camera & camera) const override;
+  void Tick(double deltatime) override;
+  
+private:
+  Milkyway *     _milkyway;
+  WormholeWall * _wall;
 };
 
 #endif
