@@ -75,6 +75,7 @@ stamp-h1
 /Shaders/SpaceJunkLines.frag
 /Shaders/SpaceJunkLines.geom
 /Shaders/SpaceJunkLines.vert
+Doxyfile
 
 # Other
 .bash_history
