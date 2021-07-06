@@ -1,12 +1,12 @@
 #include "ScreenPlanetLevel.hh"
+#include "Camera.hh"
 #include "PlanetLevel.hh"
 #include "ScenePlanet.hh"
 
 
-ScreenPlanetLevel::ScreenPlanetLevel(ScreenMainLevel * mainlevel)
-  : ScreenBonusLevel(mainlevel, 0, 0)
+ScreenPlanetLevel::ScreenPlanetLevel(ScreenLevel * parent)
+  : ScreenLevel(parent)
 {
-  /*
   _camera = new Camera();
   _camera->SetFOV(60);
   _camera->SetClippingPlanes(0.01, 10000.0);
@@ -14,7 +14,6 @@ ScreenPlanetLevel::ScreenPlanetLevel(ScreenMainLevel * mainlevel)
   _scene = new ScenePlanet();
 
   Initialize();
-  */
 }
 
 
@@ -25,5 +24,5 @@ void ScreenPlanetLevel::SetupLevels()
   auto level = new PlanetLevel(_scene);
   _levels.push_back(level);
 
-  OnLevelChanged();
+  ScreenLevel::SetupLevels();
 }

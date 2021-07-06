@@ -1,13 +1,13 @@
 #ifndef SCREEN_PLANET_LEVEL_HH_
 #define SCREEN_PLANET_LEVEL_HH_
 
-#include "ScreenBonusLevel.hh"
+#include "ScreenLevel.hh"
 
 
-class ScreenPlanetLevel : public ScreenBonusLevel
+class ScreenPlanetLevel : public ScreenLevel
 {
 public:
-  ScreenPlanetLevel(ScreenMainLevel * mainlevel);
+  ScreenPlanetLevel(ScreenLevel * parent);
 
   void SetupLevels() override;
 

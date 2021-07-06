@@ -49,6 +49,7 @@ silverwaffle_SOURCES =				\
 	Scene.cc				\
 	ScoreReel.cc				\
 	Screen.cc				\
+	ScreenLevel.cc				\
 	ScreenBonusLevel.cc			\
 	ScreenMainLevel.cc			\
 	ScreenPlanetLevel.cc			\

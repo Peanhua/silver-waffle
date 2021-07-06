@@ -246,7 +246,8 @@ void SpaceshipUpgrade::Tick(double deltatime)
           break;
           
         case Type::PLANET_LANDER:
-          {
+          { // todo: change into instant try-activation when player presses the key, because this current method is confusing for the player?
+            // todo:   move into SpaceshipUpgrade::Activate()
             auto playerpos = _spaceship->GetPosition();
             auto planet = _spaceship->GetScene()->GetClosestPlanet(playerpos);
             if(planet)
@@ -256,13 +257,12 @@ void SpaceshipUpgrade::Tick(double deltatime)
                   {
                     Deactivate();
 
-                    auto current = dynamic_cast<ScreenMainLevel *>(ScreenManager->GetScreen());
-                    if(current)
-                      {
-                        auto ns = new ScreenPlanetLevel(current);
-                        ns->SetupLevels();
-                        current->TransitionToScreen(ns, "Descending to the planet...");
-                      }
+                    auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
+                    assert(current);
+
+                    auto ns = new ScreenPlanetLevel(current);
+                    ns->SetupLevels();
+                    current->TransitionToScreen(ns, "Descending to the planet...");
                   }
               }
           }
