@@ -66,13 +66,20 @@ void ScreenLevel::Initialize()
     { // Copy player data from parent:
       auto myplr = _scene->GetPlayer();
       auto parentplr = _parent->GetScene()->GetPlayer();
+
+      for(unsigned int i = 0; i < parentplr->GetEngineCount(); i++)
+        parentplr->SetEngineThrottle(i, 0.0);
+      parentplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
+      for(unsigned int i = 0; i < myplr->GetWeaponCount(); i++)
+        parentplr->SetWeaponAutofire(i, false);
+
       myplr->CopyUpgrades(*parentplr);
       myplr->SetHealth(parentplr->GetHealth());
-      myplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
-      for(unsigned int i = 0; i < myplr->GetWeaponCount(); i++)
-        myplr->SetWeaponAutofire(i, false);
+      _scene->SetupPlayer();
 
       _gamestats = _parent->GetGameStats();
+
+      _scene->EnableTutorialMessages(false);
     }
   
   // UI:
@@ -345,18 +352,42 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       if(!pressed)
         OpenPauseUI();
       break;
+      
     case SDLK_TAB:
       if(!pressed)
         OpenSpaceshipMaintenanceUI();
       break;
+      
     case SDLK_LEFT:
       if(!disablecontrols)
-        player->SetEngineThrottle(0, pressed ? 1.0 : 0.0);
+        {
+          player->SetEngineThrottle(0, pressed ? 1.0 : 0.0);
+          player->SetEngineThrottle(0 + 4, pressed ? 1.0 : 0.0);
+        }
       break;
       
     case SDLK_RIGHT:
       if(!disablecontrols)
-        player->SetEngineThrottle(1, pressed ? 1.0 : 0.0);
+        {
+          player->SetEngineThrottle(1, pressed ? 1.0 : 0.0);
+          player->SetEngineThrottle(1 + 4, pressed ? 1.0 : 0.0);
+        }
+      break;
+
+    case SDLK_DOWN:
+      if(!disablecontrols)
+        {
+          player->SetEngineThrottle(2, pressed ? 1.0 : 0.0);
+          player->SetEngineThrottle(2 + 4, pressed ? 1.0 : 0.0);
+        }
+      break;
+
+    case SDLK_UP:
+      if(!disablecontrols)
+        {
+          player->SetEngineThrottle(3, pressed ? 1.0 : 0.0);
+          player->SetEngineThrottle(3 + 4, pressed ? 1.0 : 0.0);
+        }
       break;
 
     case SDLK_SPACE:
@@ -424,6 +455,7 @@ void ScreenLevel::NextLifeOrQuit()
     {
       _teletyper->AppendText("\nSpaceship computer online.\n");
       _scene->CreatePlayer();
+      _scene->SetupPlayer();
       _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
       _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
       {
@@ -660,7 +692,5 @@ void ScreenLevel::OnQuit()
       parentplr->CopyUpgrades(*myplr);
       parentplr->SetHealth(myplr->GetHealth());
       parentplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(true);
-
-      _scene->EnableTutorialMessages(false);
     }
 }

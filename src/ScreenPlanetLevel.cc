@@ -10,6 +10,7 @@ ScreenPlanetLevel::ScreenPlanetLevel(ScreenLevel * parent)
   _camera = new Camera();
   _camera->SetFOV(60);
   _camera->SetClippingPlanes(0.01, 10000.0);
+  _camera->SetPosition({0, -20, 0});
 
   _scene = new ScenePlanet();
 

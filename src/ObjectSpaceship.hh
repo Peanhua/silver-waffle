@@ -20,17 +20,19 @@ public:
   void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
   uint64_t GetCollidesWithChannels() const override;
 
-  void RemoveWeapons();
-  unsigned int AddWeapon();
-  unsigned int AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
+  void         RemoveWeapons();
+  void         AddWeapon();
+  void         AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
   unsigned int GetWeaponCount() const;
   double       GetWeaponHeat(unsigned int weapon_id) const;
   bool         FireWeapon(unsigned int weapon_id);
   void         SetWeaponAutofire(unsigned int weapon_id, bool enabled);
   
-  unsigned int AddEngine(const glm::vec3 & thrust_direction, double power);
+  void         AddEngine(const glm::vec3 & thrust_direction, double power);
+  unsigned int GetEngineCount() const;
   void         SetEngineThrottle(unsigned int engine_id, double throttle);
   void         UpgradeEngines(double power_multiplier);
+  void         EnableEngine(unsigned int engine_id, bool enabled);
 
   void               UpgradeFromCollectible(ObjectCollectible * collectible);
   SpaceshipUpgrade * GetUpgrade(SpaceshipUpgrade::Type type) const;
@@ -57,6 +59,7 @@ private:
     glm::vec3 _thrust_direction;
     double    _power;
     double    _throttle;
+    bool      _enabled;
   private:
   };
 

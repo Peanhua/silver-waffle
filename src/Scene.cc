@@ -44,8 +44,6 @@ Scene::Scene()
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
 
-  CreatePlayer();
-
   for(int i = 0; i < 200; i++)
     _invaders.push_back(nullptr);
 
@@ -53,6 +51,8 @@ Scene::Scene()
     _collectibles.push_back(nullptr);
 
   _time = 0;
+
+  CreatePlayer();
 }
 
 
@@ -116,7 +116,7 @@ Scene::~Scene()
 }
 
 
-ObjectSpaceship * Scene::CreatePlayer()
+void Scene::CreatePlayer()
 {
   if(_player && _player->IsAlive())
     _player->Destroy(nullptr);
@@ -126,20 +126,30 @@ ObjectSpaceship * Scene::CreatePlayer()
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
   _player->AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
   _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);
+
   _player->EnableVelocity(true, false, false);
   _player->SetPosition(glm::vec3(0, 40 - 53, 0));
   _player->SetHorizontalPositionLimit(GetPlayAreaSize().x * 0.5f);
+
   {
     auto mesh = AssetLoader->LoadMesh("Player");
     assert(mesh);
     _player->SetMesh(mesh);
   }
   _player->AddWeapon();
+  
+  // Space engines (only 2 first are used):
   _player->AddEngine(glm::vec3(-1, 0, 0), 20.0);
   _player->AddEngine(glm::vec3( 1, 0, 0), 20.0);
+  _player->AddEngine(glm::vec3( 0, 0, 0), 20.0);
+  _player->AddEngine(glm::vec3( 0, 0, 0), 20.0);
+  // Planet engines:
+  _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
+  _player->AddEngine(glm::vec3(0,  1,  0), 20.0);
+  _player->AddEngine(glm::vec3(0,  0, -1), 20.0);
+  _player->AddEngine(glm::vec3(0,  0,  1), 20.0);
+  
   _player->SystemlogEnable();
-
-  return _player;
 }
 
 
@@ -420,8 +430,8 @@ void Scene::StartWarpEngine()
       _warp_engine_starting = true;
       _warp_throttle = 0;
 
-      _player->SetEngineThrottle(0, 0.0);
-      _player->SetEngineThrottle(1, 0.0);
+      for(unsigned int i = 0; i < _player->GetEngineCount(); i++)
+        _player->SetEngineThrottle(i, 0.0);
       for(unsigned int i = 0; i < _player->GetWeaponCount(); i++)
         _player->SetWeaponAutofire(i, false);
     }

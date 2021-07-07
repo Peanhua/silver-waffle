@@ -1,6 +1,7 @@
 #include "SceneSpace.hh"
 #include "Camera.hh"
 #include "Milkyway.hh"
+#include "ObjectSpaceship.hh"
 #include "SpaceParticles.hh"
 #include "WormholeWall.hh"
 
@@ -11,7 +12,7 @@ SceneSpace::SceneSpace()
   _milkyway = new Milkyway();
   _particles = new SpaceParticles(5.0, 50.0, 0);
   _wall = new WormholeWall(100, 4);
-
+  SetupPlayer();
 }
 
 
@@ -36,10 +37,24 @@ void SceneSpace::Draw(const Camera & camera) const
     }
 }
 
-
   
 void SceneSpace::Tick(double deltatime)
 {
   Scene::Tick(deltatime);
   _wall->Tick(deltatime);
+}
+
+
+void SceneSpace::SetupPlayer()
+{
+  auto player = GetPlayer();
+  assert(player);
+  player->EnableVelocity(true, false, false);
+  player->SetPosition(glm::vec3(0, 40 - 53, 0));
+  player->SetHorizontalPositionLimit(GetPlayAreaSize().x * 0.5f);
+  for(unsigned int i = 0; i < 4; i++)
+    {
+      player->EnableEngine(i,     true);
+      player->EnableEngine(i + 4, false);
+    }
 }

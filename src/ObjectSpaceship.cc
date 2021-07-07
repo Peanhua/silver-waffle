@@ -44,12 +44,17 @@ void ObjectSpaceship::Tick(double deltatime)
   
   bool engines_on = false;
   for(auto engine : _engines)
-    if(engine->_throttle > 0.01)
-      {
-        engines_on = true;
-        AddImpulse(engine->_thrust_direction * static_cast<float>(engine->_power * engine->_throttle * deltatime));
-      }
-
+    {
+      if(engine->_enabled && engine->_throttle > 0.01)
+        {
+          engines_on = true;
+          auto orientation = glm::toMat4(GetOrientation());
+          auto direction = glm::vec4(engine->_thrust_direction, 1) * orientation;
+          auto power = static_cast<float>(engine->_power * engine->_throttle * deltatime);
+          AddImpulse(direction.xyz() * power);
+        }
+    }
+      
   if(_engines.size() > 0 && !engines_on)
     { // todo: separate controls and use the engines to slow down
       auto engineup = GetUpgrade(SpaceshipUpgrade::Type::ENGINE_UPGRADE);
@@ -86,35 +91,46 @@ void ObjectSpaceship::Tick(double deltatime)
 }
 
 
-unsigned int ObjectSpaceship::AddEngine(const glm::vec3 & thrust_direction, double power)
+void ObjectSpaceship::AddEngine(const glm::vec3 & thrust_direction, double power)
 {
   auto engine = new Engine();
   engine->_thrust_direction = thrust_direction;
   engine->_power = power;
   engine->_throttle = 0.0;
+  engine->_enabled = true;
   _engines.push_back(engine);
+}
+
+
+void ObjectSpaceship::EnableEngine(unsigned int engine_id, bool enabled)
+{
+  assert(engine_id < _engines.size());
+  _engines[engine_id]->_enabled = enabled;
+}
+
+unsigned int ObjectSpaceship::GetEngineCount() const
+{
   return static_cast<unsigned int>(_engines.size());
 }
 
 
-unsigned int ObjectSpaceship::AddWeapon()
+void ObjectSpaceship::AddWeapon()
 {
   float id = static_cast<float>((GetWeaponCount() + 1) / 2);
   float sign = (GetWeaponCount() % 2) == 0 ? 1 : -1;
 
-  return AddWeapon(glm::vec3(sign * id * 0.1f, 1, 0),
-                   AssetLoader->LoadMesh("Projectile"),
-                   glm::normalize(glm::vec3(sign * id * 0.1f, 1, 0)),
-                   10.0,
-                   34.0);
+  AddWeapon(glm::vec3(sign * id * 0.1f, 1, 0),
+            AssetLoader->LoadMesh("Projectile"),
+            glm::normalize(glm::vec3(sign * id * 0.1f, 1, 0)),
+            10.0,
+            34.0);
 }
 
 
-unsigned int ObjectSpaceship::AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
+void ObjectSpaceship::AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
 {
   auto weapon = new Weapon(location, projectile, projectile_direction, projectile_initial_velocity, projectile_damage);
   _weapons.push_back(weapon);
-  return static_cast<unsigned int>(_weapons.size());
 }
 
 
@@ -154,8 +170,9 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
   if(bonus->IsActive())
     damage *= bonus->GetValue();
 
-  auto location = glm::vec4(weapon->_location, 1) * glm::toMat4(GetOrientation());
-  auto direction = glm::vec4(weapon->_projectile_direction, 1) * glm::toMat4(GetOrientation());
+  auto orientation = glm::toMat4(glm::inverse(GetOrientation()));
+  auto location = glm::vec4(weapon->_location, 1) * orientation;
+  auto direction = glm::vec4(weapon->_projectile_direction, 1) * orientation;
   GetScene()->AddProjectile(this,
                             GetPosition() + location.xyz(),
                             GetVelocity() * 0.5f + direction.xyz() * static_cast<float>(weapon->_projectile_initial_velocity),

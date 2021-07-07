@@ -6,6 +6,11 @@
 
 class ScenePlanet : public Scene
 {
+public:
+  ScenePlanet();
+  
+  void SetupPlayer() override;
+  
 };
 
 #endif

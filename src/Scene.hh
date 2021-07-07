@@ -59,7 +59,8 @@ public:
 
   const glm::vec2 & GetPlayAreaSize() const;
 
-  ObjectSpaceship * CreatePlayer();
+  void              CreatePlayer();
+  virtual void      SetupPlayer() = 0;
   ObjectSpaceship * GetPlayer() const;
 
   void              ClearPlanets();

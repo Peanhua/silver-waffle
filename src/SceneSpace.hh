@@ -15,6 +15,7 @@ public:
 
   void Draw(const Camera & camera) const override;
   void Tick(double deltatime) override;
+  void SetupPlayer() override;
   
 private:
   Milkyway *     _milkyway;
