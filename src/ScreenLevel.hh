@@ -91,6 +91,8 @@ private:
   void OpenPauseUI();
 
   void GameOver(bool game_was_completed);
+
+  void CopyPlayerData(ScreenLevel * src);
 };
 
 #endif

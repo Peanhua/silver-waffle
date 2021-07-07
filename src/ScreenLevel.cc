@@ -61,27 +61,14 @@ void ScreenLevel::Initialize()
     OnPlayerDies();
   });
 
-
   if(_parent)
-    { // Copy player data from parent:
-      auto myplr = _scene->GetPlayer();
-      auto parentplr = _parent->GetScene()->GetPlayer();
-
-      for(unsigned int i = 0; i < parentplr->GetEngineCount(); i++)
-        parentplr->SetEngineThrottle(i, 0.0);
-      parentplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
-      for(unsigned int i = 0; i < myplr->GetWeaponCount(); i++)
-        parentplr->SetWeaponAutofire(i, false);
-
-      myplr->CopyUpgrades(*parentplr);
-      myplr->SetHealth(parentplr->GetHealth());
-      _scene->SetupPlayer();
-
+    {
+      CopyPlayerData(_parent);
       _gamestats = _parent->GetGameStats();
-
       _scene->EnableTutorialMessages(false);
     }
-  
+
+ 
   // UI:
   _score_reel = new ScoreReel(10);
 
@@ -686,19 +673,22 @@ void ScreenLevel::GameOver(bool game_was_completed)
 void ScreenLevel::OnQuit()
 {
   if(_parent)
-    {
-      auto myplr = _scene->GetPlayer(); // todo: fix to copy the data using a method in player
-      auto parentplr = _parent->GetScene()->GetPlayer();
+    _parent->CopyPlayerData(this);
+}
 
-      for(unsigned int i = 0; i < myplr->GetEngineCount(); i++)
-        myplr->SetEngineThrottle(i, 0.0);
-      myplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
-      for(unsigned int i = 0; i < myplr->GetWeaponCount(); i++)
-        myplr->SetWeaponAutofire(i, false);
 
-      parentplr->CopyUpgrades(*myplr);
-      parentplr->SetHealth(myplr->GetHealth());
-      parentplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(true);
-      parentplr->GetScene()->SetupPlayer();
-    }
+void ScreenLevel::CopyPlayerData(ScreenLevel * src)
+{
+  auto myplr = _scene->GetPlayer();
+  auto srcplr = src->GetScene()->GetPlayer();
+
+  for(unsigned int i = 0; i < srcplr->GetEngineCount(); i++)
+    srcplr->SetEngineThrottle(i, 0.0);
+  srcplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
+  for(unsigned int i = 0; i < myplr->GetWeaponCount(); i++)
+    srcplr->SetWeaponAutofire(i, false);
+
+  myplr->CopyUpgrades(*srcplr);
+  myplr->SetHealth(srcplr->GetHealth());
+  _scene->SetupPlayer();
 }
