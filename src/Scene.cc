@@ -529,6 +529,6 @@ void Scene::SetObjectPlayAreaLimits(Object * object, const glm::vec3 & low, cons
 {
   object->SetAutoDestroyBox(low, high);
   Object::ExceedAction blockaction = destroy_on_block ? Object::ExceedAction::DESTROY : Object::ExceedAction::STOP;
-  for(int i = 0; i < 3; i++)
+  for(unsigned int i = 0; i < 3; i++)
     object->SetOnExceedingPlayAreaLimits(i, _play_area_wraps[i] ? Object::ExceedAction::WRAP : blockaction);
 }

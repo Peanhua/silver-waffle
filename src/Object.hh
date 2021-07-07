@@ -66,7 +66,7 @@ public:
       WRAP,
       DESTROY
     };
-  void   SetOnExceedingPlayAreaLimits(int axis, ExceedAction action);
+  void   SetOnExceedingPlayAreaLimits(unsigned int axis, ExceedAction action);
 
   glm::vec3 GetForwardVector() const;
   glm::vec3 GetRightVector()   const;

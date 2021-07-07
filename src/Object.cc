@@ -354,9 +354,9 @@ void Object::SetOnDestroyed(on_destroyed_t callback)
 
 
 
-void Object::SetOnExceedingPlayAreaLimits(int axis, ExceedAction action)
+void Object::SetOnExceedingPlayAreaLimits(unsigned int axis, ExceedAction action)
 {
-  assert(axis >= 0 && axis < 3);
+  assert(axis < 3);
   _exceed_actions[axis] = action;
 }
 
