@@ -196,12 +196,13 @@ void Scene::Tick(double deltatime)
     }
   
   bool warpspeed = false;
-  double warpspeedmult = 0.0;
+  glm::vec3 warpspeedmove(0);
   if(_player && _player->IsAlive())
     {
       auto u = _player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
       warpspeed = u->IsActive();
-      warpspeedmult = u->GetValue();
+      if(warpspeed)
+        warpspeedmove = glm::vec3(0, -1, 0) * static_cast<float>(u->GetValue() * deltatime);
     }
   
   _time += deltatime;
@@ -234,14 +235,14 @@ void Scene::Tick(double deltatime)
           objects.push_back(p);
     }
 
-  double dtime = deltatime;
-  if(warpspeed)
-    dtime *= warpspeedmult;
-  
   for(auto o : objects)
     {
       if(o->IsAlive())
-        o->Tick(dtime); // todo: Add separate method to move the objects when warpspeed is active.
+        {
+          o->Tick(deltatime);
+          if(o != GetPlayer() && warpspeed)
+            o->Translate(warpspeedmove);
+        }
 
       if(!warpspeed)
         for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
@@ -262,14 +263,18 @@ void Scene::Tick(double deltatime)
 
   for(auto e : _explosions)
     if(e && e->IsAlive())
-      e->Tick(dtime); // todo: Add separate method to move the explosions when warpseed is active.
+      {
+        e->Tick(deltatime);
+        if(warpspeed)
+          e->Translate(warpspeedmove);
+      }
 
   if(_particles)
     {
       if(_warp_engine_starting)
         _particles->Tick(deltatime * (1.0 + static_cast<double>(5.0f * _warp_throttle)));
       else
-        _particles->Tick(dtime);
+        _particles->Tick(deltatime);
     }
 }
 

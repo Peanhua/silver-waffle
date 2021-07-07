@@ -16,11 +16,13 @@ public:
   void Tick(double deltatime);
   void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
   bool IsAlive() const;
+  void Translate(const glm::vec3 & translation);
 
 private:
   int       _fragment_count;
   Mesh *    _mesh;
   double    _time;
+  glm::vec3 _position;
   glm::vec3 _velocity;
 };
 
