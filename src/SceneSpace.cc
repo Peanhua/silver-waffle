@@ -7,7 +7,7 @@
 
 
 SceneSpace::SceneSpace()
-  : Scene({20, 60}, {false, false, false})
+  : Scene({20, 60, 0}, {false, false, false})
 {
   _milkyway = new Milkyway();
   _particles = new SpaceParticles(5.0, 50.0, 0);
@@ -47,6 +47,7 @@ void SceneSpace::Tick(double deltatime)
 
 void SceneSpace::SetupPlayer()
 {
+  Scene::SetupPlayer();
   auto player = GetPlayer();
   assert(player);
   player->EnableVelocity(true, false, false);
@@ -56,4 +57,23 @@ void SceneSpace::SetupPlayer()
       player->EnableEngine(i,     true);
       player->EnableEngine(i + 4, false);
     }
+}
+
+
+void SceneSpace::SetupSceneObject(Object * object, bool destroy_on_block)
+{
+  const auto m = GetPlayAreaSize();
+  const double bsr = object->GetVisualBoundingSphereRadius();
+  
+  const auto low  = glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - bsr, 1);
+  const auto high = glm::vec3( m.x * 0.5f,           9999999, 0);
+  object->SetAutoDestroyBox(low, high);
+  
+  Object::ExceedAction blockaction = destroy_on_block ? Object::ExceedAction::DESTROY : Object::ExceedAction::STOP;
+  for(unsigned int i = 0; i < 3; i++)
+    object->SetOnExceedingPlayAreaLimits(i, _play_area_wraps[i] ? Object::ExceedAction::WRAP : blockaction);
+
+  auto d = dynamic_cast<ObjectMovable *>(object);
+  if(d)
+    d->EnableVelocity(true, true, false);
 }

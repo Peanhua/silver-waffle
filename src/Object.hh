@@ -38,6 +38,7 @@ public:
 
   Mesh * GetMesh() const;
   void   SetMesh(Mesh * mesh);
+  virtual double GetVisualBoundingSphereRadius() const;
 
   bool   CheckCollision(const Object & other, glm::vec3 & out_hit_direction) const;
   virtual void OnCollision(Object & other, const glm::vec3 & hit_direction);

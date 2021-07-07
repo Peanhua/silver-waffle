@@ -351,7 +351,7 @@ void SpaceshipUpgrade::Activate(double value, double time)
       if(planet)
         {
           auto distance = std::abs(playerpos.y - planet->GetPosition().y);
-          if(distance < 20)
+          if(distance < 20 || Settings->GetBool("cheat_planet_lander_disable_distance_check"))
             {
               auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
               assert(current);

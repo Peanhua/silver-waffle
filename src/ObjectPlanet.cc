@@ -4,16 +4,18 @@
 #include <cassert>
 
 
-ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_object, Image * planet_texture, double planet_size)
+ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_object, Image * planet_texture, double planet_radius)
   : ObjectMovable(scene),
-    _solar_system_object(solar_system_object)
+    _solar_system_object(solar_system_object),
+    _planet_radius(planet_radius),
+    _ring_max(1)
 {
   auto planet = new Mesh(*AssetLoader->LoadMesh("Planet", "Generic"));
   assert(planet);
-  planet->ApplyTransform(glm::scale(glm::vec3(planet_size, planet_size, planet_size)));
+  planet->ApplyTransform(glm::scale(glm::vec3(planet_radius, planet_radius, planet_radius)));
   planet->SetTexture(0, planet_texture, true);
   planet->UpdateGPU();
-  planet->SetBoundingSphereRadius(planet_size);
+  planet->SetBoundingSphereRadius(planet_radius);
   SetMesh(planet);
   auto f = AssetLoader->LoadImage("White");
   assert(f);
@@ -29,6 +31,7 @@ ObjectPlanet::~ObjectPlanet()
 
 void ObjectPlanet::AddPlanetRing(float start, float end)
 {
+  _ring_max = std::max(_ring_max, static_cast<double>(end));
   Mesh * ring = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
   ring->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
   ring->SetTexture(0, AssetLoader->LoadImage("8k_saturn_ring_alpha"));
@@ -77,4 +80,10 @@ void ObjectPlanet::AddPlanetRing(float start, float end)
 SolarSystemObject * ObjectPlanet::GetSolarSystemObject() const
 {
   return _solar_system_object;
+}
+
+
+double ObjectPlanet::GetVisualBoundingSphereRadius() const
+{
+  return _planet_radius * _ring_max;
 }

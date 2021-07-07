@@ -1,6 +1,7 @@
 #include "Object.hh"
 #include "Camera.hh"
 #include "Mesh.hh"
+#include "ObjectMovable.hh"
 #include "Scene.hh"
 #include "ShaderProgram.hh"
 
@@ -67,11 +68,31 @@ void Object::Tick(double deltatime)
               {
                 pos[i] = _destroybox_low[i];
                 SetPosition(pos);
+                auto d = dynamic_cast<ObjectMovable *>(this);
+                if(d)
+                  {
+                    auto vel = d->GetVelocity();
+                    if(vel[i] < 0.0f)
+                      {
+                        vel[i] = 0;
+                        d->SetVelocity(vel);
+                      }
+                  }
               }
             else if(pos[i] > _destroybox_high[i])
               {
                 pos[i] = _destroybox_high[i];
                 SetPosition(pos);
+                auto d = dynamic_cast<ObjectMovable *>(this);
+                if(d)
+                  {
+                    auto vel = d->GetVelocity();
+                    if(vel[i] > 0.0f)
+                      {
+                        vel[i] = 0;
+                        d->SetVelocity(vel);
+                      }
+                  }
               }
           }
           break;
@@ -360,3 +381,11 @@ void Object::SetOnExceedingPlayAreaLimits(unsigned int axis, ExceedAction action
   _exceed_actions[axis] = action;
 }
 
+
+double Object::GetVisualBoundingSphereRadius() const
+{
+  if(!_mesh)
+    return 0;
+
+  return _mesh->GetBoundingSphereRadius();
+}

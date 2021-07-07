@@ -15,34 +15,17 @@
 #include <iostream>
 
 
-Scene::Scene(const glm::vec2 & play_area_size, const std::array<bool, 3> & play_area_wraps)
+Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_area_wraps)
   : _particles(nullptr),
-    _random_generator(0),
-    _play_area_size(play_area_size),
     _play_area_wraps(play_area_wraps),
+    _random_generator(0),
+    _rdist(0, 1),
+    _play_area_size(play_area_size),
     _player(nullptr),
     _time(0),
     _warp_engine_starting(false),
     _tutorialmessages_enabled(true)
 {
-  std::uniform_real_distribution<float> rdist(0, 1);
-  for(int i = 0; i < 300; i++)
-    {
-      auto b = new ObjectProjectile(this);
-
-      auto rotangle = glm::normalize(glm::vec3(rdist(_random_generator), rdist(_random_generator), rdist(_random_generator)));
-      b->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(rdist(_random_generator)) * 10.0);
-      {
-        const auto m = GetPlayAreaSize();
-        SetObjectPlayAreaLimits(b,
-                                glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
-                                glm::vec3( m.x * 0.5f, m.y,         0),
-                                true);
-      }
-
-      _projectiles.push_back(b);
-    }
-
   std::minstd_rand random(_random_generator());
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
@@ -52,8 +35,6 @@ Scene::Scene(const glm::vec2 & play_area_size, const std::array<bool, 3> & play_
 
   for(int i = 0; i < 50; i++)
     _collectibles.push_back(nullptr);
-
-  _time = 0;
 
   CreatePlayer();
 }
@@ -129,13 +110,6 @@ void Scene::CreatePlayer()
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
   _player->AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
   _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);
-  {
-    const auto m = GetPlayAreaSize();
-    SetObjectPlayAreaLimits(_player,
-                            glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
-                            glm::vec3( m.x * 0.5f, m.y,         0),
-                            false);
-  }
   _player->SetMesh(AssetLoader->LoadMesh("Player"));
   _player->AddWeapon();
   
@@ -163,6 +137,19 @@ ObjectSpaceship * Scene::GetPlayer() const
 void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime)
 {
   auto ind = _projectiles.GetNextFreeIndex();
+  if(ind >= _projectiles.size())
+    {
+      assert(_projectiles.size() < 300);
+      ind = static_cast<unsigned int>(_projectiles.size());
+      
+      auto b = new ObjectProjectile(this);
+
+      auto rotangle = glm::normalize(glm::vec3(_rdist(_random_generator), _rdist(_random_generator), _rdist(_random_generator)));
+      b->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(_rdist(_random_generator)) * 10.0);
+      SetupSceneObject(b, true);
+
+      _projectiles.push_back(b);
+    }
   assert(ind < _projectiles.size());
   if(ind < _projectiles.size())
     _projectiles[ind]->Activate(owner, position, velocity, damage, lifetime);
@@ -300,14 +287,8 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
   auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
   invader->SetPosition(position);
   invader->RotateYaw(180.0);
-  
-  {
-    const auto m = GetPlayAreaSize();
-    SetObjectPlayAreaLimits(invader,
-                            glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
-                            glm::vec3( m.x * 0.5f, m.y,         0),
-                            true);
-  }
+
+  SetupSceneObject(invader, true);
   
   delete _invaders[ind];
   _invaders[ind] = invader;
@@ -329,13 +310,7 @@ bool Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & po
   collectible->SetVelocity(velocity);
   collectible->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0)), 1.0f);
 
-  {
-    const auto m = GetPlayAreaSize();
-    SetObjectPlayAreaLimits(collectible,
-                            glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
-                            glm::vec3( m.x * 0.5f, m.y,         0),
-                            true);
-  }
+  SetupSceneObject(collectible, true);
   
   delete _collectibles[ind];
   _collectibles[ind] = collectible;
@@ -362,20 +337,14 @@ bool Scene::AddObject(Object * object, const glm::vec3 & position)
   object->SetScene(this);
   object->SetPosition(position);
 
-  {
-    const auto m = GetPlayAreaSize();
-    SetObjectPlayAreaLimits(object,
-                            glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - object->GetMesh()->GetBoundingSphereRadius(), 1),
-                            glm::vec3( m.x * 0.5f,                                                    9999999, 0),
-                            true);
-  }
+  SetupSceneObject(object, true);
   
   return true;
 }
 
 
 
-const glm::vec2 & Scene::GetPlayAreaSize() const
+const glm::vec3 & Scene::GetPlayAreaSize() const
 {
   return _play_area_size;
 }
@@ -396,17 +365,7 @@ void Scene::AddPlanet(Object * object)
   else
     _planets.push_back(object);
 
-  auto bsr = object->GetMesh()->GetBoundingSphereRadius();
-
-  auto planet = dynamic_cast<ObjectPlanet *>(object);
-  if(planet)
-    bsr *= 2.0; // todo: query the exact ring size
-
-  const auto m = GetPlayAreaSize();
-  SetObjectPlayAreaLimits(planet,
-                          glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - bsr, 1),
-                          glm::vec3( m.x * 0.5f,           9999999, 0),
-                          true);
+  SetupSceneObject(object, true);
 }
 
 
@@ -530,10 +489,7 @@ Object * Scene::GetClosestPlanet(const glm::vec3 & position) const
 }
 
 
-void Scene::SetObjectPlayAreaLimits(Object * object, const glm::vec3 & low, const glm::vec3 & high, bool destroy_on_block)
+void Scene::SetupPlayer()
 {
-  object->SetAutoDestroyBox(low, high);
-  Object::ExceedAction blockaction = destroy_on_block ? Object::ExceedAction::DESTROY : Object::ExceedAction::STOP;
-  for(unsigned int i = 0; i < 3; i++)
-    object->SetOnExceedingPlayAreaLimits(i, _play_area_wraps[i] ? Object::ExceedAction::WRAP : blockaction);
+  SetupSceneObject(_player, false);
 }

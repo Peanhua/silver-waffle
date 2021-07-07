@@ -52,16 +52,16 @@ public:
     unsigned int _pos;
   };
   
-  Scene(const glm::vec2 & play_area_size, const std::array<bool, 3> & play_area_wraps);
+  Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_area_wraps);
   virtual ~Scene();
   
   virtual void      Draw(const Camera & camera) const;
   virtual void      Tick(double deltatime);
 
-  const glm::vec2 & GetPlayAreaSize() const;
+  const glm::vec3 & GetPlayAreaSize() const;
 
   void              CreatePlayer();
-  virtual void      SetupPlayer() = 0;
+  virtual void      SetupPlayer();
   ObjectSpaceship * GetPlayer() const;
 
   void              ClearPlanets();
@@ -87,11 +87,14 @@ public:
 
 protected:
   SpaceParticles * _particles;
+  std::array<bool, 3>            _play_area_wraps;
+
+  virtual void SetupSceneObject(Object * object, bool destroy_on_block) = 0;
   
 private:
   std::mt19937_64                _random_generator;
-  glm::vec2                      _play_area_size;
-  std::array<bool, 3>            _play_area_wraps;
+  std::uniform_real_distribution<float> _rdist;
+  glm::vec3                      _play_area_size;
   ObjectSpaceship *              _player;
   Container<ObjectInvader *>     _invaders;
   Container<ObjectProjectile *>  _projectiles;
@@ -104,8 +107,6 @@ private:
   float                          _warp_throttle;
   bool                           _tutorialmessages_enabled;
   std::vector<bool>              _tutorialmessages;
-
-  void SetObjectPlayAreaLimits(Object * object, const glm::vec3 & low, const glm::vec3 & high, bool destroy_on_block);
 };
 
 
