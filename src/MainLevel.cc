@@ -10,7 +10,7 @@
 #define SCALE 100.0
 
 
-MainLevel::MainLevel(Scene * scene, const SolarSystemObject * planet)
+MainLevel::MainLevel(Scene * scene, SolarSystemObject * planet)
   : Level(scene),
     _solar_system_object(planet)
 {

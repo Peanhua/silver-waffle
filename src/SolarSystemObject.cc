@@ -20,9 +20,9 @@ double SolarSystemObject::GetRelativeSize() const
 }
 
   
-Object * SolarSystemObject::CreateSceneObject(Scene * scene, double scale) const
+Object * SolarSystemObject::CreateSceneObject(Scene * scene, double scale)
 {
-  auto obj = new ObjectPlanet(scene, _texture, scale * _relative_size);
+  auto obj = new ObjectPlanet(scene, this, _texture, scale * _relative_size);
   if(_ring.y > 0.0f && _ring.x < _ring.y)
     obj->AddPlanetRing(_ring.x, _ring.y);
 

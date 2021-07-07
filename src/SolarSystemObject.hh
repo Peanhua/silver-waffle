@@ -23,7 +23,7 @@ public:
   Type     GetType() const;
   const std::string & GetName() const;
   
-  Object * CreateSceneObject(Scene * scene, double scale) const;
+  Object * CreateSceneObject(Scene * scene, double scale);
 
   
 private:

@@ -66,6 +66,7 @@ private:
   bool        _activated;
   double      _timer;
   double      _timer_max;
+  double      _cooldown_default;
   double      _cooldown;
 };
 

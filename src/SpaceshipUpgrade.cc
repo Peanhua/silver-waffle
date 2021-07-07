@@ -1,8 +1,10 @@
 #include "SpaceshipUpgrade.hh"
 #include "ObjectCollectible.hh"
+#include "ObjectPlanet.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScreenPlanetLevel.hh"
+#include "SolarSystemObject.hh"
 #include "SubsystemScreen.hh"
 #include "SubsystemSettings.hh"
 #include <algorithm>
@@ -19,6 +21,7 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     _activated(false),
     _timer(0),
     _timer_max(0),
+    _cooldown_default(30),
     _cooldown(0)
 {
   switch(_type)
@@ -31,8 +34,8 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     case Type::HULL_UPGRADE:     _name = "Hull upgrade";   _always_activated = true;  break;
     case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; break;
     case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  break;
-    case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; break;
-    case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; break;
+    case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; _cooldown_default = 0; break;
+    case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; _cooldown_default = 3; break;
     }
 }
 
@@ -225,6 +228,7 @@ void SpaceshipUpgrade::Tick(double deltatime)
         case Type::ENGINE_UPGRADE:
         case Type::HULL_UPGRADE:
         case Type::WARP_ENGINE:
+        case Type::PLANET_LANDER:
           break;
           
         case Type::REPAIR_DROID:
@@ -243,29 +247,6 @@ void SpaceshipUpgrade::Tick(double deltatime)
               auto o = glm::angleAxis(0.0f, _spaceship->GetForwardVector());
               _spaceship->SetOrientation(o);
             }
-          break;
-          
-        case Type::PLANET_LANDER:
-          { // todo: change into instant try-activation when player presses the key, because this current method is confusing for the player?
-            // todo:   move into SpaceshipUpgrade::Activate()
-            auto playerpos = _spaceship->GetPosition();
-            auto planet = _spaceship->GetScene()->GetClosestPlanet(playerpos);
-            if(planet)
-              {
-                auto distance = std::abs(playerpos.y - planet->GetPosition().y);
-                if(distance < 20)
-                  {
-                    Deactivate();
-
-                    auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
-                    assert(current);
-
-                    auto ns = new ScreenPlanetLevel(current);
-                    ns->SetupLevels();
-                    current->TransitionToScreen(ns, "Descending to the planet...");
-                  }
-              }
-          }
           break;
         }
     }
@@ -352,19 +333,39 @@ void SpaceshipUpgrade::Activate(double value, double time)
   assert(_enabled);
   _activated = true;
   _value = value;
+  _spaceship->SystemlogAppend(_name + " activated.\n");
+  _cooldown = _cooldown_default;
   if(_type == Type::WARP_ENGINE)
     {
-      _spaceship->SystemlogAppend("Warp engine: Warp speed!\n");
     }
   else
     {
       _timer = time;
       _timer_max = time;
-      if(_type == Type::PLANET_LANDER)
-        _cooldown = 1.0;
+    }
+
+  if(_type == Type::PLANET_LANDER)
+    {
+      auto playerpos = _spaceship->GetPosition();
+      auto planet = dynamic_cast<ObjectPlanet *>(_spaceship->GetScene()->GetClosestPlanet(playerpos));
+      if(planet)
+        {
+          auto distance = std::abs(playerpos.y - planet->GetPosition().y);
+          if(distance < 20)
+            {
+              auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
+              assert(current);
+              
+              auto ns = new ScreenPlanetLevel(current);
+              ns->SetupLevels();
+              current->TransitionToScreen(ns, _name + ": Destination " + planet->GetSolarSystemObject()->GetName());
+            }
+          else
+            _spaceship->SystemlogAppend(_name + ": Error, planet too far.\n");
+        }
       else
-        _cooldown = 30.0;
-      _spaceship->SystemlogAppend(_name + " activated\n");
+        _spaceship->SystemlogAppend(_name + ": Error, no planet.\n");
+      Deactivate();
     }
 }
 

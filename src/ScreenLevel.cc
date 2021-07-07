@@ -404,7 +404,7 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
         {
           auto lander = player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER);
           if(lander->CanActivate())
-            lander->Activate(3.0);
+            lander->Activate();
         }
       break;
     }

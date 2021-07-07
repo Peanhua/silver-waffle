@@ -4,8 +4,9 @@
 #include <cassert>
 
 
-ObjectPlanet::ObjectPlanet(Scene * scene, Image * planet_texture, double planet_size)
-  : ObjectMovable(scene)
+ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_object, Image * planet_texture, double planet_size)
+  : ObjectMovable(scene),
+    _solar_system_object(solar_system_object)
 {
   auto planet = new Mesh(*AssetLoader->LoadMesh("Planet", "Generic"));
   assert(planet);
@@ -72,3 +73,8 @@ void ObjectPlanet::AddPlanetRing(float start, float end)
   GetMesh()->AddChild(ring);
 }
 
+
+SolarSystemObject * ObjectPlanet::GetSolarSystemObject() const
+{
+  return _solar_system_object;
+}

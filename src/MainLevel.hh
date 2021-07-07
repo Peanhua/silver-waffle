@@ -9,11 +9,11 @@ class SolarSystemObject;
 class MainLevel : public Level
 {
 public:
-  MainLevel(Scene * scene, const SolarSystemObject * planet);
+  MainLevel(Scene * scene, SolarSystemObject * planet);
   void Start() override;
   
 private:
-  const SolarSystemObject * _solar_system_object;
+  SolarSystemObject * _solar_system_object;
   double _planet_size;
   double _planet_position_start;
 };
