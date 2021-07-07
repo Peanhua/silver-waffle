@@ -59,6 +59,14 @@ public:
   void              Translate(const glm::vec3 & translation);
   const glm::vec3 & GetPosition() const;
   void   SetAutoDestroyBox(const glm::vec3 & low, const glm::vec3 & high);
+  enum class ExceedAction
+    {
+      IGNORE,
+      STOP,
+      WRAP,
+      DESTROY
+    };
+  void   SetOnExceedingPlayAreaLimits(int axis, ExceedAction action);
 
   glm::vec3 GetForwardVector() const;
   glm::vec3 GetRightVector()   const;
@@ -82,6 +90,7 @@ private:
   Scene *   _scene;
   glm::vec3 _position;
   glm::quat _orientation;
+  ExceedAction _exceed_actions[3];
   Mesh *    _mesh;
   bool      _destroyed;
   bool      _use_health;

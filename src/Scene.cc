@@ -15,10 +15,11 @@
 #include <iostream>
 
 
-Scene::Scene()
+Scene::Scene(const glm::vec2 & play_area_size, const std::array<bool, 3> & play_area_wraps)
   : _particles(nullptr),
     _random_generator(0),
-    _play_area_size(glm::vec2(20, 60)),
+    _play_area_size(play_area_size),
+    _play_area_wraps(play_area_wraps),
     _player(nullptr),
     _time(0),
     _warp_engine_starting(false),
@@ -33,8 +34,10 @@ Scene::Scene()
       b->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(rdist(_random_generator)) * 10.0);
       {
         const auto m = GetPlayAreaSize();
-        b->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
-                             glm::vec3( m.x * 0.5f, m.y,         0));
+        SetObjectPlayAreaLimits(b,
+                                glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
+                                glm::vec3( m.x * 0.5f, m.y,         0),
+                                true);
       }
 
       _projectiles.push_back(b);
@@ -126,16 +129,14 @@ void Scene::CreatePlayer()
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
   _player->AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
   _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);
-
-  _player->EnableVelocity(true, false, false);
-  _player->SetPosition(glm::vec3(0, 40 - 53, 0));
-  _player->SetHorizontalPositionLimit(GetPlayAreaSize().x * 0.5f);
-
   {
-    auto mesh = AssetLoader->LoadMesh("Player");
-    assert(mesh);
-    _player->SetMesh(mesh);
+    const auto m = GetPlayAreaSize();
+    SetObjectPlayAreaLimits(_player,
+                            glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
+                            glm::vec3( m.x * 0.5f, m.y,         0),
+                            false);
   }
+  _player->SetMesh(AssetLoader->LoadMesh("Player"));
   _player->AddWeapon();
   
   // Space engines (only 2 first are used):
@@ -171,7 +172,8 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
 void Scene::Tick(double deltatime)
 {
   if(_warp_engine_starting)
-    {
+    { // todo: move this warp engine startup code to SpaceshipUpgrade
+      // todo:   move _particles to SceneSpace
       if(_player && _player->IsAlive())
         {
           _warp_throttle += static_cast<float>(1.0 / 2.0 * deltatime);
@@ -296,8 +298,10 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
   
   {
     const auto m = GetPlayAreaSize();
-    invader->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
-                               glm::vec3( m.x * 0.5f, m.y,         0));
+    SetObjectPlayAreaLimits(invader,
+                            glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
+                            glm::vec3( m.x * 0.5f, m.y,         0),
+                            true);
   }
   
   delete _invaders[ind];
@@ -322,8 +326,10 @@ bool Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & po
 
   {
     const auto m = GetPlayAreaSize();
-    collectible->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
-                                   glm::vec3( m.x * 0.5f, m.y,         0));
+    SetObjectPlayAreaLimits(collectible,
+                            glm::vec3(-m.x * 0.5f, 40 - 53 - 2, 1),
+                            glm::vec3( m.x * 0.5f, m.y,         0),
+                            true);
   }
   
   delete _collectibles[ind];
@@ -353,8 +359,10 @@ bool Scene::AddObject(Object * object, const glm::vec3 & position)
 
   {
     const auto m = GetPlayAreaSize();
-    object->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - object->GetMesh()->GetBoundingSphereRadius(), 1),
-                              glm::vec3( m.x * 0.5f,                                                    9999999, 0));
+    SetObjectPlayAreaLimits(object,
+                            glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - object->GetMesh()->GetBoundingSphereRadius(), 1),
+                            glm::vec3( m.x * 0.5f,                                                    9999999, 0),
+                            true);
   }
   
   return true;
@@ -390,8 +398,10 @@ void Scene::AddPlanet(Object * object)
     bsr *= 2.0; // todo: query the exact ring size
 
   const auto m = GetPlayAreaSize();
-  planet->SetAutoDestroyBox(glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - bsr, 1),
-                            glm::vec3( m.x * 0.5f,           9999999, 0));
+  SetObjectPlayAreaLimits(planet,
+                          glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - bsr, 1),
+                          glm::vec3( m.x * 0.5f,           9999999, 0),
+                          true);
 }
 
 
@@ -514,3 +524,11 @@ Object * Scene::GetClosestPlanet(const glm::vec3 & position) const
   return rv;
 }
 
+
+void Scene::SetObjectPlayAreaLimits(Object * object, const glm::vec3 & low, const glm::vec3 & high, bool destroy_on_block)
+{
+  object->SetAutoDestroyBox(low, high);
+  Object::ExceedAction blockaction = destroy_on_block ? Object::ExceedAction::DESTROY : Object::ExceedAction::STOP;
+  for(int i = 0; i < 3; i++)
+    object->SetOnExceedingPlayAreaLimits(i, _play_area_wraps[i] ? Object::ExceedAction::WRAP : blockaction);
+}

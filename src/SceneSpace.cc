@@ -7,7 +7,7 @@
 
 
 SceneSpace::SceneSpace()
-  : Scene()
+  : Scene({20, 60}, {false, false, false})
 {
   _milkyway = new Milkyway();
   _particles = new SpaceParticles(5.0, 50.0, 0);
@@ -51,7 +51,6 @@ void SceneSpace::SetupPlayer()
   assert(player);
   player->EnableVelocity(true, false, false);
   player->SetPosition(glm::vec3(0, 40 - 53, 0));
-  player->SetHorizontalPositionLimit(GetPlayAreaSize().x * 0.5f);
   for(unsigned int i = 0; i < 4; i++)
     {
       player->EnableEngine(i,     true);

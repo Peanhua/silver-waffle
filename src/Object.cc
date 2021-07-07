@@ -9,6 +9,7 @@ Object::Object(Scene * scene)
   : _scene(scene),
     _position(0, 0, 0),
     _orientation(1, 0, 0, 0),
+    _exceed_actions{ExceedAction::DESTROY, ExceedAction::DESTROY, ExceedAction::DESTROY},
     _mesh(nullptr),
     _destroyed(false),
     _use_health(true),
@@ -52,12 +53,49 @@ void Object::Draw(const glm::mat4 & view, const glm::mat4 & projection, const gl
 void Object::Tick(double deltatime)
 {
   assert(deltatime == deltatime);
-  if((_destroybox_low.x < _destroybox_high.x && (_position.x < _destroybox_low.x || _position.x > _destroybox_high.x)) ||
-     (_destroybox_low.y < _destroybox_high.y && (_position.y < _destroybox_low.y || _position.y > _destroybox_high.y)) ||
-     (_destroybox_low.z < _destroybox_high.z && (_position.z < _destroybox_low.z || _position.z > _destroybox_high.z))   )
-    {
-      Destroy(nullptr);
-    }
+  for(int i = 0; i < 3; i++)
+    if(_destroybox_low[i] < _destroybox_high[i] && (_position[i] < _destroybox_low[i] || _position[i] > _destroybox_high[i]))
+      switch(_exceed_actions[i])
+        {
+        case ExceedAction::IGNORE:
+          break;
+          
+        case ExceedAction::STOP:
+          {
+            auto pos = GetPosition();
+            if(pos[i] < _destroybox_low[i])
+              {
+                pos[i] = _destroybox_low[i];
+                SetPosition(pos);
+              }
+            else if(pos[i] > _destroybox_high[i])
+              {
+                pos[i] = _destroybox_high[i];
+                SetPosition(pos);
+              }
+          }
+          break;
+          
+        case ExceedAction::WRAP:
+          {
+            auto pos = GetPosition();
+            if(pos[i] < _destroybox_low[i])
+              {
+                pos[i] += _destroybox_high[i] - _destroybox_low[i];
+                SetPosition(pos);
+              }
+            else if(pos[i] > _destroybox_high[i])
+              {
+                pos[i] -= _destroybox_high[i] - _destroybox_low[i];
+                SetPosition(pos);
+              }
+          }
+          break;
+          
+        case ExceedAction::DESTROY:
+          Destroy(nullptr);
+          break;
+        }
 }
 
 
@@ -169,8 +207,11 @@ void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 
 void Object::Destroy(Object * destroyer)
 {
-  _destroyed = true;
-  OnDestroyed(destroyer);
+  if(!_destroyed)
+    {
+      _destroyed = true;
+      OnDestroyed(destroyer);
+    }
 }
 
 
@@ -309,5 +350,13 @@ void Object::SetAutoDestroyBox(const glm::vec3 & low, const glm::vec3 & high)
 void Object::SetOnDestroyed(on_destroyed_t callback)
 {
   _on_destroyed.push_back(callback);
+}
+
+
+
+void Object::SetOnExceedingPlayAreaLimits(int axis, ExceedAction action)
+{
+  assert(axis >= 0 && axis < 3);
+  _exceed_actions[axis] = action;
 }
 

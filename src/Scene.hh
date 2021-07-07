@@ -2,6 +2,7 @@
 #define SCENE_HH_
 
 #include "glm.hh"
+#include <array>
 #include <functional>
 #include <random>
 
@@ -51,7 +52,7 @@ public:
     unsigned int _pos;
   };
   
-  Scene();
+  Scene(const glm::vec2 & play_area_size, const std::array<bool, 3> & play_area_wraps);
   virtual ~Scene();
   
   virtual void      Draw(const Camera & camera) const;
@@ -90,6 +91,7 @@ protected:
 private:
   std::mt19937_64                _random_generator;
   glm::vec2                      _play_area_size;
+  std::array<bool, 3>            _play_area_wraps;
   ObjectSpaceship *              _player;
   Container<ObjectInvader *>     _invaders;
   Container<ObjectProjectile *>  _projectiles;
@@ -102,6 +104,8 @@ private:
   float                          _warp_throttle;
   bool                           _tutorialmessages_enabled;
   std::vector<bool>              _tutorialmessages;
+
+  void SetObjectPlayAreaLimits(Object * object, const glm::vec3 & low, const glm::vec3 & high, bool destroy_on_block);
 };
 
 

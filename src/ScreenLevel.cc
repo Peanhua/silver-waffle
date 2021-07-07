@@ -689,8 +689,16 @@ void ScreenLevel::OnQuit()
     {
       auto myplr = _scene->GetPlayer(); // todo: fix to copy the data using a method in player
       auto parentplr = _parent->GetScene()->GetPlayer();
+
+      for(unsigned int i = 0; i < myplr->GetEngineCount(); i++)
+        myplr->SetEngineThrottle(i, 0.0);
+      myplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
+      for(unsigned int i = 0; i < myplr->GetWeaponCount(); i++)
+        myplr->SetWeaponAutofire(i, false);
+
       parentplr->CopyUpgrades(*myplr);
       parentplr->SetHealth(myplr->GetHealth());
       parentplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(true);
+      parentplr->GetScene()->SetupPlayer();
     }
 }
