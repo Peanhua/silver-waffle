@@ -58,6 +58,8 @@ public:
   virtual void      Draw(const Camera & camera) const;
   virtual void      Tick(double deltatime);
 
+  virtual glm::vec3 GetRandomSpawnPosition() = 0;
+  
   const glm::vec3 & GetPlayAreaSize() const;
 
   void              CreatePlayer();
@@ -86,14 +88,14 @@ public:
   double GetTime() const;
 
 protected:
-  SpaceParticles * _particles;
-  std::array<bool, 3>            _play_area_wraps;
-
-  virtual void SetupSceneObject(Object * object, bool destroy_on_block) = 0;
-  
-private:
+  SpaceParticles *    _particles;
+  std::array<bool, 3> _play_area_wraps;
   std::mt19937_64                _random_generator;
   std::uniform_real_distribution<float> _rdist;
+
+  virtual void      SetupSceneObject(Object * object, bool destroy_on_block) = 0;
+  
+private:
   glm::vec3                      _play_area_size;
   ObjectSpaceship *              _player;
   Container<ObjectInvader *>     _invaders;

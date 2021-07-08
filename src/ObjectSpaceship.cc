@@ -455,6 +455,10 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
       AddControlProgram(new SCP_MoveForward(this, 5, 5));
       AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
     }
+  else if(name == "wait10s")
+    {
+      AddControlProgram(new SCP_Delay(this, 10));
+    }
   else
     assert(false);
 }

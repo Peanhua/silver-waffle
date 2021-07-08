@@ -13,12 +13,13 @@ class SceneSpace : public Scene
 public:
   SceneSpace();
 
-  void Draw(const Camera & camera) const override;
-  void Tick(double deltatime) override;
-  void SetupPlayer() override;
+  void      Draw(const Camera & camera) const override;
+  void      Tick(double deltatime) override;
+  void      SetupPlayer() override;
+  glm::vec3 GetRandomSpawnPosition() override;
 
 protected:
-  void SetupSceneObject(Object * object, bool destroy_on_block) override;
+  void      SetupSceneObject(Object * object, bool destroy_on_block) override;
   
 private:
   Milkyway *     _milkyway;

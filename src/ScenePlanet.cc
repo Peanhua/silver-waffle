@@ -38,3 +38,23 @@ void ScenePlanet::SetupSceneObject(Object * object, bool destroy_on_block)
   if(d)
     d->EnableVelocity(true, false, true);
 }
+
+
+glm::vec3 ScenePlanet::GetRandomSpawnPosition()
+{
+  auto rand = [this]()
+  {
+    return _rdist(_random_generator);
+  };
+
+  // Spawn in front of player at random z on air.
+  glm::vec4 offset(0, 5, 0, 1);
+
+  glm::mat4 rot = glm::toMat4(glm::inverse(GetPlayer()->GetOrientation()));
+  offset = offset * rot;
+  
+  float groundz = 0; // todo
+  offset.z = groundz + rand() * (GetPlayAreaSize().z - groundz);
+  
+  return GetPlayer()->GetPosition() + offset.xyz();
+}

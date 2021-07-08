@@ -9,11 +9,11 @@ class ScenePlanet : public Scene
 public:
   ScenePlanet();
   
-  void SetupPlayer() override;
+  void      SetupPlayer() override;
+  glm::vec3 GetRandomSpawnPosition() override;
 
 protected:
-  void SetupSceneObject(Object * object, bool destroy_on_block) override;
-  
+  void      SetupSceneObject(Object * object, bool destroy_on_block) override;
 };
 
 #endif

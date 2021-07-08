@@ -77,3 +77,15 @@ void SceneSpace::SetupSceneObject(Object * object, bool destroy_on_block)
   if(d)
     d->EnableVelocity(true, true, false);
 }
+
+
+glm::vec3 SceneSpace::GetRandomSpawnPosition()
+{
+  auto rand = [this]()
+  {
+    return _rdist(_random_generator);
+  };
+
+  const auto max_x = GetPlayAreaSize().x * 0.5f;
+  return glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0);
+}

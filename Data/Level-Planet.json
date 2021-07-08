@@ -1,8 +1,15 @@
 {
   "spawns": [
     {
-      "start": 30.0,
-      "stop":  31.0
+      "start":  0.0,
+      "stop":  10.0,
+      "interval": 0.5,
+      "invader_type": 0,
+      "control_program": "wait10s"
+    },
+    {
+      "start": 0,
+      "stop":  60
     }
   ]
 }

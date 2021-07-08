@@ -37,7 +37,7 @@ void Level::Tick(double deltatime)
 
   for(unsigned int i = 0; i < _program.size(); i++)
     if(_program[i])
-      _program[i] = _program[i]->Tick(_scene, _random_generator, dtime, warpspeed);
+      _program[i] = _program[i]->Tick(_scene, dtime, warpspeed);
 }
 
 
@@ -131,8 +131,7 @@ bool Level::IsFinished() const
 }
 
 
-
-Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 & random_generator, double deltatime, bool disable_spawning)
+Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, double deltatime, bool disable_spawning)
 {
   if(_invader_spawn_stop_time < 0.0)
     {
@@ -158,13 +157,8 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, std::mt19937_64 &
 
           if(!disable_spawning)
             {
-              auto rand = [&random_generator]()
-              {
-                return (static_cast<float>(random_generator()) - static_cast<float>(random_generator.min())) / static_cast<float>(random_generator.max());
-              };
-          
-              const auto max_x = scene->GetPlayAreaSize().x * 0.5f;
-              auto invader = scene->AddInvader(glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0));
+              auto pos = scene->GetRandomSpawnPosition();
+              auto invader = scene->AddInvader(pos);
               assert(invader);
               invader->SetInvaderType(_invader_type);
               if(!_invader_control_program.empty())
