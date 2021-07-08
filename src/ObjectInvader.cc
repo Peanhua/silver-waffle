@@ -15,7 +15,6 @@ ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed)
 {
   AddToCollisionChannel(CollisionChannel::ENEMY);
   AddCollidesWithChannel(CollisionChannel::PLAYER);
-  AddCollidesWithChannel(CollisionChannel::PROJECTILE);
 }
 
 

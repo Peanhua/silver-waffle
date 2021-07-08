@@ -108,7 +108,6 @@ void Scene::CreatePlayer()
   _player = new ObjectSpaceship(this);
   _player->AddToCollisionChannel(Object::CollisionChannel::PLAYER);
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
-  _player->AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
   _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);
   _player->SetMesh(AssetLoader->LoadMesh("Player"));
   _player->AddWeapon();

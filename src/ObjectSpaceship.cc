@@ -13,6 +13,8 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene)
     _gamestats(nullptr),
     _systemlog_enabled(false)
 {
+  AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
+
   std::vector<SpaceshipUpgrade::Type> types
     {
       SpaceshipUpgrade::Type::BONUS_DAMAGE,

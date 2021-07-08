@@ -1,11 +1,15 @@
 #include "ScenePlanet.hh"
 #include "ControllerPlanet.hh"
+#include "ObjectPlanetGround.hh"
 #include "ObjectSpaceship.hh"
+#include "SubsystemAssetLoader.hh"
 
 
 ScenePlanet::ScenePlanet()
   : Scene({100, 0, 20}, {true, false, false})
 {
+  _ground = new ObjectPlanetGround(this, {100, 40}, AssetLoader->LoadImage("8k_earth_daymap"));
+  AddObject(_ground, {0, 0, -10});
 }
 
 

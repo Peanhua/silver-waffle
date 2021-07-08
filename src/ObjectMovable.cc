@@ -11,6 +11,7 @@ ObjectMovable::ObjectMovable(Scene * scene)
   _velocity_enabled[0] =
     _velocity_enabled[1] =
     _velocity_enabled[2] = true;
+  AddCollidesWithChannel(CollisionChannel::TERRAIN);
 }
 
 
