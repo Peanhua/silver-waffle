@@ -3,7 +3,7 @@
 
 
 ScenePlanet::ScenePlanet()
-  : Scene({24, 0, 5}, {true, false, false})
+  : Scene({32, 0, 20}, {true, false, false})
 {
 }
 

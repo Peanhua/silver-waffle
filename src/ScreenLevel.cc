@@ -88,50 +88,49 @@ void ScreenLevel::Initialize()
   OnLivesUpdated();
 
   {
+    int x = static_cast<int>(width) - 8;
     int y = 70;
-    for(auto um : _gamestats->GetUpgradeMaterials())
+    const glm::ivec2 size(20, 100);
+    std::vector<Widget *>    widgets;
+    std::vector<std::string> labels;
+    {
+      x -= size.x + 4;
+      auto w = new WidgetSpaceshipStatus(root, {x, y}, size, _scene->GetPlayer());
+      _player_status_widgets.push_back(w);
+      widgets.push_back(w);
+      labels.push_back("H");
+    }
+    {
+      x -= size.x + 4;
+      auto w = new WidgetWeaponStatus(root, {x, y}, size, _scene->GetPlayer());
+      _player_status_widgets.push_back(w);
+      widgets.push_back(w);
+      labels.push_back("W");
+    }
+    {
+      x -= size.x + 4;
+      auto w = new WidgetSpaceshipUpgradeStatus(root, {x, y}, size, _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER));
+      _player_upgrade_status_widgets.push_back(w);
+      widgets.push_back(w);
+      labels.push_back("E");
+    }
+    {
+      x -= size.x + 4;
+      auto w = new WidgetSpaceshipUpgradeStatus(root, {x, y}, size, _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE));
+      _player_upgrade_status_widgets.push_back(w);
+      widgets.push_back(w);
+      labels.push_back("Z");
+    }
+    for(unsigned int i = 0; i < labels.size(); i++)
       {
-        auto w = new WidgetUpgradeMaterial(root, glm::ivec2(width - 50 - 5, y), glm::ivec2(50, 25), *um);
-        assert(w);
-        y += 25;
+        auto l = new Widget(root, widgets[i]->GetPosition() + glm::ivec2(0, size.y), glm::ivec2(size.x, size.x));
+        l->SetText(labels[i]);
+        l->SetTextFont(AssetLoader->LoadFont(12));
+        l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
+        l->SetTextPaddingCentered(true, true);
       }
   }
-  {
-    auto w = new WidgetSpaceshipStatus(root, glm::ivec2(width - 32, 160), glm::ivec2(20, 100), _scene->GetPlayer());
-    _player_status_widgets.push_back(w);
-    auto l = new Widget(root, w->GetPosition() + glm::ivec2(0, w->GetSize().y), glm::ivec2(20, 20));
-    l->SetText("H");
-    l->SetTextFont(AssetLoader->LoadFont(12));
-    l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
-    l->SetTextPaddingCentered(true, true);
-  }
-  {
-    auto w = new WidgetWeaponStatus(root, glm::ivec2(width - 32 - 24, 160), glm::ivec2(20, 100), _scene->GetPlayer());
-    _player_status_widgets.push_back(w);
-    auto l = new Widget(root, w->GetPosition() + glm::ivec2(0, w->GetSize().y), glm::ivec2(20, 20));
-    l->SetText("W");
-    l->SetTextFont(AssetLoader->LoadFont(12));
-    l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
-    l->SetTextPaddingCentered(true, true);
-  }
-  {
-    auto w = new WidgetSpaceshipUpgradeStatus(root, glm::ivec2(width - 32 - 24 - 24, 160), glm::ivec2(20, 100), _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER));
-    _player_upgrade_status_widgets.push_back(w);
-    auto l = new Widget(root, w->GetPosition() + glm::ivec2(0, w->GetSize().y), glm::ivec2(20, 20));
-    l->SetText("E");
-    l->SetTextFont(AssetLoader->LoadFont(12));
-    l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
-    l->SetTextPaddingCentered(true, true);
-  }
-  {
-    auto w = new WidgetSpaceshipUpgradeStatus(root, glm::ivec2(width - 32 - 24 - 24 - 24, 160), glm::ivec2(20, 100), _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE));
-    _player_upgrade_status_widgets.push_back(w);
-    auto l = new Widget(root, w->GetPosition() + glm::ivec2(0, w->GetSize().y), glm::ivec2(20, 20));
-    l->SetText("Z");
-    l->SetTextFont(AssetLoader->LoadFont(12));
-    l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
-    l->SetTextPaddingCentered(true, true);
-  }
+  
   {
     std::vector<std::string> imagenames
       {
