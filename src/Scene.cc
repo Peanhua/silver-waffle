@@ -119,10 +119,10 @@ void Scene::CreatePlayer()
   _player->AddEngine(glm::vec3( 0, 0, 0), 20.0);
   _player->AddEngine(glm::vec3( 0, 0, 0), 20.0);
   // Planet engines:
-  _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
-  _player->AddEngine(glm::vec3(0,  1,  0), 20.0);
-  _player->AddEngine(glm::vec3(0,  0, -1), 20.0);
   _player->AddEngine(glm::vec3(0,  0,  1), 20.0);
+  _player->AddEngine(glm::vec3(0,  0, -1), 20.0);
+  _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
+  _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
   
   _player->SystemlogEnable();
 }

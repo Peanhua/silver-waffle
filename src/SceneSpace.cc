@@ -1,4 +1,5 @@
 #include "SceneSpace.hh"
+#include "ControllerSpace.hh"
 #include "Camera.hh"
 #include "Milkyway.hh"
 #include "ObjectSpaceship.hh"
@@ -57,6 +58,7 @@ void SceneSpace::SetupPlayer()
       player->EnableEngine(i,     true);
       player->EnableEngine(i + 4, false);
     }
+  player->SetController(new ControllerSpace(player));
 }
 
 

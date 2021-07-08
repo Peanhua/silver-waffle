@@ -9,6 +9,7 @@ class ScreenPlanetLevel : public ScreenLevel
 public:
   ScreenPlanetLevel(ScreenLevel * parent);
 
+  void Tick(double deltatime) override;
   void SetupLevels() override;
 
 private:

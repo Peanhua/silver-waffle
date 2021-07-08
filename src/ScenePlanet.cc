@@ -1,9 +1,10 @@
 #include "ScenePlanet.hh"
+#include "ControllerPlanet.hh"
 #include "ObjectSpaceship.hh"
 
 
 ScenePlanet::ScenePlanet()
-  : Scene({32, 0, 20}, {true, false, false})
+  : Scene({100, 0, 20}, {true, false, false})
 {
 }
 
@@ -20,6 +21,7 @@ void ScenePlanet::SetupPlayer()
       player->EnableEngine(i,     false);
       player->EnableEngine(i + 4, true);
     }
+  player->SetController(new ControllerPlanet(player));
 }
 
 

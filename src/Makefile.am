@@ -22,6 +22,9 @@ silverwaffle_LDADD =       \
 silverwaffle_SOURCES =				\
 	AdditiveBlending.cc			\
 	Camera.cc				\
+	Controller.cc				\
+	ControllerPlanet.cc			\
+	ControllerSpace.cc			\
 	Explosion.cc				\
 	Font.cc					\
 	GameStats.cc				\

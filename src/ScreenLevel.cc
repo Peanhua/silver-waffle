@@ -1,6 +1,7 @@
 #include "ScreenLevel.hh"
 #include "AdditiveBlending.hh"
 #include "Camera.hh"
+#include "Controller.hh"
 #include "Font.hh"
 #include "GaussianBlur.hh"
 #include "HighscoreEntry.hh"
@@ -325,7 +326,9 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
   assert(_state == State::RUNNING);
   auto player = _scene->GetPlayer();
+  auto controller = player->GetController();
   bool disablecontrols = _scene->IsWarpEngineStarting();
+
   if(player && player->IsAlive())
     {
       auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
@@ -346,40 +349,27 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       
     case SDLK_LEFT:
       if(!disablecontrols)
-        {
-          player->SetEngineThrottle(0, pressed ? 1.0 : 0.0);
-          player->SetEngineThrottle(0 + 4, pressed ? 1.0 : 0.0);
-        }
+        controller->SteerLeft(pressed);
       break;
       
     case SDLK_RIGHT:
       if(!disablecontrols)
-        {
-          player->SetEngineThrottle(1, pressed ? 1.0 : 0.0);
-          player->SetEngineThrottle(1 + 4, pressed ? 1.0 : 0.0);
-        }
+        controller->SteerRight(pressed);
       break;
 
     case SDLK_DOWN:
       if(!disablecontrols)
-        {
-          player->SetEngineThrottle(2, pressed ? 1.0 : 0.0);
-          player->SetEngineThrottle(2 + 4, pressed ? 1.0 : 0.0);
-        }
+        controller->SteerBackward(pressed);
       break;
 
     case SDLK_UP:
       if(!disablecontrols)
-        {
-          player->SetEngineThrottle(3, pressed ? 1.0 : 0.0);
-          player->SetEngineThrottle(3 + 4, pressed ? 1.0 : 0.0);
-        }
+        controller->SteerForward(pressed);
       break;
 
     case SDLK_SPACE:
       if(!disablecontrols)
-        for(unsigned int i = 0; i < _scene->GetPlayer()->GetWeaponCount(); i++)
-          player->SetWeaponAutofire(i, pressed);
+        controller->ActivateWeapon(pressed);
       break;
 
     case SDLK_c:

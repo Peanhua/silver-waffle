@@ -5,6 +5,7 @@
 #include <algorithm>
 
 class Camera;
+class Controller;
 class Mesh;
 class Scene;
 
@@ -85,12 +86,15 @@ public:
   Scene * GetScene() const;
   void    SetScene(Scene * scene);
 
+  Controller * GetController() const;
+  void         SetController(Controller * controller);
 
  
 private:
-  Scene *   _scene;
-  glm::vec3 _position;
-  glm::quat _orientation;
+  Scene *      _scene;
+  Controller * _controller;
+  glm::vec3    _position;
+  glm::quat    _orientation;
   ExceedAction _exceed_actions[3];
   Mesh *    _mesh;
   bool      _destroyed;

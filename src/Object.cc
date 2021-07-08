@@ -8,6 +8,7 @@
 
 Object::Object(Scene * scene)
   : _scene(scene),
+    _controller(nullptr),
     _position(0, 0, 0),
     _orientation(1, 0, 0, 0),
     _exceed_actions{ExceedAction::DESTROY, ExceedAction::DESTROY, ExceedAction::DESTROY},
@@ -389,3 +390,16 @@ double Object::GetVisualBoundingSphereRadius() const
 
   return _mesh->GetBoundingSphereRadius();
 }
+
+
+Controller * Object::GetController() const
+{
+  return _controller;
+}
+
+
+void Object::SetController(Controller * controller)
+{
+  _controller = controller;
+}
+
