@@ -655,7 +655,14 @@ void ScreenLevel::GameOver(bool game_was_completed)
 {
   auto hs = new HighscoreEntry(_score_reel->GetScore(), _current_level, _scene, game_was_completed);
   Highscores->Add(hs);
+
   Quit();
+  auto parent = _parent;
+  while(parent)
+    {
+      parent->Quit();
+      parent = parent->_parent;
+    }
 }
 
 
