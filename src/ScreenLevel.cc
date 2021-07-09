@@ -44,8 +44,6 @@ ScreenLevel::ScreenLevel(ScreenLevel * parent)
 
 void ScreenLevel::Initialize()
 {
-  if(!_gamestats)
-    _gamestats = new GameStats();
   _texture_renderer = new TextureRenderer(static_cast<unsigned int>(Settings->GetInt("screen_width")),
                                           static_cast<unsigned int>(Settings->GetInt("screen_height")),
                                           2);
@@ -55,19 +53,22 @@ void ScreenLevel::Initialize()
   _blur = new GaussianBlur();
   _blender = new AdditiveBlending();
     
-  _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
-  _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
-  {
-    assert(destroyer == destroyer);
-    OnPlayerDies();
-  });
-
   if(_parent)
     {
       CopyPlayerData(_parent);
       _gamestats = _parent->GetGameStats();
       _scene->EnableTutorialMessages(false);
     }
+
+  if(!_gamestats)
+    _gamestats = new GameStats();
+  
+  _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
+  _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
+  {
+    assert(destroyer == destroyer);
+    OnPlayerDies();
+  });
 
  
   // UI:
@@ -201,7 +202,12 @@ void ScreenLevel::Tick(double deltatime)
               OnLevelChanged();
             }
           else
-            GameOver(true);
+            {
+              if(_parent)
+                Quit();
+              else
+                GameOver(true);
+            }
         }
     }
   else if(_state == State::SCREEN_TRANSITION)
@@ -681,7 +687,7 @@ void ScreenLevel::CopyPlayerData(ScreenLevel * src)
   for(unsigned int i = 0; i < srcplr->GetEngineCount(); i++)
     srcplr->SetEngineThrottle(i, 0.0);
   srcplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
-  for(unsigned int i = 0; i < myplr->GetWeaponCount(); i++)
+  for(unsigned int i = 0; i < srcplr->GetWeaponCount(); i++)
     srcplr->SetWeaponAutofire(i, false);
 
   myplr->CopyUpgrades(*srcplr);
