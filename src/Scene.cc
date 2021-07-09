@@ -65,8 +65,10 @@ void Scene::Draw(const Camera & camera) const
 
   for(auto p : _planets)
     p->Draw(view, projection, vp);
-  glClear(GL_DEPTH_BUFFER_BIT);
 
+  glEnable(GL_DEPTH_TEST);
+  glClear(GL_DEPTH_BUFFER_BIT);
+  
   for(auto o : _objects)
     if(o && o->IsAlive())
       o->Draw(view, projection, vp);

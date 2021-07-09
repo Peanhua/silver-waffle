@@ -14,9 +14,6 @@ public:
 
 protected:
   void      SetupSceneObject(Object * object, bool destroy_on_block) override;
-
-private:
-  Object * _ground;
 };
 
 #endif

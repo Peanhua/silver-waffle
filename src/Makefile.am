@@ -47,6 +47,7 @@ silverwaffle_SOURCES =				\
 	ObjectInvader.cc			\
 	ObjectMovable.cc			\
 	ObjectPlanet.cc				\
+	ObjectPlanetAtmosphere.cc		\
 	ObjectPlanetGround.cc			\
 	ObjectProjectile.cc			\
 	ObjectSpaceship.cc			\

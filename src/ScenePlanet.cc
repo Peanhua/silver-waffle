@@ -1,5 +1,6 @@
 #include "ScenePlanet.hh"
 #include "ControllerPlanet.hh"
+#include "ObjectPlanetAtmosphere.hh"
 #include "ObjectPlanetGround.hh"
 #include "ObjectSpaceship.hh"
 #include "SubsystemAssetLoader.hh"
@@ -8,8 +9,12 @@
 ScenePlanet::ScenePlanet()
   : Scene({100, 0, 20}, {true, false, false})
 {
-  _ground = new ObjectPlanetGround(this, {100, 40}, AssetLoader->LoadImage("8k_earth_daymap"));
-  AddObject(_ground, {0, 0, -10});
+  auto ground = new ObjectPlanetGround(this, {100, 40}, AssetLoader->LoadImage("8k_earth_daymap"));
+  AddObject(ground, {0, 0, -10});
+
+  auto atmosphere = new ObjectPlanetAtmosphere(this, {100, 20}, {1, 0, 0}, {0, 0, 0.5});
+  atmosphere->Translate({0, 20, 0});
+  AddPlanet(atmosphere);
 }
 
 
@@ -60,7 +65,10 @@ glm::vec3 ScenePlanet::GetRandomSpawnPosition()
   offset = offset * rot;
   
   float groundz = 0; // todo
-  offset.z = groundz + rand() * (GetPlayAreaSize().z - groundz);
+  offset.z =
+    groundz
+    + rand() * (GetPlayAreaSize().z - groundz)
+    - (GetPlayAreaSize().z * 0.5f);
   
-  return GetPlayer()->GetPosition() + offset.xyz();
+  return glm::vec3(GetPlayer()->GetPosition().xy(), 0) + offset.xyz();
 }
