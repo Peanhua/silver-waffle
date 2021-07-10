@@ -4,7 +4,7 @@
 
 ControllerPlanet::ControllerPlanet(ObjectSpaceship * spaceship)
   : Controller(spaceship),
-    _facing_right(false)
+    _facing_right(true)
 {
 }
 

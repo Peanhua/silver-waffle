@@ -12,7 +12,6 @@ public:
   void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
 
   void AddImpulse(const glm::vec3 & impulse);
-  void SetMaxVelocity(double max_velocity);
   void SetVelocity(const glm::vec3 & velocity);
   const glm::vec3 & GetVelocity() const;
   void EnableVelocity(bool x = true, bool y = true, bool z = true);

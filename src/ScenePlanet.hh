@@ -17,6 +17,9 @@ public:
 
 protected:
   void      SetupSceneObject(Object * object, bool destroy_on_block) override;
+
+private:
+  bool _landing_sequence;
 };
 
 #endif

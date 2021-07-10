@@ -60,6 +60,7 @@ private:
     double    _power;
     double    _throttle;
     bool      _enabled;
+    float     _speed_limit;
   private:
   };
 

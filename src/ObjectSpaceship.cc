@@ -51,9 +51,13 @@ void ObjectSpaceship::Tick(double deltatime)
         {
           engines_on = true;
           auto orientation = glm::toMat4(GetOrientation());
-          auto direction = glm::vec4(engine->_thrust_direction, 1) * orientation;
-          auto power = static_cast<float>(engine->_power * engine->_throttle * deltatime);
-          AddImpulse(direction.xyz() * power);
+          auto direction = (glm::vec4(engine->_thrust_direction, 1) * orientation).xyz();
+
+          if(glm::dot(GetVelocity(), glm::normalize(direction)) < engine->_speed_limit)
+            {
+              auto power = static_cast<float>(engine->_power * engine->_throttle * deltatime);
+              AddImpulse(direction * power);
+            }
         }
     }
       
@@ -120,6 +124,7 @@ void ObjectSpaceship::AddEngine(const glm::vec3 & thrust_direction, double power
   engine->_power = power;
   engine->_throttle = 0.0;
   engine->_enabled = true;
+  engine->_speed_limit = 15;
   _engines.push_back(engine);
 }
 

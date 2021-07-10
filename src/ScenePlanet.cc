@@ -8,7 +8,8 @@
 
 
 ScenePlanet::ScenePlanet()
-  : Scene({100, 0, 20}, {true, false, false})
+  : Scene({100, 0, 20}, {true, false, false}),
+    _landing_sequence(true)
 {
   auto ground = new ObjectPlanetGround(this, {100, 40}, AssetLoader->LoadImage("8k_earth_daymap"));
   AddObject(ground, {0, 0, -10});
@@ -24,14 +25,19 @@ void ScenePlanet::SetupPlayer()
   Scene::SetupPlayer();
   auto player = GetPlayer();
   player->EnableVelocity(true, false, true);
-  player->SetPosition(glm::vec3(0, 0, 0));
-  player->RotateYaw(90.0);
+  player->SetPosition({50, 0, GetPlayAreaSize().z * 0.5f});
+  player->RotateYaw(-90.0);
   for(unsigned int i = 0; i < 4; i++)
     {
       player->EnableEngine(i,     false);
       player->EnableEngine(i + 4, true);
     }
   player->SetController(new ControllerPlanet(player));
+  if(_landing_sequence)
+    {
+      _landing_sequence = false;
+      player->AddImpulse({300, 0, -10});
+    }
 }
 
 
@@ -66,9 +72,10 @@ glm::vec3 ScenePlanet::GetRandomSpawnPosition()
   offset = offset * rot;
   
   float groundz = 0; // todo
+  float emptytop = GetPlayAreaSize().z * 0.333f;
   offset.z =
     groundz
-    + rand() * (GetPlayAreaSize().z - groundz)
+    + rand() * (GetPlayAreaSize().z - groundz - emptytop)
     - (GetPlayAreaSize().z * 0.5f);
   
   return glm::vec3(GetPlayer()->GetPosition().xy(), 0) + offset.xyz();

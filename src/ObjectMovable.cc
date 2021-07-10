@@ -4,7 +4,6 @@
 ObjectMovable::ObjectMovable(Scene * scene)
   : Object(scene),
     _velocity(glm::vec3(0, 0, 0)),
-    _max_velocity(10),
     _angular_velocity(0, 0, 0, 0),
     _angular_velocity_magnitude(0)
 {
@@ -41,16 +40,7 @@ void ObjectMovable::Hit(Object * perpetrator, double damage, const glm::vec3 & i
 void ObjectMovable::AddImpulse(const glm::vec3 & impulse)
 {
   auto v = _velocity + impulse;
-  double speed = glm::length(v);
-  if(speed > _max_velocity)
-    v = v / static_cast<float>((1.0 + (speed - _max_velocity) / _max_velocity));
   SetVelocity(v);
-}
-
-
-void ObjectMovable::SetMaxVelocity(double max_velocity)
-{
-  _max_velocity = max_velocity;
 }
 
 
