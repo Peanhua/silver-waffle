@@ -61,13 +61,33 @@ void ObjectSpaceship::Tick(double deltatime)
     { // todo: separate controls and use the engines to slow down
       auto engineup = GetUpgrade(SpaceshipUpgrade::Type::ENGINE_UPGRADE);
       double engine_strength = 0.5 + 1.5 * static_cast<double>(engineup->GetInstallCount()) / static_cast<double>(engineup->GetMaxInstalls());
-      const auto vel = GetVelocity();
-      if(std::abs(vel.x) < 0.2f)
-        SetVelocity(glm::vec3(0, vel.y, vel.z));
-      else if(vel.x < 0.0f)
-        AddImpulse(glm::vec3(engine_strength *  20.0 * deltatime, 0, 0));
-      else if(vel.x > 0.0f)
-        AddImpulse(glm::vec3(engine_strength * -20.0 * deltatime, 0, 0));
+
+      bool setvel = false;
+      auto vel = GetVelocity();
+      bool addimp = false;
+      glm::vec3 imp(0);
+      for(int i = 0; i < 3; i++)
+        {
+          if(std::abs(vel[i]) < 0.2f)
+            {
+              vel[i] = 0;
+              setvel = true;
+            }
+          else if(vel[i] < 0.0f)
+            {
+              imp[i] = static_cast<float>(engine_strength *  20.0 * deltatime);
+              addimp = true;
+            }
+          else if(vel[i] > 0.0f)
+            {
+              imp[i] = static_cast<float>(engine_strength * -20.0 * deltatime);
+              addimp = true;
+            }
+        }
+      if(setvel)
+        SetVelocity(vel);
+      if(addimp)
+        AddImpulse(imp);
     }
 
   int weaponcoolercount = GetUpgrade(SpaceshipUpgrade::Type::WEAPON_COOLER)->GetInstallCount();
