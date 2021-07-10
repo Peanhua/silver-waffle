@@ -63,11 +63,10 @@ void Scene::Draw(const Camera & camera) const
   const glm::mat4 & projection = camera.GetProjection();
   const glm::mat4 & vp         = camera.GetViewProjection();
 
+  glEnable(GL_DEPTH_TEST);
+
   for(auto p : _planets)
     p->Draw(view, projection, vp);
-
-  glEnable(GL_DEPTH_TEST);
-  glClear(GL_DEPTH_BUFFER_BIT);
   
   for(auto o : _objects)
     if(o && o->IsAlive())

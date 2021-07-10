@@ -1,4 +1,5 @@
 #include "ScenePlanet.hh"
+#include "Camera.hh"
 #include "ControllerPlanet.hh"
 #include "ObjectPlanetAtmosphere.hh"
 #include "ObjectPlanetGround.hh"
@@ -71,4 +72,27 @@ glm::vec3 ScenePlanet::GetRandomSpawnPosition()
     - (GetPlayAreaSize().z * 0.5f);
   
   return glm::vec3(GetPlayer()->GetPosition().xy(), 0) + offset.xyz();
+}
+
+
+void ScenePlanet::Draw(const Camera & camera) const
+{
+  Scene::Draw(camera);
+
+  // Draws the same scene on both sides so that when player is near the edge, the other side can be seen.
+  // Todo: Fix to draw at most 1 times instead of 3.
+  {
+    int i = -1;
+    auto cam2 = new Camera(camera);
+    cam2->SetPosition(cam2->GetPosition() + glm::vec3(i * 100, 0, 0));
+    cam2->SetTargetPosition(cam2->GetTargetPosition() + glm::vec3(i * 100, 0, 0));
+    Scene::Draw(*cam2);
+  }
+  {
+    int i = 1;
+    auto cam2 = new Camera(camera);
+    cam2->SetPosition(cam2->GetPosition() + glm::vec3(i * 100, 0, 0));
+    cam2->SetTargetPosition(cam2->GetTargetPosition() + glm::vec3(i * 100, 0, 0));
+    Scene::Draw(*cam2);
+  }
 }

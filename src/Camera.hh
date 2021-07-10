@@ -8,8 +8,10 @@ class Camera
 public:
   Camera();
   virtual ~Camera();
-  
+
+  const glm::vec3 & GetPosition() const;
   void              SetPosition(const glm::vec3 & position);
+  const glm::vec3 & GetTargetPosition() const;
   void              SetTargetPosition(const glm::vec3 & position);
   void              SetFOV(double fov);
   void              SetClippingPlanes(double near, double far);

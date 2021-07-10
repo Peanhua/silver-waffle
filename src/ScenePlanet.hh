@@ -3,12 +3,15 @@
 
 #include "Scene.hh"
 
+class Camera;
+
 
 class ScenePlanet : public Scene
 {
 public:
   ScenePlanet();
-  
+
+  void      Draw(const Camera & camera) const override;
   void      SetupPlayer() override;
   glm::vec3 GetRandomSpawnPosition() override;
 

@@ -127,3 +127,15 @@ void Camera::GetDirection(glm::vec3 & direction) const
   direction = glm::normalize(_target_position - _position);
 }
 
+
+const glm::vec3 & Camera::GetPosition() const
+{
+  return _position;
+}
+
+
+const glm::vec3 & Camera::GetTargetPosition() const
+{
+  return _target_position;
+}
+
