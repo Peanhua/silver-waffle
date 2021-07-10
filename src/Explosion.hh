@@ -4,6 +4,7 @@
 #include "glm.hh"
 #include <random>
 
+class Camera;
 class Mesh;
 
 
@@ -14,7 +15,7 @@ public:
 
   void Activate(const glm::vec3 & position, const glm::vec3 & velocity);
   void Tick(double deltatime);
-  void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
+  void Draw(const Camera & camera) const;
   bool IsAlive() const;
   void Translate(const glm::vec3 & translation);
 

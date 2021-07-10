@@ -3,10 +3,13 @@
 
 #include "Level.hh"
 
+class SolarSystemObject;
+
+
 class PlanetLevel : public Level
 {
 public:
-  PlanetLevel(Scene * scene);
+  PlanetLevel(Scene * scene, SolarSystemObject * planet);
 };
 
 #endif

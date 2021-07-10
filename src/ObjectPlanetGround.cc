@@ -46,8 +46,6 @@ ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Im
     SetMesh(mesh);
   }
 
-  RotatePitch(5);
-
   SetUseHealth(false);
 }
 

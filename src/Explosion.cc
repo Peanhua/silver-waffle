@@ -1,4 +1,5 @@
 #include "Explosion.hh"
+#include "Camera.hh"
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
@@ -51,14 +52,14 @@ bool Explosion::IsAlive() const
 }
 
 
-void Explosion::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
+void Explosion::Draw(const Camera & camera) const
 {
   _mesh->GetShaderProgram()->Use();
   _mesh->GetShaderProgram()->SetFloat("in_time", static_cast<float>(_time));
   _mesh->GetShaderProgram()->SetVec("in_velocity", _velocity);
   glm::mat4 model(1);
   model = glm::translate(model, _position);
-  _mesh->Draw(model, view, projection, vp * model);
+  _mesh->Draw(model, camera.GetView(), camera.GetProjection(), camera.GetViewProjection() * model);
 }
 
 

@@ -156,7 +156,6 @@ void ScreenLevel::Initialize()
     w->SetCharactersPerSecond(60);
     w->SetTextColor(glm::vec3(0.0, 0.8, 0.0));
     w->SetIsFocusable(false);
-    w->SetText("Spaceship computer online.\n");
     w->SetPurgingTime(4.0);
     _teletyper = w;
   }
@@ -435,7 +434,7 @@ void ScreenLevel::NextLifeOrQuit()
   
   if(_gamestats->GetLives() > 0)
     {
-      _teletyper->AppendText("\nSpaceship computer online.\n");
+      _teletyper->AppendText("\n\n\n");
       _scene->CreatePlayer();
       _scene->SetupPlayer();
       _scene->GetPlayer()->SetOwnerGameStats(_gamestats);

@@ -356,7 +356,7 @@ void SpaceshipUpgrade::Activate(double value, double time)
               auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
               assert(current);
               
-              auto ns = new ScreenPlanetLevel(current);
+              auto ns = new ScreenPlanetLevel(current, planet->GetSolarSystemObject());
               ns->SetupLevels();
               current->TransitionToScreen(ns, _name + ": Destination " + planet->GetSolarSystemObject()->GetName());
             }

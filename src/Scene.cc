@@ -59,40 +59,42 @@ void Scene::Draw(const Camera & camera) const
       }
   }
       
-  const glm::mat4 & view       = camera.GetView();
-  const glm::mat4 & projection = camera.GetProjection();
-  const glm::mat4 & vp         = camera.GetViewProjection();
-
   glEnable(GL_DEPTH_TEST);
 
   for(auto p : _planets)
-    p->Draw(view, projection, vp);
-  
-  for(auto o : _objects)
-    if(o && o->IsAlive())
-      o->Draw(view, projection, vp);
+    p->Draw(camera);
+
+  glClear(GL_DEPTH_BUFFER_BIT);
 
   if(_particles)
     _particles->Draw(camera);
   
+  std::vector<Object *> objects;
+  for(auto o : _objects)
+    if(o && o->IsAlive())
+      objects.push_back(o);
+
   if(_player->IsAlive())
-    _player->Draw(view, projection, vp);
+    objects.push_back(_player);
 
   for(auto i : _invaders)
     if(i && i->IsAlive())
-      i->Draw(view, projection, vp);
+      objects.push_back(i);
 
   for(auto b : _projectiles)
     if(b->IsAlive())
-      b->Draw(view, projection, vp);
+      objects.push_back(b);
 
   for(auto c : _collectibles)
     if(c && c->IsAlive())
-      c->Draw(view, projection, vp);
+      objects.push_back(c);
   
+  for(auto o : objects)
+    o->Draw(camera);
+
   for(auto e : _explosions)
     if(e->IsAlive())
-      e->Draw(view, projection, vp);
+      e->Draw(camera);
 }
 
 
@@ -125,6 +127,8 @@ void Scene::CreatePlayer()
   _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
   
   _player->SystemlogEnable();
+  _player->SystemlogAppend("Spaceship computer online.\n");
+  
 }
 
 

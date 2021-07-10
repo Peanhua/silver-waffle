@@ -5,8 +5,9 @@
 #include "ScenePlanet.hh"
 
 
-ScreenPlanetLevel::ScreenPlanetLevel(ScreenLevel * parent)
-  : ScreenLevel(parent)
+ScreenPlanetLevel::ScreenPlanetLevel(ScreenLevel * parent, SolarSystemObject * planet)
+  : ScreenLevel(parent),
+    _planet(planet)
 {
   _camera = new Camera();
   _camera->SetFOV(60);
@@ -23,7 +24,7 @@ void ScreenPlanetLevel::SetupLevels()
 {
   _levels.clear();
 
-  auto level = new PlanetLevel(_scene);
+  auto level = new PlanetLevel(_scene, _planet);
   _levels.push_back(level);
 
   ScreenLevel::SetupLevels();
