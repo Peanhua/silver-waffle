@@ -17,7 +17,8 @@ Mesh::Mesh(unsigned int options)
     _generic_vec3_vbo(0),
     _primitive_type(GL_TRIANGLES),
     _shader_program(nullptr),
-    _bounding_sphere_radius(0)
+    _bounding_sphere_radius(0),
+    _bounding_box_size(0, 0, 0)
 {
 }
 
@@ -65,7 +66,8 @@ Mesh::Mesh(const Mesh & other)
     _generic_vec2s(other._generic_vec2s),
     _generic_vec3s(other._generic_vec3s),
     _shader_program(other._shader_program),
-    _bounding_sphere_radius(other._bounding_sphere_radius)
+    _bounding_sphere_radius(other._bounding_sphere_radius),
+    _bounding_box_size(other._bounding_box_size)
 {
   for(auto c : other._children)
     {
@@ -486,15 +488,20 @@ ShaderProgram * Mesh::GetShaderProgram() const
 }
 
 
-void Mesh::CalculateBoundingSphereRadius(const glm::mat4 & transform)
+void Mesh::CalculateBoundingVolumes(const glm::mat4 & transform)
 {
   const glm::mat4 mytransform(transform * _transform);
   
   _bounding_sphere_radius = 0.0;
+  _bounding_box_size = { 0, 0, 0 };
+  
   for(auto c : _children)
     {
-      c->CalculateBoundingSphereRadius(mytransform);
+      c->CalculateBoundingVolumes(mytransform);
       _bounding_sphere_radius = std::max(_bounding_sphere_radius, c->GetBoundingSphereRadius());
+      auto cbb = c->GetBoundingBoxHalfSize();
+      for(int k = 0; k < 3; k++)
+        _bounding_box_size[k] = std::max(_bounding_box_size[k], cbb[k]);
     }
 
   for(unsigned int i = 0; i < _vertices.size() / 3; i++)
@@ -502,8 +509,15 @@ void Mesh::CalculateBoundingSphereRadius(const glm::mat4 & transform)
       glm::vec4 v(_vertices[i * 3 + 0], _vertices[i * 3 + 1], _vertices[i * 3 + 2], 1);
       v = mytransform * v;
       v = v / v.w;
+      
       _bounding_sphere_radius = std::max(_bounding_sphere_radius, static_cast<double>(glm::length(v.xyz())));
+
+      for(int k = 0; k < 3; k++)
+        _bounding_box_size[k] = std::max(_bounding_box_size[k], std::abs(v[k]));
     }
+  assert(_bounding_box_size[0] > 0.0f);
+  assert(_bounding_box_size[1] > 0.0f);
+  assert(_bounding_box_size[2] > 0.0f);
 }
 
 
@@ -579,3 +593,8 @@ unsigned int Mesh::GetOptions(unsigned int interested_in) const
   return _options & interested_in;
 }
 
+
+const glm::vec3 & Mesh::GetBoundingBoxHalfSize() const
+{
+  return _bounding_box_size;
+}

@@ -23,6 +23,9 @@ silverwaffle_SOURCES =				\
 	AdditiveBlending.cc			\
 	Camera.cc				\
 	Controller.cc				\
+	CollisionShape.cc			\
+	CollisionShapeOBB.cc			\
+	CollisionShapeSphere.cc			\
 	ControllerPlanet.cc			\
 	ControllerSpace.cc			\
 	Explosion.cc				\

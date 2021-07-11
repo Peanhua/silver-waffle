@@ -5,6 +5,7 @@
 #include <algorithm>
 
 class Camera;
+class CollisionShape;
 class Controller;
 class Mesh;
 class Scene;
@@ -28,6 +29,10 @@ public:
   
   Object(Scene * scene);
   virtual ~Object();
+  Object(const Object & source);
+  Object(Object &&)                  = delete; // todo: move constructor
+  Object & operator=(const Object &) = delete; // todo: copy assignment
+  Object & operator=(Object &&)      = delete; // todo: move assignment
 
   void         Draw(const Camera & camera) const;
   virtual void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
@@ -42,6 +47,8 @@ public:
   void   SetMesh(Mesh * mesh);
   virtual double GetVisualBoundingSphereRadius() const;
 
+  CollisionShape * GetCollisionShape() const;
+  void             SetCollisionShape(CollisionShape * collision_shape);
   bool         CheckCollision(const Object & other, glm::vec3 & out_hit_direction) const;
   virtual void OnCollision(Object & other, const glm::vec3 & hit_direction);
   // void AddOnCollision(on_collision_t callback);
@@ -81,9 +88,6 @@ public:
   const glm::quat & GetOrientation() const;
   void SetOrientation(const glm::quat & orientation);
 
-  void   SetCollisionSphereRadius(double radius);
-  double GetCollisionSphereRadius() const;
-
   Scene * GetScene() const;
   void    SetScene(Scene * scene);
 
@@ -94,6 +98,7 @@ public:
 private:
   Scene *      _scene;
   Controller * _controller;
+  CollisionShape * _collision_shape;
   glm::vec3    _position;
   glm::quat    _orientation;
   ExceedAction _exceed_actions[3];
@@ -102,7 +107,6 @@ private:
   bool      _use_health;
   double    _health;
   double    _max_health;
-  double    _collision_sphere_radius;
   uint64_t  _collision_channels; // Collision channels this object belongs to.
   uint64_t  _collision_mask;     // Collision channels this object collides with.
   glm::vec3 _destroybox_low;

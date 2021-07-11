@@ -1,5 +1,7 @@
 #include "Scene.hh"
 #include "Camera.hh"
+#include "CollisionShapeOBB.hh"
+#include "CollisionShapeSphere.hh"
 #include "Explosion.hh"
 #include "Mesh.hh"
 #include "ObjectCollectible.hh"
@@ -32,9 +34,6 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
 
   for(int i = 0; i < 200; i++)
     _invaders.push_back(nullptr);
-
-  for(int i = 0; i < 50; i++)
-    _collectibles.push_back(nullptr);
 
   CreatePlayer();
 }
@@ -113,6 +112,7 @@ void Scene::CreatePlayer()
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
   _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);
   _player->SetMesh(AssetLoader->LoadMesh("Player"));
+  _player->SetCollisionShape(new CollisionShapeOBB(_player, _player->GetMesh()->GetBoundingBoxHalfSize()));
   _player->AddWeapon();
   
   // Space engines (only 2 first are used):
@@ -301,13 +301,16 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
 }
 
 
-bool Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity)
+void Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity)
 {
   assert(collectible->IsAlive());
   
   auto ind = _collectibles.GetNextFreeIndex();
   if(ind >= _collectibles.size())
-    return false;
+    {
+      ind = static_cast<unsigned int>(_collectibles.size());
+      _collectibles.push_back(nullptr);
+    }
 
   collectible->SetScene(this);
   collectible->SetPosition(position);
@@ -320,8 +323,6 @@ bool Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & po
   _collectibles[ind] = collectible;
 
   TutorialMessage(2, "A valuable item from the explosion,\ncollect it!\n");
-
-  return true;
 }
 
 

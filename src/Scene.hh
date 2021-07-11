@@ -73,7 +73,7 @@ public:
   ObjectInvader *   AddInvader(const glm::vec3 & position);
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
-  bool              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity);
+  void              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity);
   bool              AddObject(Object * object, const glm::vec3 & position);
 
   std::vector<ObjectMovable *> * GetNearbyObjects(const glm::vec3 & position, float radius);

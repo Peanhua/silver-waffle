@@ -1,4 +1,6 @@
 #include "SubsystemAssetLoader.hh"
+#include "CollisionShapeOBB.hh"
+#include "CollisionShapeSphere.hh"
 #include "Font.hh"
 #include "Image.hh"
 #include "Mesh.hh"
@@ -160,7 +162,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
     {
       std::cout << "Loaded mesh '" << name << "'.\n";
       mesh->UpdateGPU();
-      mesh->CalculateBoundingSphereRadius();
+      mesh->CalculateBoundingVolumes();
       _meshes[key] = mesh;
     }
 
@@ -333,6 +335,7 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
       collectible->SetMesh(LoadMesh("WarpFuel"));
       break;
     }
+  collectible->SetCollisionShape(new CollisionShapeOBB(collectible, collectible->GetMesh()->GetBoundingBoxHalfSize()));
 
   //_collectibles[type] = collectible;
   return collectible;

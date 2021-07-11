@@ -17,7 +17,7 @@ void WidgetHighscores::Tick(double deltatime)
 {
   Widget::Tick(deltatime);
   
-  auto cursize = Highscores->Get().size();
+  auto cursize = static_cast<unsigned int>(Highscores->Get().size());
   if(cursize != _last_refresh)
     {
       _last_refresh = cursize;

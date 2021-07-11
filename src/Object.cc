@@ -1,5 +1,7 @@
 #include "Object.hh"
 #include "Camera.hh"
+#include "CollisionShapeOBB.hh"
+#include "CollisionShapeSphere.hh"
 #include "Mesh.hh"
 #include "ObjectMovable.hh"
 #include "Scene.hh"
@@ -9,6 +11,7 @@
 Object::Object(Scene * scene)
   : _scene(scene),
     _controller(nullptr),
+    _collision_shape(nullptr),
     _position(0, 0, 0),
     _orientation(1, 0, 0, 0),
     _exceed_actions{ExceedAction::DESTROY, ExceedAction::DESTROY, ExceedAction::DESTROY},
@@ -17,7 +20,6 @@ Object::Object(Scene * scene)
     _use_health(true),
     _health(100.0),
     _max_health(_health),
-    _collision_sphere_radius(-1),
     _collision_channels(0),
     _collision_mask(0),
     _destroybox_low(1, 1, 1),
@@ -28,6 +30,38 @@ Object::Object(Scene * scene)
 
 Object::~Object()
 {
+}
+
+
+Object::Object(const Object & source)
+  : _scene(source._scene),
+    _controller(nullptr),
+    _collision_shape(nullptr),
+    _position(source._position),
+    _orientation(source._orientation),
+    _exceed_actions{source._exceed_actions[0], source._exceed_actions[1], source._exceed_actions[2]},
+    _mesh(source._mesh),
+    _destroyed(source._destroyed),
+    _use_health(source._use_health),
+    _health(source._health),
+    _max_health(source._max_health),
+    _collision_channels(source._collision_channels),
+    _collision_mask(source._collision_mask),
+    _destroybox_low(source._destroybox_low),
+    _destroybox_high(source._destroybox_high)
+{
+  auto sc = source.GetCollisionShape();
+  auto scobb = dynamic_cast<CollisionShapeOBB *>(sc);
+  if(scobb)
+    _collision_shape = new CollisionShapeOBB(this, scobb->GetSize());
+  else
+    {
+      auto scsphere = dynamic_cast<CollisionShapeSphere *>(sc);
+      if(scsphere)
+        _collision_shape = new CollisionShapeSphere(this, scsphere->GetRadius());
+      else
+        assert(false);
+    }
 }
 
 
@@ -151,38 +185,18 @@ void Object::SetMesh(Mesh * mesh)
 }
 
 
-void Object::SetCollisionSphereRadius(double radius)
-{
-  _collision_sphere_radius = radius;
-}
-
-
-double Object::GetCollisionSphereRadius() const
-{
-  if(_collision_sphere_radius > 0)
-    return _collision_sphere_radius;
-  else
-    {
-      assert(_mesh);
-      return _mesh->GetBoundingSphereRadius();
-    }
-}
-
-
 bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction) const
 {
+  if(!GetCollisionShape() || !other.GetCollisionShape())
+    return false;
+  
   if(!IsAlive() || !other.IsAlive())
     return false;
 
   if(!(GetCollidesWithChannels() & other.GetCollisionChannels()))
     return false;
-  
-  auto distance = glm::distance(GetPosition(), other.GetPosition());
-  if(distance > static_cast<float>(GetCollisionSphereRadius() + other.GetCollisionSphereRadius()))
-    return false;
 
-  out_hit_direction = glm::normalize(other.GetPosition() - GetPosition());
-  return true;
+  return GetCollisionShape()->CheckCollision(*other.GetCollisionShape(), out_hit_direction);
 }
 
 
@@ -403,3 +417,16 @@ void Object::SetController(Controller * controller)
   _controller = controller;
 }
 
+
+CollisionShape * Object::GetCollisionShape() const
+{
+  return _collision_shape;
+}
+
+
+void Object::SetCollisionShape(CollisionShape * collision_shape)
+{
+  delete _collision_shape;
+  _collision_shape = collision_shape;
+  assert(!collision_shape || collision_shape->GetOwner() == this);
+}

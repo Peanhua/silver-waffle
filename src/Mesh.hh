@@ -46,7 +46,7 @@ public:
   bool   LoadFromFile(const std::string & filename, const std::string & shader_prefix);
   void   UpdateGPU();
   void   UpdateGPU(unsigned int update_options, unsigned int first, unsigned int count);
-  void   CalculateBoundingSphereRadius(const glm::mat4 & transform = glm::mat4(1));
+  void   CalculateBoundingVolumes(const glm::mat4 & transform = glm::mat4(1));
   void   ApplyTransform(const glm::mat4 & transform);
   void   SetTransform(const glm::mat4 & transform);
 
@@ -54,6 +54,7 @@ public:
   void Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
   void         SetBoundingSphereRadius(double radius);
   double       GetBoundingSphereRadius() const;
+  const glm::vec3 & GetBoundingBoxHalfSize() const;
   unsigned int GetOptions(unsigned int interested_in) const;
   
   void Clear();
@@ -120,7 +121,8 @@ private:
   ShaderProgram * _shader_program;
   std::vector<Image *> _textures;
 
-  double _bounding_sphere_radius;
+  double    _bounding_sphere_radius;
+  glm::vec3 _bounding_box_size;
 
   std::vector<Mesh *> _children;
 

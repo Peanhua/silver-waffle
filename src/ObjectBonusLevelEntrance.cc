@@ -1,7 +1,8 @@
 #include "ObjectBonusLevelEntrance.hh"
-#include "ScreenBonusLevel.hh"
+#include "CollisionShapeSphere.hh"
 #include "Mesh.hh"
 #include "ObjectSpaceship.hh"
+#include "ScreenBonusLevel.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemScreen.hh"
 
@@ -15,7 +16,7 @@ ObjectBonusLevelEntrance::ObjectBonusLevelEntrance(Scene * scene, double enemy_d
 {
   SetMesh(new Mesh(*AssetLoader->LoadMesh("BonusLevelEntrance")));
   GetMesh()->SetShaderProgram(AssetLoader->LoadShaderProgram("BonusLevelEntrance"), true);
-  SetCollisionSphereRadius(0.5);
+  SetCollisionShape(new CollisionShapeSphere(this, 0.5));
   AddToCollisionChannel(CollisionChannel::COLLECTIBLE);
 
   GetMesh()->SetAllColor(glm::vec4(enemy_difficulty, 0.0f, warp_fuel_bonus, 0.2f), true);

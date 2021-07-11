@@ -1,6 +1,9 @@
 #include "ObjectInvader.hh"
+#include "CollisionShapeOBB.hh"
+#include "CollisionShapeSphere.hh"
 #include "GameStats.hh"
 #include "Loot.hh"
+#include "Mesh.hh"
 #include "ObjectCollectible.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
@@ -136,6 +139,26 @@ void ObjectInvader::SetInvaderType(unsigned int type)
   assert(mesh);
   SetMesh(mesh);
 
+  CollisionShape::Type ct = CollisionShape::Type::OBB;
+  if(d["collision_shape"].is_string())
+    {
+      if(d["collision_shape"] == "obb")
+        ct = CollisionShape::Type::OBB;
+      else if(d["collision_shape"] == "sphere")
+        ct = CollisionShape::Type::SPHERE;
+      else
+        assert(false); // unknown collision shape
+    }
+  switch(ct)
+    {
+    case CollisionShape::Type::OBB:
+      SetCollisionShape(new CollisionShapeOBB(this, GetMesh()->GetBoundingBoxHalfSize()));
+      break;
+    case CollisionShape::Type::SPHERE:
+      SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
+      break;
+    }
+  
   RemoveWeapons();
   assert(d["weapons"].is_number());
   for(int i = 0; i < d["weapons"].number_value(); i++)

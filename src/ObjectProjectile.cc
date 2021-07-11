@@ -1,4 +1,6 @@
 #include "ObjectProjectile.hh"
+#include "CollisionShapeSphere.hh"
+#include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
 
 ObjectProjectile::ObjectProjectile(Scene * scene)
@@ -6,6 +8,7 @@ ObjectProjectile::ObjectProjectile(Scene * scene)
     _owner(nullptr)
 {
   SetMesh(AssetLoader->LoadMesh("Projectile"));
+  SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
   SetHealth(0);
   AddToCollisionChannel(CollisionChannel::PROJECTILE);
 }
