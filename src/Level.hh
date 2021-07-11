@@ -59,6 +59,8 @@ protected:
   std::string                 _name;
   double                      _time;
   std::vector<ProgramEntry *> _program;
+  unsigned int                _boss_buildings_alive;
+  json11::Json                _buildings_config;
 
   void LoadConfig(const std::string & filename);
 };

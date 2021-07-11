@@ -55,6 +55,7 @@ public:
 
   void AddToCollisionChannel(CollisionChannel channel);
   void AddCollidesWithChannel(CollisionChannel channel);
+  void RemoveCollidesWithChannel(CollisionChannel channel);
   virtual uint64_t GetCollisionChannels() const;
   virtual uint64_t GetCollidesWithChannels() const;
 
@@ -94,6 +95,8 @@ public:
   Controller * GetController() const;
   void         SetController(Controller * controller);
 
+  bool IsSleeping() const;
+  void SetIsSleeping(bool sleeping);
  
 private:
   Scene *      _scene;
@@ -103,6 +106,7 @@ private:
   glm::quat    _orientation;
   ExceedAction _exceed_actions[3];
   Mesh *    _mesh;
+  bool      _sleeping;
   bool      _destroyed;
   bool      _use_health;
   double    _health;

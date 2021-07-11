@@ -12,7 +12,6 @@ class ObjectInvader : public ObjectSpaceship
 public:
   ObjectInvader(Scene * scene, unsigned int random_seed);
 
-  void Tick(double deltatime)          override;
   void OnDestroyed(Object * destroyer) override;
   void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
   void SetInvaderType(unsigned int type);

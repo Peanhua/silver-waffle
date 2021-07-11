@@ -21,6 +21,15 @@
                            "Boss1",
                            "WarpFuel"
                          ]
+    },
+    {
+      "mesh":            "AlienStructureTower",
+      "collision_shape": "obb",
+      "weapons":         0,
+      "health":          2000,
+      "shield_chance":   0,
+      "hit_impulse":     false,
+      "loot":            [ ]
     }
   ]
 }

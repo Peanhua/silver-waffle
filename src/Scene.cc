@@ -230,7 +230,8 @@ void Scene::Tick(double deltatime)
     {
       if(o->IsAlive())
         {
-          o->Tick(deltatime);
+          if(!o->IsSleeping())
+             o->Tick(deltatime);
           if(o != GetPlayer() && warpspeed)
             o->Translate(warpspeedmove);
         }

@@ -1,5 +1,6 @@
 #include "Level.hh"
 #include "Camera.hh"
+#include "Mesh.hh"
 #include "ObjectInvader.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
@@ -10,7 +11,8 @@
 Level::Level(Scene * scene)
   : _scene(scene),
     _random_generator(0),
-    _time(0)
+    _time(0),
+    _boss_buildings_alive(0)
 {
 }
 
@@ -50,6 +52,37 @@ double Level::GetTime() const
 void Level::Start()
 {
   _time = 0;
+  _boss_buildings_alive = 0;
+
+  if(_buildings_config.is_array())
+    for(auto config : _buildings_config.array_items())
+      {
+        auto type = static_cast<unsigned int>(config["type"].int_value());
+        auto boss = config["boss"].bool_value();
+        glm::vec3 offset;
+        for(int i = 0; i < 3; i++)
+          offset[i] = static_cast<float>(config["offset"][static_cast<unsigned int>(i)].number_value());
+        
+        {
+          glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f + _scene->GetPlayAreaSize() * offset;
+          auto building = _scene->AddInvader(pos);
+          building->SetInvaderType(type);
+          building->SetIsSleeping(true);
+          building->RemoveCollidesWithChannel(Object::CollisionChannel::TERRAIN);
+          pos.z = -_scene->GetPlayAreaSize().z * 0.5f + building->GetMesh()->GetBoundingBoxHalfSize().z;
+          building->SetPosition(pos);
+          
+          if(boss)
+            {
+              _boss_buildings_alive++;
+              building->SetOnDestroyed([this](Object * destroyer)
+              {
+                assert(destroyer == destroyer);
+                _boss_buildings_alive--;
+              });
+            }
+        }
+      }
 }
 
 
@@ -196,5 +229,8 @@ void Level::LoadConfig(const std::string & filename)
       assert(spawns.is_array());
       for(auto spawn : spawns.array_items())
         _program.push_back(new ProgramEntry(spawn));
+
+
+      _buildings_config = (*levelconfig)["buildings"];
     }
 }

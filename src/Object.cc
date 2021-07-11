@@ -17,6 +17,7 @@ Object::Object(Scene * scene)
     _orientation(1, 0, 0, 0),
     _exceed_actions{ExceedAction::DESTROY, ExceedAction::DESTROY, ExceedAction::DESTROY},
     _mesh(nullptr),
+    _sleeping(false),
     _destroyed(false),
     _use_health(true),
     _health(100.0),
@@ -218,6 +219,12 @@ void Object::AddToCollisionChannel(CollisionChannel channel)
 void Object::AddCollidesWithChannel(CollisionChannel channel)
 {
   _collision_mask |= static_cast<uint64_t>(1) << static_cast<uint64_t>(channel);
+}
+
+
+void Object::RemoveCollidesWithChannel(CollisionChannel channel)
+{
+  _collision_mask &= ~(static_cast<uint64_t>(1) << static_cast<uint64_t>(channel));
 }
 
 
@@ -438,4 +445,16 @@ void Object::SetCollisionShape(CollisionShape * collision_shape)
   delete _collision_shape;
   _collision_shape = collision_shape;
   assert(!collision_shape || collision_shape->GetOwner() == this);
+}
+
+
+bool Object::IsSleeping() const
+{
+  return _sleeping;
+}
+
+
+void Object::SetIsSleeping(bool sleeping)
+{
+  _sleeping = sleeping;
 }
