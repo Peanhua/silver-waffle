@@ -50,6 +50,12 @@ bool SubsystemSettings::GetBool(const std::string & name) const
 }
 
 
+void SubsystemSettings::SetBool(const std::string & name, bool value)
+{
+  _bool_values[name] = value;
+}
+
+
 int SubsystemSettings::GetInt(const std::string & name) const
 {
   auto it = _int_values.find(name);

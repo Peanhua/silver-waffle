@@ -14,6 +14,7 @@ public:
   void Stop() override;
 
   bool   GetBool(const std::string & name) const;
+  void   SetBool(const std::string & name, bool value);
   int    GetInt(const std::string & name) const;
   double GetDouble(const std::string & name) const;
 

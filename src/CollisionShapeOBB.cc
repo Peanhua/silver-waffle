@@ -5,7 +5,7 @@
 #include "SubsystemAssetLoader.hh"
 
 
-CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size)
+CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size, const glm::vec3 & debugcolor)
   : CollisionShape(owner, Type::OBB),
     _size(size)
 {
@@ -26,32 +26,23 @@ CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size)
 
   _debugmesh = new Mesh(*AssetLoader->LoadMesh("Cube", "Generic"));
   _debugmesh->ApplyTransform(glm::scale(size * 2.0f));
-  _debugmesh->SetAllColor({1, 0.5, 0.5}, true);
+  _debugmesh->SetAllColor(debugcolor, true);
   _debugmesh->UpdateGPU();
 }
 
 
 bool CollisionShapeOBB::CheckCollisionOnSphere(const CollisionShape & other, glm::vec3 & out_hit_direction) const
-{
+{ // Figure out the closest (to the sphere) point of box, and check the distance to the sphere < sphere radius.
   auto sphere = dynamic_cast<const CollisionShapeSphere *>(&other);
   assert(sphere);
-  
-  auto axis = sphere->GetPosition() - GetPosition();
-  auto naxis = glm::normalize(axis);
+  auto spherepos = sphere->GetPosition();
+  auto boxpos = GetPosition();
+  auto closestpos = glm::clamp(spherepos, boxpos - _size, boxpos + _size);
 
-  float max = -9999;
-  for(auto vv : _vertices)
-    {
-      auto v = (glm::vec4(vv, 1) * glm::toMat4(GetOwner()->GetOrientation())).xyz();
-      auto projection = glm::dot(v, naxis);
-      max = std::max(max, projection);
-    }
-
-  // This probably produces slightly incorrect results.
-  auto len = glm::length(axis);
-  if(len > 0 && len - max > sphere->GetRadius())
+  float distance = glm::length(spherepos - closestpos);
+  if(distance > sphere->GetRadius())
     return false;
-  
+
   out_hit_direction = glm::normalize(sphere->GetPosition() - GetPosition());
   return true;
 }

@@ -8,7 +8,7 @@
 class CollisionShapeOBB : public CollisionShape
 {
 public:
-  CollisionShapeOBB(Object * owner, const glm::vec3 & size);
+  CollisionShapeOBB(Object * owner, const glm::vec3 & size, const glm::vec3 & debugcolor = {1.0, 0.5, 0.5});
   
   bool CheckCollisionOnSphere(const CollisionShape & other, glm::vec3 & out_hit_direction) const override;
   bool CheckCollisionOnOBB(const CollisionShape & other, glm::vec3 & out_hit_direction) const override;

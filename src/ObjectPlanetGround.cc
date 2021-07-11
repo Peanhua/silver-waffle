@@ -1,4 +1,5 @@
 #include "ObjectPlanetGround.hh"
+#include "CollisionShapeOBB.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
 
@@ -47,6 +48,8 @@ ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Im
   }
 
   SetUseHealth(false);
+
+  SetCollisionShape(new CollisionShapeOBB(this, {size, 1}, {0.5, 0.4, 0}));
 }
 
 

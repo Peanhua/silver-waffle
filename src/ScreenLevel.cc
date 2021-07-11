@@ -401,6 +401,14 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
             lander->Activate();
         }
       break;
+
+    case SDLK_F1:
+      if(pressed)
+        {
+          auto f = Settings->GetBool("draw_collision");
+          Settings->SetBool("draw_collision", !f);
+        }
+      break;
     }
 }
 
