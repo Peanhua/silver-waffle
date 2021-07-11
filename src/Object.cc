@@ -6,6 +6,7 @@
 #include "ObjectMovable.hh"
 #include "Scene.hh"
 #include "ShaderProgram.hh"
+#include "SubsystemSettings.hh"
 
 
 Object::Object(Scene * scene)
@@ -67,7 +68,15 @@ Object::Object(const Object & source)
 
 void Object::Draw(const Camera & camera) const
 {
-  Draw(camera.GetView(), camera.GetProjection(), camera.GetViewProjection());
+  if(Settings->GetBool("draw_collision") && _collision_shape && _collision_shape->GetDebugMesh())
+    {
+      auto dmesh = _collision_shape->GetDebugMesh();
+      const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
+      const glm::mat4 mvp(camera.GetViewProjection() * model);
+      dmesh->Draw(model, camera.GetView(), camera.GetProjection(), mvp);
+    }
+  else
+    Draw(camera.GetView(), camera.GetProjection(), camera.GetViewProjection());
 }
 
 

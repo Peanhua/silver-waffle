@@ -1,6 +1,8 @@
 #include "CollisionShapeOBB.hh"
 #include "CollisionShapeSphere.hh"
+#include "Mesh.hh"
 #include "Object.hh"
+#include "SubsystemAssetLoader.hh"
 
 
 CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size)
@@ -20,6 +22,12 @@ CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size)
   _vertices.push_back({b.x, a.y, b.z});
   _vertices.push_back({b.x, b.y, a.z});
   _vertices.push_back(b);
+
+
+  _debugmesh = new Mesh(*AssetLoader->LoadMesh("Cube", "Generic"));
+  _debugmesh->ApplyTransform(glm::scale(size * 2.0f));
+  _debugmesh->SetAllColor({1, 0.5, 0.5}, true);
+  _debugmesh->UpdateGPU();
 }
 
 

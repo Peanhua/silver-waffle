@@ -3,6 +3,7 @@
 
 #include "glm.hh"
 
+class Mesh;
 class Object;
 
 
@@ -23,11 +24,14 @@ public:
   bool CheckCollision(const CollisionShape & other, glm::vec3 & out_hit_direction);
 
   const glm::vec3 & GetPosition() const;
+  Mesh * GetDebugMesh() const;
 
   virtual bool CheckCollisionOnSphere(const CollisionShape & other, glm::vec3 & out_hit_direction) const = 0;
   virtual bool CheckCollisionOnOBB(const CollisionShape & other, glm::vec3 & out_hit_direction) const = 0;
 
-  
+protected:
+  Mesh *   _debugmesh;
+
 private:
   Object * _owner;
   Type     _type;
