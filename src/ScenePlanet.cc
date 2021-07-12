@@ -1,6 +1,7 @@
 #include "ScenePlanet.hh"
 #include "Camera.hh"
 #include "ControllerPlanet.hh"
+#include "Mesh.hh"
 #include "ObjectPlanetAtmosphere.hh"
 #include "ObjectPlanetGround.hh"
 #include "ObjectSpaceship.hh"
@@ -43,14 +44,15 @@ void ScenePlanet::SetupPlayer()
 
 void ScenePlanet::SetupSceneObject(Object * object, bool destroy_on_block)
 {
+  assert(destroy_on_block == destroy_on_block);
+  
   const auto m = GetPlayAreaSize();
   const auto low  = glm::vec3(-m.x * 0.5f, 1, -m.z * 0.5f);
   const auto high = glm::vec3( m.x * 0.5f, 0,  m.z * 0.5f);
   object->SetAutoDestroyBox(low, high);
   
-  Object::ExceedAction blockaction = destroy_on_block ? Object::ExceedAction::DESTROY : Object::ExceedAction::STOP;
   for(unsigned int i = 0; i < 3; i++)
-    object->SetOnExceedingPlayAreaLimits(i, _play_area_wraps[i] ? Object::ExceedAction::WRAP : blockaction);
+    object->SetOnExceedingPlayAreaLimits(i, _play_area_wraps[i] ? Object::ExceedAction::WRAP : Object::ExceedAction::STOP);
 
   auto d = dynamic_cast<ObjectMovable *>(object);
   if(d)
@@ -85,7 +87,7 @@ glm::vec3 ScenePlanet::GetRandomSpawnPosition()
 void ScenePlanet::Draw(const Camera & camera) const
 {
   Scene::Draw(camera);
-
+#if 0
   // Draws the same scene on both sides so that when player is near the edge, the other side can be seen.
   // Todo: Fix to draw at most 1 times instead of 3.
   {
@@ -102,4 +104,14 @@ void ScenePlanet::Draw(const Camera & camera) const
     cam2->SetTargetPosition(cam2->GetTargetPosition() + glm::vec3(i * 100, 0, 0));
     Scene::Draw(*cam2);
   }
+#endif
 }
+
+
+bool ScenePlanet::AreInSameCollisionPartition(Object * a, Object * b) const
+{
+  auto dist = std::abs(a->GetPosition().x - b->GetPosition().x);
+  auto mindist = static_cast<float>(a->GetMesh()->GetBoundingSphereRadius() + b->GetMesh()->GetBoundingSphereRadius());
+  return dist < mindist;
+}
+

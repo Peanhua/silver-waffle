@@ -222,33 +222,31 @@ void Scene::Tick(double deltatime)
         if(p && p->IsAlive())
           objects.push_back(p);
     }
-
-  for(auto o : objects)
-    {
-      if(o->IsAlive())
-        {
-          if(!o->IsSleeping())
-             o->Tick(deltatime);
-          if(o != GetPlayer() && warpspeed)
-            o->Translate(warpspeedmove);
-        }
-
-      if(!warpspeed)
-        for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
-          {
-            auto oo = objects[i];
-            if(o != oo && oo->IsAlive())
-              {
-                glm::vec3 hitdir;
-                if(o->CheckCollision(*oo, hitdir))
-                  {
-                    o->OnCollision(*oo, -hitdir);
-                    oo->OnCollision(*o, hitdir);
-                  }
-              }
-          }
-    }
   
+  for(auto o : objects)
+    if(o->IsAlive())
+      {
+        if(!o->IsSleeping())
+          o->Tick(deltatime);
+        if(o != GetPlayer() && warpspeed)
+          o->Translate(warpspeedmove);
+
+        if(!warpspeed && o->GetCollidesWithChannels())
+          for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
+              {
+                auto oo = objects[i];
+                if(o != oo && oo->IsAlive())
+                  if(AreInSameCollisionPartition(o, oo))
+                    {
+                      glm::vec3 hitdir;
+                      if(o->CheckCollision(*oo, hitdir))
+                        {
+                          o->OnCollision(*oo, -hitdir);
+                          oo->OnCollision(*o, hitdir);
+                        }
+                    }
+              }
+      }
 
   for(auto e : _explosions)
     if(e && e->IsAlive())

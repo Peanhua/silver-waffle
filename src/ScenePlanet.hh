@@ -14,6 +14,7 @@ public:
   void      Draw(const Camera & camera) const override;
   void      SetupPlayer() override;
   glm::vec3 GetRandomSpawnPosition() override;
+  bool      AreInSameCollisionPartition(Object * a, Object * b) const override;
 
 protected:
   void      SetupSceneObject(Object * object, bool destroy_on_block) override;

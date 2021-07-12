@@ -59,6 +59,7 @@ public:
   virtual void      Tick(double deltatime);
 
   virtual glm::vec3 GetRandomSpawnPosition() = 0;
+  virtual bool      AreInSameCollisionPartition(Object * a, Object * b) const = 0;
   
   const glm::vec3 & GetPlayAreaSize() const;
 

@@ -1,6 +1,7 @@
 #include "SceneSpace.hh"
-#include "ControllerSpace.hh"
 #include "Camera.hh"
+#include "ControllerSpace.hh"
+#include "Mesh.hh"
 #include "Milkyway.hh"
 #include "ObjectSpaceship.hh"
 #include "SpaceParticles.hh"
@@ -91,3 +92,12 @@ glm::vec3 SceneSpace::GetRandomSpawnPosition()
   const auto max_x = GetPlayAreaSize().x * 0.5f;
   return glm::vec3(-max_x + rand() * max_x * 2.0f, 40, 0);
 }
+
+
+bool SceneSpace::AreInSameCollisionPartition(Object * a, Object * b) const
+{
+  auto dist = std::abs(a->GetPosition().y - b->GetPosition().y);
+  auto mindist = static_cast<float>(a->GetMesh()->GetBoundingSphereRadius() + b->GetMesh()->GetBoundingSphereRadius());
+  return dist < mindist;
+}
+
