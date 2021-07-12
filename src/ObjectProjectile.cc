@@ -2,11 +2,13 @@
 #include "CollisionShapeSphere.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include <array>
+
 
 ObjectProjectile::ObjectProjectile(Scene * scene)
-  : ObjectMovable(scene),
-    _owner(nullptr)
+  : ObjectMovable(scene)
 {
+  SetOwner(nullptr);
   SetMesh(AssetLoader->LoadMesh("Projectile"));
   SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
   SetHealth(0);
@@ -30,7 +32,7 @@ void ObjectProjectile::Activate(Object * owner, const glm::vec3 & position, cons
   Revive(1);
   SetPosition(position);
   SetVelocity(velocity);
-  _owner = owner;
+  SetOwner(owner);
   _damage = damage;
   _lifetime_left = lifetime;
 }
@@ -39,6 +41,15 @@ void ObjectProjectile::Activate(Object * owner, const glm::vec3 & position, cons
 Object * ObjectProjectile::GetOwner() const
 {
   return _owner;
+}
+
+
+void ObjectProjectile::SetOwner(Object * owner)
+{
+  _owner = owner;
+  
+  if(_owner)
+    SetCollisionChannels(_owner->GetCollisionChannels());
 }
 
 
@@ -51,11 +62,4 @@ double ObjectProjectile::GetDamage() const
 void ObjectProjectile::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
   other.Hit(_owner, GetDamage(), -hit_direction);
-}
-
-
-uint64_t ObjectProjectile::GetCollisionChannels() const
-{
-  assert(_owner);
-  return _owner->GetCollisionChannels();
 }

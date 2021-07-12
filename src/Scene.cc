@@ -226,6 +226,14 @@ void Scene::Tick(double deltatime)
   for(auto o : objects)
     if(o->IsAlive())
       {
+        auto ClearReferences = [this](Object * obj)
+        { // todo: Use smart pointers instead of manually fixing references.
+          for(auto proj : _projectiles)
+            if(proj && proj->IsAlive())
+              if(proj->GetOwner() == obj)
+                proj->SetOwner(nullptr);
+        };
+
         if(!o->IsSleeping())
           o->Tick(deltatime);
         if(o != GetPlayer() && warpspeed)
@@ -243,9 +251,13 @@ void Scene::Tick(double deltatime)
                         {
                           o->OnCollision(*oo, -hitdir);
                           oo->OnCollision(*o, hitdir);
+                          if(!oo->IsAlive())
+                            ClearReferences(oo);
                         }
                     }
               }
+        if(!o->IsAlive())
+          ClearReferences(o);
       }
 
   for(auto e : _explosions)

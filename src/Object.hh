@@ -3,10 +3,12 @@
 
 #include "glm.hh"
 #include <algorithm>
+#include <random>
 
 class Camera;
 class CollisionShape;
 class Controller;
+class Loot;
 class Mesh;
 class Scene;
 
@@ -55,9 +57,10 @@ public:
 
   void AddToCollisionChannel(CollisionChannel channel);
   void RemoveFromCollisionChannel(CollisionChannel channel);
+  void SetCollisionChannels(uint64_t channels);
   void AddCollidesWithChannel(CollisionChannel channel);
   void RemoveCollidesWithChannel(CollisionChannel channel);
-  virtual uint64_t GetCollisionChannels() const;
+  uint64_t GetCollisionChannels() const;
   virtual uint64_t GetCollidesWithChannels() const;
 
   void   SetUseHealth(bool enable);
@@ -98,8 +101,13 @@ public:
 
   bool IsSleeping() const;
   void SetIsSleeping(bool sleeping);
+
+  void ClearLoot();
+  void AddLoot(Loot * loot);
  
 private:
+  std::mt19937_64                       _random_generator;
+  std::uniform_real_distribution<float> _rdist;
   Scene *      _scene;
   Controller * _controller;
   CollisionShape * _collision_shape;
@@ -116,9 +124,12 @@ private:
   uint64_t  _collision_mask;     // Collision channels this object collides with.
   glm::vec3 _destroybox_low;
   glm::vec3 _destroybox_high;
+  std::vector<Loot *> _lootset;
   
   //  std::vector<on_collision_t> _on_collision;
   std::vector<on_destroyed_t> _on_destroyed;
+
+  void SpawnLoot();
 };
 
 #endif

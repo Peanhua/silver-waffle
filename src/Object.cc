@@ -2,15 +2,18 @@
 #include "Camera.hh"
 #include "CollisionShapeOBB.hh"
 #include "CollisionShapeSphere.hh"
+#include "Loot.hh"
 #include "Mesh.hh"
-#include "ObjectMovable.hh"
+#include "ObjectCollectible.hh"
 #include "Scene.hh"
 #include "ShaderProgram.hh"
+#include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 
 
 Object::Object(Scene * scene)
-  : _scene(scene),
+  : _random_generator(0),
+    _scene(scene),
     _controller(nullptr),
     _collision_shape(nullptr),
     _position(0, 0, 0),
@@ -223,6 +226,12 @@ void Object::RemoveFromCollisionChannel(CollisionChannel channel)
 }
 
 
+void Object::SetCollisionChannels(uint64_t channels)
+{
+  _collision_channels = channels;
+}
+
+
 void Object::AddCollidesWithChannel(CollisionChannel channel)
 {
   _collision_mask |= static_cast<uint64_t>(1) << static_cast<uint64_t>(channel);
@@ -285,6 +294,7 @@ void Object::OnDestroyed(Object * destroyer)
 {
   for(auto callback : _on_destroyed)
     callback(destroyer);
+  SpawnLoot();
 }
 
 
@@ -464,4 +474,58 @@ bool Object::IsSleeping() const
 void Object::SetIsSleeping(bool sleeping)
 {
   _sleeping = sleeping;
+}
+
+
+void Object::SpawnLoot()
+{
+  auto rand = [this] { return static_cast<double>(_random_generator() - _random_generator.min()) / static_cast<double>(_random_generator.max()); };
+
+  for(auto loot : _lootset)
+    {
+      auto item = loot->CreateLootItem(rand(), rand());
+      if(item)
+        {
+          auto c = AssetLoader->LoadObjectCollectible(static_cast<int>(item->_type));
+          assert(c);
+          auto coll = new ObjectCollectible(*c);
+          coll->SetBonus(item->_type, item->_bonus);
+          GetScene()->AddCollectible(coll,
+                                     GetPosition() + 0.5f * glm::vec3(rand() - 0.5, rand() - 0.5, 0.0),
+                                     glm::vec3(0, -5, 0));
+
+          switch(item->_type)
+            {
+            case ObjectCollectible::Type::SCORE_BONUS:
+            case ObjectCollectible::Type::UPGRADEMATERIAL_ATTACK:
+            case ObjectCollectible::Type::UPGRADEMATERIAL_DEFENSE:
+            case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
+            case ObjectCollectible::Type::WARP_FUEL:
+              {
+                auto rotangle = glm::normalize(glm::vec3(rand() * 2.0 - 1.0,
+                                                         rand() * 2.0 - 1.0,
+                                                         rand() * 2.0 - 1.0));
+                coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + rand() * 10.0);
+              }
+              break;
+            case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
+            case ObjectCollectible::Type::SCORE_MULTIPLIER:
+            case ObjectCollectible::Type::SHIELD:
+            case ObjectCollectible::Type::NONE:
+              break;
+            }
+        }
+    }
+}
+
+
+void Object::ClearLoot()
+{
+  _lootset.clear();
+}
+
+
+void Object::AddLoot(Loot * loot)
+{
+  _lootset.push_back(loot);
 }

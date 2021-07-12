@@ -1,6 +1,7 @@
 #include "ObjectInvader.hh"
 #include "CollisionShapeOBB.hh"
 #include "CollisionShapeSphere.hh"
+#include "Controller.hh"
 #include "GameStats.hh"
 #include "Loot.hh"
 #include "Mesh.hh"
@@ -23,59 +24,22 @@ ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed)
 
 void ObjectInvader::OnDestroyed(Object * destroyer)
 {
-  auto player = dynamic_cast<ObjectSpaceship *>(destroyer);
-  if(player)
+  if(destroyer)
     {
-      auto gamestats = player->GetOwnerGameStats();
-      if(gamestats)
-        gamestats->AddScore(1);
-      
-      SpawnRandomCollectibles();
-    }
-
-  ObjectMovable::OnDestroyed(destroyer);
-}
-
-
-void ObjectInvader::SpawnRandomCollectibles()
-{
-  auto rand = [this] { return static_cast<double>(_random_generator() - _random_generator.min()) / static_cast<double>(_random_generator.max()); };
-
-  for(auto loot : _lootset)
-    {
-      auto item = loot->CreateLootItem(rand(), rand());
-      if(item)
+      auto controller = destroyer->GetController();
+      if(controller)
         {
-          auto c = AssetLoader->LoadObjectCollectible(static_cast<int>(item->_type));
-          assert(c);
-          auto coll = new ObjectCollectible(*c);
-          coll->SetBonus(item->_type, item->_bonus);
-          GetScene()->AddCollectible(coll,
-                                     GetPosition() + 0.5f * glm::vec3(rand() - 0.5, rand() - 0.5, 0.0),
-                                     glm::vec3(0, -5, 0));
-
-          switch(item->_type)
+          auto player = controller->GetOwner();
+          if(player)
             {
-            case ObjectCollectible::Type::SCORE_BONUS:
-            case ObjectCollectible::Type::UPGRADEMATERIAL_ATTACK:
-            case ObjectCollectible::Type::UPGRADEMATERIAL_DEFENSE:
-            case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
-            case ObjectCollectible::Type::WARP_FUEL:
-              {
-                auto rotangle = glm::normalize(glm::vec3(rand() * 2.0 - 1.0,
-                                                         rand() * 2.0 - 1.0,
-                                                         rand() * 2.0 - 1.0));
-                coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + rand() * 10.0);
-              }
-              break;
-            case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
-            case ObjectCollectible::Type::SCORE_MULTIPLIER:
-            case ObjectCollectible::Type::SHIELD:
-            case ObjectCollectible::Type::NONE:
-              break;
+              auto gamestats = player->GetOwnerGameStats();
+              if(gamestats)
+                gamestats->AddScore(1);
             }
         }
     }
+
+  ObjectMovable::OnDestroyed(destroyer);
 }
 
 
@@ -123,14 +87,14 @@ void ObjectInvader::SetInvaderType(unsigned int type)
   if(d["hit_impulse"].is_bool())
     _disable_hit_impulse = !d["hit_impulse"].bool_value();
 
-  _lootset.clear();
+  ClearLoot();
   assert(d["loot"].is_array());
   auto loots = d["loot"].array_items();
   for(auto loot : loots)
     {
       assert(loot.is_string());
       auto lootjson = AssetLoader->LoadJson("Data/Loot-" + loot.string_value());
-      _lootset.push_back(new Loot(lootjson));
+      AddLoot(new Loot(lootjson));
     }
   assert(d["shield_chance"].is_number());
   if(rand() < d["shield_chance"].number_value())

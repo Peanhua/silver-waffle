@@ -14,6 +14,8 @@ public:
   virtual void SteerLeft(bool pressed);
   virtual void SteerRight(bool pressed);
   virtual void ActivateWeapon(bool pressed);
+
+  ObjectSpaceship * GetOwner() const;
   
 protected:
   ObjectSpaceship * _spaceship;

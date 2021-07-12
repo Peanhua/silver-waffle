@@ -42,3 +42,9 @@ void Controller::ActivateWeapon(bool pressed)
   for(unsigned int i = 0; i < _spaceship->GetWeaponCount(); i++)
     _spaceship->SetWeaponAutofire(i, pressed);
 }
+
+
+ObjectSpaceship * Controller::GetOwner() const
+{
+  return _spaceship;
+}
