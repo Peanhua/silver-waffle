@@ -15,7 +15,8 @@ public:
   void SetVelocity(const glm::vec3 & velocity);
   const glm::vec3 & GetVelocity() const;
   void EnableVelocity(bool x = true, bool y = true, bool z = true);
-
+  void EnableHitImpulse(bool enabled);
+  
   void SetAngularVelocity(const glm::quat & angular_velocity, double magnitude);
 
 private:
@@ -24,6 +25,7 @@ private:
   double    _max_velocity;
   glm::quat _angular_velocity;
   double    _angular_velocity_magnitude;
+  bool      _hit_impulse_enabled;
 };
 
 #endif

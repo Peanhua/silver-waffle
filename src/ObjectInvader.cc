@@ -14,8 +14,7 @@ ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed)
   : ObjectSpaceship(scene),
     _random_generator(random_seed),
     _time_to_think(0.334),
-    _next_thinking(0),
-    _disable_hit_impulse(false)
+    _next_thinking(0)
 {
   AddToCollisionChannel(CollisionChannel::ENEMY);
   AddCollidesWithChannel(CollisionChannel::PLAYER);
@@ -85,7 +84,7 @@ void ObjectInvader::SetInvaderType(unsigned int type)
   SetMaxHealth(d["health"].number_value());
 
   if(d["hit_impulse"].is_bool())
-    _disable_hit_impulse = !d["hit_impulse"].bool_value();
+    EnableHitImpulse(d["hit_impulse"].bool_value());
 
   ClearLoot();
   assert(d["loot"].is_array());
@@ -104,15 +103,6 @@ void ObjectInvader::SetInvaderType(unsigned int type)
     }
   
   SetHealth(GetMaxHealth());
-}
-
-
-void ObjectInvader::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
-{
-  if(_disable_hit_impulse)
-    ObjectSpaceship::Hit(perpetrator, damage, glm::vec3(0, 0, 0));
-  else
-    ObjectSpaceship::Hit(perpetrator, damage, impulse);
 }
 
 

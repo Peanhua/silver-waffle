@@ -5,7 +5,8 @@ ObjectMovable::ObjectMovable(Scene * scene)
   : Object(scene),
     _velocity(glm::vec3(0, 0, 0)),
     _angular_velocity(0, 0, 0, 0),
-    _angular_velocity_magnitude(0)
+    _angular_velocity_magnitude(0),
+    _hit_impulse_enabled(true)
 {
   _velocity_enabled[0] =
     _velocity_enabled[1] =
@@ -33,7 +34,14 @@ void ObjectMovable::Tick(double deltatime)
 void ObjectMovable::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
   Object::Hit(perpetrator, damage, impulse);
-  AddImpulse(impulse);
+  if(_hit_impulse_enabled)
+    AddImpulse(impulse);
+}
+
+
+void ObjectMovable::EnableHitImpulse(bool enabled)
+{
+  _hit_impulse_enabled = enabled;
 }
 
 
