@@ -41,14 +41,12 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
   assert(hit_direction == hit_direction);
 
   auto player = dynamic_cast<ObjectSpaceship *>(&other);
-  assert(player);
   if(!player)
     return;
   
   player->UpgradeFromCollectible(this);
 
   auto gamestats = player->GetOwnerGameStats();
-  assert(gamestats);
   if(!gamestats)
     return;
   

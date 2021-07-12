@@ -109,15 +109,8 @@ void ObjectInvader::SetInvaderType(unsigned int type)
       else
         assert(false); // unknown collision shape
     }
-  switch(ct)
-    {
-    case CollisionShape::Type::OBB:
-      SetCollisionShape(new CollisionShapeOBB(this, GetMesh()->GetBoundingBoxHalfSize()));
-      break;
-    case CollisionShape::Type::SPHERE:
-      SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
-      break;
-    }
+
+  CreateCollisionShape(ct);
   
   RemoveWeapons();
   assert(d["weapons"].is_number());
@@ -156,4 +149,18 @@ void ObjectInvader::Hit(Object * perpetrator, double damage, const glm::vec3 & i
     ObjectSpaceship::Hit(perpetrator, damage, glm::vec3(0, 0, 0));
   else
     ObjectSpaceship::Hit(perpetrator, damage, impulse);
+}
+
+
+void ObjectInvader::CreateCollisionShape(CollisionShape::Type type)
+{
+  switch(type)
+    {
+    case CollisionShape::Type::OBB:
+      SetCollisionShape(new CollisionShapeOBB(this, GetMesh()->GetBoundingBoxHalfSize()));
+      break;
+    case CollisionShape::Type::SPHERE:
+      SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
+      break;
+    }
 }

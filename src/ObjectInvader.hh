@@ -2,6 +2,7 @@
 #define OBJECT_INVADER_HH_
 
 #include "ObjectSpaceship.hh"
+#include "CollisionShape.hh"
 #include <random>
 
 class Loot;
@@ -15,6 +16,7 @@ public:
   void OnDestroyed(Object * destroyer) override;
   void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
   void SetInvaderType(unsigned int type);
+  void CreateCollisionShape(CollisionShape::Type type);
   
 private:
   std::mt19937_64 _random_generator;

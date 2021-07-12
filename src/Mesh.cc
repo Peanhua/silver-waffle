@@ -545,6 +545,12 @@ void Mesh::SetTransform(const glm::mat4 & transform)
 }
 
 
+const glm::mat4 & Mesh::GetTransform() const
+{
+  return _transform;
+}
+
+
 void Mesh::SetTexture(unsigned int index, Image * texture_image, bool set_children)
 {
   assert(index <= _textures.size());
@@ -594,7 +600,15 @@ unsigned int Mesh::GetOptions(unsigned int interested_in) const
 }
 
 
+void Mesh::SetBoundingBoxHalfSize(const glm::vec3 & size)
+{
+  _bounding_box_size = size;
+}
+
+
 const glm::vec3 & Mesh::GetBoundingBoxHalfSize() const
 {
   return _bounding_box_size;
 }
+
+

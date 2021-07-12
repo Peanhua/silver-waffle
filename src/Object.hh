@@ -54,6 +54,7 @@ public:
   // void AddOnCollision(on_collision_t callback);
 
   void AddToCollisionChannel(CollisionChannel channel);
+  void RemoveFromCollisionChannel(CollisionChannel channel);
   void AddCollidesWithChannel(CollisionChannel channel);
   void RemoveCollidesWithChannel(CollisionChannel channel);
   virtual uint64_t GetCollisionChannels() const;

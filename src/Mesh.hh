@@ -48,12 +48,14 @@ public:
   void   UpdateGPU(unsigned int update_options, unsigned int first, unsigned int count);
   void   CalculateBoundingVolumes(const glm::mat4 & transform = glm::mat4(1));
   void   ApplyTransform(const glm::mat4 & transform);
+  const glm::mat4 & GetTransform() const;
   void   SetTransform(const glm::mat4 & transform);
 
   virtual void PreDrawSetupShader(ShaderProgram * shader_program) const;
   void Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
   void         SetBoundingSphereRadius(double radius);
   double       GetBoundingSphereRadius() const;
+  void              SetBoundingBoxHalfSize(const glm::vec3 & size);
   const glm::vec3 & GetBoundingBoxHalfSize() const;
   unsigned int GetOptions(unsigned int interested_in) const;
   

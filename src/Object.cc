@@ -217,6 +217,12 @@ void Object::AddToCollisionChannel(CollisionChannel channel)
 }
 
 
+void Object::RemoveFromCollisionChannel(CollisionChannel channel)
+{
+  _collision_channels &= ~(static_cast<uint64_t>(1) << static_cast<uint64_t>(channel));
+}
+
+
 void Object::AddCollidesWithChannel(CollisionChannel channel)
 {
   _collision_mask |= static_cast<uint64_t>(1) << static_cast<uint64_t>(channel);

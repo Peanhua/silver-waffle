@@ -69,6 +69,8 @@ void Level::Start()
           auto building = _scene->AddInvader(pos);
           building->SetInvaderType(type);
           building->SetIsSleeping(true);
+          building->AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
+          building->RemoveFromCollisionChannel(Object::CollisionChannel::ENEMY);
           building->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
           building->RemoveCollidesWithChannel(Object::CollisionChannel::TERRAIN);
           pos.z = -_scene->GetPlayAreaSize().z * 0.5f + building->GetMesh()->GetBoundingBoxHalfSize().z;
@@ -107,14 +109,19 @@ void Level::Start()
                 auto building = _scene->AddInvader(pos);
                 building->SetInvaderType(3);
                 building->SetIsSleeping(true);
+                building->AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
+                building->RemoveFromCollisionChannel(Object::CollisionChannel::ENEMY);
                 building->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
                 building->RemoveCollidesWithChannel(Object::CollisionChannel::TERRAIN);
                 building->SetMesh(new Mesh(*building->GetMesh()));
+                building->GetMesh()->SetBoundingBoxHalfSize(blocksize * 0.5f);
+                building->GetMesh()->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
                 building->GetMesh()->SetAllColor(rgba.rgb());
                 building->GetMesh()->UpdateGPU();
                 building->GetMesh()->ApplyTransform(glm::scale(blocksize));
                 building->SetMaxHealth(building->GetMaxHealth() * static_cast<double>(rgba.a));
                 building->SetHealth(building->GetMaxHealth());
+                building->CreateCollisionShape(building->GetCollisionShape()->GetType());
               }
           }
     }
@@ -194,7 +201,7 @@ bool Level::IsFinished() const
 {
   if(_boss_buildings_alive > 0)
     return false;
-  
+
   for(auto p : _program)
     if(p)
       return false;
