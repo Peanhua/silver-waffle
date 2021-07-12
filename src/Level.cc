@@ -69,6 +69,7 @@ void Level::Start()
           auto building = _scene->AddInvader(pos);
           building->SetInvaderType(type);
           building->SetIsSleeping(true);
+          building->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
           building->RemoveCollidesWithChannel(Object::CollisionChannel::TERRAIN);
           pos.z = -_scene->GetPlayAreaSize().z * 0.5f + building->GetMesh()->GetBoundingBoxHalfSize().z;
           building->SetPosition(pos);
@@ -106,6 +107,7 @@ void Level::Start()
                 auto building = _scene->AddInvader(pos);
                 building->SetInvaderType(3);
                 building->SetIsSleeping(true);
+                building->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
                 building->RemoveCollidesWithChannel(Object::CollisionChannel::TERRAIN);
                 building->SetMesh(new Mesh(*building->GetMesh()));
                 building->GetMesh()->SetAllColor(rgba.rgb());
