@@ -61,6 +61,7 @@ protected:
   std::vector<ProgramEntry *> _program;
   unsigned int                _boss_buildings_alive;
   json11::Json                _buildings_config;
+  Image *                     _destructible_terrain_config;
 
   void LoadConfig(const std::string & filename);
 };

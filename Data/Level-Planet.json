@@ -1,18 +1,35 @@
 {
+  "terrain": "PlanetDestructibleTerrainTest",
+  "buildings" : [
+    {
+      "type":   2,
+      "boss":   true,
+      "offset": [ 0.30, 0.0, 0.0 ]
+    },
+    {
+      "type":   2,
+      "boss":   true,
+      "offset": [ 0.35, 0.0, 0.0 ]
+    },
+    {
+      "type":   2,
+      "boss":   true,
+      "offset": [ 0.40, 0.0, 0.0 ]
+    }
+  ],
   "spawns": [
     {
-      "start":  0.0,
-      "stop":  10.0,
+      "start":    0.0,
+      "stop":    10.0,
       "interval": 0.5,
       "invader_type": 0,
       "control_program": "wait10s"
     },
     {
-      "start": 10.0,
-      "stop":  15.0,
+      "start":    10.0,
+      "stop":     15.0,
       "interval": 0.5,
       "invader_type": 1,
-      "boss":  true,
       "control_program": "wait10s",
       "next":
       {

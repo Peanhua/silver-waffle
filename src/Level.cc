@@ -1,5 +1,6 @@
 #include "Level.hh"
 #include "Camera.hh"
+#include "Image.hh"
 #include "Mesh.hh"
 #include "ObjectInvader.hh"
 #include "Scene.hh"
@@ -7,12 +8,12 @@
 #include <cassert>
 
 
-
 Level::Level(Scene * scene)
   : _scene(scene),
     _random_generator(0),
     _time(0),
-    _boss_buildings_alive(0)
+    _boss_buildings_alive(0),
+    _destructible_terrain_config(nullptr)
 {
 }
 
@@ -83,6 +84,38 @@ void Level::Start()
             }
         }
       }
+
+  if(_destructible_terrain_config)
+    { // For each pixel with alpha > 0, generate a destructible terrain block of relative size.
+      auto img = _destructible_terrain_config;
+      glm::vec3 blocksize;
+      blocksize.x = _scene->GetPlayAreaSize().x / static_cast<float>(img->GetWidth());
+      blocksize.y = 4;
+      blocksize.z = _scene->GetPlayAreaSize().z / static_cast<float>(img->GetHeight());
+
+      for(unsigned int y = 0; y < img->GetHeight(); y++)
+        for(unsigned int x = 0; x < img->GetWidth(); x++)
+          {
+            auto rgba = img->GetRGBA(x, y);
+            if(rgba.a > 0.0f)
+              {
+                glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f;
+                pos.x += (static_cast<float>(x) + 0.5f) * blocksize.x;
+                pos.y = 0;
+                pos.z += (static_cast<float>(y) + 0.5f) * blocksize.z;
+                auto building = _scene->AddInvader(pos);
+                building->SetInvaderType(3);
+                building->SetIsSleeping(true);
+                building->RemoveCollidesWithChannel(Object::CollisionChannel::TERRAIN);
+                building->SetMesh(new Mesh(*building->GetMesh()));
+                building->GetMesh()->SetAllColor(rgba.rgb());
+                building->GetMesh()->UpdateGPU();
+                building->GetMesh()->ApplyTransform(glm::scale(blocksize));
+                building->SetMaxHealth(building->GetMaxHealth() * static_cast<double>(rgba.a));
+                building->SetHealth(building->GetMaxHealth());
+              }
+          }
+    }
 }
 
 
@@ -157,9 +190,13 @@ double Level::ProgramEntry::GetRemainingTime() const
 
 bool Level::IsFinished() const
 {
+  if(_boss_buildings_alive > 0)
+    return false;
+  
   for(auto p : _program)
     if(p)
       return false;
+  
   return true;
 }
 
@@ -232,5 +269,8 @@ void Level::LoadConfig(const std::string & filename)
 
 
       _buildings_config = (*levelconfig)["buildings"];
+
+      if((*levelconfig)["terrain"].is_string())
+        _destructible_terrain_config = AssetLoader->LoadImage((*levelconfig)["terrain"].string_value());
     }
 }

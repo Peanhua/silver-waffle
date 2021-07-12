@@ -32,9 +32,6 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
 
-  for(int i = 0; i < 200; i++)
-    _invaders.push_back(nullptr);
-
   CreatePlayer();
 }
 
@@ -285,9 +282,11 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
     return nullptr;
 
   auto ind = _invaders.GetNextFreeIndex();
-  assert(ind < _invaders.size());
   if(ind >= _invaders.size())
-    return nullptr;
+    {
+      ind = static_cast<unsigned int>(_invaders.size());
+      _invaders.push_back(nullptr);
+    }
   
   auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
   invader->SetPosition(position);

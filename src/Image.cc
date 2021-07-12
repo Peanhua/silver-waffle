@@ -407,3 +407,19 @@ void Image::ToSignedDistanceField(double shrink_min, double shrink_max)
         _data[(x + y * _width) * _bytes_per_pixel + channel] = static_cast<uint8_t>(value);
       }
 }
+
+
+glm::vec4 Image::GetRGBA(unsigned int x, unsigned int y) const
+{
+  assert(x < _width);
+  assert(y < _height);
+  glm::vec4 rgba(0, 0, 0, 0);
+
+  auto ind = (x + y * _width) * _bytes_per_pixel;
+  for(unsigned int i = 0; i < 4 && i < _bytes_per_pixel; i++)
+    rgba[static_cast<int>(i)] = static_cast<float>(_data[ind + i]) / 255.0f;
+  if(_bytes_per_pixel < 4)
+    rgba.a = glm::length(rgba.rgb()) > 0.0f ? 1 : 0;
+  
+  return rgba;
+}

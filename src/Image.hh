@@ -1,6 +1,7 @@
 #ifndef IMAGE_HH_
 #define IMAGE_HH_
 
+#include "glm.hh"
 #include <string>
 #include <cstdint>
 #include <SDL.h>
@@ -32,7 +33,7 @@ public:
   unsigned int GetHeight()        const;
   unsigned int GetBytesPerPixel() const;
   uint8_t *    GetData()          const;
-
+  glm::vec4    GetRGBA(unsigned int x, unsigned int y) const;
   
 private:
   unsigned int         _width;

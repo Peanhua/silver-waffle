@@ -43,6 +43,7 @@ Object::Object(const Object & source)
     _orientation(source._orientation),
     _exceed_actions{source._exceed_actions[0], source._exceed_actions[1], source._exceed_actions[2]},
     _mesh(source._mesh),
+    _sleeping(source._sleeping),
     _destroyed(source._destroyed),
     _use_health(source._use_health),
     _health(source._health),
