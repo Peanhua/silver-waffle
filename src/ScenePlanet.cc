@@ -12,6 +12,8 @@ ScenePlanet::ScenePlanet()
   : Scene({100, 0, 20}, {true, false, false}),
     _landing_sequence(true)
 {
+  _gravity = { 0, 0, -9.81 };
+  
   auto ground = new ObjectPlanetGround(this, {100, 40}, AssetLoader->LoadImage("8k_earth_daymap"));
   AddObject(ground, {0, 0, -10});
 

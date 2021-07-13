@@ -4,7 +4,7 @@
 
 
 ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & size, const glm::vec3 & bottom_color, const glm::vec3 & top_color)
-  : Object(scene)
+  : Object(scene, 0)
 {
   {
     auto mesh = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_COLOR);

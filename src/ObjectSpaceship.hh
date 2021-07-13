@@ -13,7 +13,7 @@ class SpaceshipControlProgram;
 class ObjectSpaceship : public ObjectMovable
 {
 public:
-  ObjectSpaceship(Scene * scene);
+  ObjectSpaceship(Scene * scene, unsigned int random_seed);
 
   void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const override;
   void Tick(double deltatime) override;

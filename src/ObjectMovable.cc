@@ -1,12 +1,14 @@
 #include "ObjectMovable.hh"
-#include <iostream>
+#include "Scene.hh"
 
-ObjectMovable::ObjectMovable(Scene * scene)
-  : Object(scene),
+
+ObjectMovable::ObjectMovable(Scene * scene, unsigned int random_seed)
+  : Object(scene, random_seed),
     _velocity(glm::vec3(0, 0, 0)),
     _angular_velocity(0, 0, 0, 0),
     _angular_velocity_magnitude(0),
-    _hit_impulse_enabled(true)
+    _hit_impulse_enabled(true),
+    _is_affected_by_gravity(true)
 {
   _velocity_enabled[0] =
     _velocity_enabled[1] =
@@ -17,6 +19,13 @@ ObjectMovable::ObjectMovable(Scene * scene)
 
 void ObjectMovable::Tick(double deltatime)
 {
+  if(_is_affected_by_gravity)
+    {
+      auto scene = GetScene();
+      if(scene)
+        _velocity += scene->GetGravity() * static_cast<float>(deltatime);
+    }
+    
   Translate(_velocity * static_cast<float>(deltatime));
 
   if(_angular_velocity_magnitude > 0.01)
@@ -79,5 +88,11 @@ void ObjectMovable::EnableVelocity(bool x, bool y, bool z)
   _velocity_enabled[0] = x;
   _velocity_enabled[1] = y;
   _velocity_enabled[2] = z;
+}
+
+
+void ObjectMovable::SetIsAffectedByGravity(bool is_affected)
+{
+  _is_affected_by_gravity = is_affected;
 }
 

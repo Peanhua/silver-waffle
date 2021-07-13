@@ -29,7 +29,7 @@ public:
   typedef std::function<void(Object * destroyer)> on_destroyed_t;
   
   
-  Object(Scene * scene);
+  Object(Scene * scene, unsigned int random_seed);
   virtual ~Object();
   Object(const Object & source);
   Object(Object &&)                  = delete; // todo: move constructor
@@ -104,6 +104,8 @@ public:
 
   void ClearLoot();
   void AddLoot(Loot * loot);
+
+  float GetRand();
  
 private:
   std::mt19937_64                       _random_generator;

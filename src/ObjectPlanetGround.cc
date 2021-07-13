@@ -5,7 +5,7 @@
 
 
 ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Image * texture_map)
-  : Object(scene)
+  : Object(scene, 0)
 {
   AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
 

@@ -3,7 +3,6 @@
 
 #include "ObjectSpaceship.hh"
 #include "CollisionShape.hh"
-#include <random>
 
 
 class ObjectInvader : public ObjectSpaceship
@@ -16,9 +15,8 @@ public:
   void CreateCollisionShape(CollisionShape::Type type);
   
 private:
-  std::mt19937_64 _random_generator;
-  double          _time_to_think;
-  double          _next_thinking;
+  double _time_to_think;
+  double _next_thinking;
 };
 
 #endif

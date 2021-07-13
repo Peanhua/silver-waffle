@@ -5,11 +5,12 @@
 
 
 ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_object, Image * planet_texture, double planet_radius)
-  : ObjectMovable(scene),
+  : ObjectMovable(scene, 0),
     _solar_system_object(solar_system_object),
     _planet_radius(planet_radius),
     _ring_max(1)
 {
+  SetIsAffectedByGravity(false);
   auto planet = new Mesh(*AssetLoader->LoadMesh("Planet", "Generic"));
   assert(planet);
   planet->ApplyTransform(glm::scale(glm::vec3(planet_radius, planet_radius, planet_radius)));

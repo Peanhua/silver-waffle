@@ -6,7 +6,7 @@
 
 
 ObjectProjectile::ObjectProjectile(Scene * scene)
-  : ObjectMovable(scene)
+  : ObjectMovable(scene, 0)
 {
   SetOwner(nullptr);
   SetMesh(AssetLoader->LoadMesh("Projectile"));

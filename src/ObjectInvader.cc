@@ -11,8 +11,7 @@
 
 
 ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed)
-  : ObjectSpaceship(scene),
-    _random_generator(random_seed),
+  : ObjectSpaceship(scene, random_seed),
     _time_to_think(0.334),
     _next_thinking(0)
 {
@@ -44,11 +43,6 @@ void ObjectInvader::OnDestroyed(Object * destroyer)
 
 void ObjectInvader::SetInvaderType(unsigned int type)
 {
-  auto rand = [this]()
-  {
-    return (static_cast<double>(_random_generator()) - static_cast<double>(_random_generator.min())) / static_cast<double>(_random_generator.max());
-  };
-
   auto config = AssetLoader->LoadJson("Data/Invaders");
   assert(config->is_object());
   assert((*config)["definitions"].is_array());
@@ -96,10 +90,10 @@ void ObjectInvader::SetInvaderType(unsigned int type)
       AddLoot(new Loot(lootjson));
     }
   assert(d["shield_chance"].is_number());
-  if(rand() < d["shield_chance"].number_value())
+  if(GetRand() < d["shield_chance"].number_value())
     {
       auto u = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-      u->Activate(50.0 + GetMaxHealth() * rand(), 9999);
+      u->Activate(50.0 + GetMaxHealth() * GetRand(), 9999);
     }
   
   SetHealth(GetMaxHealth());

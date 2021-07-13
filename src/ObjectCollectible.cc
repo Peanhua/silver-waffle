@@ -6,7 +6,7 @@
 #include "SubsystemAssetLoader.hh"
 
 ObjectCollectible::ObjectCollectible(Scene * scene)
-  : ObjectMovable(scene)
+  : ObjectMovable(scene, 0)
 {
   SetHealth(1);
   AddToCollisionChannel(CollisionChannel::COLLECTIBLE);

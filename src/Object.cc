@@ -11,8 +11,8 @@
 #include "SubsystemSettings.hh"
 
 
-Object::Object(Scene * scene)
-  : _random_generator(0),
+Object::Object(Scene * scene, unsigned int random_seed)
+  : _random_generator(random_seed),
     _scene(scene),
     _controller(nullptr),
     _collision_shape(nullptr),
@@ -39,7 +39,8 @@ Object::~Object()
 
 
 Object::Object(const Object & source)
-  : _scene(source._scene),
+  : _random_generator(source._random_generator),
+    _scene(source._scene),
     _controller(nullptr),
     _collision_shape(nullptr),
     _position(source._position),
@@ -56,6 +57,8 @@ Object::Object(const Object & source)
     _destroybox_low(source._destroybox_low),
     _destroybox_high(source._destroybox_high)
 {
+  _random_generator.seed(_random_generator());
+  
   auto sc = source.GetCollisionShape();
   auto scobb = dynamic_cast<CollisionShapeOBB *>(sc);
   if(scobb)
@@ -479,20 +482,16 @@ void Object::SetIsSleeping(bool sleeping)
 
 void Object::SpawnLoot()
 {
-  auto rand = [this] { return static_cast<double>(_random_generator() - _random_generator.min()) / static_cast<double>(_random_generator.max()); };
-
   for(auto loot : _lootset)
     {
-      auto item = loot->CreateLootItem(rand(), rand());
+      auto item = loot->CreateLootItem(GetRand(), GetRand());
       if(item)
         {
           auto c = AssetLoader->LoadObjectCollectible(static_cast<int>(item->_type));
           assert(c);
           auto coll = new ObjectCollectible(*c);
           coll->SetBonus(item->_type, item->_bonus);
-          GetScene()->AddCollectible(coll,
-                                     GetPosition() + 0.5f * glm::vec3(rand() - 0.5, rand() - 0.5, 0.0),
-                                     glm::vec3(0, -5, 0));
+          GetScene()->AddCollectible(coll, GetPosition() + 0.5f * glm::vec3(GetRand() - 0.5f, GetRand() - 0.5f, 0.0));
 
           switch(item->_type)
             {
@@ -502,10 +501,10 @@ void Object::SpawnLoot()
             case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
             case ObjectCollectible::Type::WARP_FUEL:
               {
-                auto rotangle = glm::normalize(glm::vec3(rand() * 2.0 - 1.0,
-                                                         rand() * 2.0 - 1.0,
-                                                         rand() * 2.0 - 1.0));
-                coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + rand() * 10.0);
+                auto rotangle = glm::normalize(glm::vec3(GetRand() * 2.0f - 1.0f,
+                                                         GetRand() * 2.0f - 1.0f,
+                                                         GetRand() * 2.0f - 1.0f));
+                coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1f + GetRand() * 10.0f);
               }
               break;
             case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
@@ -528,4 +527,10 @@ void Object::ClearLoot()
 void Object::AddLoot(Loot * loot)
 {
   _lootset.push_back(loot);
+}
+
+
+float Object::GetRand()
+{
+  return _rdist(_random_generator);
 }

@@ -74,7 +74,7 @@ public:
   ObjectInvader *   AddInvader(const glm::vec3 & position);
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
-  void              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity);
+  void              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position);
   bool              AddObject(Object * object, const glm::vec3 & position);
 
   std::vector<ObjectMovable *> * GetNearbyObjects(const glm::vec3 & position, float radius);
@@ -86,9 +86,11 @@ public:
   void TutorialMessage(unsigned int id, const std::string & message);
   void EnableTutorialMessages(bool enabled);
 
-  double GetTime() const;
+  double            GetTime() const;
+  const glm::vec3 & GetGravity() const;
 
 protected:
+  glm::vec3           _gravity;
   SpaceParticles *    _particles;
   std::array<bool, 3> _play_area_wraps;
   std::mt19937_64                _random_generator;

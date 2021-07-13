@@ -8,11 +8,12 @@
 #include "SubsystemAssetLoader.hh"
 
 
-ObjectSpaceship::ObjectSpaceship(Scene * scene)
-  : ObjectMovable(scene),
+ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
+  : ObjectMovable(scene, random_seed),
     _gamestats(nullptr),
     _systemlog_enabled(false)
 {
+  SetIsAffectedByGravity(false);
   AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
 
   std::vector<SpaceshipUpgrade::Type> types
@@ -204,7 +205,7 @@ bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
                             GetPosition() + location.xyz(),
                             GetVelocity() * 0.5f + direction.xyz() * static_cast<float>(weapon->_projectile_initial_velocity),
                             damage,
-                            10.0);
+                            5.0);
   weapon->_heat += 0.03;
   weapon->_last_fire_timer = weapon->_minimum_firing_interval;
   

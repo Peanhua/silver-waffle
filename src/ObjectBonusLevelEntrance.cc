@@ -8,7 +8,7 @@
 
 
 ObjectBonusLevelEntrance::ObjectBonusLevelEntrance(Scene * scene, double enemy_difficulty, double warp_fuel_bonus)
-  : ObjectMovable(scene),
+  : ObjectMovable(scene, 0),
     _enemy_difficulty(enemy_difficulty),
     _warp_fuel_bonus(warp_fuel_bonus),
     _drag_timer(0),

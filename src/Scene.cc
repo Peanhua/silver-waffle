@@ -18,7 +18,8 @@
 
 
 Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_area_wraps)
-  : _particles(nullptr),
+  : _gravity(0, 0, 0),
+    _particles(nullptr),
     _play_area_wraps(play_area_wraps),
     _random_generator(0),
     _rdist(0, 1),
@@ -104,7 +105,7 @@ void Scene::CreatePlayer()
   if(_player && _player->IsAlive())
     _player->Destroy(nullptr);
   
-  _player = new ObjectSpaceship(this);
+  _player = new ObjectSpaceship(this, _random_generator());
   _player->AddToCollisionChannel(Object::CollisionChannel::PLAYER);
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
   _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);
@@ -311,7 +312,7 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
 }
 
 
-void Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position, const glm::vec3 & velocity)
+void Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position)
 {
   assert(collectible->IsAlive());
   
@@ -324,7 +325,6 @@ void Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & po
 
   collectible->SetScene(this);
   collectible->SetPosition(position);
-  collectible->SetVelocity(velocity);
   collectible->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0)), 1.0f);
 
   SetupSceneObject(collectible, true);
@@ -508,3 +508,10 @@ void Scene::SetupPlayer()
 {
   SetupSceneObject(_player, false);
 }
+
+
+const glm::vec3 & Scene::GetGravity() const
+{
+  return _gravity;
+}
+
