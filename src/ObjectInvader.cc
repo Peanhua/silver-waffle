@@ -90,10 +90,10 @@ void ObjectInvader::SetInvaderType(unsigned int type)
       AddLoot(new Loot(lootjson));
     }
   assert(d["shield_chance"].is_number());
-  if(GetRand() < d["shield_chance"].number_value())
+  if(static_cast<double>(GetRand()) < d["shield_chance"].number_value())
     {
       auto u = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-      u->Activate(50.0 + GetMaxHealth() * GetRand(), 9999);
+      u->Activate(50.0 + GetMaxHealth() * static_cast<double>(GetRand()), 9999);
     }
   
   SetHealth(GetMaxHealth());

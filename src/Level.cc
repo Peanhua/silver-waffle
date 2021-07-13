@@ -102,10 +102,10 @@ void Level::Start()
             auto rgba = img->GetRGBA(x, y);
             if(rgba.a > 0.0f)
               {
-                glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f;
-                pos.x += (static_cast<float>(x) + 0.5f) * blocksize.x;
+                glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f + glm::vec3(blocksize.x, 0, blocksize.z) * 0.5f;
+                pos.x += static_cast<float>(x) * blocksize.x;
                 pos.y = 0;
-                pos.z += (static_cast<float>(y) + 0.5f) * blocksize.z;
+                pos.z += static_cast<float>(y) * blocksize.z;
                 auto building = _scene->AddInvader(pos);
                 building->SetInvaderType(3);
                 building->SetIsSleeping(true);

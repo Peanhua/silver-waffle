@@ -105,7 +105,7 @@ void Scene::CreatePlayer()
   if(_player && _player->IsAlive())
     _player->Destroy(nullptr);
   
-  _player = new ObjectSpaceship(this, _random_generator());
+  _player = new ObjectSpaceship(this, static_cast<unsigned int>(_random_generator()));
   _player->AddToCollisionChannel(Object::CollisionChannel::PLAYER);
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
   _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);

@@ -15,7 +15,9 @@ ScenePlanet::ScenePlanet()
   _gravity = { 0, 0, -9.81 };
   
   auto ground = new ObjectPlanetGround(this, {100, 40}, AssetLoader->LoadImage("8k_earth_daymap"));
-  AddObject(ground, {0, 0, -10});
+  AddObject(ground);
+  ground->SetAutoDestroyBox({1, 1, 1}, {0, 0, 0});
+  ground->SetPosition({0, 0, -10.5});
 
   auto atmosphere = new ObjectPlanetAtmosphere(this, {100, 20}, {1, 0, 0}, {0, 0, 0.5});
   atmosphere->Translate({0, 20, 0});

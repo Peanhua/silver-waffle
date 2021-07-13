@@ -15,10 +15,10 @@ ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Im
     mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
 
     std::vector<glm::vec3> vertices {
-      glm::vec3( 1,  1, 0), 
-      glm::vec3( 1, -1, 0), 
-      glm::vec3(-1, -1, 0),
-      glm::vec3(-1,  1, 0),
+      glm::vec3( 1,  1, 1),
+      glm::vec3( 1, -1, 1),
+      glm::vec3(-1, -1, 1),
+      glm::vec3(-1,  1, 1),
     };
     std::vector<glm::vec2> texcoords {
       glm::vec2(1, 1),
@@ -33,7 +33,7 @@ ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Im
 
     for(auto v : vertices)
       {
-        mesh->AddVertex(v * glm::vec3(size * 0.5f, 1));
+        mesh->AddVertex(v * glm::vec3(size, 1) * 0.5f);
         mesh->AddColor({1.0, 1.0, 1.0});
         mesh->AddNormal({0, 0, 1});
       }
@@ -43,13 +43,13 @@ ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Im
       mesh->AddElement(i);
     
     mesh->UpdateGPU();
-
+    mesh->CalculateBoundingVolumes();
     SetMesh(mesh);
   }
 
   SetUseHealth(false);
 
-  SetCollisionShape(new CollisionShapeOBB(this, {size, 1}, {0.5, 0.4, 0}));
+  SetCollisionShape(new CollisionShapeOBB(this, glm::vec3(size, 1) * 0.5f, {0.5f, 0.4f, 0.0f}));
 }
 
 
