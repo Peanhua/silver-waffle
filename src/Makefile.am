@@ -61,8 +61,8 @@ silverwaffle_SOURCES =				\
 	Screen.cc				\
 	ScreenLevel.cc				\
 	ScreenLevelBonus.cc			\
-	ScreenLevelMain.cc			\
 	ScreenLevelPlanet.cc			\
+	ScreenLevelSpace.cc			\
 	ScreenTitle.cc				\
 	Shader.cc				\
 	ShaderProgram.cc			\

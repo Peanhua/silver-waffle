@@ -5,7 +5,7 @@
 
 
 ScreenLevelBonus::ScreenLevelBonus(ScreenLevel * parent, double enemy_difficulty, double warp_fuel_bonus)
-  : ScreenLevelMain(parent),
+  : ScreenLevelSpace(parent),
     _enemy_difficulty(enemy_difficulty),
     _warp_fuel_bonus(warp_fuel_bonus)
 {

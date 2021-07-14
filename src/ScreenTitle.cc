@@ -1,6 +1,6 @@
 #include "ScreenTitle.hh"
 #include "Camera.hh"
-#include "ScreenLevelMain.hh"
+#include "ScreenLevelSpace.hh"
 #include "Milkyway.hh"
 #include "ObjectMovable.hh"
 #include "SolarSystemObject.hh"
@@ -97,7 +97,7 @@ ScreenTitle::ScreenTitle()
       assert(position == position);
       if(!pressed)
         {
-          auto s = new ScreenLevelMain(nullptr);
+          auto s = new ScreenLevelSpace(nullptr);
           s->SetupLevels();
           SetChild(s);
         }

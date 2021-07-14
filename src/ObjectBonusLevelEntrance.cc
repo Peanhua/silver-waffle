@@ -70,7 +70,7 @@ void ObjectBonusLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit
 
   _used = true;
 
-  auto current = dynamic_cast<ScreenLevelMain *>(ScreenManager->GetScreen());
+  auto current = dynamic_cast<ScreenLevelSpace *>(ScreenManager->GetScreen());
   if(current)
     {
       auto ns = new ScreenLevelBonus(current, _enemy_difficulty, _warp_fuel_bonus);

@@ -1,10 +1,10 @@
 #ifndef SCREEN_LEVEL_BONUS_HH_
 #define SCREEN_LEVEL_BONUS_HH_
 
-#include "ScreenLevelMain.hh"
+#include "ScreenLevelSpace.hh"
 
 
-class ScreenLevelBonus : public ScreenLevelMain
+class ScreenLevelBonus : public ScreenLevelSpace
 {
 public:
   ScreenLevelBonus(ScreenLevel * parent, double enemy_difficulty, double warp_fuel_bonus);

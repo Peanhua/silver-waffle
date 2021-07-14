@@ -1,11 +1,11 @@
-#include "ScreenLevelMain.hh"
+#include "ScreenLevelSpace.hh"
 #include "Camera.hh"
 #include "LevelSpace.hh"
 #include "SceneSpace.hh"
 #include "SubsystemAssetLoader.hh"
 
 
-ScreenLevelMain::ScreenLevelMain(ScreenLevel * parent)
+ScreenLevelSpace::ScreenLevelSpace(ScreenLevel * parent)
   : ScreenLevel(parent)
 {
   _camera = new Camera();
@@ -18,7 +18,7 @@ ScreenLevelMain::ScreenLevelMain(ScreenLevel * parent)
 }
 
 
-void ScreenLevelMain::SetupLevels()
+void ScreenLevelSpace::SetupLevels()
 {
   bool done = false;
   for(unsigned int i = 0; !done; i++)
