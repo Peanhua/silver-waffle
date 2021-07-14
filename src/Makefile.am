@@ -36,8 +36,8 @@ silverwaffle_SOURCES =				\
 	Image.cc				\
 	Level.cc				\
 	LevelBonus.cc				\
-	LevelMain.cc				\
 	LevelPlanet.cc				\
+	LevelSpace.cc				\
 	Loot.cc					\
 	Mesh.cc					\
 	MeshOverlay.cc				\

@@ -1,6 +1,6 @@
 #include "ScreenLevelMain.hh"
 #include "Camera.hh"
-#include "LevelMain.hh"
+#include "LevelSpace.hh"
 #include "SceneSpace.hh"
 #include "SubsystemAssetLoader.hh"
 
@@ -25,7 +25,7 @@ void ScreenLevelMain::SetupLevels()
     {
       auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::Type::PLANET, i);
       if(sobj)
-        _levels.push_back(new LevelMain(_scene, sobj));
+        _levels.push_back(new LevelSpace(_scene, sobj));
       else
         done = true;
     }
