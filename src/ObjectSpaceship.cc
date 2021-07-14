@@ -487,6 +487,56 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
     {
       AddControlProgram(new SCP_Delay(this, 10));
     }
+  else if(name == "waithoriz5-shoot")
+    {
+      AddControlProgram(new SCP_MoveForward(this, 2, 999));
+
+      SpaceshipControlProgram * p, * pp;
+
+      p = new SCP_Infinitely(this);
+      AddControlProgram(p);
+
+      pp = new SCP_WaitForPlayerHorizontalDistanceMin(this, 5);
+      p->SetNext(pp);
+
+      p = pp;
+      pp = new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.03, 1);
+      p->SetNext(pp);
+    }
+  else if(name == "wait15-shoot")
+    {
+      AddControlProgram(new SCP_MoveForward(this, 2, 999));
+
+      SpaceshipControlProgram * p, * pp;
+
+      p = new SCP_Infinitely(this);
+      AddControlProgram(p);
+
+      pp = new SCP_WaitForPlayerDistanceMin(this, 15);
+      p->SetNext(pp);
+
+      p = pp;
+      pp = new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.03, 1);
+      p->SetNext(pp);
+    }
+  else if(name == "face-player-shoot")
+    {
+      SpaceshipControlProgram * p, * pp;
+
+      p = new SCP_Infinitely(this);
+      AddControlProgram(p);
+
+      pp = new SCP_WaitForPlayerDistanceMin(this, 15);
+      p->SetNext(pp);
+
+      p = pp;
+      pp = new SCP_FacePlayer(this);
+      p->SetNext(pp);
+
+      p = pp;
+      pp = new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.10, 1);
+      p->SetNext(pp);
+    }
   else
     assert(false);
 }

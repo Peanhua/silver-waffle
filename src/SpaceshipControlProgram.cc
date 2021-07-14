@@ -1,5 +1,6 @@
 #include "SpaceshipControlProgram.hh"
 #include "ObjectSpaceship.hh"
+#include "Scene.hh"
 #include <cassert>
 #include <iostream>
 
@@ -211,3 +212,120 @@ bool SCP_MoveSidewaysSin::IsFinished() const
 
 
 
+SCP_Infinitely::SCP_Infinitely(ObjectSpaceship * spaceship)
+  : SpaceshipControlProgram(spaceship)
+{
+}
+
+
+void SCP_Infinitely::PTick(double deltatime)
+{
+  if(_next)
+    {
+      auto p = _next->GetCurrent();
+      if(p)
+        p->PTick(deltatime);
+    }
+}
+
+
+bool SCP_Infinitely::IsFinished() const
+{
+  return false;
+}
+
+
+SpaceshipControlProgram * SpaceshipControlProgram::GetCurrent()
+{
+  if(!IsFinished())
+    return this;
+  
+  if(_next)
+    return _next->GetCurrent();
+  
+  return nullptr;
+}
+
+
+
+SCP_WaitForPlayerDistanceMin::SCP_WaitForPlayerDistanceMin(ObjectSpaceship * spaceship, float distance)
+  : SpaceshipControlProgram(spaceship),
+    _distance(distance)
+{
+}
+
+
+bool SCP_WaitForPlayerDistanceMin::IsFinished() const
+{
+  bool rv = false;
+  
+  auto player = _spaceship->GetScene()->GetPlayer();
+  if(player && player->IsAlive())
+    rv = glm::length(player->GetPosition() - _spaceship->GetPosition()) < _distance;
+
+  return rv;
+}
+
+
+SCP_WaitForPlayerHorizontalDistanceMin::SCP_WaitForPlayerHorizontalDistanceMin(ObjectSpaceship * spaceship, float distance)
+  : SpaceshipControlProgram(spaceship),
+    _distance(distance)
+{
+}
+
+
+bool SCP_WaitForPlayerHorizontalDistanceMin::IsFinished() const
+{
+  bool rv = false;
+  
+  auto player = _spaceship->GetScene()->GetPlayer();
+  if(player && player->IsAlive())
+    rv = std::abs(player->GetPosition().x - _spaceship->GetPosition().x) < _distance;
+
+  return rv;
+}
+
+
+SCP_FacePlayer::SCP_FacePlayer(ObjectSpaceship * spaceship)
+  : SpaceshipControlProgram(spaceship),
+    _done(false)
+{
+}
+
+
+void SCP_FacePlayer::PTick(double deltatime)
+{
+  auto player = _spaceship->GetScene()->GetPlayer();
+  if(player && player->IsAlive())
+    {
+      const double rotspeed = 45;
+      auto rot = rotspeed * deltatime;
+      if(player->GetPosition().x < _spaceship->GetPosition().x)
+        rot *= -1.0;
+      _spaceship->RotateYaw(rot);
+    }
+}
+
+
+float SCP_FacePlayer::GetFacingDiff() const
+{
+  auto player = _spaceship->GetScene()->GetPlayer();
+  if(!player || !player->IsAlive())
+    return 0;
+
+  float current = glm::eulerAngles(_spaceship->GetOrientation()).z;
+
+  float target;
+  if(player->GetPosition().x < _spaceship->GetPosition().x)
+    target = glm::radians(90.0f);
+  else
+    target = glm::radians(-90.0f);
+  
+  return target - current;
+}
+
+
+bool SCP_FacePlayer::IsFinished() const
+{
+  return std::abs(GetFacingDiff()) < glm::radians(1.0f);
+}

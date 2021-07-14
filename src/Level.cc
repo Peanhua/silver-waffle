@@ -136,6 +136,8 @@ Level::ProgramEntry::ProgramEntry()
     _boss(false),
     _invader_type(0),
     _bosses_alive(0),
+    _spawn_count(0),
+    _max_spawn_count(0),
     _next(nullptr)
 {
 }
@@ -149,6 +151,8 @@ Level::ProgramEntry::ProgramEntry(const json11::Json & config)
     SetStopTime(config["stop"].number_value());
   if(config["interval"].is_number())
     SetSpawnInterval(config["interval"].number_value());
+  if(config["max"].is_number())
+     _max_spawn_count = static_cast<unsigned int>(config["max"].number_value());
   _invader_type = static_cast<unsigned int>(config["invader_type"].int_value());
   if(config["control_program"].is_string())
     SetInvaderControlProgram(config["control_program"].string_value());
@@ -235,24 +239,27 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, double deltatime,
           _invader_spawn_timer -= _invader_spawn_interval;
 
           if(!disable_spawning)
-            {
-              auto pos = scene->GetRandomSpawnPosition();
-              auto invader = scene->AddInvader(pos);
-              assert(invader);
-              invader->SetInvaderType(_invader_type);
-              if(!_invader_control_program.empty())
-                invader->AddNamedControlProgram(_invader_control_program);
+            if(_max_spawn_count == 0 || _spawn_count < _max_spawn_count)
+              {
+                auto pos = scene->GetRandomSpawnPosition();
+                auto invader = scene->AddInvader(pos);
+                assert(invader);
+                _spawn_count++;
 
-              if(_boss)
-                {
-                  _bosses_alive++;
-                  invader->SetOnDestroyed([this](Object * destroyer)
+                invader->SetInvaderType(_invader_type);
+                if(!_invader_control_program.empty())
+                  invader->AddNamedControlProgram(_invader_control_program);
+
+                if(_boss)
                   {
-                    assert(destroyer == destroyer);
-                    _bosses_alive--;
-                  });
-                }
-            }
+                    _bosses_alive++;
+                    invader->SetOnDestroyed([this](Object * destroyer)
+                    {
+                      assert(destroyer == destroyer);
+                      _bosses_alive--;
+                    });
+                  }
+              }
         }
     }
   return this;

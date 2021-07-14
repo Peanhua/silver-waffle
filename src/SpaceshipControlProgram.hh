@@ -14,8 +14,9 @@ public:
   virtual ~SpaceshipControlProgram();
   
   SpaceshipControlProgram * Tick(double deltatime);
-  void SetNext(SpaceshipControlProgram * next);
-
+  SpaceshipControlProgram * GetCurrent();
+  void                      SetNext(SpaceshipControlProgram * next);
+  
   virtual bool IsFinished() const = 0;
   virtual void PTick(double deltatime);
   
@@ -120,6 +121,48 @@ private:
   double          _chance;
   double          _finish_time;
   double          _cooldown;
+};
+
+
+class SCP_Infinitely : public SpaceshipControlProgram
+{
+public:
+  SCP_Infinitely(ObjectSpaceship * spaceship);
+  void PTick(double deltatime) override;
+  bool IsFinished() const override;
+};
+
+
+class SCP_WaitForPlayerDistanceMin : public SpaceshipControlProgram
+{
+public:
+  SCP_WaitForPlayerDistanceMin(ObjectSpaceship * spaceship, float distance);
+  bool IsFinished() const override;
+private:
+  float _distance;
+};
+
+
+class SCP_WaitForPlayerHorizontalDistanceMin : public SpaceshipControlProgram
+{
+public:
+  SCP_WaitForPlayerHorizontalDistanceMin(ObjectSpaceship * spaceship, float distance);
+  bool IsFinished() const override;
+private:
+  float _distance;
+};
+
+
+class SCP_FacePlayer : public SpaceshipControlProgram
+{
+public:
+  SCP_FacePlayer(ObjectSpaceship * spaceship);
+  void PTick(double deltatime) override;
+  bool IsFinished() const override;
+private:
+  bool _done;
+
+  float GetFacingDiff() const;
 };
 
 

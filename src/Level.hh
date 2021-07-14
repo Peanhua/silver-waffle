@@ -51,6 +51,8 @@ protected:
     bool           _boss;
     unsigned int   _invader_type;
     unsigned int   _bosses_alive;
+    unsigned int   _spawn_count;
+    unsigned int   _max_spawn_count;
     ProgramEntry * _next;
   };
   

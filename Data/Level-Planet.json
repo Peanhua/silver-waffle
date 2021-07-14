@@ -4,6 +4,11 @@
     {
       "type":   2,
       "boss":   true,
+      "offset": [ 0.0, 0.0, 0.0 ]
+    },
+    {
+      "type":   2,
+      "boss":   true,
       "offset": [ 0.30, 0.0, 0.0 ]
     },
     {
@@ -19,23 +24,20 @@
   ],
   "spawns": [
     {
-      "start":    0.0,
-      "stop":    10.0,
-      "interval": 0.5,
+      "start":        0.0,
+      "stop":         3.0,
+      "interval":     0.01,
+      "max":         50,
       "invader_type": 0,
-      "control_program": "wait10s"
+      "control_program": "face-player-shoot"
     },
     {
-      "start":    10.0,
-      "stop":     15.0,
-      "interval": 0.5,
+      "start":        0.0,
+      "stop":         3.0,
+      "interval":     0.01,
+      "max":         10,
       "invader_type": 1,
-      "control_program": "wait10s",
-      "next":
-      {
-        "start": 0.0,
-        "stop":  10.0
-      }
+      "control_program": "face-player-shoot"
     }
   ]
 }
