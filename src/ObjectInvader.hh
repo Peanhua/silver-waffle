@@ -13,10 +13,6 @@ public:
   void OnDestroyed(Object * destroyer) override;
   void SetInvaderType(unsigned int type);
   void CreateCollisionShape(CollisionShape::Type type);
-  
-private:
-  double _time_to_think;
-  double _next_thinking;
 };
 
 #endif

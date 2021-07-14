@@ -11,9 +11,7 @@
 
 
 ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed)
-  : ObjectSpaceship(scene, random_seed),
-    _time_to_think(0.334),
-    _next_thinking(0)
+  : ObjectSpaceship(scene, random_seed)
 {
   AddToCollisionChannel(CollisionChannel::ENEMY);
   AddCollidesWithChannel(CollisionChannel::PLAYER);
