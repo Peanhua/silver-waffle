@@ -35,9 +35,9 @@ silverwaffle_SOURCES =				\
 	HighscoreEntry.cc			\
 	Image.cc				\
 	Level.cc				\
-	BonusLevel.cc				\
-	MainLevel.cc				\
-	PlanetLevel.cc				\
+	LevelBonus.cc				\
+	LevelMain.cc				\
+	LevelPlanet.cc				\
 	Loot.cc					\
 	Mesh.cc					\
 	MeshOverlay.cc				\
@@ -60,9 +60,9 @@ silverwaffle_SOURCES =				\
 	ScoreReel.cc				\
 	Screen.cc				\
 	ScreenLevel.cc				\
-	ScreenBonusLevel.cc			\
-	ScreenMainLevel.cc			\
-	ScreenPlanetLevel.cc			\
+	ScreenLevelBonus.cc			\
+	ScreenLevelMain.cc			\
+	ScreenLevelPlanet.cc			\
 	ScreenTitle.cc				\
 	Shader.cc				\
 	ShaderProgram.cc			\

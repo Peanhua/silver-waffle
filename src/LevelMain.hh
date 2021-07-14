@@ -1,15 +1,15 @@
-#ifndef MAIN_LEVEL_HH_
-#define MAIN_LEVEL_HH_
+#ifndef LEVEL_MAIN_HH_
+#define LEVEL_MAIN_HH_
 
 #include "Level.hh"
 
 class SolarSystemObject;
 
 
-class MainLevel : public Level
+class LevelMain : public Level
 {
 public:
-  MainLevel(Scene * scene, SolarSystemObject * planet);
+  LevelMain(Scene * scene, SolarSystemObject * planet);
   void Start() override;
   
 private:

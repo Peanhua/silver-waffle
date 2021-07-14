@@ -3,7 +3,7 @@
 #include "ObjectPlanet.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
-#include "ScreenPlanetLevel.hh"
+#include "ScreenLevelPlanet.hh"
 #include "SolarSystemObject.hh"
 #include "SubsystemScreen.hh"
 #include "SubsystemSettings.hh"
@@ -356,7 +356,7 @@ void SpaceshipUpgrade::Activate(double value, double time)
               auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
               assert(current);
               
-              auto ns = new ScreenPlanetLevel(current, planet->GetSolarSystemObject());
+              auto ns = new ScreenLevelPlanet(current, planet->GetSolarSystemObject());
               ns->SetupLevels();
               current->TransitionToScreen(ns, _name + ": Destination " + planet->GetSolarSystemObject()->GetName());
             }

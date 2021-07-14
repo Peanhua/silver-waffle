@@ -1,4 +1,4 @@
-#include "MainLevel.hh"
+#include "LevelMain.hh"
 #include "ObjectBonusLevelEntrance.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectPlanet.hh"
@@ -10,7 +10,7 @@
 #define SCALE 100.0
 
 
-MainLevel::MainLevel(Scene * scene, SolarSystemObject * planet)
+LevelMain::LevelMain(Scene * scene, SolarSystemObject * planet)
   : Level(scene),
     _solar_system_object(planet)
 {
@@ -27,7 +27,7 @@ MainLevel::MainLevel(Scene * scene, SolarSystemObject * planet)
 }
 
 
-void MainLevel::Start()
+void LevelMain::Start()
 {
   Level::Start();
 

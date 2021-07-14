@@ -2,7 +2,7 @@
 #include "CollisionShapeSphere.hh"
 #include "Mesh.hh"
 #include "ObjectSpaceship.hh"
-#include "ScreenBonusLevel.hh"
+#include "ScreenLevelBonus.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemScreen.hh"
 
@@ -70,10 +70,10 @@ void ObjectBonusLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit
 
   _used = true;
 
-  auto current = dynamic_cast<ScreenMainLevel *>(ScreenManager->GetScreen());
+  auto current = dynamic_cast<ScreenLevelMain *>(ScreenManager->GetScreen());
   if(current)
     {
-      auto ns = new ScreenBonusLevel(current, _enemy_difficulty, _warp_fuel_bonus);
+      auto ns = new ScreenLevelBonus(current, _enemy_difficulty, _warp_fuel_bonus);
       ns->SetupLevels();
       current->TransitionToScreen(ns, "Entering bonus level...");
     }

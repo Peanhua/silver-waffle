@@ -1,11 +1,11 @@
-#include "ScreenPlanetLevel.hh"
+#include "ScreenLevelPlanet.hh"
 #include "Camera.hh"
 #include "ObjectSpaceship.hh"
-#include "PlanetLevel.hh"
+#include "LevelPlanet.hh"
 #include "ScenePlanet.hh"
 
 
-ScreenPlanetLevel::ScreenPlanetLevel(ScreenLevel * parent, SolarSystemObject * planet)
+ScreenLevelPlanet::ScreenLevelPlanet(ScreenLevel * parent, SolarSystemObject * planet)
   : ScreenLevel(parent),
     _planet(planet)
 {
@@ -20,18 +20,18 @@ ScreenPlanetLevel::ScreenPlanetLevel(ScreenLevel * parent, SolarSystemObject * p
 }
 
 
-void ScreenPlanetLevel::SetupLevels()
+void ScreenLevelPlanet::SetupLevels()
 {
   _levels.clear();
 
-  auto level = new PlanetLevel(_scene, _planet);
+  auto level = new LevelPlanet(_scene, _planet);
   _levels.push_back(level);
 
   ScreenLevel::SetupLevels();
 }
 
 
-void ScreenPlanetLevel::Tick(double deltatime)
+void ScreenLevelPlanet::Tick(double deltatime)
 {
   auto pos = _scene->GetPlayer()->GetPosition();
   _camera->SetPosition({pos.x, -20, pos.z});

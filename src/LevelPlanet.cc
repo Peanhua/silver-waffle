@@ -1,8 +1,8 @@
-#include "PlanetLevel.hh"
+#include "LevelPlanet.hh"
 #include "SolarSystemObject.hh"
 
 
-PlanetLevel::PlanetLevel(Scene * scene, SolarSystemObject * planet)
+LevelPlanet::LevelPlanet(Scene * scene, SolarSystemObject * planet)
   : Level(scene)
 {
   _name = planet->GetName();

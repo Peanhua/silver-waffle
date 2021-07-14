@@ -1,11 +1,11 @@
-#include "ScreenMainLevel.hh"
+#include "ScreenLevelMain.hh"
 #include "Camera.hh"
-#include "MainLevel.hh"
+#include "LevelMain.hh"
 #include "SceneSpace.hh"
 #include "SubsystemAssetLoader.hh"
 
 
-ScreenMainLevel::ScreenMainLevel(ScreenLevel * parent)
+ScreenLevelMain::ScreenLevelMain(ScreenLevel * parent)
   : ScreenLevel(parent)
 {
   _camera = new Camera();
@@ -18,14 +18,14 @@ ScreenMainLevel::ScreenMainLevel(ScreenLevel * parent)
 }
 
 
-void ScreenMainLevel::SetupLevels()
+void ScreenLevelMain::SetupLevels()
 {
   bool done = false;
   for(unsigned int i = 0; !done; i++)
     {
       auto sobj = AssetLoader->LoadSolarSystemObject(SolarSystemObject::Type::PLANET, i);
       if(sobj)
-        _levels.push_back(new MainLevel(_scene, sobj));
+        _levels.push_back(new LevelMain(_scene, sobj));
       else
         done = true;
     }

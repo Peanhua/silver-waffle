@@ -1,15 +1,15 @@
-#ifndef SCREEN_PLANET_LEVEL_HH_
-#define SCREEN_PLANET_LEVEL_HH_
+#ifndef SCREEN_LEVEL_PLANET_HH_
+#define SCREEN_LEVEL_PLANET_HH_
 
 #include "ScreenLevel.hh"
 
 class SolarSystemObject;
 
 
-class ScreenPlanetLevel : public ScreenLevel
+class ScreenLevelPlanet : public ScreenLevel
 {
 public:
-  ScreenPlanetLevel(ScreenLevel * parent, SolarSystemObject * planet);
+  ScreenLevelPlanet(ScreenLevel * parent, SolarSystemObject * planet);
 
   void Tick(double deltatime) override;
   void SetupLevels() override;
