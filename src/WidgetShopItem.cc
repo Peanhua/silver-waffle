@@ -70,7 +70,12 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
               w->SetText(t2);
             }
           if(!CanBuy())
-            buybutton->Destroy();
+            {
+              //buybutton->Destroy(); Should really do this, but not doing because of buggy Screen->_focused_widget.
+              buybutton->SetText("");
+              buybutton->SetIsFocused(false);
+              buybutton->SetIsFocusable(false);
+            }
         });
       }
 
