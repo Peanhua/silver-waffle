@@ -1,4 +1,6 @@
 #include "SubsystemHandler.hh"
+#include "Scene.hh"
+#include "ScreenLevel.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemGfx.hh"
 #include "SubsystemHighscores.hh"
@@ -77,9 +79,26 @@ int main(int argc, char *argv[])
                 auto since_last_fps = std::chrono::duration<double>(frame_end - last_fps_time);
                 if(since_last_fps.count() > 5.0)
                   {
-                    std::cout << "fps: " << (static_cast<double>(framecounter) / since_last_fps.count()) << std::endl;
+                    std::cout << "fps: " << (static_cast<double>(framecounter) / since_last_fps.count());
                     framecounter = 0;
                     last_fps_time = frame_end;
+
+                    auto s = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
+                    if(s)
+                      {
+                        auto scene = s->GetScene();
+                        assert(scene);
+
+                        auto stats = scene->GetCollisionCheckStatistics();
+                        std::cout << "    "
+                                  << "collisions:"
+                                  << " elapsed time=" << stats.elapsed_time
+                                  << ", objects total=" << stats.total << "(" << std::floor(static_cast<double>(stats.total) / stats.elapsed_time) << "/s)"
+                                  << ", passed wide check=" << stats.pass_wide_check << "(" << (100.0 * static_cast<double>(stats.pass_wide_check) / static_cast<double>(stats.total)) << "%)"
+                                  << ", passed narrow check=" << stats.pass_narrow_check << "(" << (100.0 * static_cast<double>(stats.pass_narrow_check) / static_cast<double>(stats.total)) << "%)";
+                        scene->ResetCollisionCheckStatistics();
+                      }
+                    std::cout << std::endl;
                   }
               }
           }

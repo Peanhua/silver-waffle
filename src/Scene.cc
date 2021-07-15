@@ -223,6 +223,7 @@ void Scene::Tick(double deltatime)
           objects.push_back(p);
     }
   
+  _collisioncheck_statistics.elapsed_time += deltatime;
   for(auto o : objects)
     if(o->IsAlive())
       {
@@ -244,16 +245,21 @@ void Scene::Tick(double deltatime)
               {
                 auto oo = objects[i];
                 if(o != oo && oo->IsAlive())
-                  if(AreInSameCollisionPartition(o, oo))
-                    {
-                      glm::vec3 hitdir;
-                      if(o->CheckCollision(*oo, hitdir))
-                        {
-                          o->OnCollision(*oo, -hitdir);
-                          if(!oo->IsAlive())
-                            ClearReferences(oo);
-                        }
-                    }
+                  {
+                    _collisioncheck_statistics.total++;
+                    if(AreInSameCollisionPartition(o, oo))
+                      {
+                        _collisioncheck_statistics.pass_wide_check++;
+                        glm::vec3 hitdir;
+                        if(o->CheckCollision(*oo, hitdir))
+                          {
+                            _collisioncheck_statistics.pass_narrow_check++;
+                            o->OnCollision(*oo, -hitdir);
+                            if(!oo->IsAlive())
+                              ClearReferences(oo);
+                          }
+                      }
+                  }
               }
         if(!o->IsAlive())
           ClearReferences(o);
@@ -511,5 +517,18 @@ void Scene::SetupPlayer()
 const glm::vec3 & Scene::GetGravity() const
 {
   return _gravity;
+}
+
+
+const Scene::CollisionCheckStatistics & Scene::GetCollisionCheckStatistics() const
+{
+  return _collisioncheck_statistics;
+}
+
+
+void Scene::ResetCollisionCheckStatistics()
+{
+  CollisionCheckStatistics z;
+  _collisioncheck_statistics = z;
 }
 

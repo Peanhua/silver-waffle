@@ -47,10 +47,29 @@ public:
         }
       return static_cast<unsigned int>(std::vector<T>::size());
     }
-    
+
   private:
     unsigned int _pos;
   };
+
+  struct CollisionCheckStatistics
+  {
+  public:
+    CollisionCheckStatistics()
+      : elapsed_time(0),
+        total(0),
+        pass_wide_check(0),
+        pass_narrow_check(0)
+    {
+    }
+    
+    double   elapsed_time;
+    uint64_t total;
+    uint64_t pass_wide_check;
+    uint64_t pass_narrow_check;
+  };
+    
+
   
   Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_area_wraps);
   virtual ~Scene();
@@ -89,6 +108,9 @@ public:
   double            GetTime() const;
   const glm::vec3 & GetGravity() const;
 
+  const CollisionCheckStatistics & GetCollisionCheckStatistics() const;
+  void ResetCollisionCheckStatistics();
+
 protected:
   glm::vec3           _gravity;
   SpaceParticles *    _particles;
@@ -112,6 +134,7 @@ private:
   float                          _warp_throttle;
   bool                           _tutorialmessages_enabled;
   std::vector<bool>              _tutorialmessages;
+  CollisionCheckStatistics       _collisioncheck_statistics;
 };
 
 
