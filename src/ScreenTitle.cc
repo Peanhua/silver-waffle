@@ -17,7 +17,8 @@
 ScreenTitle::ScreenTitle()
   : Screen(),
     _time(0),
-    _plot_phase(0)
+    _plot_phase(0),
+    _demo_start_button(nullptr)
 {
   _milkyway = new Milkyway();
 
@@ -86,6 +87,7 @@ ScreenTitle::ScreenTitle()
     int bh = 60;
   
     auto w = new WidgetButton(root, glm::ivec2((width - bw) / 2, height - bh * 4), glm::ivec2(bw, bh));
+    _demo_start_button = w;
     w->SetTextFont(AssetLoader->LoadFont(30));
     w->SetText("Play");
     w->SetTextColor(glm::vec3(0.5, 1.0, 0.5));
@@ -139,6 +141,12 @@ ScreenTitle::~ScreenTitle()
 
 void ScreenTitle::Tick(double deltatime)
 {
+  if(_demo_start_button && Settings->GetBool("demo"))
+    {
+      _demo_start_button->OnClicked(true);
+      _demo_start_button->OnClicked(false);
+      _demo_start_button = nullptr;
+    }
   _time += deltatime;
   TickPlot();
   

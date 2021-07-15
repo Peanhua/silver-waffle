@@ -57,6 +57,7 @@ public:
   public:
     CollisionCheckStatistics()
       : elapsed_time(0),
+        elapsed_frames(0),
         total(0),
         pass_wide_check(0),
         pass_narrow_check(0)
@@ -64,6 +65,7 @@ public:
     }
     
     double   elapsed_time;
+    uint64_t elapsed_frames;
     uint64_t total;
     uint64_t pass_wide_check;
     uint64_t pass_narrow_check;

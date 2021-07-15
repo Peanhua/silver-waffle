@@ -23,6 +23,8 @@ bool SubsystemSettings::Start()
   _bool_values["tutorial"] = true;
 
   _bool_values["draw_collision"] = false;
+
+  _bool_values["demo"] = false;
   
   _bool_values["cheat_no_enemies"] = false;
   _bool_values["cheat_cheap_upgrades"] = false;

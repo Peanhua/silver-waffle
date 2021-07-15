@@ -15,10 +15,15 @@
 int main(int argc, char *argv[])
 {
   bool unlimited_fps = false;
-  if(argc > 1)
-    if(std::string(argv[1]) == "--fps")
+  bool demo = false;
+  for(int i = 1; i < argc; i++)
+    if(std::string(argv[i]) == "--fps")
       unlimited_fps = true;
-  
+    else if(std::string(argv[i]) == "--demo")
+      demo = true;
+    else
+      std::cerr << argv[0] << ": Warning, unknown argument #" << i << "'" << argv[i] << "'\n";
+
   int rv = EXIT_FAILURE;
 
   SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
@@ -45,8 +50,10 @@ int main(int argc, char *argv[])
           {
             rv = EXIT_SUCCESS;
 
-            if(unlimited_fps)
+            if(unlimited_fps || demo)
               SDL_GL_SetSwapInterval(0);
+            Settings->SetBool("demo", demo);
+            std::cout << "main.cc:DEMO=" << Settings->GetBool("demo") << "\n";
             
             std::chrono::steady_clock clock;
             std::chrono::duration<double> deltatime(1.0 / 60.0);
@@ -67,7 +74,7 @@ int main(int argc, char *argv[])
                   {
                     deltatime = frame_time;
                   }
-                else
+                else if(!demo)
                   {
                     auto sleeptime = deltatime - frame_time;
                     if(sleeptime.count() > 0.0)
@@ -77,9 +84,9 @@ int main(int argc, char *argv[])
                 framecounter++;
 
                 auto since_last_fps = std::chrono::duration<double>(frame_end - last_fps_time);
-                if(since_last_fps.count() > 5.0)
+                if(since_last_fps.count() > 5.0 || !ssh.IsRunning())
                   {
-                    std::cout << "fps: " << (static_cast<double>(framecounter) / since_last_fps.count());
+                    std::cout << "frames: " << framecounter << ", fps: " << (static_cast<double>(framecounter) / since_last_fps.count());
                     framecounter = 0;
                     last_fps_time = frame_end;
 
@@ -93,8 +100,14 @@ int main(int argc, char *argv[])
                         std::cout << "    "
                                   << "collisions:"
                                   << " elapsed time=" << stats.elapsed_time
-                                  << ", objects total=" << stats.total << "(" << std::floor(static_cast<double>(stats.total) / stats.elapsed_time) << "/s)"
-                                  << ", passed wide check=" << stats.pass_wide_check << "(" << (100.0 * static_cast<double>(stats.pass_wide_check) / static_cast<double>(stats.total)) << "%)"
+                                  << ", objects total=" << stats.total << "("
+                                  << std::floor(static_cast<double>(stats.total) / stats.elapsed_time) << "/s, "
+                                  << std::floor(static_cast<double>(stats.total) / static_cast<double>(stats.elapsed_frames)) << "/frame"
+                                  << ")"
+                                  << ", passed wide check=" << stats.pass_wide_check << "("
+                                  << (100.0 * static_cast<double>(stats.pass_wide_check) / static_cast<double>(stats.total)) << "%, "
+                                  << std::floor(static_cast<double>(stats.pass_wide_check) / static_cast<double>(stats.elapsed_frames)) << "/frame"
+                                  << ")"
                                   << ", passed narrow check=" << stats.pass_narrow_check << "(" << (100.0 * static_cast<double>(stats.pass_narrow_check) / static_cast<double>(stats.total)) << "%)";
                         scene->ResetCollisionCheckStatistics();
                       }

@@ -158,9 +158,8 @@ bool SCP_Delay::IsFinished() const
 
 
 
-SCP_ChanceToFire::SCP_ChanceToFire(ObjectSpaceship * spaceship, unsigned long random_seed, double chance, double time)
+SCP_ChanceToFire::SCP_ChanceToFire(ObjectSpaceship * spaceship, double chance, double time)
   : SpaceshipControlProgram(spaceship),
-    _random_generator(random_seed),
     _chance(chance),
     _finish_time(time),
     _cooldown(0)
@@ -173,8 +172,7 @@ void SCP_ChanceToFire::PTick(double deltatime)
   if(_cooldown < 0.0)
     {
       _cooldown += 0.1;
-      double r = static_cast<double>(_random_generator() - _random_generator.min()) / static_cast<double>(_random_generator.max());
-      if(r < _chance)
+      if(static_cast<double>(_spaceship->GetRand()) < _chance)
         for(unsigned int i = 0; i < _spaceship->GetWeaponCount(); i++)
           _spaceship->FireWeapon(i);
     }

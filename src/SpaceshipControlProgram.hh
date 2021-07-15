@@ -2,7 +2,6 @@
 #define SPACESHIP_CONTROL_PROGRAM_HH_
 
 #include "glm.hh"
-#include <random>
 
 class ObjectSpaceship;
 
@@ -113,14 +112,13 @@ private:
 class SCP_ChanceToFire : public SpaceshipControlProgram
 {
 public:
-  SCP_ChanceToFire(ObjectSpaceship * spaceship, unsigned long random_seed, double chance, double time);
+  SCP_ChanceToFire(ObjectSpaceship * spaceship, double chance, double time);
   void PTick(double deltatime) override;
   bool IsFinished() const override;
 private:
-  std::mt19937_64 _random_generator;
-  double          _chance;
-  double          _finish_time;
-  double          _cooldown;
+  double _chance;
+  double _finish_time;
+  double _cooldown;
 };
 
 

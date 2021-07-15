@@ -28,6 +28,7 @@ private:
   std::vector<Object *> _planets;
   WidgetTeletyper * _teletyper;
   unsigned int      _plot_phase;
+  Widget * _demo_start_button;
 };
 
 #endif

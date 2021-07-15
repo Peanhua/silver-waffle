@@ -395,7 +395,7 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
         }
 
 
-      p = new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 9999);
+      p = new SCP_ChanceToFire(this, 0.02, 9999);
       AddControlProgram(p);
     }
   else if(name == "test2")
@@ -412,13 +412,13 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
   else if(name == "forward")
     {
       AddControlProgram(new SCP_MoveForward(this, 2, 999));
-      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+      AddControlProgram(new SCP_ChanceToFire(this, 0.02, 999));
     }
   else if(name == "snake-forward")
     {
       AddControlProgram(new SCP_MoveForward(this, 2, 999));
       AddControlProgram(new SCP_MoveSidewaysSin(this, 1.5, 1.5, 999));
-      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+      AddControlProgram(new SCP_ChanceToFire(this, 0.02, 999));
     }
   else if(name == "erratic-forward")
     {
@@ -442,7 +442,7 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
           p = pp;
         }
 
-      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+      AddControlProgram(new SCP_ChanceToFire(this, 0.02, 999));
     }
   else if(name == "stepping-forward")
     {
@@ -458,7 +458,7 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
           pp->SetNext(p);
         }
 
-      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+      AddControlProgram(new SCP_ChanceToFire(this, 0.02, 999));
     }
   else if(name == "snake-stepping-forward")
     {
@@ -475,12 +475,12 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
         }
       AddControlProgram(new SCP_MoveSidewaysSin(this, 1.0, 5.0, 999));
 
-      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+      AddControlProgram(new SCP_ChanceToFire(this, 0.02, 999));
     }
   else if(name == "boss")
     {
       AddControlProgram(new SCP_MoveForward(this, 5, 5));
-      AddControlProgram(new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.02, 999));
+      AddControlProgram(new SCP_ChanceToFire(this, 0.02, 999));
     }
   else if(name == "wait10s")
     {
@@ -499,7 +499,7 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
       p->SetNext(pp);
 
       p = pp;
-      pp = new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.03, 1);
+      pp = new SCP_ChanceToFire(this, 0.03, 1);
       p->SetNext(pp);
     }
   else if(name == "wait15-shoot")
@@ -515,7 +515,7 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
       p->SetNext(pp);
 
       p = pp;
-      pp = new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.03, 1);
+      pp = new SCP_ChanceToFire(this, 0.03, 1);
       p->SetNext(pp);
     }
   else if(name == "face-player-shoot")
@@ -533,7 +533,7 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
       p->SetNext(pp);
 
       p = pp;
-      pp = new SCP_ChanceToFire(this, reinterpret_cast<unsigned long>(this), 0.10, 1);
+      pp = new SCP_ChanceToFire(this, 0.10, 1);
       p->SetNext(pp);
     }
   else

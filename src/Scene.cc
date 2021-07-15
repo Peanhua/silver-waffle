@@ -224,6 +224,7 @@ void Scene::Tick(double deltatime)
     }
   
   _collisioncheck_statistics.elapsed_time += deltatime;
+  _collisioncheck_statistics.elapsed_frames++;
   for(auto o : objects)
     if(o->IsAlive())
       {

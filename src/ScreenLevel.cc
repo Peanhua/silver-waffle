@@ -426,6 +426,14 @@ void ScreenLevel::OnLivesUpdated()
 
 void ScreenLevel::OnPlayerDies()
 {
+  if(Settings->GetBool("demo"))
+    {
+      SDL_Event e;
+      e.quit.type = SDL_QUIT;
+      e.quit.timestamp = SDL_GetTicks();
+      SDL_PushEvent(&e);
+    }
+  
   assert(_state == State::RUNNING);
   _teletyper->AppendText("Offline.\n");
   ChangeState(State::DEATH_PAUSE);
