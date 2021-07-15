@@ -58,9 +58,11 @@ public:
   void AddToCollisionChannel(CollisionChannel channel);
   void RemoveFromCollisionChannel(CollisionChannel channel);
   void SetCollisionChannels(uint64_t channels);
+  uint64_t GetCollisionChannels() const;
+
   void AddCollidesWithChannel(CollisionChannel channel);
   void RemoveCollidesWithChannel(CollisionChannel channel);
-  uint64_t GetCollisionChannels() const;
+  void SetCollidesWithChannels(uint64_t channels);
   virtual uint64_t GetCollidesWithChannels() const;
 
   void   SetUseHealth(bool enable);

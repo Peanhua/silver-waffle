@@ -51,9 +51,3 @@ ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Im
 
   SetCollisionShape(new CollisionShapeOBB(this, glm::vec3(size, 1) * 0.5f, {0.5f, 0.4f, 0.0f}));
 }
-
-
-void ObjectPlanetGround::OnCollision(Object & other, const glm::vec3 & hit_direction)
-{
-  other.Hit(this, 100, -hit_direction);
-}

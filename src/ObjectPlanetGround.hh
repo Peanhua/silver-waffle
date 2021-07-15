@@ -10,8 +10,6 @@ class ObjectPlanetGround : public Object
 {
 public:
   ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Image * texture_map);
-
-  void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
 };
 
 #endif

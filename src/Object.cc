@@ -253,6 +253,11 @@ uint64_t Object::GetCollisionChannels() const
 }
 
 
+void Object::SetCollidesWithChannels(uint64_t channels)
+{
+  _collision_mask = channels;
+}
+
 uint64_t Object::GetCollidesWithChannels() const
 {
   return _collision_mask;
@@ -261,10 +266,12 @@ uint64_t Object::GetCollidesWithChannels() const
 
 void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
+  if(!IsAlive())
+    return;
+  
   if(!_use_health)
     return;
   
-  assert(IsAlive());
   _health -= damage;
 
   if(!IsAlive())
@@ -408,7 +415,7 @@ void Object::SetScene(Scene * scene)
 
 void Object::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
-  other.Hit(this, 50, -hit_direction);
+  Hit(&other, 50, hit_direction);
 }
  
 

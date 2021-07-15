@@ -14,7 +14,6 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
     _systemlog_enabled(false)
 {
   SetIsAffectedByGravity(false);
-  AddCollidesWithChannel(Object::CollisionChannel::PROJECTILE);
 
   std::vector<SpaceshipUpgrade::Type> types
     {

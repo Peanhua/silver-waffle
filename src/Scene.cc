@@ -108,7 +108,6 @@ void Scene::CreatePlayer()
   _player = new ObjectSpaceship(this, static_cast<unsigned int>(_random_generator()));
   _player->AddToCollisionChannel(Object::CollisionChannel::PLAYER);
   _player->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
-  _player->AddCollidesWithChannel(Object::CollisionChannel::COLLECTIBLE);
   _player->SetMesh(AssetLoader->LoadMesh("Player"));
   _player->SetCollisionShape(new CollisionShapeOBB(_player, _player->GetMesh()->GetBoundingBoxHalfSize()));
   _player->AddWeapon();
@@ -251,7 +250,6 @@ void Scene::Tick(double deltatime)
                       if(o->CheckCollision(*oo, hitdir))
                         {
                           o->OnCollision(*oo, -hitdir);
-                          oo->OnCollision(*o, hitdir);
                           if(!oo->IsAlive())
                             ClearReferences(oo);
                         }

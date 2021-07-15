@@ -10,6 +10,7 @@ ObjectCollectible::ObjectCollectible(Scene * scene)
 {
   SetHealth(1);
   AddToCollisionChannel(CollisionChannel::COLLECTIBLE);
+  AddCollidesWithChannel(CollisionChannel::PLAYER);
 }
 
 
@@ -37,8 +38,9 @@ double ObjectCollectible::GetBonus(Type type) const
 
 void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
-  assert(&other == &other);
   assert(hit_direction == hit_direction);
+
+  Destroy(&other);
 
   auto player = dynamic_cast<ObjectSpaceship *>(&other);
   if(!player)

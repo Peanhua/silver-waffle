@@ -49,7 +49,7 @@ void ObjectProjectile::SetOwner(Object * owner)
   _owner = owner;
   
   if(_owner)
-    SetCollisionChannels(_owner->GetCollisionChannels());
+    SetCollidesWithChannels(_owner->GetCollidesWithChannels());
 }
 
 
@@ -62,4 +62,5 @@ double ObjectProjectile::GetDamage() const
 void ObjectProjectile::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
   other.Hit(_owner, GetDamage(), -hit_direction);
+  Destroy(&other);
 }
