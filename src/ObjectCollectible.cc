@@ -11,6 +11,7 @@ ObjectCollectible::ObjectCollectible(Scene * scene)
   SetHealth(1);
   AddToCollisionChannel(CollisionChannel::COLLECTIBLE);
   AddCollidesWithChannel(CollisionChannel::PLAYER);
+  SetBounciness(2.0);
 }
 
 
@@ -38,17 +39,21 @@ double ObjectCollectible::GetBonus(Type type) const
 
 void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
-  assert(hit_direction == hit_direction);
-
-  Destroy(&other);
-
   auto player = dynamic_cast<ObjectSpaceship *>(&other);
-  if(!player)
-    return;
-  
-  player->UpgradeFromCollectible(this);
+  if(player && player->GetOwnerGameStats()) // todo: Fix to work for also invaders? The check for GameStats is to distinguish from destructible terrain, fix by making destructible terrain class not descendant of ObjectSpaceship.
+    CollectBy(player);
+  else
+    ObjectMovable::OnCollision(other, hit_direction);
+}
 
-  auto gamestats = player->GetOwnerGameStats();
+
+void ObjectCollectible::CollectBy(ObjectSpaceship * spaceship)
+{
+  Destroy(spaceship);
+  
+  spaceship->UpgradeFromCollectible(this);
+
+  auto gamestats = spaceship->GetOwnerGameStats();
   if(!gamestats)
     return;
   
@@ -56,13 +61,13 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
     {
       auto score = static_cast<unsigned int>(GetBonus(Type::SCORE_BONUS));
       gamestats->AddScore(score);
-      player->SystemlogAppend("Score +" + std::to_string(score) + "\n");
+      spaceship->SystemlogAppend("Score +" + std::to_string(score) + "\n");
     }
   if(HasBonus(Type::SCORE_MULTIPLIER))
     {
       auto mult = static_cast<unsigned int>(GetBonus(Type::SCORE_MULTIPLIER));
       gamestats->SetScoreMultiplier(mult, 30);
-      player->SystemlogAppend("Score multiplier: " + std::to_string(mult) + "\n");
+      spaceship->SystemlogAppend("Score multiplier: " + std::to_string(mult) + "\n");
     }
   {
     UpgradeMaterial::Type upg_types[] =
@@ -83,7 +88,7 @@ void ObjectCollectible::OnCollision(Object & other, const glm::vec3 & hit_direct
           auto upgrade = gamestats->GetUpgradeMaterial(upg_types[i]);
           auto amount = static_cast<unsigned int>(GetBonus(my_types[i]));
           upgrade->Add(amount);
-          player->SystemlogAppend("Material " + upgrade->GetName() + " +" + std::to_string(amount) + "\n");
+          spaceship->SystemlogAppend("Material " + upgrade->GetName() + " +" + std::to_string(amount) + "\n");
           GetScene()->TutorialMessage(1, "Press TAB to open the upgrade menu.\n");
         }
   }

@@ -8,7 +8,8 @@ ObjectMovable::ObjectMovable(Scene * scene, unsigned int random_seed)
     _angular_velocity(0, 0, 0, 0),
     _angular_velocity_magnitude(0),
     _hit_impulse_enabled(true),
-    _is_affected_by_gravity(true)
+    _is_affected_by_gravity(true),
+    _bounciness(-1)
 {
   _velocity_enabled[0] =
     _velocity_enabled[1] =
@@ -45,6 +46,21 @@ void ObjectMovable::Hit(Object * perpetrator, double damage, const glm::vec3 & i
   Object::Hit(perpetrator, damage, impulse);
   if(_hit_impulse_enabled)
     AddImpulse(impulse);
+}
+
+
+void ObjectMovable::OnCollision(Object & other, const glm::vec3 & hit_direction)
+{
+  glm::vec3 bouncing_direction(0, 0, 1); // todo: Fix hit_direction so that it can be used here.
+
+  if(_bounciness > 0.0)
+    {
+      SetVelocity({0, 0, 0});
+      // todo: Maybe also adjust the position so that this object is not inside the other.
+      AddImpulse(bouncing_direction * static_cast<float>(_bounciness) * (1.0f + GetRand()));
+    }
+  else
+    Object::OnCollision(other, hit_direction);
 }
 
 
@@ -96,3 +112,8 @@ void ObjectMovable::SetIsAffectedByGravity(bool is_affected)
   _is_affected_by_gravity = is_affected;
 }
 
+
+void ObjectMovable::SetBounciness(double bounciness)
+{
+  _bounciness = bounciness;
+}

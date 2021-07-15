@@ -106,22 +106,21 @@ void Level::Start()
                 pos.x += static_cast<float>(x) * blocksize.x;
                 pos.y = 0;
                 pos.z += static_cast<float>(y) * blocksize.z;
-                auto building = _scene->AddInvader(pos);
-                building->SetInvaderType(3);
-                building->SetIsSleeping(true);
-                building->AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
-                building->RemoveFromCollisionChannel(Object::CollisionChannel::ENEMY);
-                building->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
-                building->RemoveCollidesWithChannel(Object::CollisionChannel::TERRAIN);
-                building->SetMesh(new Mesh(*building->GetMesh()));
-                building->GetMesh()->SetBoundingBoxHalfSize(blocksize * 0.5f);
-                building->GetMesh()->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
-                building->GetMesh()->SetAllColor(rgba.rgb());
-                building->GetMesh()->UpdateGPU();
-                building->GetMesh()->ApplyTransform(glm::scale(blocksize));
-                building->SetMaxHealth(building->GetMaxHealth() * static_cast<double>(rgba.a));
-                building->SetHealth(building->GetMaxHealth());
-                building->CreateCollisionShape(building->GetCollisionShape()->GetType());
+                auto block = _scene->AddInvader(pos);
+                block->SetInvaderType(3);
+                block->SetIsSleeping(true);
+                block->SetCollisionChannels(0);
+                block->AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
+                block->SetCollidesWithChannels(0);
+                block->SetMesh(new Mesh(*block->GetMesh()));
+                block->GetMesh()->SetBoundingBoxHalfSize(blocksize * 0.5f);
+                block->GetMesh()->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
+                block->GetMesh()->SetAllColor(rgba.rgb());
+                block->GetMesh()->UpdateGPU();
+                block->GetMesh()->ApplyTransform(glm::scale(blocksize));
+                block->SetMaxHealth(block->GetMaxHealth() * static_cast<double>(rgba.a));
+                block->SetHealth(block->GetMaxHealth());
+                block->CreateCollisionShape(block->GetCollisionShape()->GetType());
               }
           }
     }

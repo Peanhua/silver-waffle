@@ -10,12 +10,14 @@ public:
 
   void Tick(double deltatime) override;
   void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
+  void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
 
   void AddImpulse(const glm::vec3 & impulse);
   void SetVelocity(const glm::vec3 & velocity);
   const glm::vec3 & GetVelocity() const;
   void EnableVelocity(bool x = true, bool y = true, bool z = true);
   void EnableHitImpulse(bool enabled);
+  void SetBounciness(double bounciness);
   
   void SetAngularVelocity(const glm::quat & angular_velocity, double magnitude);
 
@@ -29,6 +31,7 @@ private:
   double    _angular_velocity_magnitude;
   bool      _hit_impulse_enabled;
   bool      _is_affected_by_gravity;
+  double    _bounciness;
 };
 
 #endif

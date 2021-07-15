@@ -4,6 +4,8 @@
 #include "ObjectMovable.hh"
 #include <map>
 
+class ObjectSpaceship;
+
 
 class ObjectCollectible : public ObjectMovable
 {
@@ -32,6 +34,8 @@ public:
   
 private:
   std::map<Type, double> _bonuses;
+
+  void CollectBy(ObjectSpaceship * spaceship);
 };
 
 #endif
