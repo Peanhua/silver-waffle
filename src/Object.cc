@@ -218,9 +218,6 @@ bool Object::CheckCollision(const Object & other, glm::vec3 & out_hit_direction)
   if(!GetCollisionShape() || !other.GetCollisionShape())
     return false;
   
-  if(!IsAlive() || !other.IsAlive())
-    return false;
-
   if(!(GetCollidesWithChannels() & other.GetCollisionChannels()))
     return false;
 
