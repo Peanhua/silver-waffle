@@ -9,6 +9,9 @@
 
   Complete license can be found in the LICENSE file.
 */
+#ifdef HAVE_CONFIG_H
+# include "../config.h"
+#endif
 #include "ScreenLevel.hh"
 #include "AdditiveBlending.hh"
 #include "Camera.hh"
@@ -31,13 +34,20 @@
 #include "UpgradeMaterial.hh"
 #include "WidgetButton.hh"
 #include "WidgetPlayerShip.hh"
+#include "WidgetScoreReel.hh"
 #include "WidgetSpaceshipMaintenance.hh"
 #include "WidgetSpaceshipStatus.hh"
 #include "WidgetSpaceshipUpgradeStatus.hh"
 #include "WidgetTeletyper.hh"
 #include "WidgetUpgradeMaterial.hh"
 #include "WidgetWeaponStatus.hh"
-#include <iostream>
+#ifdef WITH_VALGRIND
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wold-style-cast"
+# pragma GCC diagnostic ignored "-Wuseless-cast"
+# include <callgrind.h>
+# pragma GCC diagnostic pop
+#endif
 
 
 ScreenLevel::ScreenLevel(ScreenLevel * parent)
@@ -83,8 +93,6 @@ void ScreenLevel::Initialize()
 
  
   // UI:
-  _score_reel = new ScoreReel(10);
-
   const double width = Settings->GetInt("screen_width");
   const double height = Settings->GetInt("screen_height");
 
@@ -92,6 +100,9 @@ void ScreenLevel::Initialize()
   assert(root);
   root->SetIsFocusable(false);
   SetRootWidget(root);
+
+  _score_reel = new ScoreReel(10);
+  new WidgetScoreReel(root, glm::ivec2(0, 30), glm::ivec2(350, 50), _score_reel);
 
   for(int i = 0; i < 5; i++)
     {
@@ -174,6 +185,14 @@ void ScreenLevel::Initialize()
   _levelinfo_widget = new Widget(root, glm::ivec2(10, 10), glm::ivec2(300, 25));
   _levelinfo_widget->SetTextColor(glm::vec3(1.00, 0.88, 0.00));
   _levelinfo_widget->SetTextFont(AssetLoader->LoadFont(12));
+
+#ifdef WITH_VALGRIND
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wold-style-cast"
+# pragma GCC diagnostic ignored "-Wuseless-cast"
+  CALLGRIND_ZERO_STATS;
+# pragma GCC diagnostic pop
+#endif
 }
 
 
@@ -304,8 +323,6 @@ void ScreenLevel::Tick(double deltatime)
   auto tid_glow = _blur->Blur(3, _texture_renderer->GetTextureId(1));
   _blender->Blend(_texture_renderer->GetTextureId(0), tid_glow);
   glEnable(GL_DEPTH_TEST);
-  
-  _score_reel->Draw();
   
   Screen::Tick(deltatime);
 }
