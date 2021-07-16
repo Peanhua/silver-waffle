@@ -220,8 +220,7 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
 
 void SpaceshipUpgrade::Tick(double deltatime)
 {
-  if(!_spaceship->IsAlive())
-    return;
+  assert(_spaceship->IsAlive());
   
   if(IsActive())
     {
