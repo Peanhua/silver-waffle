@@ -6,7 +6,8 @@ AM_CXXFLAGS =                \
         $(GLM_CFLAGS)        \
 	$(ASSIMP_CFLAGS)     \
 	$(JSON11_CFLAGS)     \
-	$(FREETYPE2_CFLAGS)
+	$(FREETYPE2_CFLAGS)  \
+	$(VALGRIND_CFLAGS)
 
 bin_PROGRAMS = silverwaffle
 

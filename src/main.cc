@@ -1,3 +1,14 @@
+/*
+  Silver Waffle
+  Copyright (C) 2021  Steve Joni Yrjänä <joniyrjana@gmail.com>
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+
+  Complete license can be found in the LICENSE file.
+*/
 #include "SubsystemHandler.hh"
 #include "Scene.hh"
 #include "ScreenLevel.hh"
@@ -53,7 +64,6 @@ int main(int argc, char *argv[])
             if(unlimited_fps || demo)
               SDL_GL_SetSwapInterval(0);
             Settings->SetBool("demo", demo);
-            std::cout << "main.cc:DEMO=" << Settings->GetBool("demo") << "\n";
             
             std::chrono::steady_clock clock;
             std::chrono::duration<double> deltatime(1.0 / 60.0);

@@ -25,6 +25,13 @@ PKG_CHECK_MODULES([JSON11], [json11 >= 1])
 
 PKG_CHECK_MODULES([FREETYPE2], [freetype2])
 
+
+AC_ARG_WITH([valgrind], AS_HELP_STRING([--with-valgrind], [Build with support for Valgrind.]))
+AS_IF([test "x$with_valgrind" = "xyes"], [
+  PKG_CHECK_MODULES([VALGRIND], [valgrind])
+  AC_DEFINE([WITH_VALGRIND], [1], [Define to use Valgrind.])
+])
+
 AX_CHECK_GL
 
 AC_ARG_VAR([CONVERT], [Path to the convert program from ImageMagick or alternative.])
