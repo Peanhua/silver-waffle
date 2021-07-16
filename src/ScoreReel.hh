@@ -23,7 +23,7 @@ class ScoreReel
 public:
   ScoreReel(unsigned int drum_count);
 
-  void Tick(double deltatime);
+  bool Tick(double deltatime);
   void Draw() const;
   void SetScore(unsigned int score);
   unsigned int GetScore() const;

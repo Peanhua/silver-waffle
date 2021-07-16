@@ -208,7 +208,6 @@ void ScreenLevel::Tick(double deltatime)
   auto level = _levels[_current_level];
   
   _score_reel->SetScore(_gamestats->GetScore());
-  _score_reel->Tick(deltatime);
 
   if(_state == State::RUNNING)
     {

@@ -35,10 +35,12 @@ void WidgetScoreReel::Tick(double deltatime)
 {
   Widget::Tick(deltatime);
   
-  _score_reel->Tick(deltatime);
-
-  _texture_renderer->BeginRender();
-  _score_reel->Draw();
-  _texture_renderer->EndRender();
-  GetImage()->SetTextureId(_texture_renderer->GetTextureId());
+  bool should_redraw = _score_reel->Tick(deltatime);
+  if(should_redraw)
+    {
+      _texture_renderer->BeginRender();
+      _score_reel->Draw();
+      _texture_renderer->EndRender();
+      GetImage()->SetTextureId(_texture_renderer->GetTextureId());
+    }
 }
