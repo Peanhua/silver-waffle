@@ -58,7 +58,8 @@ ScreenLevel::ScreenLevel(ScreenLevel * parent)
     _rdist(0, 1),
     _current_level(0),
     _gamestats(nullptr),
-    _pausebutton(nullptr)
+    _pausebutton(nullptr),
+    _demo_lander_activated(false)
 {
 }
 
@@ -193,6 +194,8 @@ void ScreenLevel::Initialize()
   CALLGRIND_ZERO_STATS;
 # pragma GCC diagnostic pop
 #endif
+  if(Settings->GetBool("demo"))
+    _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Install();
 }
 
 
@@ -205,6 +208,24 @@ ScreenLevel::~ScreenLevel()
 
 void ScreenLevel::Tick(double deltatime)
 {
+  if(Settings->GetBool("demo"))
+    {
+      if(!_demo_lander_activated)
+        if(!_parent && GetGameStats()->GetTime() > 9.75)
+          { // Activates only if "cheat_planet_lander_disable_distance_check" settings is true.
+            _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Activate();
+            _demo_lander_activated = true;
+          }
+      if(GetGameStats()->GetTime() > 20.0)
+        {
+          SDL_Event e;
+          e.quit.type = SDL_QUIT;
+          e.quit.timestamp = SDL_GetTicks();
+          SDL_PushEvent(&e);
+        }
+    }
+      
+  
   auto level = _levels[_current_level];
   
   _score_reel->SetScore(_gamestats->GetScore());

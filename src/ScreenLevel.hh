@@ -93,7 +93,9 @@ private:
   Widget *              _pausebutton;
   Widget *              _levelinfo_widget;
   WidgetTeletyper *     _teletyper;
-
+  
+  bool _demo_lander_activated;
+  
   void ChangeState(State new_state);
   void OnPlayerDies();
   void NextLifeOrQuit();
