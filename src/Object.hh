@@ -48,7 +48,7 @@ public:
   Object & operator=(Object &&)      = delete; // todo: move assignment
 
   void         Draw(const Camera & camera) const;
-  virtual void Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const;
+  virtual void Draw(const glm::mat4 & vp) const;
   virtual void Tick(double deltatime);
   virtual void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse);
   virtual void OnDestroyed(Object * destroyer);

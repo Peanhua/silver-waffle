@@ -92,14 +92,14 @@ void Object::Draw(const Camera & camera) const
       auto dmesh = _collision_shape->GetDebugMesh();
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(camera.GetViewProjection() * model);
-      dmesh->Draw(model, camera.GetView(), camera.GetProjection(), mvp);
+      dmesh->Draw(model, mvp);
     }
   else
-    Draw(camera.GetView(), camera.GetProjection(), camera.GetViewProjection());
+    Draw(camera.GetViewProjection());
 }
 
 
-void Object::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
+void Object::Draw(const glm::mat4 & vp) const
 {
   if(_mesh)
     {
@@ -109,7 +109,7 @@ void Object::Draw(const glm::mat4 & view, const glm::mat4 & projection, const gl
 
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);
-      _mesh->Draw(model, view, projection, mvp);
+      _mesh->Draw(model, mvp);
     }
 }
 

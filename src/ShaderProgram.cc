@@ -16,6 +16,9 @@
 #include <iostream>
 
 
+std::map<std::string, GLuint> ShaderProgram::_ubos;
+
+
 ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::string & fragment_shader, const std::string & geometry_shader)
 {
   _program = glCreateProgram();
@@ -88,6 +91,10 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
       std::cerr << std::flush;
     }      
   assert(status == GL_TRUE);
+
+  auto ubi = glGetUniformBlockIndex(_program, "Data");
+  if(ubi != GL_INVALID_INDEX)
+    glUniformBlockBinding(_program, ubi, 0);
 }
 
 
@@ -157,4 +164,33 @@ void ShaderProgram::Use() const
 {
   assert(_program);
   glUseProgram(_program);
+}
+
+
+void ShaderProgram::SetUBOMatrix(const std::string & ubo_name, const std::string & name, const glm::mat4 & matrix)
+{
+  unsigned int pos; // todo: find the position properly
+  if(name == "in_view")
+    pos = 0;
+  else
+    pos = sizeof(glm::mat4);
+
+  GLuint ubo = GL_INVALID_INDEX;
+  auto it = _ubos.find(ubo_name);
+  if(it != _ubos.end())
+    ubo = (*it).second;
+  else
+    {
+      glGenBuffers(1, &ubo);
+      _ubos[ubo_name] = ubo;
+
+      glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+      glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+      glBindBuffer(GL_UNIFORM_BUFFER, 0);
+      glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 2 * sizeof(glm::mat4));
+    }
+  assert(ubo != GL_INVALID_INDEX);
+  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof(glm::mat4), glm::value_ptr(matrix));
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }

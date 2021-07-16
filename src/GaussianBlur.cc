@@ -65,7 +65,7 @@ GLuint GaussianBlur::Blur(unsigned int count, GLuint source_texture_id)
 
       glBindFramebuffer(GL_FRAMEBUFFER, _fbos[ind]);
       _meshes[ind]->GetTexture()->SetTextureId(source_texture_id);
-      _meshes[ind]->Draw(glm::mat4(1), glm::mat4(1), glm::mat4(1), glm::mat4(1));
+      _meshes[ind]->Draw(glm::mat4(1), glm::mat4(1));
 
       source_texture_id = _texture_ids[ind];
     }

@@ -130,7 +130,7 @@ void Widget::Draw() const
     return;
   
   if(_imagemesh)
-    _imagemesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
+    _imagemesh->Draw(glm::mat4(1), GetMVP());
   if(_textmesh)
     {
       auto shader = _textmesh->GetShaderProgram();
@@ -139,11 +139,11 @@ void Widget::Draw() const
       shader->SetFloat("in_font_weight", _text_font_weight);
       glm::mat4 model(1);
       model = glm::translate(model, glm::vec3(_textpadding, 0));
-      _textmesh->Draw(model, GetView(), GetProjection(), GetMVP() * model);
+      _textmesh->Draw(model, GetMVP() * model);
     }
   
   if(_focused && _focused_borders_mesh)
-    _focused_borders_mesh->Draw(glm::mat4(1), GetView(), GetProjection(), GetMVP());
+    _focused_borders_mesh->Draw(glm::mat4(1), GetMVP());
 
   for(auto c : _children)
     if(c)

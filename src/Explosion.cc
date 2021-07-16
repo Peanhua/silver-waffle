@@ -70,7 +70,7 @@ void Explosion::Draw(const Camera & camera) const
   _mesh->GetShaderProgram()->SetVec("in_velocity", _velocity);
   glm::mat4 model(1);
   model = glm::translate(model, _position);
-  _mesh->Draw(model, camera.GetView(), camera.GetProjection(), camera.GetViewProjection() * model);
+  _mesh->Draw(model, camera.GetViewProjection() * model);
 }
 
 

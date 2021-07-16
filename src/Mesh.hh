@@ -63,7 +63,7 @@ public:
   void   SetTransform(const glm::mat4 & transform);
 
   virtual void PreDrawSetupShader(ShaderProgram * shader_program) const;
-  void Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
+  void Draw(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program = nullptr) const;
   void         SetBoundingSphereRadius(double radius);
   double       GetBoundingSphereRadius() const;
   void              SetBoundingBoxHalfSize(const glm::vec3 & size);

@@ -94,7 +94,7 @@ void Mesh::PreDrawSetupShader(ShaderProgram * shader_program) const
 }
 
 
-void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp, ShaderProgram * shader_program) const
+void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program) const
 {
   const glm::mat4 mymvp(mvp * _transform);
   const glm::mat4 mymodel(model * _transform);
@@ -120,10 +120,8 @@ void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4
       if(_options & OPTION_BLEND)
         glEnable(GL_BLEND);
 
-      shader->SetMatrix("in_model",      mymodel);
-      shader->SetMatrix("in_view",       view);
-      shader->SetMatrix("in_projection", projection);
-      shader->SetMatrix("in_mvp",        mymvp);
+      shader->SetMatrix("in_model", mymodel);
+      shader->SetMatrix("in_mvp",   mymvp);
       PreDrawSetupShader(shader);
       
       glBindVertexArray(_vao);
@@ -137,7 +135,7 @@ void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4
     }
 
   for(auto c : _children)
-    c->Draw(mymodel, view, projection, mymvp, shader_program);
+    c->Draw(mymodel, mymvp, shader_program);
 }
 
 

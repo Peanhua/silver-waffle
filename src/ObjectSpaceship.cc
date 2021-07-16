@@ -285,7 +285,7 @@ SpaceshipUpgrade * ObjectSpaceship::GetUpgrade(SpaceshipUpgrade::Type type) cons
 }
 
 
-void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & vp) const
+void ObjectSpaceship::Draw(const glm::mat4 & vp) const
 {
   auto mesh = GetMesh();
   if(mesh)
@@ -298,7 +298,7 @@ void ObjectSpaceship::Draw(const glm::mat4 & view, const glm::mat4 & projection,
       auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
       shader->SetVec("in_glow", shield->IsActive() ? glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(shield->GetValue() / GetMaxHealth()) : glm::vec3(0.0, 0.0, 0.0));
 
-      mesh->Draw(model, view, projection, mvp, shader);
+      mesh->Draw(model, mvp, shader);
     }
 }
 

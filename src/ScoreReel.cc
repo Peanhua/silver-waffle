@@ -111,7 +111,11 @@ void ScoreReel::Draw() const
   glm::mat4 proj = glm::perspective(glm::radians(30.0), 512.0 / 128.0, 0.001, 100.0);
   glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -static_cast<float>(_drum_count) * static_cast<float>(_drum_width) * 0.65f, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
   glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.5f * -static_cast<float>(_drum_count) * static_cast<float>(_drum_width), 0, 0));
-  _background->Draw(model, view, proj, proj * view * model);
+
+  ShaderProgram::SetUBOMatrix("Data", "in_view",       view);
+  ShaderProgram::SetUBOMatrix("Data", "in_projection", proj);
+
+  _background->Draw(model, proj * view * model);
   
   for(unsigned int i = 0; i < _drums.size(); i++)
     {
@@ -120,7 +124,7 @@ void ScoreReel::Draw() const
       drummodel = glm::rotate(drummodel, glm::radians(180.0f), glm::vec3(1, 0, 0));
       drummodel = glm::rotate(drummodel, glm::radians(static_cast<float>(_drums_angles[i])), glm::vec3(1, 0, 0));
 
-      _drums[i]->Draw(drummodel, view, proj, proj * view * drummodel);
+      _drums[i]->Draw(drummodel, proj * view * drummodel);
     }
 }
 

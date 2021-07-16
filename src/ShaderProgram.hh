@@ -12,10 +12,11 @@
   Complete license can be found in the LICENSE file.
 */
 
+#include "glm.hh"
 #include <GL/glew.h>
+#include <map>
 #include <string>
 #include <vector>
-#include "glm.hh"
 
 class Shader;
 
@@ -30,21 +31,19 @@ public:
 
   void Use() const;
   GLuint GetProgram() const;
-  /*
-  // GLint  GetUniformLocation(const std::string & name) const;
-  void   SetUniformValue(const std::string & name, bool value);
-  void   SetUniformValue(const std::string & name, uint32_t value);
-  void   SetUniformValue(const std::string & name, float value);
-  */
+
   void SetMatrix(const std::string & name, const glm::mat4 & matrix);
   void SetVec(const std::string & name, const glm::vec3 & value);
   void SetVec(const std::string & name, const glm::vec4 & value);
   void SetFloat(const std::string & name, float value);
   void SetInt(const std::string & name, int value);
+
+  static void SetUBOMatrix(const std::string & ubo_name, const std::string & name, const glm::mat4 & matrix);
   
 private:
   GLuint                _program;
   std::vector<Shader *> _shaders;
+  static std::map<std::string, GLuint> _ubos;
 };
 
 #endif

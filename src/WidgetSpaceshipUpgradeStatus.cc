@@ -54,7 +54,7 @@ void WidgetSpaceshipUpgradeStatus::Draw() const
   unsigned int ind = _upgrade->IsActive() ? 1 : 0;
   _meter->SetColor(glm::mix(low_colors[ind], hi_colors[ind], value));
   
-  _meter->Draw(GetModel(), GetView(), GetProjection(), GetMVP());
+  _meter->Draw(GetModel(), GetMVP());
   
   Widget::Draw();
 }

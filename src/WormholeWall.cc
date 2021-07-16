@@ -57,5 +57,5 @@ void WormholeWall::Tick(double deltatime)
 
 void WormholeWall::Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp) const
 {
-  _mesh->Draw(model, view, projection, mvp);
+  _mesh->Draw(model, mvp);
 }

@@ -98,7 +98,7 @@ void WidgetButton::Draw() const
   if(_mesh_up)
     {
       auto m = glm::scale(glm::mat4(1), glm::vec3(GetSize(), 1));
-      _mesh_up->Draw(m, GetView(), GetProjection(), GetMVP() * m);
+      _mesh_up->Draw(m, GetMVP() * m);
     }
   
   Widget::Draw();

@@ -60,8 +60,9 @@ bool SubsystemGfx::Start()
                   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
                   
                   rv = true;
-                  
 
+                  // todo: Add separate method to initialize uniform buffer objects.
+                  ShaderProgram::SetUBOMatrix("Data", "in_view", glm::mat4(1));
 #ifndef NDEBUG
                   if(GLEW_VERSION_4_3)
                     {

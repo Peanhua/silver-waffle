@@ -36,7 +36,7 @@ void WidgetWeaponStatus::Draw() const
     {
       _meter->SetValue(static_cast<float>(std::clamp(_spaceship->GetWeaponHeat(i), 0.0, 1.0)));
       auto model = glm::translate(GetModel(), glm::vec3(static_cast<float>(i) * static_cast<float>(GetSize().x) / static_cast<float>(count), 0, 0));
-      _meter->Draw(model, GetView(), GetProjection(), GetProjection() * GetView() * model);
+      _meter->Draw(model, GetProjection() * GetView() * model);
     }
 
   Widget::Draw();

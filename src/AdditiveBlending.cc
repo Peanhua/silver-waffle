@@ -29,6 +29,6 @@ void AdditiveBlending::Blend(GLuint a, GLuint b)
 {
   _mesh->GetTexture(0)->SetTextureId(a);
   _mesh->GetTexture(1)->SetTextureId(b);
-  _mesh->Draw(glm::mat4(1), glm::mat4(1), glm::mat4(1), glm::mat4(1));
+  _mesh->Draw(glm::mat4(1), glm::mat4(1));
 }
 
