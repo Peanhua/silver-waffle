@@ -24,13 +24,12 @@ class WidgetPlayerShip : public Widget
 public:
   WidgetPlayerShip(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
   ~WidgetPlayerShip();
-  
-  void Tick(double deltatime) override;
-
 
 private:
   Mesh *            _mesh;
   TextureRenderer * _texture_renderer;
+
+  void Render();
 };
 
 #endif

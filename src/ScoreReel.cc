@@ -119,7 +119,7 @@ void ScoreReel::Draw() const
 
       _drums[i]->Draw(drummodel, view, proj, proj * view * drummodel);
     }
-  glViewport(0, 0, Settings->GetInt("screen_width"), Settings->GetInt("screen_width"));
+  glViewport(0, 0, Settings->GetInt("screen_width"), Settings->GetInt("screen_height"));
 }
 
 
