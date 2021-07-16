@@ -255,26 +255,8 @@ void Scene::Tick(double deltatime)
           o->Translate(warpspeedmove);
 
         if(!warpspeed && o->GetCollidesWithChannels())
-          for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
-              {
-                auto oo = objects[i];
-                if(o != oo && oo->IsAlive())
-                  {
-                    _collisioncheck_statistics.total++;
-                    if(AreInSameCollisionPartition(o, oo))
-                      {
-                        _collisioncheck_statistics.pass_wide_check++;
-                        glm::vec3 hitdir;
-                        if(o->CheckCollision(*oo, hitdir))
-                          {
-                            _collisioncheck_statistics.pass_narrow_check++;
-                            o->OnCollision(*oo, -hitdir);
-                            if(!oo->IsAlive())
-                              ClearReferences(oo);
-                          }
-                      }
-                  }
-              }
+          CollisionsForObject(o, objects);
+
         if(!o->IsAlive())
           ClearReferences(o);
       }
@@ -296,6 +278,39 @@ void Scene::Tick(double deltatime)
     }
 }
 
+
+void Scene::CollisionsForObject(Object * o, std::vector<Object *> & objects)
+{
+  for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
+    {
+      auto oo = objects[i];
+      if(o != oo && oo->IsAlive())
+        {
+          _collisioncheck_statistics.total++;
+          if(AreInSameCollisionPartition(o, oo))
+            {
+              _collisioncheck_statistics.pass_wide_check++;
+              glm::vec3 hitdir;
+              if(o->CheckCollision(*oo, hitdir))
+                {
+                  _collisioncheck_statistics.pass_narrow_check++;
+                  o->OnCollision(*oo, -hitdir);
+                  if(!oo->IsAlive())
+                    {
+                      auto ClearReferences = [this](Object * obj)
+                      { // todo: Use smart pointers instead of manually fixing references.
+                        for(auto proj : _projectiles)
+                          if(proj && proj->IsAlive())
+                            if(proj->GetOwner() == obj)
+                              proj->SetOwner(nullptr);
+                      };
+                      ClearReferences(oo);
+                    }
+                }
+            }
+        }
+    }
+}
 
 void Scene::AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity)
 {

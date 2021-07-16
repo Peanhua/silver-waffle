@@ -148,6 +148,8 @@ private:
   bool                           _tutorialmessages_enabled;
   std::vector<bool>              _tutorialmessages;
   CollisionCheckStatistics       _collisioncheck_statistics;
+
+  void CollisionsForObject(Object * o, std::vector<Object *> & objects);
 };
 
 

@@ -95,6 +95,7 @@ private:
   WidgetTeletyper *     _teletyper;
   
   bool _demo_lander_activated;
+  bool _demo_ending_activated;
   
   void ChangeState(State new_state);
   void OnPlayerDies();

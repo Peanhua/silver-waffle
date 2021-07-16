@@ -126,9 +126,10 @@ void CollisionShapeOBB::GetOBBMinMax(const glm::vec3 & axis, float & out_min, fl
 {
   out_min = 9999;
   out_max = -9999;
+  const auto m(glm::toMat4(GetOwner()->GetOrientation()));
   for(auto vv : _vertices)
     {
-      auto v = GetPosition() + (glm::vec4(vv, 1) * glm::toMat4(GetOwner()->GetOrientation())).xyz();
+      auto v = GetPosition() + (m * glm::vec4(vv, 1)).xyz();
       auto projection = glm::dot(v, axis);
       out_min = std::min(out_min, projection);
       out_max = std::max(out_max, projection);

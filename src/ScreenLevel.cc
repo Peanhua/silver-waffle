@@ -59,7 +59,8 @@ ScreenLevel::ScreenLevel(ScreenLevel * parent)
     _current_level(0),
     _gamestats(nullptr),
     _pausebutton(nullptr),
-    _demo_lander_activated(false)
+    _demo_lander_activated(false),
+    _demo_ending_activated(false)
 {
 }
 
@@ -216,6 +217,11 @@ void ScreenLevel::Tick(double deltatime)
             _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Activate();
             _demo_lander_activated = true;
           }
+      if(!_demo_ending_activated && _parent && GetGameStats()->GetTime() > 12.0)
+        {
+          _demo_ending_activated = true;
+          _scene->GetPlayer()->GetController()->SteerBackward(true);
+        }
       if(GetGameStats()->GetTime() > 20.0)
         {
           SDL_Event e;
