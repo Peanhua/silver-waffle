@@ -157,15 +157,15 @@ Mesh * ScoreReel::CreateDrum(const std::vector<Mesh *> numbers) const
   glm::mat4 rot(1);
   for(unsigned int i = 0; i <= 9; i++)
     {
-      auto num = new Mesh(0);
+      auto num = new Mesh(*numbers[i]);
       auto forward = glm::column(rot, 1);
       auto mov = glm::translate(glm::mat4(1), forward.xyz() * 1.3f);
-      rot = glm::rotate(rot, glm::radians(-18.0f), glm::vec3(1, 0, 0));
-      num->ApplyTransform(mov * rot);
-      num->AddChild(numbers[i]);
+      num->ApplyTransform(mov * glm::rotate(rot, glm::radians(-18.0f), glm::vec3(1, 0, 0)));
       drum->AddChild(num);
-      rot = glm::rotate(rot, glm::radians(18.0f + 36.0f), glm::vec3(1, 0, 0));
+      rot = glm::rotate(rot, glm::radians(36.0f), glm::vec3(1, 0, 0));
     }
+  
+  drum->UpdateGPU();
 
   return drum;
 }

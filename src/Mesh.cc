@@ -544,7 +544,7 @@ double Mesh::GetBoundingSphereRadius() const
 
 void Mesh::ApplyTransform(const glm::mat4 & transform)
 {
-  _transform *= transform;
+  _transform = transform * _transform;
 }
 
 
@@ -621,3 +621,78 @@ const glm::vec3 & Mesh::GetBoundingBoxHalfSize() const
 }
 
 
+bool Mesh::AppendMesh(Mesh * other)
+{
+  if(_primitive_type != other->_primitive_type)
+    return false;
+  if(_options != other->_options)
+    return false;
+  if(_shader_program != other->_shader_program)
+    return false;
+
+  unsigned int indstart = _vertices.size() / (_options & OPTION_VERTEX_W) ? 4 : 3;
+
+  if(_options & OPTION_VERTEX)
+    {
+      assert(!(_options & OPTION_VERTEX_W));
+      for(unsigned int i = 0; i < other->_vertices.size() / 3; i++)
+        {
+          glm::vec3 v(other->_vertices[i * 3 + 0],
+                      other->_vertices[i * 3 + 1],
+                      other->_vertices[i * 3 + 2]);
+          AddVertex((other->_transform * glm::vec4(v, 1)).xyz());
+        }
+    }
+  if(_options & OPTION_ELEMENT)
+    for(auto i : other->_indices)
+      _indices.push_back(indstart + i);
+  if(_options & OPTION_COLOR)
+    for(auto c : other->_colors)
+      _colors.push_back(c);
+  if(_options & OPTION_TEXTURE)
+    for(auto t : other->_texcoords)
+      _texcoords.push_back(t);
+  if(_options & OPTION_NORMAL)
+    for(auto n : other->_normals)
+      _normals.push_back(n);
+  if(_options & OPTION_GENERIC_VEC2_INPUT)
+    for(auto v : other->_generic_vec2s)
+      _generic_vec2s.push_back(v);
+  if(_options & OPTION_GENERIC_VEC3_INPUT)
+    for(auto v : other->_generic_vec3s)
+      _generic_vec3s.push_back(v);
+
+  for(auto c : other->_children)
+    _children.push_back(new Mesh(*c));
+  
+  return true;
+}
+
+
+void Mesh::CombineWithChildren()
+{
+  std::vector<Mesh *> childs;
+  auto from = _children.size();
+  for(auto c : _children)
+    {
+      c->CombineWithChildren();
+      if(AppendMesh(c))
+        delete c;
+      else
+        childs.push_back(c);
+    }
+  
+  _children = childs;
+}
+
+
+void Mesh::Dump(int indent) const
+{
+  for(int i = 0; i < indent; i++)
+    std::cout << " ";
+  std::cout << this << "(Mesh '" << _name << "'): options=" << _options
+            << ", vertex count=" << _vertices.size()
+            << ", children count=" << _children.size() << "\n";
+  for(auto c : _children)
+    c->Dump(indent + 2);
+}

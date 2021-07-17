@@ -49,8 +49,7 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
 
 void ObjectSpaceship::Tick(double deltatime)
 {
-  ObjectMovable::Tick(deltatime);
-
+  assert(IsAlive());
   for(unsigned int i = 0; i < _control_programs.size(); i++)
     if(_control_programs[i])
       _control_programs[i] = _control_programs[i]->Tick(deltatime);
@@ -125,6 +124,8 @@ void ObjectSpaceship::Tick(double deltatime)
 
   for(auto u : _upgrades)
     u->Tick(deltatime);
+
+  ObjectMovable::Tick(deltatime);
 }
 
 

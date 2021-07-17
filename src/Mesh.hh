@@ -106,6 +106,11 @@ public:
 
   void   AddChild(Mesh * child);
   Mesh * FindChild(const std::string & name);
+
+  bool AppendMesh(Mesh * other);
+  void CombineWithChildren();
+
+  void Dump(int indent = 0) const;
   
 private:
   std::string  _name;

@@ -116,6 +116,7 @@ void Object::Draw(const glm::mat4 & vp) const
 
 void Object::Tick(double deltatime)
 {
+  assert(IsAlive());
   assert(deltatime == deltatime);
   for(int i = 0; i < 3; i++)
     if(_destroybox_low[i] < _destroybox_high[i] && (_position[i] < _destroybox_low[i] || _position[i] > _destroybox_high[i]))

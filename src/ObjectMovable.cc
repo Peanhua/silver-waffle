@@ -31,6 +31,7 @@ ObjectMovable::ObjectMovable(Scene * scene, unsigned int random_seed)
 
 void ObjectMovable::Tick(double deltatime)
 {
+  assert(IsAlive());
   if(_is_affected_by_gravity)
     {
       auto scene = GetScene();
