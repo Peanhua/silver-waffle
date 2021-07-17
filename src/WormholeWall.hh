@@ -23,7 +23,7 @@ public:
   WormholeWall(double length, double height);
 
   void Tick(double deltatime);
-  void Draw(const glm::mat4 & model, const glm::mat4 & view, const glm::mat4 & projection, const glm::mat4 & mvp) const;
+  void Draw(const glm::mat4 & model, const glm::mat4 & mvp) const;
   
 private:
   Mesh * _mesh;
