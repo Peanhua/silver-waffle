@@ -122,8 +122,9 @@ void ScenePlanet::Draw(const Camera & camera) const
 
 bool ScenePlanet::AreInSameCollisionPartition(Object * a, Object * b) const
 {
-  auto dist = std::abs(a->GetPosition().x - b->GetPosition().x);
+  auto xdist = std::abs(a->GetPosition().x - b->GetPosition().x);
+  auto zdist = std::abs(a->GetPosition().z - b->GetPosition().z);
   auto mindist = static_cast<float>(a->GetMesh()->GetBoundingSphereRadius() + b->GetMesh()->GetBoundingSphereRadius());
-  return dist < mindist;
+  return xdist < mindist && zdist < mindist;
 }
 
