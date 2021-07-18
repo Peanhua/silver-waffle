@@ -39,6 +39,7 @@ public:
   void SetInt(const std::string & name, int value);
 
   static void SetUBOMatrix(const std::string & ubo_name, const std::string & name, const glm::mat4 & matrix);
+  static void SetUBOFloat(const std::string & ubo_name, const std::string & name, const float value);
   
 private:
   GLuint                _program;

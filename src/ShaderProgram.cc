@@ -185,12 +185,31 @@ void ShaderProgram::SetUBOMatrix(const std::string & ubo_name, const std::string
       _ubos[ubo_name] = ubo;
 
       glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-      glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4), nullptr, GL_DYNAMIC_DRAW);
+      glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + 1 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
-      glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 2 * sizeof(glm::mat4));
+      glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 2 * sizeof(glm::mat4) + 1 * sizeof(float));
     }
   assert(ubo != GL_INVALID_INDEX);
   glBindBuffer(GL_UNIFORM_BUFFER, ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof(glm::mat4), glm::value_ptr(matrix));
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
+
+void ShaderProgram::SetUBOFloat(const std::string & ubo_name, const std::string & name, const float value)
+{
+  std::cout << value << std::endl;
+  assert(name == "in_time");
+  unsigned int pos = 2 * sizeof(glm::mat4); // todo: find the position properly
+  GLuint ubo = GL_INVALID_INDEX;
+  auto it = _ubos.find(ubo_name);
+  if(it != _ubos.end())
+    ubo = (*it).second;
+  else
+    assert(false); // todo
+
+  assert(ubo != GL_INVALID_INDEX);
+  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof value, &value);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+

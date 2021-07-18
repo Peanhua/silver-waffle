@@ -118,10 +118,10 @@ void SpaceParticles::Draw(const Camera & camera) const
   const glm::mat4 & mvp        = camera.GetViewProjection();
     
   _mesh->GetShaderProgram()->Use();
-  _mesh->GetShaderProgram()->SetFloat("in_time", static_cast<float>(_time));
   _mesh->GetShaderProgram()->SetFloat("in_particle_length", _particle_length);
   ShaderProgram::SetUBOMatrix("Data", "in_view",       view);
   ShaderProgram::SetUBOMatrix("Data", "in_projection", projection);
+  ShaderProgram::SetUBOFloat("Data",  "in_time",       static_cast<float>(_time));
     
   _mesh->Draw(glm::mat4(1), mvp);
 }
