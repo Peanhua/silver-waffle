@@ -25,10 +25,11 @@ Camera::Camera()
     _up(0, 0, 1),
     _position(0, -20, 14.5),
     _target_position(0, 0, 0),
-    _view_projection(1)
+    _view_projection(1),
+    _projection_dirty(true),
+    _view_dirty(true)
 {
-  UpdateView();
-  UpdateProjection();
+  Update();
 }
 
 
@@ -40,7 +41,7 @@ Camera::~Camera()
 void Camera::SetFOV(double fov)
 {
   _fov = fov;
-  UpdateProjection();
+  _projection_dirty = true;
 }
 
 
@@ -48,62 +49,74 @@ void Camera::SetClippingPlanes(double near, double far)
 {
   _clippingplane_near = near;
   _clippingplane_far  = far;
-  UpdateProjection();
+  _projection_dirty = true;
 }
 
 
 void Camera::SetUp(const glm::vec3 & up)
 {
   _up = up;
-  UpdateView();
+  _view_dirty = true;
 }
 
 
 void Camera::SetPosition(const glm::vec3 & position)
 {
   _position = position;
-  UpdateView();
+  _view_dirty = true;
 }
 
 
 void Camera::SetTargetPosition(const glm::vec3 & position)
 {
   _target_position = position;
-  UpdateView();
+  _view_dirty = true;
 }
 
 
 const glm::mat4 & Camera::GetViewProjection() const
 {
+  assert(!_projection_dirty);
+  assert(!_view_dirty);
   return _view_projection;
 }
 
 
-void Camera::UpdateProjection()
+void Camera::Update()
 {
-  const double width  = Settings->GetInt("screen_width");
-  const double height = Settings->GetInt("screen_height");
-  _projection = glm::perspective(glm::radians(_fov), width / height, _clippingplane_near, _clippingplane_far);
-  _view_projection = _projection * _view;
-  _frustum.UpdateFrustum(*this);
+  if(_projection_dirty)
+    {
+      const double width  = Settings->GetInt("screen_width");
+      const double height = Settings->GetInt("screen_height");
+      _projection = glm::perspective(glm::radians(_fov), width / height, _clippingplane_near, _clippingplane_far);
+    }
+
+  if(_view_dirty)
+    _view = glm::lookAt(_position, _target_position, _up);
+
+  if(_projection_dirty || _view_dirty)
+    _view_projection = _projection * _view;
+
+  if(_projection_dirty)
+    _frustum.UpdateFrustum(*this);
+  if(_projection_dirty || _view_dirty)
+    _frustum.UpdateView(*this);
+
+  _projection_dirty = false;
+  _view_dirty       = false;
 }
 
-
-void Camera::UpdateView()
-{
-  _view = glm::lookAt(_position, _target_position, _up);
-  _view_projection = _projection * _view;
-  _frustum.UpdateView(*this);
-}
 
 const glm::mat4 & Camera::GetView() const
 {
+  assert(!_view_dirty);
   return _view;
 }
 
 
 const glm::mat4 & Camera::GetProjection() const
 {
+  assert(!_projection_dirty);
   return _projection;
 }
 
@@ -115,7 +128,7 @@ void Camera::MoveForward(double amount)
   GetDirection(d);
   _position += d * static_cast<float>(amount);
   //_target_position += d * static_cast<float>(amount);
-  UpdateView();
+  _view_dirty = true;
 }
 
 
@@ -127,7 +140,7 @@ void Camera::MoveRight(double amount)
   auto right = glm::normalize(glm::cross(_up, d));
   _position += right * static_cast<float>(amount);
   //_target_position += right * static_cast<float>(amount);
-  UpdateView();
+  _view_dirty = true;
 }
 
 
@@ -135,7 +148,7 @@ void Camera::MoveUp(double amount)
 {
   _position += _up * static_cast<float>(amount);
   //_target_position += _up * static_cast<float>(amount);
-  UpdateView();
+  _view_dirty = true;
 }
 
 
@@ -161,8 +174,9 @@ bool Camera::IsInView(const glm::vec3 & position, float bounding_sphere_radius) 
 {
   if(!_frustum_culling)
     return true;
-  
-  auto rv = _frustum.IsSphereInside(position, bounding_sphere_radius) != Frustum::Result::OUTSIDE;
+
+  auto r = _frustum.IsSphereInside(position, bounding_sphere_radius);
+  auto rv = r != Frustum::Result::OUTSIDE;
 
   if(rv)
     Camera::stats.in_view++;

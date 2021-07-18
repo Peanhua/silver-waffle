@@ -44,6 +44,8 @@ public:
   bool              IsInView(const glm::vec3 & position, float bounding_sphere_radius) const;
   void              SetFrustumCulling(bool enabled);
 
+  void              Update();
+  
   static struct Stats
   {
     Stats()
@@ -70,10 +72,9 @@ private:
   glm::vec3 _target_position;
   glm::mat4 _view_projection;
   glm::mat4 _projection;
+  bool      _projection_dirty;
   glm::mat4 _view;
-
-  void              UpdateProjection();
-  void              UpdateView();
+  bool      _view_dirty;
 };
 
 #endif

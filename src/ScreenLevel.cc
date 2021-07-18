@@ -342,6 +342,7 @@ void ScreenLevel::Tick(double deltatime)
         }
   }
   _texture_renderer->BeginRender();
+  _camera->Update();
   _camera->stats.elapsed_frames++;
   _scene->Draw(*_camera);
   _texture_renderer->EndRender();

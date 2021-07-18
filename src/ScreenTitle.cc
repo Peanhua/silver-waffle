@@ -39,6 +39,7 @@ ScreenTitle::ScreenTitle()
   _camera->SetFOV(90.0);
   _camera->SetClippingPlanes(0.001, 1300.0);
   _camera->SetPosition(glm::vec3(0.0f, -20.0f, 0.0f));
+  _camera->Update();
 
 
   auto startdist = 70.0;
