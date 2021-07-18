@@ -61,21 +61,23 @@ bool CollisionShapeOBB::CheckCollisionOnSphere(const CollisionShape & other, glm
 
 bool CollisionShapeOBB::CheckCollisionOnOBB(const CollisionShape & other, glm::vec3 & out_hit_direction) const
 { // Uses separating axis theorem.
+  // Manually optimized order.
+
   auto me = GetOwner();
   auto ot = other.GetOwner();
-
-  if(SeparatedByAxis(other, me->GetForwardVector()))
+  
+  if(SeparatedByAxis(other, me->GetUpVector()))
     return false;
   if(SeparatedByAxis(other, me->GetRightVector()))
     return false;
-  if(SeparatedByAxis(other, me->GetUpVector()))
+  if(SeparatedByAxis(other, me->GetForwardVector()))
     return false;
   
-  if(SeparatedByAxis(other, ot->GetForwardVector()))
+  if(SeparatedByAxis(other, ot->GetUpVector()))
     return false;
   if(SeparatedByAxis(other, ot->GetRightVector()))
     return false;
-  if(SeparatedByAxis(other, ot->GetUpVector()))
+  if(SeparatedByAxis(other, ot->GetForwardVector()))
     return false;
 
   if(SeparatedByAxis(other, glm::cross(me->GetForwardVector(), ot->GetForwardVector())))
