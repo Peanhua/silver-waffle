@@ -197,7 +197,6 @@ void ShaderProgram::SetUBOMatrix(const std::string & ubo_name, const std::string
 
 void ShaderProgram::SetUBOFloat(const std::string & ubo_name, const std::string & name, const float value)
 {
-  std::cout << value << std::endl;
   assert(name == "in_time");
   unsigned int pos = 2 * sizeof(glm::mat4); // todo: find the position properly
   GLuint ubo = GL_INVALID_INDEX;
