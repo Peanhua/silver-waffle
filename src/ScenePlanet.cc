@@ -20,18 +20,19 @@
 
 
 ScenePlanet::ScenePlanet()
-  : Scene({100, 0, 20}, {true, false, false}),
+  : Scene({2000, 0, 100}, {true, false, false}),
     _landing_sequence(true)
 {
   _gravity = { 0, 0, -9.81 };
-  
-  auto ground = new ObjectPlanetGround(this, {100, 40}, AssetLoader->LoadImage("8k_earth_daymap"));
+
+  const float groundsize = 40;
+  auto ground = new ObjectPlanetGround(this, {GetPlayAreaSize().x, groundsize}, AssetLoader->LoadImage("8k_earth_daymap"));
   AddObject(ground);
   ground->SetAutoDestroyBox({1, 1, 1}, {0, 0, 0});
-  ground->SetPosition({0, 0, -10.5});
+  ground->SetPosition({0, 0, -(GetPlayAreaSize().z / 2.0f + 0.5f)});
 
-  auto atmosphere = new ObjectPlanetAtmosphere(this, {100, 20}, {1, 0, 0}, {0, 0, 0.5});
-  atmosphere->Translate({0, 20, 0});
+  auto atmosphere = new ObjectPlanetAtmosphere(this, GetPlayAreaSize().xz(), {1, 0, 0}, {0, 0, 0.5});
+  atmosphere->Translate({0, groundsize / 2.0f, 0});
   AddPlanet(atmosphere);
 }
 
@@ -82,20 +83,16 @@ glm::vec3 ScenePlanet::GetRandomSpawnPosition()
     return _rdist(_random_generator);
   };
 
-  // Spawn in front of player at random z on air.
-  glm::vec4 offset(0, 5, 0, 1);
-
-  glm::mat4 rot = glm::toMat4(glm::inverse(GetPlayer()->GetOrientation()));
-  offset = offset * rot;
-  
   float groundz = 0; // todo
-  float emptytop = GetPlayAreaSize().z * 0.333f;
-  offset.z =
-    groundz
-    + rand() * (GetPlayAreaSize().z - groundz - emptytop)
-    - (GetPlayAreaSize().z * 0.5f);
-  
-  return glm::vec3(GetPlayer()->GetPosition().xy(), 0) + offset.xyz();
+  float emptytop = GetPlayAreaSize().z * 0.4f;
+
+  glm::vec3 pos {
+    GetPlayAreaSize().x * rand(),
+    GetPlayAreaSize().y * rand(),
+    groundz  +  rand() * (GetPlayAreaSize().z - groundz - emptytop)  -  (GetPlayAreaSize().z * 0.5f)
+  };
+      
+  return pos;
 }
 
 
