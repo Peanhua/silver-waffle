@@ -31,6 +31,7 @@ silverwaffle_SOURCES =				\
 	ControllerSpace.cc			\
 	Explosion.cc				\
 	Font.cc					\
+	Frustum.cc				\
 	GameStats.cc				\
 	GaussianBlur.cc				\
 	HighscoreEntry.cc			\
@@ -55,6 +56,7 @@ silverwaffle_SOURCES =				\
 	ObjectPlanetGround.cc			\
 	ObjectProjectile.cc			\
 	ObjectSpaceship.cc			\
+	Plane.cc				\
 	Scene.cc				\
 	ScenePlanet.cc				\
 	SceneSpace.cc				\

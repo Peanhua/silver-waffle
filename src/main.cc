@@ -10,6 +10,7 @@
   Complete license can be found in the LICENSE file.
 */
 #include "SubsystemHandler.hh"
+#include "Camera.hh"
 #include "Scene.hh"
 #include "ScreenLevel.hh"
 #include "SubsystemAssetLoader.hh"
@@ -106,20 +107,39 @@ int main(int argc, char *argv[])
                         auto scene = s->GetScene();
                         assert(scene);
 
-                        auto stats = scene->GetCollisionCheckStatistics();
-                        std::cout << "    "
-                                  << "collisions:"
-                                  << " elapsed time=" << stats.elapsed_time
-                                  << ", objects total=" << stats.total << "("
-                                  << std::floor(static_cast<double>(stats.total) / stats.elapsed_time) << "/s, "
-                                  << std::floor(static_cast<double>(stats.total) / static_cast<double>(stats.elapsed_frames)) << "/frame"
-                                  << ")"
-                                  << ", passed wide check=" << stats.pass_wide_check << "("
-                                  << (100.0 * static_cast<double>(stats.pass_wide_check) / static_cast<double>(stats.total)) << "%, "
-                                  << std::floor(static_cast<double>(stats.pass_wide_check) / static_cast<double>(stats.elapsed_frames)) << "/frame"
-                                  << ")"
-                                  << ", passed narrow check=" << stats.pass_narrow_check << "(" << (100.0 * static_cast<double>(stats.pass_narrow_check) / static_cast<double>(stats.total)) << "%)";
-                        scene->ResetCollisionCheckStatistics();
+                        {
+                          auto stats = scene->GetCollisionCheckStatistics();
+                          std::cout << "    "
+                                    << "collisions:"
+                                    << " elapsed time=" << stats.elapsed_time
+                                    << ", objects total=" << stats.total << "("
+                                    << std::floor(static_cast<double>(stats.total) / stats.elapsed_time) << "/s, "
+                                    << std::floor(static_cast<double>(stats.total) / static_cast<double>(stats.elapsed_frames)) << "/frame"
+                                    << ")"
+                                    << ", passed wide check=" << stats.pass_wide_check << "("
+                                    << (100.0 * static_cast<double>(stats.pass_wide_check) / static_cast<double>(stats.total)) << "%, "
+                                    << std::floor(static_cast<double>(stats.pass_wide_check) / static_cast<double>(stats.elapsed_frames)) << "/frame"
+                                    << ")"
+                                    << ", passed narrow check=" << stats.pass_narrow_check << "(" << (100.0 * static_cast<double>(stats.pass_narrow_check) / static_cast<double>(stats.total)) << "%)";
+                          scene->ResetCollisionCheckStatistics();
+                        }
+                        {
+                          auto & stats = s->GetCamera()->stats;
+                          std::cout << "    "
+                                    << "view frustum culling:"
+                                    << " total=" << (stats.in_view + stats.out_view)
+                                    << " inside=" << stats.in_view
+                                    << "(" << (100.0 * static_cast<double>(stats.in_view) / static_cast<double>(stats.in_view + stats.out_view)) << "%, "
+                                    << std::floor(static_cast<double>(stats.in_view) / static_cast<double>(stats.elapsed_frames)) << "/frame"
+                                    << ")"
+                                    << " outside=" << stats.out_view
+                                    << "(" << (100.0 * static_cast<double>(stats.out_view) / static_cast<double>(stats.in_view + stats.out_view)) << "%, "
+                                    << std::floor(static_cast<double>(stats.out_view) / static_cast<double>(stats.elapsed_frames)) << "/frame"
+                                    << ")";
+                          stats.elapsed_frames = 0;
+                          stats.in_view = 0;
+                          stats.out_view = 0;
+                        }
                       }
                     std::cout << std::endl;
                   }

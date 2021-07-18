@@ -342,6 +342,7 @@ void ScreenLevel::Tick(double deltatime)
         }
   }
   _texture_renderer->BeginRender();
+  _camera->stats.elapsed_frames++;
   _scene->Draw(*_camera);
   _texture_renderer->EndRender();
 
@@ -762,4 +763,10 @@ void ScreenLevel::CopyPlayerData(ScreenLevel * src)
   myplr->CopyUpgrades(*srcplr);
   myplr->SetHealth(srcplr->GetHealth());
   _scene->SetupPlayer();
+}
+
+
+Camera * ScreenLevel::GetCamera() const
+{
+  return _camera;
 }

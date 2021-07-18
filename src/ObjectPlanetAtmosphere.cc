@@ -45,7 +45,7 @@ ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & 
       mesh->AddElement(i);
     
     mesh->UpdateGPU();
-
+    mesh->CalculateBoundingVolumes();
     SetMesh(mesh);
   }
 

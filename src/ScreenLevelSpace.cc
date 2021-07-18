@@ -22,6 +22,7 @@ ScreenLevelSpace::ScreenLevelSpace(ScreenLevel * parent)
   _camera = new Camera();
   _camera->SetFOV(60);
   _camera->SetClippingPlanes(0.01, 10000.0);
+  _camera->SetFrustumCulling(false);
   
   _scene = new SceneSpace();
 

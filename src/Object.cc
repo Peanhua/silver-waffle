@@ -87,6 +87,9 @@ Object::Object(const Object & source)
 
 void Object::Draw(const Camera & camera) const
 {
+  if(!camera.IsInView(_position, static_cast<float>(_mesh->GetBoundingSphereRadius())))
+    return;
+  
   if(Settings->GetBool("draw_collision") && _collision_shape && _collision_shape->GetDebugMesh())
     {
       auto dmesh = _collision_shape->GetDebugMesh();

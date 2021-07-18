@@ -45,12 +45,13 @@ public:
   void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod) override;
   void OnQuit() override;
 
+  Camera *    GetCamera()    const;
   GameStats * GetGameStats() const;
   Scene *     GetScene()     const;
   void TransitionToScreen(Screen * new_screen, const std::string & message);
 
   void OnLivesUpdated();
-  
+
 protected:
   Camera *             _camera;
   Scene *              _scene;

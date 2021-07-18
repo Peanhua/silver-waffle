@@ -14,8 +14,12 @@
 #include <iostream>
 
 
+Camera::Stats Camera::stats;
+
+
 Camera::Camera()
-  : _fov(60.0),
+  : _frustum_culling(true),
+    _fov(60.0),
     _clippingplane_near(0.001),
     _clippingplane_far(2000.0),
     _up(0, 0, 1),
@@ -81,6 +85,7 @@ void Camera::UpdateProjection()
   const double height = Settings->GetInt("screen_height");
   _projection = glm::perspective(glm::radians(_fov), width / height, _clippingplane_near, _clippingplane_far);
   _view_projection = _projection * _view;
+  _frustum.UpdateFrustum(*this);
 }
 
 
@@ -88,6 +93,7 @@ void Camera::UpdateView()
 {
   _view = glm::lookAt(_position, _target_position, _up);
   _view_projection = _projection * _view;
+  _frustum.UpdateView(*this);
 }
 
 const glm::mat4 & Camera::GetView() const
@@ -148,5 +154,46 @@ const glm::vec3 & Camera::GetPosition() const
 const glm::vec3 & Camera::GetTargetPosition() const
 {
   return _target_position;
+}
+
+
+bool Camera::IsInView(const glm::vec3 & position, float bounding_sphere_radius) const
+{
+  if(!_frustum_culling)
+    return true;
+  
+  auto rv = _frustum.IsSphereInside(position, bounding_sphere_radius) != Frustum::Result::OUTSIDE;
+
+  if(rv)
+    Camera::stats.in_view++;
+  else
+    Camera::stats.out_view++;
+  
+  return rv;
+}
+
+
+const glm::vec3 & Camera::GetUp() const
+{
+  return _up;
+}
+
+
+double Camera::GetFOV() const
+{
+  return _fov;
+}
+
+
+void Camera::GetClippingPlanes(double & near, double & far) const
+{
+  near = _clippingplane_near;
+  far  = _clippingplane_far;
+}
+
+
+void Camera::SetFrustumCulling(bool enabled)
+{
+  _frustum_culling = enabled;
 }
 

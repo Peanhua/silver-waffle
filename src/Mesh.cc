@@ -524,9 +524,6 @@ void Mesh::CalculateBoundingVolumes(const glm::mat4 & transform)
       for(int k = 0; k < 3; k++)
         _bounding_box_size[k] = std::max(_bounding_box_size[k], std::abs(v[k]));
     }
-  assert(_bounding_box_size[0] > 0.0f);
-  assert(_bounding_box_size[1] > 0.0f);
-  assert(_bounding_box_size[2] > 0.0f);
 }
 
 
@@ -672,7 +669,7 @@ bool Mesh::AppendMesh(Mesh * other)
 void Mesh::CombineWithChildren()
 {
   std::vector<Mesh *> childs;
-  auto from = _children.size();
+
   for(auto c : _children)
     {
       c->CombineWithChildren();
