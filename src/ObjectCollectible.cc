@@ -23,6 +23,7 @@ ObjectCollectible::ObjectCollectible(Scene * scene)
   AddToCollisionChannel(CollisionChannel::COLLECTIBLE);
   AddCollidesWithChannel(CollisionChannel::PLAYER);
   SetBounciness(2.0);
+  SetTickingRequiresPlayerVisibility(true);
 }
 
 

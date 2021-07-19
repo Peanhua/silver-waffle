@@ -48,25 +48,10 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
 
 void Scene::Draw(const Camera & camera) const
 {
-  {
-    std::vector<std::string> shadernames
-      {
-        "Cloud",
-        "SceneObject-Color",
-        "SceneObject-Texture",
-        "BonusLevelEntrance",
-      };
-    for(auto name : shadernames)
-      {
-        auto shader = AssetLoader->LoadShaderProgram(name);
-        assert(shader);
-        shader->Use();
-        shader->SetVec("in_light_color", glm::vec3(1, 1, 1));
-      }
-    ShaderProgram::SetUBOMatrix("Data", "in_view",       camera.GetView());
-    ShaderProgram::SetUBOMatrix("Data", "in_projection", camera.GetProjection());
-    ShaderProgram::SetUBOFloat("Data",  "in_time",       static_cast<float>(_time));
-  }
+  ShaderProgram::SetUBOMatrix("Data", "in_view",        camera.GetView());
+  ShaderProgram::SetUBOMatrix("Data", "in_projection",  camera.GetProjection());
+  ShaderProgram::SetUBOFloat("Data",  "in_time",        static_cast<float>(_time));
+  ShaderProgram::SetUBOVec3("Data",   "in_light_color", glm::vec3(1, 1, 1));
       
   glEnable(GL_DEPTH_TEST);
 
@@ -229,24 +214,29 @@ void Scene::Tick(double deltatime)
   for(auto o : objects)
     if(o->IsAlive())
       {
-        auto ClearReferences = [this](Object * obj)
-        { // todo: Use smart pointers instead of manually fixing references.
-          for(auto proj : _projectiles)
-            if(proj && proj->IsAlive())
-              if(proj->GetOwner() == obj)
-                proj->SetOwner(nullptr);
-        };
-
-        if(!o->IsSleeping())
-          o->Tick(deltatime);
         if(o != GetPlayer() && warpspeed)
           o->Translate(warpspeedmove);
+        
+        if(o->ShouldTick())
+          {
+            o->Tick(deltatime);
 
-        if(!warpspeed && o->GetCollidesWithChannels())
-          CollisionsForObject(o, objects);
-
-        if(!o->IsAlive())
-          ClearReferences(o);
+            if(!warpspeed && o->GetCollidesWithChannels())
+              CollisionsForObject(o, objects);
+            
+            if(!o->IsAlive())
+              {
+                auto ClearReferences = [this](Object * obj)
+                { // todo: Use smart pointers instead of manually fixing references.
+                  for(auto proj : _projectiles)
+                    if(proj && proj->IsAlive())
+                      if(proj->GetOwner() == obj)
+                        proj->SetOwner(nullptr);
+                };
+                
+                ClearReferences(o);
+              }
+          }
       }
 
   for(auto e : _explosions)

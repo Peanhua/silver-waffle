@@ -41,7 +41,8 @@ Object::Object(Scene * scene, unsigned int random_seed)
     _collision_mask(0),
     _destroybox_low(1, 1, 1),
     _destroybox_high(0, 0, 0),
-    _ticking_requires_player_alive(false)
+    _ticking_requires_player_alive(false),
+    _ticking_requires_player_visibility(false)
 {
 }
 
@@ -69,7 +70,8 @@ Object::Object(const Object & source)
     _collision_mask(source._collision_mask),
     _destroybox_low(source._destroybox_low),
     _destroybox_high(source._destroybox_high),
-    _ticking_requires_player_alive(source._ticking_requires_player_alive)
+    _ticking_requires_player_alive(source._ticking_requires_player_alive),
+    _ticking_requires_player_visibility(source._ticking_requires_player_visibility)
 {
   _random_generator.seed(_random_generator());
   
@@ -120,19 +122,36 @@ void Object::Draw(const glm::mat4 & vp) const
 }
 
 
+bool Object::ShouldTick() const
+{
+  if(IsSleeping())
+    return false;
+  
+  if(_ticking_requires_player_alive || _ticking_requires_player_visibility)
+    if(_scene)
+      {
+        auto player = _scene->GetPlayer();
+        if(player && player->IsAlive())
+          {
+            if(_ticking_requires_player_visibility)
+              if(std::abs(GetPosition().x - player->GetPosition().x) > 50.0f)
+                return false;
+          }
+        else
+          {
+            if(_ticking_requires_player_alive)
+              return false;
+          }
+      }
+  return true;
+}
+
+
 void Object::Tick(double deltatime)
 {
   assert(IsAlive());
   assert(deltatime == deltatime);
 
-  if(_ticking_requires_player_alive)
-    if(_scene)
-      {
-        auto player = _scene->GetPlayer();
-        if(!player || !player->IsAlive())
-          return;
-      }
-  
   for(int i = 0; i < 3; i++)
     if(_destroybox_low[i] < _destroybox_high[i] && (_position[i] < _destroybox_low[i] || _position[i] > _destroybox_high[i]))
       switch(_exceed_actions[i])
@@ -570,4 +589,10 @@ float Object::GetRand()
 void Object::SetTickingRequiresPlayerAlive(bool alive_required)
 {
   _ticking_requires_player_alive = alive_required;
+}
+
+
+void Object::SetTickingRequiresPlayerVisibility(bool visibility_required)
+{
+  _ticking_requires_player_visibility = visibility_required;
 }

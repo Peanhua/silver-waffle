@@ -24,6 +24,7 @@ ObjectProjectile::ObjectProjectile(Scene * scene)
   SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
   SetHealth(0);
   AddToCollisionChannel(CollisionChannel::PROJECTILE);
+  SetTickingRequiresPlayerVisibility(true);
 }
 
 

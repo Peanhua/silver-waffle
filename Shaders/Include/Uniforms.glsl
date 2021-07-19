@@ -2,11 +2,11 @@ layout (std140) uniform Data
 {
   mat4  in_view;
   mat4  in_projection;
-  float in_time;
+  vec3  in_light_color;
   vec2  in_resolution;
+  float in_time;
 };
 
-uniform vec3  in_light_color;
 
 uniform mat4 in_mvp;
 uniform mat4 in_model;

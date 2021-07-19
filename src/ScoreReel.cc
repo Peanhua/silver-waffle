@@ -105,8 +105,8 @@ void ScoreReel::Draw() const
   auto shader = AssetLoader->LoadShaderProgram("SceneObject-Color");
   assert(shader);
   shader->Use();
-  shader->SetVec("in_light_color", glm::vec3(1.00, 0.59, 0.19));
   shader->SetVec("in_glow", glm::vec3(0.0, 0.0, 0.0));
+  ShaderProgram::SetUBOVec3("Data", "in_light_color", glm::vec3(1.00, 0.59, 0.19));
 
   glm::mat4 proj = glm::perspective(glm::radians(30.0), 512.0 / 128.0, 0.001, 100.0);
   glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -static_cast<float>(_drum_count) * static_cast<float>(_drum_width) * 0.65f, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));

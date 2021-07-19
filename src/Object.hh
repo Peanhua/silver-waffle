@@ -120,7 +120,9 @@ public:
 
   float GetRand();
 
+  bool ShouldTick() const;
   void SetTickingRequiresPlayerAlive(bool alive_required);
+  void SetTickingRequiresPlayerVisibility(bool visibility_required);
   
 private:
   std::mt19937_64                       _random_generator;
@@ -143,6 +145,7 @@ private:
   glm::vec3 _destroybox_high;
   std::vector<Loot *> _lootset;
   bool      _ticking_requires_player_alive;
+  bool      _ticking_requires_player_visibility;
   
   //  std::vector<on_collision_t> _on_collision;
   std::vector<on_destroyed_t> _on_destroyed;

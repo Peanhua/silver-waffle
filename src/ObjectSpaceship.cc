@@ -44,6 +44,7 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
       auto u = new SpaceshipUpgrade(this, t);
       _upgrades.push_back(u);
     }
+  SetTickingRequiresPlayerVisibility(true);
 }
 
 
