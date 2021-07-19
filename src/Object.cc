@@ -16,6 +16,7 @@
 #include "Loot.hh"
 #include "Mesh.hh"
 #include "ObjectCollectible.hh"
+#include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
@@ -39,7 +40,8 @@ Object::Object(Scene * scene, unsigned int random_seed)
     _collision_channels(0),
     _collision_mask(0),
     _destroybox_low(1, 1, 1),
-    _destroybox_high(0, 0, 0)
+    _destroybox_high(0, 0, 0),
+    _ticking_requires_player_alive(false)
 {
 }
 
@@ -66,7 +68,8 @@ Object::Object(const Object & source)
     _collision_channels(source._collision_channels),
     _collision_mask(source._collision_mask),
     _destroybox_low(source._destroybox_low),
-    _destroybox_high(source._destroybox_high)
+    _destroybox_high(source._destroybox_high),
+    _ticking_requires_player_alive(source._ticking_requires_player_alive)
 {
   _random_generator.seed(_random_generator());
   
@@ -121,6 +124,15 @@ void Object::Tick(double deltatime)
 {
   assert(IsAlive());
   assert(deltatime == deltatime);
+
+  if(_ticking_requires_player_alive)
+    if(_scene)
+      {
+        auto player = _scene->GetPlayer();
+        if(!player || !player->IsAlive())
+          return;
+      }
+  
   for(int i = 0; i < 3; i++)
     if(_destroybox_low[i] < _destroybox_high[i] && (_position[i] < _destroybox_low[i] || _position[i] > _destroybox_high[i]))
       switch(_exceed_actions[i])
@@ -552,4 +564,10 @@ void Object::AddLoot(Loot * loot)
 float Object::GetRand()
 {
   return _rdist(_random_generator);
+}
+
+
+void Object::SetTickingRequiresPlayerAlive(bool alive_required)
+{
+  _ticking_requires_player_alive = alive_required;
 }

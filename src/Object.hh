@@ -119,7 +119,9 @@ public:
   void AddLoot(Loot * loot);
 
   float GetRand();
- 
+
+  void SetTickingRequiresPlayerAlive(bool alive_required);
+  
 private:
   std::mt19937_64                       _random_generator;
   std::uniform_real_distribution<float> _rdist;
@@ -140,6 +142,7 @@ private:
   glm::vec3 _destroybox_low;
   glm::vec3 _destroybox_high;
   std::vector<Loot *> _lootset;
+  bool      _ticking_requires_player_alive;
   
   //  std::vector<on_collision_t> _on_collision;
   std::vector<on_destroyed_t> _on_destroyed;

@@ -107,7 +107,7 @@ public:
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
   void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
   void              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position);
-  bool              AddObject(Object * object, const glm::vec3 & position = { 0, 0, 0 });
+  void              AddObject(Object * object, const glm::vec3 & position = { 0, 0, 0 });
 
   std::vector<ObjectMovable *> * GetNearbyObjects(const glm::vec3 & position, float radius);
 
@@ -136,7 +136,6 @@ protected:
 private:
   glm::vec3                      _play_area_size;
   ObjectSpaceship *              _player;
-  Container<ObjectInvader *>     _invaders;
   Container<ObjectProjectile *>  _projectiles;
   Container<ObjectCollectible *> _collectibles;
   Container<Object *>            _objects;

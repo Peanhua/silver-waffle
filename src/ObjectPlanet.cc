@@ -32,6 +32,7 @@ ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_objec
   auto f = AssetLoader->LoadImage("White");
   assert(f);
   assert(f != planet->GetTexture());
+  SetTickingRequiresPlayerAlive(true);
 }
 
 

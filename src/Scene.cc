@@ -85,10 +85,6 @@ void Scene::Draw(const Camera & camera) const
   if(_player->IsAlive())
     objects.push_back(_player);
 
-  for(auto i : _invaders)
-    if(i && i->IsAlive())
-      objects.push_back(i);
-
   for(auto b : _projectiles)
     if(b->IsAlive())
       objects.push_back(b);
@@ -211,10 +207,6 @@ void Scene::Tick(double deltatime)
   if(_player && _player->IsAlive())
     objects.push_back(_player);
 
-  for(auto i : _invaders)
-    if(i && i->IsAlive())
-      objects.push_back(i);
-
   for(auto c : _collectibles)
     if(c && c->IsAlive())
       objects.push_back(c);
@@ -223,16 +215,13 @@ void Scene::Tick(double deltatime)
     if(p && p->IsAlive())
       objects.push_back(p);
 
-  if(_player && _player->IsAlive())
-    {
-      for(auto o : _objects)
-        if(o && o->IsAlive())
-          objects.push_back(o);
+  for(auto o : _objects)
+    if(o && o->IsAlive())
+      objects.push_back(o);
       
-      for(auto p : _planets)
-        if(p && p->IsAlive())
-          objects.push_back(p);
-    }
+  for(auto p : _planets)
+    if(p && p->IsAlive())
+      objects.push_back(p);
   
   _collisioncheck_statistics.elapsed_time += deltatime;
   _collisioncheck_statistics.elapsed_frames++;
@@ -323,21 +312,9 @@ ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
   if(Settings->GetBool("cheat_no_enemies"))
     return nullptr;
 
-  auto ind = _invaders.GetNextFreeIndex();
-  if(ind >= _invaders.size())
-    {
-      ind = static_cast<unsigned int>(_invaders.size());
-      _invaders.push_back(nullptr);
-    }
-  
   auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
-  invader->SetPosition(position);
   invader->RotateYaw(180.0);
-
-  SetupSceneObject(invader, true);
-  
-  delete _invaders[ind];
-  _invaders[ind] = invader;
+  AddObject(invader, position);
 
   return invader;
 }
@@ -367,7 +344,7 @@ void Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & po
 }
 
 
-bool Scene::AddObject(Object * object, const glm::vec3 & position)
+void Scene::AddObject(Object * object, const glm::vec3 & position)
 {
   assert(object->IsAlive());
 
@@ -384,8 +361,6 @@ bool Scene::AddObject(Object * object, const glm::vec3 & position)
   object->SetPosition(position);
 
   SetupSceneObject(object, true);
-  
-  return true;
 }
 
 
@@ -424,10 +399,14 @@ std::vector<ObjectMovable *> * Scene::GetNearbyObjects(const glm::vec3 & positio
     if(glm::distance(position, _player->GetPosition()) < radius)
       rv->push_back(_player);
 
-  for(auto o : _invaders)
+  for(auto o : _objects)
     if(o && o->IsAlive())
       if(glm::distance(position, o->GetPosition()) < radius)
-        rv->push_back(o);
+        {
+          auto d = dynamic_cast<ObjectMovable *>(o);
+          if(d)
+            rv->push_back(d);
+        }
 
   for(auto o : _collectibles)
     if(o && o->IsAlive())

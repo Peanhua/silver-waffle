@@ -33,6 +33,7 @@ ObjectBonusLevelEntrance::ObjectBonusLevelEntrance(Scene * scene, double enemy_d
   SetCollidesWithChannels(0);
   AddCollidesWithChannel(CollisionChannel::PLAYER);
   SetIsAffectedByGravity(false);
+  SetTickingRequiresPlayerAlive(true);
 
   GetMesh()->SetAllColor(glm::vec4(enemy_difficulty, 0.0f, warp_fuel_bonus, 0.2f), true);
   GetMesh()->UpdateGPU();
