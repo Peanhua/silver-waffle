@@ -34,6 +34,9 @@ ScenePlanet::ScenePlanet()
   auto atmosphere = new ObjectPlanetAtmosphere(this, GetPlayAreaSize().xz(), {1, 0, 0}, {0, 0, 0.5});
   atmosphere->Translate({0, groundsize / 2.0f, 0});
   AddPlanet(atmosphere);
+
+  CreatePlayer();
+  SetupPlayer();
 }
 
 
@@ -122,9 +125,11 @@ void ScenePlanet::Draw(const Camera & camera) const
 
 bool ScenePlanet::AreInSameCollisionPartition(Object * a, Object * b) const
 {
-  auto xdist = std::abs(a->GetPosition().x - b->GetPosition().x);
-  auto zdist = std::abs(a->GetPosition().z - b->GetPosition().z);
   auto mindist = static_cast<float>(a->GetMesh()->GetBoundingSphereRadius() + b->GetMesh()->GetBoundingSphereRadius());
+  const auto & apos = a->GetPosition();
+  const auto & bpos = b->GetPosition();
+  auto xdist = std::abs(apos.x - bpos.x);
+  auto zdist = std::abs(apos.z - bpos.z);
   return xdist < mindist && zdist < mindist;
 }
 

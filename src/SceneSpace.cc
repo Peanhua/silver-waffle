@@ -26,6 +26,7 @@ SceneSpace::SceneSpace()
   _milkyway = new Milkyway();
   _particles = new SpaceParticles(5.0, 50.0, 0);
   _wall = new WormholeWall(100, 4);
+  CreatePlayer();
   SetupPlayer();
 }
 

@@ -43,8 +43,6 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
   std::minstd_rand random(_random_generator());
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
-
-  CreatePlayer();
 }
 
 
