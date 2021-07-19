@@ -184,10 +184,11 @@ void ShaderProgram::SetUBOMatrix(const std::string & ubo_name, const std::string
       glGenBuffers(1, &ubo);
       _ubos[ubo_name] = ubo;
 
+      auto size = 2 * sizeof(glm::mat4) + 2 * sizeof(float) + 2 * sizeof(float);
       glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-      glBufferData(GL_UNIFORM_BUFFER, 2 * sizeof(glm::mat4) + 1 * sizeof(float), nullptr, GL_DYNAMIC_DRAW);
+      glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
       glBindBuffer(GL_UNIFORM_BUFFER, 0);
-      glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, 2 * sizeof(glm::mat4) + 1 * sizeof(float));
+      glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, size);
     }
   assert(ubo != GL_INVALID_INDEX);
   glBindBuffer(GL_UNIFORM_BUFFER, ubo);
@@ -197,8 +198,8 @@ void ShaderProgram::SetUBOMatrix(const std::string & ubo_name, const std::string
 
 void ShaderProgram::SetUBOFloat(const std::string & ubo_name, const std::string & name, const float value)
 {
-  assert(name == "in_time");
   unsigned int pos = 2 * sizeof(glm::mat4); // todo: find the position properly
+  assert(name == "in_time");
   GLuint ubo = GL_INVALID_INDEX;
   auto it = _ubos.find(ubo_name);
   if(it != _ubos.end())
@@ -209,6 +210,23 @@ void ShaderProgram::SetUBOFloat(const std::string & ubo_name, const std::string 
   assert(ubo != GL_INVALID_INDEX);
   glBindBuffer(GL_UNIFORM_BUFFER, ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof value, &value);
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void ShaderProgram::SetUBOVec2(const std::string & ubo_name, const std::string & name, const glm::vec2 & value)
+{
+  unsigned int pos = 2 * sizeof(glm::mat4) + 2 * sizeof(float); // todo: find the position properly
+  assert(name == "in_resolution");
+  GLuint ubo = GL_INVALID_INDEX;
+  auto it = _ubos.find(ubo_name);
+  if(it != _ubos.end())
+    ubo = (*it).second;
+  else
+    assert(false); // todo
+
+  assert(ubo != GL_INVALID_INDEX);
+  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof value, glm::value_ptr(value));
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 

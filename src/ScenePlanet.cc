@@ -13,6 +13,7 @@
 #include "Camera.hh"
 #include "ControllerPlanet.hh"
 #include "Mesh.hh"
+#include "ObjectCloud.hh"
 #include "ObjectPlanetAtmosphere.hh"
 #include "ObjectPlanetGround.hh"
 #include "ObjectSpaceship.hh"
@@ -34,6 +35,19 @@ ScenePlanet::ScenePlanet()
   auto atmosphere = new ObjectPlanetAtmosphere(this, GetPlayAreaSize().xz(), {1, 0, 0}, {0, 0, 0.5});
   atmosphere->Translate({0, groundsize / 2.0f, 0});
   AddPlanet(atmosphere);
+
+  auto GetRand = [this]()
+  {
+    return _rdist(_random_generator);
+  };
+  for(int i = 0; i < 100; i++)
+    {
+      auto cloud = new ObjectCloud(this, static_cast<unsigned int>(_random_generator()));
+      glm::vec3 pos(GetPlayAreaSize().x * GetRand(),
+                    GetPlayAreaSize().y * GetRand(),
+                    GetPlayAreaSize().z * GetRand() * 0.2f);
+      AddObject(cloud, pos);
+    }
 
   CreatePlayer();
   SetupPlayer();

@@ -51,6 +51,7 @@ void Scene::Draw(const Camera & camera) const
   {
     std::vector<std::string> shadernames
       {
+        "Cloud",
         "SceneObject-Color",
         "SceneObject-Texture",
         "BonusLevelEntrance",

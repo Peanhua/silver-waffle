@@ -61,6 +61,8 @@ stamp-h1
 /Images/*-low.png
 /Shaders/BonusLevelEntrance.frag
 /Shaders/BonusLevelEntrance.vert
+/Shaders/Cloud.frag
+/Shaders/Cloud.vert
 /Shaders/GaussianBlur-Horizontal.frag
 /Shaders/GaussianBlur-Horizontal.vert
 /Shaders/GaussianBlur-Vertical.frag

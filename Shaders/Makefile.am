@@ -48,6 +48,11 @@ SpaceJunkLines.frag : Star.frag Include/Input.frag Include/Output.frag Include/D
 SpaceJunkLines.geom : StarLines.geom Include/Input.geom Include/Output.geom Include/Data.glsl Include/Uniforms.glsl
 	$(AM_V_GEN) ./generate-variants.sh $< $@
 
+Cloud.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
+	$(AM_V_GEN) ./generate-variants.sh $< $@
+
+Cloud.frag : src/Cloud.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
+	$(AM_V_GEN) ./generate-variants.sh $< $@
 
 
 shaders_DATA = \
@@ -55,6 +60,8 @@ shaders_DATA = \
 	AdditiveBlending.vert		\
 	BonusLevelEntrance.frag		\
 	BonusLevelEntrance.vert		\
+	Cloud.frag			\
+	Cloud.vert			\
 	Explosion.frag			\
 	Explosion.vert			\
 	Font.frag			\
@@ -86,6 +93,8 @@ shaders_DATA = \
 CLEANFILES = \
 	BonusLevelEntrance.frag		\
 	BonusLevelEntrance.vert		\
+	Cloud.frag			\
+	Cloud.vert			\
 	GaussianBlur-Horizontal.frag	\
 	GaussianBlur-Horizontal.vert	\
 	GaussianBlur-Vertical.frag	\
