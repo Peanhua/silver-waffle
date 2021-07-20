@@ -18,6 +18,7 @@
 #include "ObjectCollectible.hh"
 #include "ShaderProgram.hh"
 #include "SolarSystemObject.hh"
+#include "SubsystemSettings.hh"
 #include <cassert>
 #include <iostream>
 #include <fstream>
@@ -359,9 +360,22 @@ Font * SubsystemAssetLoader::LoadFont(float size)
   if(it != _fonts.end())
     return (*it).second;
 
-  std::string name("Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf");
+  std::string name(Settings->GetString("font"));
   auto font = new Font(name, static_cast<unsigned int>(size * 1.15f));
-  std::cout << "Loaded font '" << name << "' size " << size << ".\n";
+  assert(font);
+  
+  if(font->Load())
+    {
+      std::cout << "Loaded font '" << name << "' size " << size << ".\n";
+    }
+  else
+    {
+      auto success = font->Generate();
+      assert(success);
+      std::cout << "Generated font '" << name << "' size " << size << ".\n";
+      font->Save();
+    }
+  
   _fonts[size] = font;
   return font;
 }

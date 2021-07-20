@@ -57,8 +57,10 @@ missing
 stamp-h1
 
 # Generated files
+/Data/Font-*
 /Images/*-low.jpg
 /Images/*-low.png
+/Images/Font-*
 /Shaders/BonusLevelEntrance.frag
 /Shaders/BonusLevelEntrance.vert
 /Shaders/Cloud.frag

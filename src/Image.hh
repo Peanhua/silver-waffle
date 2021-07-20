@@ -29,6 +29,7 @@ public:
 
   bool   Load(const std::string & filename);
   bool   Load(SDL_Surface & source);
+  bool   Save(const std::string & filename);
   void   UpdateGPU(bool mipmapping, bool linear_filtering);
   GLuint GetTextureId() const;
   void   SetTextureId(GLuint texture_id);

@@ -15,6 +15,7 @@
 #include "SubsystemAssetLoader.hh"
 #include <cassert>
 #include <cerrno>
+#include <fstream>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include <iostream>
@@ -23,24 +24,33 @@
 
 
 Font::Font(const std::string & name, unsigned int font_size)
-  : _image     (NULL),
-    _height    (0)
+  : _name           (name),
+    _font_size      (font_size),
+    _height         (0),
+    _image          (nullptr),
+    _image_allocated(false)
+{
+}
+
+
+bool Font::Generate()
 {
   configchar fontdata[256];
 
   FT_Library ft;
 
-  _height = font_size;
+  _height = _font_size;
   if(FT_Init_FreeType(&ft) == 0)
     {
       FT_Face face;
  
-      if(FT_New_Face(ft, name.c_str(), 0, &face) == 0)
+      if(FT_New_Face(ft, _name.c_str(), 0, &face) == 0)
         {
-          FT_Set_Pixel_Sizes(face, 0, font_size);
+          FT_Set_Pixel_Sizes(face, 0, _font_size);
 
           unsigned int x = 0;
           _image = new Image(1, _height, 1, false);
+          _image_allocated = true;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
 #pragma GCC diagnostic ignored "-Wuseless-cast"
@@ -86,7 +96,7 @@ Font::Font(const std::string & name, unsigned int font_size)
                 /* Add some padding to it. */
                 const unsigned int padding = 2;
                 unsigned int padding_left = padding + static_cast<unsigned int>(face->glyph->bitmap_left);
-                unsigned int padding_top  = font_size - static_cast<unsigned int>(face->glyph->bitmap_top);
+                unsigned int padding_top  = _font_size - static_cast<unsigned int>(face->glyph->bitmap_top);
                 Image padded_glyph(glyph.GetWidth() + padding_left + padding, glyph.GetHeight() + padding_top + padding, 1, false);
                 padded_glyph.Clear();
                 padded_glyph.Blit(padding_left, padding_top, glyph);
@@ -107,17 +117,17 @@ Font::Font(const std::string & name, unsigned int font_size)
                   _height = padded_glyph.GetHeight();
               }
             else
-              std::cout << "Failed to load character '" << c << std::endl;
+              std::cout << "Failed to load character '" << c << "' from font '" << _name << "'" << std::endl;
           FT_Done_Face(face);
         }
       else
-        std::cout << "Failed to open font '" << name << "'" << std::endl;
+        std::cout << "Failed to open font '" << _name << "'" << std::endl;
 
       FT_Done_FreeType(ft);
     }
 
-  assert(_image != NULL);
-  if(_image != NULL)
+  assert(_image);
+  if(_image)
     {
       unsigned int ccount = 0;
       for(int i = '!'; i <= '~'; i++)
@@ -126,11 +136,9 @@ Font::Font(const std::string & name, unsigned int font_size)
       _characters.resize(ccount);
       for(unsigned int i = '!'; i <= '~'; i++)
         {
-          struct fontcharacter * fc;
-                  
           unsigned int c = i - '!';
                   
-          fc = &_characters[c];
+          auto fc = &_characters[c];
                   
           fc->width = fontdata[c].width;
 
@@ -147,18 +155,19 @@ Font::Font(const std::string & name, unsigned int font_size)
       _image->Expand(_image->GetWidth() + 4 - padding, _image->GetHeight());
   }
       
-
-  /* Send the final texture to the OpenGL. */
   _image->UpdateGPU(false, true);
 
   _height = _image->GetHeight();
+
+  return true;
 }
 
 
 Font::~Font()
 {
-  delete _image;
-  _image = NULL;
+  if(_image_allocated)
+    delete _image;
+  _image = nullptr;
 }
 
 
@@ -232,4 +241,79 @@ unsigned int Font::GetWidth(const std::string & text) const
 unsigned int Font::GetHeight() const
 {
   return _height;
+}
+
+
+
+
+bool Font::Load()
+{
+  std::string filename("Font-" + std::to_string(_font_size));
+  auto config = AssetLoader->LoadJson("Data/" + filename);
+  if(!config || !config->is_object())
+    return false;
+
+  auto & conf = *config;
+  assert(conf["name"].is_string());
+  assert(conf["font_size"].is_number());
+  assert(conf["characters"].is_array());
+  assert(_name == conf["name"].string_value());
+  assert(_font_size == static_cast<unsigned int>(conf["font_size"].int_value()));
+
+  _image = AssetLoader->LoadImage(filename);
+  _image_allocated = false;
+  if(!_image)
+    return false;
+
+  _height = static_cast<unsigned int>(conf["height"].int_value());
+
+  auto & chars = conf["characters"].array_items();
+  _characters.resize(chars.size());
+  
+  unsigned int i = 0;
+  for(auto c : chars)
+    {
+      assert(c["width"].is_number());
+      assert(c["texture_coordinates"].is_array());
+      auto fc = &_characters[i++];
+      fc->width = static_cast<unsigned int>(c["width"].int_value());
+      auto & coords = c["texture_coordinates"].array_items();
+      for(unsigned int j = 0; j < 4; j++)
+        {
+          assert(coords[j].is_number());
+          fc->texture_coordinates[j] = static_cast<float>(coords[j].number_value());
+        }
+    }
+
+  _image->UpdateGPU(false, true);
+  _height = _image->GetHeight();
+  
+  return true;
+}
+
+
+void Font::Save() const
+{
+  json11::Json config = json11::Json::object {
+    { "name",       _name                        },
+    { "font_size",  static_cast<int>(_font_size) },
+    { "characters", _characters                  }
+  };
+
+  std::string filename("Font-" + std::to_string(_font_size));
+
+  if(!_image->Save("Images/" + filename))
+    {
+      std::cerr << "Warning, failed to save font.\n";
+      return;
+    }
+  
+  std::ofstream file("Data/" + filename + ".json");
+  if(!file)
+    {
+      std::cerr << "Warning, failed to save font.\n";
+      return;
+    }
+  file << config.dump();
+  std::cout << "Cached font data: " << filename << "\n";
 }

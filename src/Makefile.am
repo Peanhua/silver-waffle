@@ -1,24 +1,26 @@
 AM_CXXFLAGS =                \
-        $(SDL2_CFLAGS)       \
-        $(SDL2_image_CFLAGS) \
+	$(ASSIMP_CFLAGS)     \
+	$(FREETYPE2_CFLAGS)  \
         $(GL_CFLAGS)         \
         $(GLEW_CFLAGS)       \
         $(GLM_CFLAGS)        \
-	$(ASSIMP_CFLAGS)     \
 	$(JSON11_CFLAGS)     \
-	$(FREETYPE2_CFLAGS)  \
+	$(LIBPNG_CFLAGS)     \
+        $(SDL2_CFLAGS)       \
+        $(SDL2_image_CFLAGS) \
 	$(VALGRIND_CFLAGS)
 
 bin_PROGRAMS = silverwaffle
 
 silverwaffle_LDADD =       \
-        $(SDL2_LIBS)       \
-        $(SDL2_image_LIBS) \
+	$(ASSIMP_LIBS)     \
+	$(FREETYPE2_LIBS)  \
         $(GL_LIBS)         \
         $(GLEW_LIBS)       \
-	$(ASSIMP_LIBS)     \
 	$(JSON11_LIBS)     \
-	$(FREETYPE2_LIBS)
+	$(LIBPNG_LIBS)     \
+        $(SDL2_LIBS)       \
+        $(SDL2_image_LIBS)
 
 silverwaffle_SOURCES =				\
 	AdditiveBlending.cc			\
@@ -36,6 +38,7 @@ silverwaffle_SOURCES =				\
 	GaussianBlur.cc				\
 	HighscoreEntry.cc			\
 	Image.cc				\
+	Image_Save.cc				\
 	Level.cc				\
 	LevelBonus.cc				\
 	LevelPlanet.cc				\

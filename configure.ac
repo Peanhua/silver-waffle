@@ -25,6 +25,8 @@ PKG_CHECK_MODULES([JSON11], [json11 >= 1])
 
 PKG_CHECK_MODULES([FREETYPE2], [freetype2])
 
+PKG_CHECK_MODULES([LIBPNG], [libpng])
+
 
 AC_ARG_WITH([valgrind], AS_HELP_STRING([--with-valgrind], [Build with support for Valgrind.]))
 AS_IF([test "x$with_valgrind" = "xyes"], [

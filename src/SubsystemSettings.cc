@@ -40,6 +40,8 @@ bool SubsystemSettings::Start()
   _bool_values["cheat_no_enemies"] = false;
   _bool_values["cheat_cheap_upgrades"] = false;
   _bool_values["cheat_planet_lander_disable_distance_check"] = false;
+
+  _string_values["font"] = "Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf";
   
   return true;
 }
@@ -88,4 +90,16 @@ double SubsystemSettings::GetDouble(const std::string & name) const
 
   assert(false);
   return 0;
+}
+
+
+const std::string & SubsystemSettings::GetString(const std::string & name) const
+{
+  auto it = _string_values.find(name);
+  if(it != _string_values.end())
+    return (*it).second;
+
+  assert(false);
+  static std::string defaultrv;
+  return defaultrv;
 }
