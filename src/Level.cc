@@ -13,6 +13,7 @@
 #include "Camera.hh"
 #include "Image.hh"
 #include "Mesh.hh"
+#include "ObjectBuilding.hh"
 #include "ObjectInvader.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
@@ -76,13 +77,10 @@ void Level::Start()
           offset[i] = static_cast<float>(config["offset"][static_cast<unsigned int>(i)].number_value());
         
         {
+          auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), type);
+          _scene->AddObject(building);
+
           glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f + _scene->GetPlayAreaSize() * offset;
-          auto building = _scene->AddInvader(type, pos);
-          building->SetIsSleeping(true);
-          building->AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
-          building->RemoveFromCollisionChannel(Object::CollisionChannel::ENEMY);
-          building->AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
-          building->RemoveCollidesWithChannel(Object::CollisionChannel::TERRAIN);
           pos.z = -_scene->GetPlayAreaSize().z * 0.5f + building->GetMesh()->GetBoundingBoxHalfSize().z;
           building->SetPosition(pos);
           
@@ -116,10 +114,8 @@ void Level::Start()
                 pos.x += static_cast<float>(x) * blocksize.x;
                 pos.y = 0;
                 pos.z += static_cast<float>(y) * blocksize.z;
-                auto block = _scene->AddInvader(3, pos);
-                block->SetIsSleeping(true);
-                block->SetCollisionChannels(0);
-                block->AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
+                auto block = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 1);
+                _scene->AddObject(block, pos);
                 block->SetCollidesWithChannels(0);
                 block->SetMesh(new Mesh(*block->GetMesh()));
                 block->GetMesh()->SetBoundingBoxHalfSize(blocksize * 0.5f);

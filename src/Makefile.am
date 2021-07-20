@@ -51,6 +51,7 @@ silverwaffle_SOURCES =				\
 	Milkyway.cc				\
 	Object.cc				\
 	ObjectBonusLevelEntrance.cc		\
+	ObjectBuilding.cc			\
 	ObjectCloud.cc				\
 	ObjectCollectible.cc			\
 	ObjectInvader.cc			\
