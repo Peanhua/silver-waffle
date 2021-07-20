@@ -21,7 +21,9 @@ ObjectCloud::ObjectCloud(Scene * scene, unsigned int random_seed)
   t = glm::scale(t, scale);
   GetMesh()->ApplyTransform(t);
   GetMesh()->UpdateGPU();
-  GetMesh()->CalculateBoundingVolumes();
+  auto cursize = GetMesh()->GetBoundingBoxHalfSize();
+  cursize *= scale;
+  GetMesh()->SetBoundingSphereRadius(glm::length(cursize));
   SetCollisionChannels(0);
   SetCollidesWithChannels(0);
   SetUseHealth(false);
