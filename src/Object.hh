@@ -12,12 +12,12 @@
   Complete license can be found in the LICENSE file.
 */
 
+#include "CollisionShape.hh"
 #include "glm.hh"
 #include <algorithm>
 #include <random>
 
 class Camera;
-class CollisionShape;
 class Controller;
 class Loot;
 class Mesh;
@@ -123,6 +123,8 @@ public:
   bool ShouldTick() const;
   void SetTickingRequiresPlayerAlive(bool alive_required);
   void SetTickingRequiresPlayerVisibility(bool visibility_required);
+
+  void CreateCollisionShape(CollisionShape::Type type);
   
 private:
   std::mt19937_64                       _random_generator;

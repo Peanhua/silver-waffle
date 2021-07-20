@@ -13,6 +13,8 @@
 #include "Camera.hh"
 #include "CollisionShapeOBB.hh"
 #include "CollisionShapeSphere.hh"
+#include "Controller.hh"
+#include "GameStats.hh"
 #include "Loot.hh"
 #include "Mesh.hh"
 #include "ObjectCollectible.hh"
@@ -352,6 +354,21 @@ void Object::OnDestroyed(Object * destroyer)
   for(auto callback : _on_destroyed)
     callback(destroyer);
   SpawnLoot();
+
+  if(destroyer && destroyer != this)
+    {
+      auto controller = destroyer->GetController();
+      if(controller)
+        {
+          auto player = controller->GetOwner();
+          if(player)
+            {
+              auto gamestats = player->GetOwnerGameStats();
+              if(gamestats)
+                gamestats->AddScore(1);
+            }
+        }
+    }
 }
 
 
@@ -599,4 +616,18 @@ void Object::SetTickingRequiresPlayerAlive(bool alive_required)
 void Object::SetTickingRequiresPlayerVisibility(bool visibility_required)
 {
   _ticking_requires_player_visibility = visibility_required;
+}
+
+
+void Object::CreateCollisionShape(CollisionShape::Type type)
+{
+  switch(type)
+    {
+    case CollisionShape::Type::OBB:
+      SetCollisionShape(new CollisionShapeOBB(this, GetMesh()->GetBoundingBoxHalfSize()));
+      break;
+    case CollisionShape::Type::SPHERE:
+      SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
+      break;
+    }
 }

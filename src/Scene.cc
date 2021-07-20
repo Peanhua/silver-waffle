@@ -298,13 +298,12 @@ void Scene::AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity)
 }
 
 
-ObjectInvader * Scene::AddInvader(const glm::vec3 & position)
+ObjectInvader * Scene::AddInvader(unsigned int type, const glm::vec3 & position)
 {
   if(Settings->GetBool("cheat_no_enemies"))
     return nullptr;
 
-  auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()));
-  invader->RotateYaw(180.0);
+  auto invader = new ObjectInvader(this, static_cast<unsigned int>(_random_generator()), type);
   AddObject(invader, position);
 
   return invader;

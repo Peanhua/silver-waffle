@@ -10,48 +10,17 @@
   Complete license can be found in the LICENSE file.
 */
 #include "ObjectInvader.hh"
-#include "CollisionShapeOBB.hh"
-#include "CollisionShapeSphere.hh"
-#include "Controller.hh"
-#include "GameStats.hh"
 #include "Loot.hh"
-#include "Mesh.hh"
-#include "ObjectCollectible.hh"
-#include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
 
 
-ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed)
+ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed, unsigned int type)
   : ObjectSpaceship(scene, random_seed)
 {
   AddToCollisionChannel(CollisionChannel::ENEMY);
   AddCollidesWithChannel(CollisionChannel::PLAYER);
-}
+  RotateYaw(180.0);
 
-
-void ObjectInvader::OnDestroyed(Object * destroyer)
-{
-  if(destroyer)
-    {
-      auto controller = destroyer->GetController();
-      if(controller)
-        {
-          auto player = controller->GetOwner();
-          if(player)
-            {
-              auto gamestats = player->GetOwnerGameStats();
-              if(gamestats)
-                gamestats->AddScore(1);
-            }
-        }
-    }
-
-  ObjectMovable::OnDestroyed(destroyer);
-}
-
-
-void ObjectInvader::SetInvaderType(unsigned int type)
-{
   auto config = AssetLoader->LoadJson("Data/Invaders");
   assert(config->is_object());
   assert((*config)["definitions"].is_array());
@@ -106,18 +75,4 @@ void ObjectInvader::SetInvaderType(unsigned int type)
     }
   
   SetHealth(GetMaxHealth());
-}
-
-
-void ObjectInvader::CreateCollisionShape(CollisionShape::Type type)
-{
-  switch(type)
-    {
-    case CollisionShape::Type::OBB:
-      SetCollisionShape(new CollisionShapeOBB(this, GetMesh()->GetBoundingBoxHalfSize()));
-      break;
-    case CollisionShape::Type::SPHERE:
-      SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
-      break;
-    }
 }

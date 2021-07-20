@@ -77,8 +77,7 @@ void Level::Start()
         
         {
           glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f + _scene->GetPlayAreaSize() * offset;
-          auto building = _scene->AddInvader(pos);
-          building->SetInvaderType(type);
+          auto building = _scene->AddInvader(type, pos);
           building->SetIsSleeping(true);
           building->AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
           building->RemoveFromCollisionChannel(Object::CollisionChannel::ENEMY);
@@ -117,8 +116,7 @@ void Level::Start()
                 pos.x += static_cast<float>(x) * blocksize.x;
                 pos.y = 0;
                 pos.z += static_cast<float>(y) * blocksize.z;
-                auto block = _scene->AddInvader(pos);
-                block->SetInvaderType(3);
+                auto block = _scene->AddInvader(3, pos);
                 block->SetIsSleeping(true);
                 block->SetCollisionChannels(0);
                 block->AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
@@ -252,11 +250,10 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, double deltatime,
             if(_max_spawn_count == 0 || _spawn_count < _max_spawn_count)
               {
                 auto pos = scene->GetRandomSpawnPosition();
-                auto invader = scene->AddInvader(pos);
+                auto invader = scene->AddInvader(_invader_type, pos);
                 assert(invader);
                 _spawn_count++;
 
-                invader->SetInvaderType(_invader_type);
                 if(!_invader_control_program.empty())
                   invader->AddNamedControlProgram(_invader_control_program);
 
