@@ -184,7 +184,7 @@ void ShaderProgram::SetUBOMatrix(const std::string & ubo_name, const std::string
       glGenBuffers(1, &ubo);
       _ubos[ubo_name] = ubo;
 
-      auto size = 2 * sizeof(glm::mat4) + 4 * sizeof(float) + 2 * sizeof(float) + sizeof(float);
+      GLsizeiptr size = 2 * sizeof(glm::mat4) + 4 * sizeof(float) + 2 * sizeof(float) + sizeof(float);
       glBindBuffer(GL_UNIFORM_BUFFER, ubo);
       glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
       glBindBuffer(GL_UNIFORM_BUFFER, 0);

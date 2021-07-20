@@ -191,6 +191,13 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
       rotate("rotate-x", glm::vec3(1, 0, 0));
       rotate("rotate-y", glm::vec3(0, 1, 0));
       rotate("rotate-z", glm::vec3(0, 0, 1));
+
+      if((*config)["shader"].is_string())
+        {
+          auto sp = LoadShaderProgram((*config)["shader"].string_value());
+          assert(sp);
+          mesh->SetShaderProgram(sp, true);
+        }
     }
   
   return mesh;

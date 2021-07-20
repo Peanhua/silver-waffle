@@ -34,11 +34,12 @@ CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size, con
   _vertices.push_back({b.x, b.y, a.z});
   _vertices.push_back(b);
 
-
+#ifdef DEBUG_COLLISION
   _debugmesh = new Mesh(*AssetLoader->LoadMesh("Cube", "Generic"));
   _debugmesh->ApplyTransform(glm::scale(size * 2.0f));
   _debugmesh->SetAllColor(debugcolor, true);
   _debugmesh->UpdateGPU();
+#endif
 }
 
 

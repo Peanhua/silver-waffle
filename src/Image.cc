@@ -85,6 +85,9 @@ bool Image::Load(SDL_Surface & source)
     {
       SDL_LockSurface(&source);
 
+      Uint32 colorkey;
+      bool have_colorkey = SDL_GetColorKey(&source, &colorkey) == 0;
+      
       for(int y = 0; y < source.h; y++)
         {
           uint8_t * src, * dst;
@@ -124,16 +127,9 @@ bool Image::Load(SDL_Surface & source)
                   a = 0xff;
                 }
 
-              Uint32 ckey;
-
-              if(SDL_GetColorKey(&source, &ckey) == 0)
-                {
-                  Uint32 rgb;
-                  
-                  rgb = SDL_MapRGB(source.format, r, g, b);
-                  if(rgb == ckey)
-                    a = 0x00;
-                }
+              if(have_colorkey)
+                if(SDL_MapRGB(source.format, r, g, b) == colorkey)
+                  a = 0x00;
 
               dst[0] = r;
               dst[1] = g;

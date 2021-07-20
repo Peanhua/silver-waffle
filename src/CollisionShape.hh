@@ -35,17 +35,20 @@ public:
   bool CheckCollision(const CollisionShape & other, glm::vec3 & out_hit_direction);
 
   const glm::vec3 & GetPosition() const;
-  Mesh * GetDebugMesh() const;
 
   virtual bool CheckCollisionOnSphere(const CollisionShape & other, glm::vec3 & out_hit_direction) const = 0;
   virtual bool CheckCollisionOnOBB(const CollisionShape & other, glm::vec3 & out_hit_direction) const = 0;
 
-protected:
-  Mesh *   _debugmesh;
-
 private:
   Object * _owner;
   Type     _type;
+
+#ifdef DEBUG_COLLISION
+public:
+  Mesh * GetDebugMesh() const;
+protected:
+  Mesh * _debugmesh;
+#endif
 };
 
 #endif

@@ -95,6 +95,7 @@ void Object::Draw(const Camera & camera) const
   if(!camera.IsInView(_position, static_cast<float>(_mesh->GetBoundingSphereRadius())))
     return;
   
+#ifdef DEBUG_COLLISION
   if(Settings->GetBool("draw_collision") && _collision_shape && _collision_shape->GetDebugMesh())
     {
       auto dmesh = _collision_shape->GetDebugMesh();
@@ -103,6 +104,7 @@ void Object::Draw(const Camera & camera) const
       dmesh->Draw(model, mvp);
     }
   else
+#endif
     Draw(camera.GetViewProjection());
 }
 
@@ -112,9 +114,11 @@ void Object::Draw(const glm::mat4 & vp) const
   if(_mesh)
     {
       auto shader = _mesh->GetShaderProgram();
-      shader->Use();
-      shader->SetVec("in_glow", glm::vec3(0.0, 0.0, 0.0));
-
+      if(shader)
+        {
+          shader->Use();
+          shader->SetVec("in_glow", glm::vec3(0.0, 0.0, 0.0));
+        }
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);
       _mesh->Draw(model, mvp);

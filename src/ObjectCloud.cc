@@ -7,8 +7,9 @@ ObjectCloud::ObjectCloud(Scene * scene, unsigned int random_seed)
   : ObjectMovable(scene, random_seed)
 {
   SetIsAffectedByGravity(false);
-  SetMesh(new Mesh(*AssetLoader->LoadMesh("Cloud1")));
-  GetMesh()->SetShaderProgram(AssetLoader->LoadShaderProgram("Cloud"), true);
+  auto cmesh = AssetLoader->LoadMesh("Cloud1");
+  SetMesh(new Mesh(0));
+  GetMesh()->AddChild(cmesh);
   glm::vec3 scale {
     5.0f + 5.0f * GetRand(),
     5.0f + 5.0f * GetRand(),
@@ -20,10 +21,11 @@ ObjectCloud::ObjectCloud(Scene * scene, unsigned int random_seed)
   glm::mat4 t = glm::toMat4(glm::angleAxis(glm::radians(angle), glm::vec3(0, 0, 1)));
   t = glm::scale(t, scale);
   GetMesh()->ApplyTransform(t);
-  GetMesh()->UpdateGPU();
-  auto cursize = GetMesh()->GetBoundingBoxHalfSize();
+  
+  auto cursize = cmesh->GetBoundingBoxHalfSize();
   cursize *= scale;
   GetMesh()->SetBoundingSphereRadius(glm::length(cursize));
+
   SetCollisionChannels(0);
   SetCollidesWithChannels(0);
   SetUseHealth(false);

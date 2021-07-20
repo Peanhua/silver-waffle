@@ -188,12 +188,14 @@ void ScreenLevel::Initialize()
   _levelinfo_widget->SetTextColor(glm::vec3(1.00, 0.88, 0.00));
   _levelinfo_widget->SetTextFont(AssetLoader->LoadFont(12));
 
+#if 0
 #ifdef WITH_VALGRIND
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wold-style-cast"
 # pragma GCC diagnostic ignored "-Wuseless-cast"
   CALLGRIND_ZERO_STATS;
 # pragma GCC diagnostic pop
+#endif
 #endif
   if(Settings->GetBool("demo"))
     _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Install();
@@ -461,8 +463,10 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
     case SDLK_F1:
       if(pressed)
         {
+#ifdef DEBUG_COLLISION
           auto f = Settings->GetBool("draw_collision");
           Settings->SetBool("draw_collision", !f);
+#endif
         }
       break;
     }

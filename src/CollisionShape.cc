@@ -14,9 +14,11 @@
 
 
 CollisionShape::CollisionShape(Object * owner, Type type)
-  : _debugmesh(nullptr),
-    _owner(owner),
+  : _owner(owner),
     _type(type)
+#ifdef DEBUG_COLLISION
+    , _debugmesh(nullptr)
+#endif
 {
   assert(_owner);
 }
@@ -58,7 +60,9 @@ const glm::vec3 & CollisionShape::GetPosition() const
 }
 
 
+#ifdef DEBUG_COLLISION
 Mesh * CollisionShape::GetDebugMesh() const
 {
   return _debugmesh;
 }
+#endif

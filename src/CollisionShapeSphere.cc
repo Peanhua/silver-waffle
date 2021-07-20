@@ -19,10 +19,12 @@ CollisionShapeSphere::CollisionShapeSphere(Object * owner, double radius)
   : CollisionShape(owner, Type::SPHERE),
     _radius(static_cast<float>(radius))
 {
+#ifdef DEBUG_COLLISION
   _debugmesh = new Mesh(*AssetLoader->LoadMesh("Sphere", "Generic"));
   _debugmesh->ApplyTransform(glm::scale(glm::vec3(radius, radius, radius) * 2.0f));
   _debugmesh->SetAllColor({1, 0.5, 0.5}, true);
   _debugmesh->UpdateGPU();
+#endif
 }
 
 
