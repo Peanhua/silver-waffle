@@ -9,6 +9,17 @@
       "mesh":            "OrganicCube",
       "collision_shape": "obb",
       "health":          2000
+    },
+    {
+      "mesh":            "AlienStructureSpawnerVertical",
+      "collision_shape": "sphere",
+      "health":          10000,
+      "spawn": {
+        "type":      0,
+        "interval": 10,
+        "max":       7,
+        "control_program": "face-player-shoot"
+      }
     }
   ]
 }

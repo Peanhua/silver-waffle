@@ -34,6 +34,8 @@ public:
 
   void SetIsAffectedByGravity(bool is_affected);
 
+  void SetDrag(double drag);
+
 private:
   glm::vec3 _velocity;
   bool      _velocity_enabled[3];
@@ -43,6 +45,7 @@ private:
   bool      _hit_impulse_enabled;
   bool      _is_affected_by_gravity;
   double    _bounciness;
+  double    _drag; // air resistance
 };
 
 #endif

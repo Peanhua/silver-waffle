@@ -380,9 +380,9 @@ void Scene::AddPlanet(Object * object)
 }
 
 
-std::vector<ObjectMovable *> * Scene::GetNearbyObjects(const glm::vec3 & position, float radius)
+std::vector<Object *> * Scene::GetNearbyObjects(const glm::vec3 & position, float radius) const
 {
-  auto rv = new std::vector<ObjectMovable *>();
+  auto rv = new std::vector<Object *>();
   assert(rv);
 
   if(_player && _player->IsAlive())
@@ -392,11 +392,7 @@ std::vector<ObjectMovable *> * Scene::GetNearbyObjects(const glm::vec3 & positio
   for(auto o : _objects)
     if(o && o->IsAlive())
       if(glm::distance(position, o->GetPosition()) < radius)
-        {
-          auto d = dynamic_cast<ObjectMovable *>(o);
-          if(d)
-            rv->push_back(d);
-        }
+        rv->push_back(o);
 
   for(auto o : _collectibles)
     if(o && o->IsAlive())
@@ -526,5 +522,32 @@ void Scene::ResetCollisionCheckStatistics()
 {
   CollisionCheckStatistics z;
   _collisioncheck_statistics = z;
+}
+
+
+glm::vec3 Scene::GetClosestGroundSurface(const glm::vec3 & position) const
+{
+  auto pos = position;
+  auto objs = GetNearbyObjects(position, GetPlayAreaSize().z);
+  bool retry = true;
+  while(retry)
+    {
+      retry = false;
+      for(auto o : *objs)
+        {
+          auto op = o->GetPosition();
+          auto dims = o->GetMesh()->GetBoundingBoxHalfSize();
+          auto topleft = op + glm::vec3(-dims.x, 0, dims.z);
+          auto botright = op + glm::vec3(dims.x, 0, -dims.z);
+          if(pos.x >= topleft.x  && pos.x <= botright.x &&
+             pos.z >= botright.z && pos.z <= topleft.z    )
+            {
+              retry = true;
+              pos.z = topleft.z + 0.01f;
+            }
+        }
+    }
+  delete objs;
+  return pos;
 }
 

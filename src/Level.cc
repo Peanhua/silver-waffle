@@ -67,35 +67,6 @@ void Level::Start()
   _time = 0;
   _boss_buildings_alive = 0;
 
-  if(_buildings_config.is_array())
-    for(auto config : _buildings_config.array_items())
-      {
-        auto type = static_cast<unsigned int>(config["type"].int_value());
-        auto boss = config["boss"].bool_value();
-        glm::vec3 offset;
-        for(int i = 0; i < 3; i++)
-          offset[i] = static_cast<float>(config["offset"][static_cast<unsigned int>(i)].number_value());
-        
-        {
-          auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), type);
-          _scene->AddObject(building);
-
-          glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f + _scene->GetPlayAreaSize() * offset;
-          pos.z = -_scene->GetPlayAreaSize().z * 0.5f + building->GetMesh()->GetBoundingBoxHalfSize().z;
-          building->SetPosition(pos);
-          
-          if(boss)
-            {
-              _boss_buildings_alive++;
-              building->SetOnDestroyed([this](Object * destroyer)
-              {
-                assert(destroyer == destroyer);
-                _boss_buildings_alive--;
-              });
-            }
-        }
-      }
-
   if(_destructible_terrain_config)
     { // For each pixel with alpha > 0, generate a destructible terrain block of relative size.
       auto img = _destructible_terrain_config;
@@ -129,6 +100,36 @@ void Level::Start()
               }
           }
     }
+  
+  if(_buildings_config.is_array())
+    for(auto config : _buildings_config.array_items())
+      {
+        auto type = static_cast<unsigned int>(config["type"].int_value());
+        auto boss = config["boss"].bool_value();
+        glm::vec3 offset;
+        for(int i = 0; i < 3; i++)
+          offset[i] = static_cast<float>(config["offset"][static_cast<unsigned int>(i)].number_value());
+        
+        {
+          auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), type);
+          _scene->AddObject(building);
+
+          glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f + _scene->GetPlayAreaSize() * offset;
+          pos = _scene->GetClosestGroundSurface(pos);
+          pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
+          building->SetPosition(pos);
+          
+          if(boss)
+            {
+              _boss_buildings_alive++;
+              building->SetOnDestroyed([this](Object * destroyer)
+              {
+                assert(destroyer == destroyer);
+                _boss_buildings_alive--;
+              });
+            }
+        }
+      }
 }
 
 
@@ -282,9 +283,9 @@ void Level::LoadConfig(const std::string & filename)
   if(levelconfig)
     {
       auto spawns = (*levelconfig)["spawns"];
-      assert(spawns.is_array());
-      for(auto spawn : spawns.array_items())
-        _program.push_back(new ProgramEntry(spawn));
+      if(spawns.is_array())
+        for(auto spawn : spawns.array_items())
+          _program.push_back(new ProgramEntry(spawn));
 
 
       _buildings_config = (*levelconfig)["buildings"];

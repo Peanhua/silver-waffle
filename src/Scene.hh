@@ -109,7 +109,7 @@ public:
   void              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position);
   void              AddObject(Object * object, const glm::vec3 & position = { 0, 0, 0 });
 
-  std::vector<ObjectMovable *> * GetNearbyObjects(const glm::vec3 & position, float radius);
+  std::vector<Object *> * GetNearbyObjects(const glm::vec3 & position, float radius) const;
 
   void StartWarpEngine();
   void StopWarpEngine();
@@ -123,6 +123,8 @@ public:
 
   const CollisionCheckStatistics & GetCollisionCheckStatistics() const;
   void ResetCollisionCheckStatistics();
+
+  glm::vec3 GetClosestGroundSurface(const glm::vec3 & position) const;
 
 protected:
   glm::vec3           _gravity;

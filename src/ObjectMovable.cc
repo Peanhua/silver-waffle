@@ -20,7 +20,8 @@ ObjectMovable::ObjectMovable(Scene * scene, unsigned int random_seed)
     _angular_velocity_magnitude(0),
     _hit_impulse_enabled(true),
     _is_affected_by_gravity(true),
-    _bounciness(-1)
+    _bounciness(-1),
+    _drag(-1)
 {
   _velocity_enabled[0] =
     _velocity_enabled[1] =
@@ -38,6 +39,8 @@ void ObjectMovable::Tick(double deltatime)
       if(scene)
         _velocity += scene->GetGravity() * static_cast<float>(deltatime);
     }
+  if(_drag > 0.0)
+    _velocity *= static_cast<float>(1.0 - _drag * deltatime);
     
   Translate(_velocity * static_cast<float>(deltatime));
 
@@ -128,4 +131,10 @@ void ObjectMovable::SetIsAffectedByGravity(bool is_affected)
 void ObjectMovable::SetBounciness(double bounciness)
 {
   _bounciness = bounciness;
+}
+
+
+void ObjectMovable::SetDrag(double drag)
+{
+  _drag = drag;
 }

@@ -20,6 +20,26 @@
       "type":   0,
       "boss":   true,
       "offset": [ 0.40, 0.0, 0.0 ]
+    },
+    {
+      "type":   2,
+      "boss":   true,
+      "offset": [ 0.50, 0.0, 0.0 ]
+    },
+    {
+      "type":   2,
+      "boss":   true,
+      "offset": [ 0.60, 0.0, 0.0 ]
+    },
+    {
+      "type":   2,
+      "boss":   true,
+      "offset": [ 0.98, 0.0, 0.0 ]
+    },
+    {
+      "type":   0,
+      "boss":   true,
+      "offset": [ 0.99, 0.0, 0.0 ]
     }
   ],
   "spawns": [
