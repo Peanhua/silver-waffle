@@ -11,6 +11,7 @@ layout (std140) uniform Data
 uniform mat4 in_mvp;
 uniform mat4 in_model;
 uniform vec3 in_glow;
+uniform vec3 in_colormod;
 
 #ifdef USE_TEXTURE
 uniform sampler2D texture0;

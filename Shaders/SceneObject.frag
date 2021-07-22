@@ -43,6 +43,6 @@ void main()
 #endif
   
   
-  out_color = vec4(color, alpha);
+  out_color = vec4(color * in_colormod, alpha);
   out_glow = vec4(in_glow, alpha);
 }

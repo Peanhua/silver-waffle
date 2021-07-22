@@ -543,7 +543,7 @@ glm::vec3 Scene::GetClosestGroundSurface(const glm::vec3 & position) const
              pos.z >= botright.z && pos.z <= topleft.z    )
             {
               retry = true;
-              pos.z = topleft.z + 0.01f;
+              pos.z = topleft.z + 0.001f;
             }
         }
     }

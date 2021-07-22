@@ -26,11 +26,11 @@ class ObjectSpaceship : public ObjectMovable
 public:
   ObjectSpaceship(Scene * scene, unsigned int random_seed);
 
-  void Draw(const glm::mat4 & vp) const override;
   void Tick(double deltatime) override;
   void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
   uint64_t GetCollidesWithChannels() const override;
-
+  double GetGlow() const override;
+  
   void         RemoveWeapons();
   void         AddWeapon();
   void         AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);

@@ -34,6 +34,7 @@ Object::Object(Scene * scene, unsigned int random_seed)
     _orientation(1, 0, 0, 0),
     _exceed_actions{ExceedAction::DESTROY, ExceedAction::DESTROY, ExceedAction::DESTROY},
     _mesh(nullptr),
+    _color(1, 1, 1),
     _sleeping(false),
     _destroyed(false),
     _use_health(true),
@@ -63,6 +64,7 @@ Object::Object(const Object & source)
     _orientation(source._orientation),
     _exceed_actions{source._exceed_actions[0], source._exceed_actions[1], source._exceed_actions[2]},
     _mesh(source._mesh),
+    _color(source._color),
     _sleeping(source._sleeping),
     _destroyed(source._destroyed),
     _use_health(source._use_health),
@@ -119,12 +121,19 @@ void Object::Draw(const glm::mat4 & vp) const
       if(shader)
         {
           shader->Use();
-          shader->SetVec("in_glow", glm::vec3(0.0, 0.0, 0.0));
+          shader->SetVec("in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
+          shader->SetVec("in_colormod", _color);
         }
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);
       _mesh->Draw(model, mvp);
     }
+}
+
+
+double Object::GetGlow() const
+{
+  return 0;
 }
 
 
@@ -630,4 +639,10 @@ void Object::CreateCollisionShape(CollisionShape::Type type)
       SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
       break;
     }
+}
+
+
+void Object::SetColor(const glm::vec3 & color)
+{
+  _color = color;
 }

@@ -75,6 +75,7 @@ void Level::Start()
       blocksize.y = 4;
       blocksize.z = _scene->GetPlayAreaSize().z / static_cast<float>(img->GetHeight());
 
+      Mesh * mesh = nullptr;
       for(unsigned int y = 0; y < img->GetHeight(); y++)
         for(unsigned int x = 0; x < img->GetWidth(); x++)
           {
@@ -88,12 +89,16 @@ void Level::Start()
                 auto block = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 1);
                 _scene->AddObject(block, pos);
                 block->SetCollidesWithChannels(0);
-                block->SetMesh(new Mesh(*block->GetMesh()));
-                block->GetMesh()->SetBoundingBoxHalfSize(blocksize * 0.5f);
-                block->GetMesh()->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
-                block->GetMesh()->SetAllColor(rgba.rgb());
-                block->GetMesh()->UpdateGPU();
-                block->GetMesh()->ApplyTransform(glm::scale(blocksize));
+                if(!mesh)
+                  {
+                    mesh = new Mesh(*block->GetMesh());
+                    mesh->UpdateGPU();
+                    mesh->SetBoundingBoxHalfSize(blocksize * 0.5f);
+                    mesh->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
+                    mesh->ApplyTransform(glm::scale(blocksize));
+                  }
+                block->SetMesh(mesh);
+                block->SetColor(rgba.rgb());
                 block->SetMaxHealth(block->GetMaxHealth() * static_cast<double>(rgba.a));
                 block->SetHealth(block->GetMaxHealth());
                 block->CreateCollisionShape(block->GetCollisionShape()->GetType());

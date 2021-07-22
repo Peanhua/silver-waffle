@@ -48,7 +48,7 @@ public:
   Object & operator=(Object &&)      = delete; // todo: move assignment
 
   void         Draw(const Camera & camera) const;
-  virtual void Draw(const glm::mat4 & vp) const;
+  void         Draw(const glm::mat4 & vp) const;
   virtual void Tick(double deltatime);
   virtual void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse);
   virtual void OnDestroyed(Object * destroyer);
@@ -58,6 +58,8 @@ public:
 
   Mesh * GetMesh() const;
   void   SetMesh(Mesh * mesh);
+  void   SetColor(const glm::vec3 & color);
+  virtual double GetGlow() const;
   virtual double GetVisualBoundingSphereRadius() const;
 
   CollisionShape * GetCollisionShape() const;
@@ -136,6 +138,7 @@ private:
   glm::quat    _orientation;
   ExceedAction _exceed_actions[3];
   Mesh *    _mesh;
+  glm::vec3 _color;
   bool      _sleeping;
   bool      _destroyed;
   bool      _use_health;
