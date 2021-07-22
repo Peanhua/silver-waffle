@@ -16,7 +16,7 @@ void main()
   
   const vec3 light_position = vec3(0, 0, 100);
   const vec3 ambient = vec3(0.1f, 0.1f, 0.1f);
-  const float material_shininess = 16.0f;
+  const float material_shininess = 2.0f;
   vec3 color = DirectionalLight(light_position,
                                 ambient,
                                 fin.position,
@@ -47,7 +47,7 @@ void main()
     discard;
   else
     {
-      out_color = vec4(color, alpha);
+      out_color = vec4(color * in_colormod, alpha);
       out_glow = vec4(in_glow, alpha);
     }
 }

@@ -23,19 +23,9 @@ ScoreReel::ScoreReel(unsigned int drum_count)
   : _drum_count(drum_count),
     _drum_width(0.75)
 {
-  auto nums = AssetLoader->LoadMesh("Numbers");
-  std::vector<Mesh *> numbers;
-  for(char i = '0'; i <= '9'; i++)
-    {
-      auto n = nums->FindChild(std::string("Number") + i);
-      assert(n);
-      numbers.push_back(n);
-    }
-  
-  
+  _drum = AssetLoader->LoadMesh("ScoreReelDrum");
   for(unsigned int i = 0; i < _drum_count; i++)
     {
-      _drums.push_back(CreateDrum(numbers));
       _drums_angles.push_back(0);
       _drums_target_angles.push_back(0);
     }
@@ -82,6 +72,11 @@ ScoreReel::ScoreReel(unsigned int drum_count)
   
   _background->UpdateGPU();
 
+  _projection = glm::perspective(glm::radians(30.0), 512.0 / 128.0, 0.001, 100.0);
+  _view = glm::lookAt(glm::vec3(0.0f, -3.5, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+  _viewprojection = _projection * _view;
+  _model = glm::translate(glm::mat4(1), glm::vec3(0.5f * -static_cast<float>(_drum_count) * static_cast<float>(_drum_width), 0, 0));
+  
   SetScore(0);
 }
 
@@ -89,7 +84,7 @@ ScoreReel::ScoreReel(unsigned int drum_count)
 bool ScoreReel::Tick(double deltatime)
 {
   bool should_draw = false;
-  for(unsigned int i = 0; i < _drums.size(); i++)
+  for(unsigned int i = 0; i < _drum_count; i++)
     {
       auto diff = _drums_target_angles[i] - _drums_angles[i];
       _drums_angles[i] += diff * deltatime;
@@ -106,25 +101,19 @@ void ScoreReel::Draw() const
   assert(shader);
   shader->Use();
   shader->SetVec("in_glow", glm::vec3(0.0, 0.0, 0.0));
-  ShaderProgram::SetUBOVec3("Data", "in_light_color", glm::vec3(1.00, 0.59, 0.19));
+  shader->SetVec("in_colormod", glm::vec3(1, 1, 1));
+  ShaderProgram::SetUBOVec3("Data",   "in_light_color", glm::vec3(1.00, 0.59, 0.19));
+  ShaderProgram::SetUBOMatrix("Data", "in_view",        _view);
+  ShaderProgram::SetUBOMatrix("Data", "in_projection",  _projection);
 
-  glm::mat4 proj = glm::perspective(glm::radians(30.0), 512.0 / 128.0, 0.001, 100.0);
-  glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -static_cast<float>(_drum_count) * static_cast<float>(_drum_width) * 0.65f, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
-  glm::mat4 model = glm::translate(glm::mat4(1), glm::vec3(0.5f * -static_cast<float>(_drum_count) * static_cast<float>(_drum_width), 0, 0));
-
-  ShaderProgram::SetUBOMatrix("Data", "in_view",       view);
-  ShaderProgram::SetUBOMatrix("Data", "in_projection", proj);
-
-  _background->Draw(model, proj * view * model);
+  _background->Draw(_model, _viewprojection * _model);
   
-  for(unsigned int i = 0; i < _drums.size(); i++)
+  for(unsigned int i = 0; i < _drum_count; i++)
     {
-      glm::mat4 drummodel(model);
+      glm::mat4 drummodel(_model);
       drummodel = glm::translate(drummodel, glm::vec3(static_cast<float>(_drum_width) * (static_cast<float>(i) + 0.125f), 0, 0));
-      drummodel = glm::rotate(drummodel, glm::radians(180.0f), glm::vec3(1, 0, 0));
       drummodel = glm::rotate(drummodel, glm::radians(static_cast<float>(_drums_angles[i])), glm::vec3(1, 0, 0));
-
-      _drums[i]->Draw(drummodel, proj * view * drummodel);
+      _drum->Draw(drummodel, _viewprojection * drummodel);
     }
 }
 
@@ -138,8 +127,7 @@ void ScoreReel::SetScore(unsigned int score)
       score /= 10;
       
       const auto drumind = _drum_count - i - 1;
-      const double adjustment = 0.47;
-      _drums_target_angles[drumind] = 360.0 / 10.0 * (adjustment + static_cast<double>(10 - drumscore));
+      _drums_target_angles[drumind] = 360.0 / 10.0 * static_cast<double>(10 - drumscore);
     }
 }
 
@@ -148,25 +136,3 @@ unsigned int ScoreReel::GetScore() const
 {
   return _score;
 }
-
-
-Mesh * ScoreReel::CreateDrum(const std::vector<Mesh *> numbers) const
-{
-  Mesh * drum = new Mesh(0);
-  
-  glm::mat4 rot(1);
-  for(unsigned int i = 0; i <= 9; i++)
-    {
-      auto num = new Mesh(*numbers[i]);
-      auto forward = glm::column(rot, 1);
-      auto mov = glm::translate(glm::mat4(1), forward.xyz() * 1.3f);
-      num->ApplyTransform(mov * glm::rotate(rot, glm::radians(-18.0f), glm::vec3(1, 0, 0)));
-      drum->AddChild(num);
-      rot = glm::rotate(rot, glm::radians(36.0f), glm::vec3(1, 0, 0));
-    }
-  
-  drum->UpdateGPU();
-
-  return drum;
-}
-

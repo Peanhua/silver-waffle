@@ -21,7 +21,7 @@
 
 
 ScenePlanet::ScenePlanet()
-  : Scene({2000, 0, 100}, {true, false, false}),
+  : Scene({2000, 0, 200}, {true, false, false}),
     _landing_sequence(true)
 {
   _gravity = { 0, 0, -9.81 };

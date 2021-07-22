@@ -33,11 +33,13 @@ private:
   double              _drum_width;
   unsigned int        _score;
   Mesh *              _background;
-  std::vector<Mesh *> _drums;
+  Mesh *              _drum;
   std::vector<double> _drums_angles;
   std::vector<double> _drums_target_angles;
-
-  Mesh * CreateDrum(const std::vector<Mesh *> numbers) const;
+  glm::mat4           _projection;
+  glm::mat4           _view;
+  glm::mat4           _viewprojection;
+  glm::mat4           _model;
 };
 
 #endif

@@ -101,6 +101,7 @@ void Level::Start()
                 block->SetColor(rgba.rgb());
                 block->SetMaxHealth(block->GetMaxHealth() * static_cast<double>(rgba.a));
                 block->SetHealth(block->GetMaxHealth());
+                block->SetUseHealth(rgba.a < 1.0f);
                 block->CreateCollisionShape(block->GetCollisionShape()->GetType());
               }
           }

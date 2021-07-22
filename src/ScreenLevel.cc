@@ -103,7 +103,7 @@ void ScreenLevel::Initialize()
   root->SetIsFocusable(false);
   SetRootWidget(root);
 
-  _score_reel = new ScoreReel(10);
+  _score_reel = new ScoreReel(6);
   new WidgetScoreReel(root, glm::ivec2(0, 30), glm::ivec2(350, 50), _score_reel);
 
   for(int i = 0; i < 5; i++)

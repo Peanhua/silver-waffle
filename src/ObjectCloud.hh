@@ -8,8 +8,6 @@ class ObjectCloud : public ObjectMovable
 {
 public:
   ObjectCloud(Scene * scene, unsigned int random_seed);
-
-  void Tick(double deltatime) override;
 };
 
 #endif
