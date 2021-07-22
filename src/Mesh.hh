@@ -117,6 +117,7 @@ private:
   unsigned int _options;
 
   glm::mat4 _transform;
+  bool      _transform_is_identity;
   
   GLuint _vao;
   GLuint _vertex_vbo;

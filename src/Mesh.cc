@@ -18,6 +18,7 @@
 Mesh::Mesh(unsigned int options)
   : _options(options | OPTION_VERTEX),
     _transform(1),
+    _transform_is_identity(true),
     _vao(0),
     _vertex_vbo(0),
     _element_vbo(0),
@@ -60,6 +61,7 @@ Mesh::~Mesh()
 Mesh::Mesh(const Mesh & other)
   : _options(other._options),
     _transform(other._transform),
+    _transform_is_identity(other._transform_is_identity),
     _vao(0),
     _vertex_vbo(0),
     _element_vbo(0),
@@ -96,9 +98,14 @@ void Mesh::PreDrawSetupShader(ShaderProgram * shader_program) const
 
 void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program) const
 {
-  const glm::mat4 mymvp(mvp * _transform);
-  const glm::mat4 mymodel(model * _transform);
-
+  glm::mat4 mymvp(mvp);
+  glm::mat4 mymodel(model);
+  if(!_transform_is_identity)
+    {
+      mymvp = mymvp * _transform;
+      mymodel = mymodel * _transform;
+    }
+  
   if(_vertices.size() > 0)
     {
       auto shader = shader_program ? shader_program : _shader_program;
@@ -542,12 +549,14 @@ double Mesh::GetBoundingSphereRadius() const
 void Mesh::ApplyTransform(const glm::mat4 & transform)
 {
   _transform = transform * _transform;
+  _transform_is_identity = false;
 }
 
 
 void Mesh::SetTransform(const glm::mat4 & transform)
 {
   _transform = transform;
+  _transform_is_identity = false;
 }
 
 
