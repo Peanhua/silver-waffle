@@ -322,17 +322,15 @@ void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
   if(!IsAlive())
     return;
   
+  _scene->AddExplosion(GetPosition(), impulse * 0.5f);
+
   if(!_use_health)
     return;
   
   _health -= damage;
 
   if(!IsAlive())
-    {
-      if(perpetrator)
-        _scene->AddExplosion(GetPosition(), impulse);
-      Destroy(perpetrator);
-    }
+    Destroy(perpetrator);
 }
 
 
