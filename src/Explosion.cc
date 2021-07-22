@@ -48,6 +48,7 @@ void Explosion::Activate(const glm::vec3 & position, const glm::vec3 & velocity)
 
   _position = position;
   _velocity = velocity;
+  _model = glm::translate(_position);
 }
 
 
@@ -65,16 +66,18 @@ bool Explosion::IsAlive() const
 
 void Explosion::Draw(const Camera & camera) const
 {
+  if(!camera.IsInView(_position, 5))
+    return;
+  
   _mesh->GetShaderProgram()->Use();
   _mesh->GetShaderProgram()->SetFloat("in_time", static_cast<float>(_time));
   _mesh->GetShaderProgram()->SetVec("in_velocity", _velocity);
-  glm::mat4 model(1);
-  model = glm::translate(model, _position);
-  _mesh->Draw(model, camera.GetViewProjection() * model);
+  _mesh->DrawSameShader(_model, camera.GetViewProjection() * _model);
 }
 
 
 void Explosion::Translate(const glm::vec3 & translation)
 {
   _position += translation;
+  _model = glm::translate(_position);
 }

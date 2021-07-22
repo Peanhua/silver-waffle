@@ -36,6 +36,7 @@ private:
   double    _time;
   glm::vec3 _position;
   glm::vec3 _velocity;
+  glm::mat4 _model;
 };
 
 #endif

@@ -87,7 +87,7 @@ bool ScoreReel::Tick(double deltatime)
   for(unsigned int i = 0; i < _drum_count; i++)
     {
       auto diff = _drums_target_angles[i] - _drums_angles[i];
-      _drums_angles[i] += diff * deltatime;
+      _drums_angles[i] += 3.0 * diff * deltatime;
       if(std::abs(diff) > 1.0)
         should_draw = true;
     }

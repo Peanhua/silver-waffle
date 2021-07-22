@@ -139,7 +139,7 @@ void Widget::Draw() const
       shader->SetFloat("in_font_weight", _text_font_weight);
       glm::mat4 model(1);
       model = glm::translate(model, glm::vec3(_textpadding, 0));
-      _textmesh->Draw(model, GetMVP() * model);
+      _textmesh->DrawSameShader(model, GetMVP() * model);
     }
   
   if(_focused && _focused_borders_mesh)

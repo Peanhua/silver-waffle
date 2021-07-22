@@ -123,5 +123,5 @@ void SpaceParticles::Draw(const Camera & camera) const
   ShaderProgram::SetUBOMatrix("Data", "in_projection", projection);
   ShaderProgram::SetUBOFloat("Data",  "in_time",       static_cast<float>(_time));
     
-  _mesh->Draw(glm::mat4(1), mvp);
+  _mesh->DrawSameShader(glm::mat4(1), mvp);
 }

@@ -76,6 +76,30 @@ void SubsystemAssetLoader::Stop()
 }
 
 
+void SubsystemAssetLoader::LoadCache()
+{
+  _collectibles_meshes[ObjectCollectible::Type::SCORE_BONUS] = LoadMesh("ScoreBonus");
+  {
+    auto m = new Mesh(*LoadMesh("BonusCylinder"));
+    m->SetTexture(0, LoadImage("BonusIcon-2xDamage"), true);
+    m->UpdateGPU();
+    _collectibles_meshes[ObjectCollectible::Type::DAMAGE_MULTIPLIER] = m;
+  }
+  {
+    auto m = new Mesh(*LoadMesh("BonusCylinder"));
+    m->SetTexture(0, LoadImage("BonusIcon-2xScore"), true);
+    m->UpdateGPU();
+    _collectibles_meshes[ObjectCollectible::Type::SCORE_MULTIPLIER] = m;
+  }
+  {
+    auto m = new Mesh(*LoadMesh("BonusCylinder"));
+    m->SetTexture(0, LoadImage("BonusIcon-Shield"), true);
+    m->UpdateGPU();
+    _collectibles_meshes[ObjectCollectible::Type::SHIELD] = m;
+  }
+}  
+
+
 const std::string & SubsystemAssetLoader::LoadText(const std::string & filename, bool ignore_not_found_error)
 {
   auto it = _text_assets.find(filename);
@@ -304,51 +328,33 @@ SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(SolarSystemObjec
 
 ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
 {
-  if(type == static_cast<int>(ObjectCollectible::Type::NONE))
+  auto typ = static_cast<ObjectCollectible::Type>(type);
+  if(typ == ObjectCollectible::Type::NONE)
     return nullptr;
-  /*
-  auto it = _collectibles.find(type);
-  if(it != _collectibles.end())
-    return (*it).second;
-  */
+  
   auto collectible = new ObjectCollectible(nullptr);
-  switch(static_cast<ObjectCollectible::Type>(type))
+  switch(typ)
     {
     case ObjectCollectible::Type::NONE:
       assert(false);
       break;
     case ObjectCollectible::Type::SCORE_BONUS:
-      collectible->SetMesh(LoadMesh("ScoreBonus"));
-      break;
     case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
-      collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
-      collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-2xDamage"), true);
-      collectible->GetMesh()->UpdateGPU();
-      break;
     case ObjectCollectible::Type::SCORE_MULTIPLIER:
-      collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
-      collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-2xScore"), true);
-      collectible->GetMesh()->UpdateGPU();
-      break;
     case ObjectCollectible::Type::SHIELD:
-      collectible->SetMesh(new Mesh(*LoadMesh("BonusCylinder")));
-      collectible->GetMesh()->SetTexture(0, LoadImage("BonusIcon-Shield"), true);
-      collectible->GetMesh()->UpdateGPU();
+      collectible->SetMesh(_collectibles_meshes[typ]);
       break;
     case ObjectCollectible::Type::UPGRADEMATERIAL_ATTACK:
-      collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
-      collectible->GetMesh()->SetAllColor(glm::vec3(1, 0, 0));
-      collectible->GetMesh()->UpdateGPU();
+      collectible->SetMesh(LoadMesh("UpgradeMaterial"));
+      collectible->SetColor(glm::vec3(1, 0, 0));
       break;
     case ObjectCollectible::Type::UPGRADEMATERIAL_DEFENSE:
-      collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
-      collectible->GetMesh()->SetAllColor(glm::vec3(0, 0, 1));
-      collectible->GetMesh()->UpdateGPU();
+      collectible->SetMesh(LoadMesh("UpgradeMaterial"));
+      collectible->SetColor(glm::vec3(0, 0, 1));
       break;
     case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
-      collectible->SetMesh(new Mesh(*LoadMesh("UpgradeMaterial")));
-      collectible->GetMesh()->SetAllColor(glm::vec3(1, 0.612, 0));
-      collectible->GetMesh()->UpdateGPU();
+      collectible->SetMesh(LoadMesh("UpgradeMaterial"));
+      collectible->SetColor(glm::vec3(1, 0.612, 0));
       break;
     case ObjectCollectible::Type::WARP_FUEL:
       collectible->SetMesh(LoadMesh("WarpFuel"));
@@ -356,7 +362,6 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
     }
   collectible->SetCollisionShape(new CollisionShapeOBB(collectible, collectible->GetMesh()->GetBoundingBoxHalfSize()));
 
-  //_collectibles[type] = collectible;
   return collectible;
 }
 

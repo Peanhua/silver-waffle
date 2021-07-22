@@ -118,15 +118,14 @@ void Object::Draw(const glm::mat4 & vp) const
   if(_mesh)
     {
       auto shader = _mesh->GetShaderProgram();
-      if(shader)
-        {
-          shader->Use();
-          shader->SetVec("in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
-          shader->SetVec("in_colormod", _color);
-        }
+      assert(shader);
+      shader->Use();
+      shader->SetVec("in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
+      shader->SetVec("in_colormod", _color);
+
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);
-      _mesh->Draw(model, mvp);
+      _mesh->DrawSameShader(model, mvp);
     }
 }
 

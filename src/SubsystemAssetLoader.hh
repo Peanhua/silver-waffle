@@ -13,6 +13,7 @@
 */
 
 #include "Subsystem.hh"
+#include "ObjectCollectible.hh"
 #include "SolarSystemObject.hh"
 #include <json11.hpp>
 #include <map>
@@ -34,6 +35,8 @@ public:
   bool Start() override;
   void Stop() override;
 
+  void LoadCache();
+
   Font *              LoadFont(float size);
   const std::string & LoadText(const std::string & filename, bool ignore_not_found_error = false);
   json11::Json *      LoadJson(const std::string & filename);
@@ -50,7 +53,7 @@ private:
   std::map<std::string, Mesh *>          _meshes;
   std::map<std::string, Image *>         _images;
   std::map<SolarSystemObject::Type, std::vector<SolarSystemObject *> *> _solar_system_objects;
-  std::map<int, ObjectCollectible *>     _collectibles;
+  std::map<ObjectCollectible::Type, Mesh *> _collectibles_meshes;
   std::map<float, Font *>                _fonts;
 };
 

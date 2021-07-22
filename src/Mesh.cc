@@ -96,7 +96,7 @@ void Mesh::PreDrawSetupShader(ShaderProgram * shader_program) const
 }
 
 
-void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program) const
+void Mesh::DrawSameShader(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program) const
 {
   glm::mat4 mymvp(mvp);
   glm::mat4 mymodel(model);
@@ -109,8 +109,6 @@ void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * 
   if(_vertices.size() > 0)
     {
       auto shader = shader_program ? shader_program : _shader_program;
-      assert(shader);
-      shader->Use();
 
       if(_options & OPTION_TEXTURE)
         {
@@ -143,6 +141,18 @@ void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * 
 
   for(auto c : _children)
     c->Draw(mymodel, mymvp, shader_program);
+}
+
+
+void Mesh::Draw(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program) const
+{
+  if(_vertices.size() > 0)
+    {
+      auto shader = shader_program ? shader_program : _shader_program;
+      assert(shader);
+      shader->Use();
+    }
+  DrawSameShader(model, mvp, shader_program);
 }
 
 
