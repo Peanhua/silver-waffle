@@ -353,6 +353,8 @@ void Object::Revive(unsigned int health)
 
 void Object::OnDestroyed(Object * destroyer)
 {
+  assert(_destroyed);
+  
   for(auto callback : _on_destroyed)
     callback(destroyer);
   SpawnLoot();
