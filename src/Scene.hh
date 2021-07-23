@@ -13,6 +13,7 @@
 */
 
 #include "glm.hh"
+#include "RingBuffer.hh"
 #include <array>
 #include <functional>
 #include <random>
@@ -33,35 +34,6 @@ class Scene
 {
 public:
 
-  template<typename T> class Container : public std::vector<T>
-  {
-  public:
-    // Constructor to silence Valgrind:
-    Container()
-      : std::vector<T>(),
-        _pos(0)
-    {
-    }
-
-    
-    unsigned int GetNextFreeIndex()
-    {
-      for(unsigned int i = 0; i < std::vector<T>::size(); i++)
-        {
-          _pos++;
-          if(_pos >= std::vector<T>::size())
-            _pos = 0;
-
-          auto obj = std::vector<T>::at(_pos);
-          if(!obj || !obj->IsAlive())
-            return _pos;
-        }
-      return static_cast<unsigned int>(std::vector<T>::size());
-    }
-
-  private:
-    unsigned int _pos;
-  };
 
   struct CollisionCheckStatistics
   {
@@ -138,11 +110,11 @@ protected:
 private:
   glm::vec3                      _play_area_size;
   ObjectSpaceship *              _player;
-  Container<ObjectProjectile *>  _projectiles;
-  Container<ObjectCollectible *> _collectibles;
-  Container<Object *>            _objects;
-  Container<Explosion *>         _explosions;
-  Container<Object *>            _planets;
+  RingBuffer<ObjectProjectile *> _projectiles;
+  RingBuffer<ObjectCollectible *> _collectibles;
+  RingBuffer<Object *>            _objects;
+  RingBuffer<Explosion *>         _explosions;
+  RingBuffer<Object *>            _planets;
   double                         _time;
   bool                           _warp_engine_starting;
   float                          _warp_throttle;
