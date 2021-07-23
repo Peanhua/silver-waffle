@@ -19,6 +19,7 @@
 #include "Mesh.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectSpaceship.hh"
+#include "QuadTree.hh"
 #include "Scene.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
@@ -91,6 +92,8 @@ Object::Object(const Object & source)
       else
         assert(false);
     }
+  if(_scene && _collision_shape)
+    _scene->GetQuadTree()->Add(this);
 }
 
 
@@ -229,13 +232,16 @@ void Object::Tick(double deltatime)
 
 void Object::SetPosition(const glm::vec3 & position)
 {
+  auto const oldpos = _position;
   _position = position;
+  if(_scene && _collision_shape)
+    _scene->GetQuadTree()->Move(this, oldpos);
 }
 
 
 void Object::Translate(const glm::vec3 & translation)
 {
-  _position += translation;
+  SetPosition(_position + translation);
 }
 
 
@@ -320,8 +326,9 @@ void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
   if(!IsAlive())
     return;
-  
-  _scene->AddExplosion(GetPosition(), impulse * 0.5f);
+
+  if(_scene)
+    _scene->AddExplosion(GetPosition(), impulse * 0.5f);
 
   if(!_use_health)
     return;
@@ -338,6 +345,8 @@ void Object::Destroy(Object * destroyer)
   if(!_destroyed)
     {
       _destroyed = true;
+      if(_scene && _collision_shape)
+        _scene->GetQuadTree()->Remove(this);
       OnDestroyed(destroyer);
     }
 }
@@ -347,6 +356,8 @@ void Object::Revive(unsigned int health)
 {
   _destroyed = false;
   SetHealth(health);
+  if(_scene && _collision_shape)
+    _scene->GetQuadTree()->Add(this);
 }
 
 
@@ -536,6 +547,14 @@ CollisionShape * Object::GetCollisionShape() const
 
 void Object::SetCollisionShape(CollisionShape * collision_shape)
 {
+  if(_scene)
+    {
+      if(!_collision_shape && collision_shape)
+        _scene->GetQuadTree()->Add(this);
+      else if(_collision_shape && !collision_shape)
+        _scene->GetQuadTree()->Remove(this);
+    }
+
   delete _collision_shape;
   _collision_shape = collision_shape;
   assert(!collision_shape || collision_shape->GetOwner() == this);
@@ -584,6 +603,8 @@ void Object::SpawnLoot()
             case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
             case ObjectCollectible::Type::SCORE_MULTIPLIER:
             case ObjectCollectible::Type::SHIELD:
+              coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0)), 1.0f);
+              break;
             case ObjectCollectible::Type::NONE:
               break;
             }

@@ -17,6 +17,7 @@
 #include "ObjectPlanetAtmosphere.hh"
 #include "ObjectPlanetGround.hh"
 #include "ObjectSpaceship.hh"
+#include "QuadTree.hh"
 #include "SubsystemAssetLoader.hh"
 
 
@@ -26,6 +27,8 @@ ScenePlanet::ScenePlanet()
 {
   _gravity = { 0, 0, -9.81 };
 
+  _quadtree = new QuadTreeXZ(GetPlayAreaSize(), 10.0f);
+  
   const float groundsize = 40;
   auto ground = new ObjectPlanetGround(this, {GetPlayAreaSize().x, groundsize}, AssetLoader->LoadImage("8k_earth_daymap"));
   AddObject(ground);

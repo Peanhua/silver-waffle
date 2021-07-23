@@ -22,7 +22,7 @@
 template<typename T> class RingBuffer : public std::vector<T>
 {
 public:
-#ifdef WITH_VALGRIND
+#if defined(WITH_VALGRIND) || false
   // Constructor to silence Valgrind about uninitialized _pos in GetNextFreeIndex():
   RingBuffer()
     : std::vector<T>(),
@@ -34,7 +34,7 @@ public:
     
   unsigned int GetNextFreeIndex()
   {
-    for(unsigned int i = 0; i < std::vector<T>::size(); i++)
+    for(std::vector<void *>::size_type i = 0; i < std::vector<T>::size(); i++)
       {
         _pos++;
         if(_pos >= std::vector<T>::size())
@@ -45,6 +45,40 @@ public:
           return _pos;
       }
     return static_cast<unsigned int>(std::vector<T>::size());
+  }
+
+  unsigned int GetNextNullIndex()
+  {
+    for(std::vector<void *>::size_type i = 0; i < std::vector<T>::size(); i++)
+      {
+        _pos++;
+        if(_pos >= std::vector<T>::size())
+          _pos = 0;
+        
+        auto obj = std::vector<T>::at(_pos);
+        if(!obj)
+          return _pos;
+      }
+    return static_cast<unsigned int>(std::vector<T>::size());
+  }
+
+  void Add(T object)
+  {
+    auto ind = GetNextFreeIndex();
+    if(ind < std::vector<T>::size())
+      (*this)[ind] = object;
+    else
+      std::vector<T>::push_back(object);
+  }
+
+  void Remove(T object)
+  {
+    for(std::vector<void *>::size_type i = 0; i < std::vector<T>::size(); i++)
+      if(std::vector<T>::at(i) == object)
+        {
+          (*this)[i] = nullptr;
+          break;
+        }
   }
   
 private:

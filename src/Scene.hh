@@ -27,6 +27,7 @@ class ObjectInvader;
 class ObjectMovable;
 class ObjectProjectile;
 class ObjectSpaceship;
+class QuadTree;
 class SpaceParticles;
 
 
@@ -71,7 +72,6 @@ public:
   virtual void      SetupPlayer();
   ObjectSpaceship * GetPlayer() const;
 
-  void              ClearPlanets();
   void              AddPlanet(Object * planet);
   Object *          GetClosestPlanet(const glm::vec3 & position) const;
 
@@ -98,12 +98,15 @@ public:
 
   glm::vec3 GetClosestGroundSurface(const glm::vec3 & position) const;
 
+  QuadTree * GetQuadTree() const;
+
 protected:
   glm::vec3           _gravity;
   SpaceParticles *    _particles;
   std::array<bool, 3> _play_area_wraps;
   std::mt19937_64                _random_generator;
   std::uniform_real_distribution<float> _rdist;
+  QuadTree *          _quadtree;
 
   virtual void      SetupSceneObject(Object * object, bool destroy_on_block) = 0;
   
@@ -111,10 +114,9 @@ private:
   glm::vec3                      _play_area_size;
   ObjectSpaceship *              _player;
   RingBuffer<ObjectProjectile *> _projectiles;
-  RingBuffer<ObjectCollectible *> _collectibles;
-  RingBuffer<Object *>            _objects;
-  RingBuffer<Explosion *>         _explosions;
-  RingBuffer<Object *>            _planets;
+  RingBuffer<Object *>           _objects;
+  RingBuffer<Explosion *>        _explosions;
+  RingBuffer<Object *>           _planets;
   double                         _time;
   bool                           _warp_engine_starting;
   float                          _warp_throttle;
@@ -122,7 +124,7 @@ private:
   std::vector<bool>              _tutorialmessages;
   CollisionCheckStatistics       _collisioncheck_statistics;
 
-  void CollisionsForObject(Object * o, std::vector<Object *> & objects);
+  void CollisionsForObject(Object * o);
 };
 
 

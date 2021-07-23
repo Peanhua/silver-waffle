@@ -12,6 +12,8 @@
 #include "ObjectProjectile.hh"
 #include "CollisionShapeSphere.hh"
 #include "Mesh.hh"
+#include "QuadTree.hh"
+#include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
 #include <array>
 
@@ -22,6 +24,7 @@ ObjectProjectile::ObjectProjectile(Scene * scene)
   SetOwner(nullptr);
   SetMesh(AssetLoader->LoadMesh("Projectile"));
   SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
+  GetScene()->GetQuadTree()->Remove(this); // Was added by SetCollisionShape(), removed here because ObjectProjectile is created dead.
   SetHealth(0);
   AddToCollisionChannel(CollisionChannel::PROJECTILE);
   SetTickingRequiresPlayerVisibility(true);

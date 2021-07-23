@@ -15,6 +15,7 @@
 #include "Mesh.hh"
 #include "Milkyway.hh"
 #include "ObjectSpaceship.hh"
+#include "QuadTree.hh"
 #include "SpaceParticles.hh"
 #include "WormholeWall.hh"
 
@@ -23,6 +24,7 @@ SceneSpace::SceneSpace()
   : Scene({20, 60, 0}, {false, false, false})
 {
   _gravity = { 0, -1, 0 };
+  _quadtree = new QuadTreeXY(GetPlayAreaSize(), 10.0f);
   _milkyway = new Milkyway();
   _particles = new SpaceParticles(5.0, 50.0, 0);
   _wall = new WormholeWall(100, 4);

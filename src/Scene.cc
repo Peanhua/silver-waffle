@@ -20,6 +20,7 @@
 #include "ObjectPlanet.hh"
 #include "ObjectProjectile.hh"
 #include "ObjectSpaceship.hh"
+#include "QuadTree.hh"
 #include "ShaderProgram.hh"
 #include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
@@ -34,6 +35,7 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
     _play_area_wraps(play_area_wraps),
     _random_generator(0),
     _rdist(0, 1),
+    _quadtree(nullptr),
     _play_area_size(play_area_size),
     _player(nullptr),
     _time(0),
@@ -75,10 +77,6 @@ void Scene::Draw(const Camera & camera) const
     if(b->IsAlive())
       objects.push_back(b);
 
-  for(auto c : _collectibles)
-    if(c && c->IsAlive())
-      objects.push_back(c);
-  
   for(auto o : objects)
     o->Draw(camera);
 
@@ -193,10 +191,6 @@ void Scene::Tick(double deltatime)
   if(_player && _player->IsAlive())
     objects.push_back(_player);
 
-  for(auto c : _collectibles)
-    if(c && c->IsAlive())
-      objects.push_back(c);
-  
   for(auto p : _projectiles)
     if(p && p->IsAlive())
       objects.push_back(p);
@@ -204,11 +198,11 @@ void Scene::Tick(double deltatime)
   for(auto o : _objects)
     if(o && o->IsAlive())
       objects.push_back(o);
-      
+
   for(auto p : _planets)
     if(p && p->IsAlive())
       objects.push_back(p);
-  
+
   _collisioncheck_statistics.elapsed_time += deltatime;
   _collisioncheck_statistics.elapsed_frames++;
   for(auto o : objects)
@@ -222,7 +216,7 @@ void Scene::Tick(double deltatime)
             o->Tick(deltatime);
 
             if(!warpspeed && o->GetCollidesWithChannels())
-              CollisionsForObject(o, objects);
+              CollisionsForObject(o);
             
             if(!o->IsAlive())
               {
@@ -254,14 +248,25 @@ void Scene::Tick(double deltatime)
       else
         _particles->Tick(deltatime);
     }
+
+  for(std::vector<Object *>::size_type i = 0; i < _objects.size(); i++)
+    {
+      auto o = _objects[i];
+      if(o && !o->IsAlive())
+        {
+          delete o;
+          _objects[i] = nullptr;
+        }
+    }
 }
 
 
-void Scene::CollisionsForObject(Object * o, std::vector<Object *> & objects)
+void Scene::CollisionsForObject(Object * o)
 {
-  for(unsigned int i = 0; o->IsAlive() && i < objects.size(); i++)
+  auto objects = _quadtree->GetNearby(o->GetPosition());
+  auto oo = objects.Next();
+  while(o->IsAlive() && oo)
     {
-      auto oo = objects[i];
       if(o != oo && oo->IsAlive())
         {
           _collisioncheck_statistics.total++;
@@ -287,6 +292,7 @@ void Scene::CollisionsForObject(Object * o, std::vector<Object *> & objects)
                 }
             }
         }
+      oo = objects.Next();
     }
 }
 
@@ -313,22 +319,8 @@ ObjectInvader * Scene::AddInvader(unsigned int type, const glm::vec3 & position)
 void Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position)
 {
   assert(collectible->IsAlive());
-  
-  auto ind = _collectibles.GetNextFreeIndex();
-  if(ind >= _collectibles.size())
-    {
-      ind = static_cast<unsigned int>(_collectibles.size());
-      _collectibles.push_back(nullptr);
-    }
 
-  collectible->SetScene(this);
-  collectible->SetPosition(position);
-  collectible->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0)), 1.0f);
-
-  SetupSceneObject(collectible, true);
-  
-  delete _collectibles[ind];
-  _collectibles[ind] = collectible;
+  AddObject(collectible, position);
 
   TutorialMessage(2, "A valuable item from the explosion,\ncollect it!\n");
 }
@@ -338,12 +330,9 @@ void Scene::AddObject(Object * object, const glm::vec3 & position)
 {
   assert(object->IsAlive());
 
-  auto ind = _objects.GetNextFreeIndex();
+  auto ind = _objects.GetNextNullIndex();
   if(ind < _objects.size())
-    {
-      delete _objects[ind];
-      _objects[ind] = object;
-    }
+    _objects[ind] = object;
   else
     _objects.push_back(object);
 
@@ -361,10 +350,6 @@ const glm::vec3 & Scene::GetPlayAreaSize() const
 }
 
 
-void Scene::ClearPlanets()
-{
-  _planets.clear();
-}
 
 
 void Scene::AddPlanet(Object * object)
@@ -390,11 +375,6 @@ std::vector<Object *> * Scene::GetNearbyObjects(const glm::vec3 & position, floa
       rv->push_back(_player);
 
   for(auto o : _objects)
-    if(o && o->IsAlive())
-      if(glm::distance(position, o->GetPosition()) < radius)
-        rv->push_back(o);
-
-  for(auto o : _collectibles)
     if(o && o->IsAlive())
       if(glm::distance(position, o->GetPosition()) < radius)
         rv->push_back(o);
@@ -488,6 +468,7 @@ Object * Scene::GetClosestPlanet(const glm::vec3 & position) const
 
   for(auto planet : _planets)
     {
+      assert(planet && planet->IsAlive());
       auto dist = glm::distance(position, planet->GetPosition());
       if(!rv || dist < rvdist)
         {
@@ -551,3 +532,8 @@ glm::vec3 Scene::GetClosestGroundSurface(const glm::vec3 & position) const
   return pos;
 }
 
+
+QuadTree * Scene::GetQuadTree() const
+{
+  return _quadtree;
+}
