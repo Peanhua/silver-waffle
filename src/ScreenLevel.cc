@@ -188,7 +188,7 @@ void ScreenLevel::Initialize()
   _levelinfo_widget->SetTextColor(glm::vec3(1.00, 0.88, 0.00));
   _levelinfo_widget->SetTextFont(AssetLoader->LoadFont(12));
 
-#ifdef WITH_VALGRIND && true
+#if defined(WITH_VALGRIND) && true
 # pragma GCC diagnostic push
 # pragma GCC diagnostic ignored "-Wold-style-cast"
 # pragma GCC diagnostic ignored "-Wuseless-cast"
