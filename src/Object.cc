@@ -148,8 +148,12 @@ bool Object::ShouldTick() const
     if(_scene)
       {
         auto player = _scene->GetPlayer();
-        if(!player || !player->IsAlive())
+        if(!player)
           return false;
+
+        if(_ticking_requires_player_alive)
+          if(!player->IsAlive())
+            return false;
         
         if(_ticking_requires_player_visibility)
           if(std::abs(GetPosition().x - player->GetPosition().x) > 50.0f)
