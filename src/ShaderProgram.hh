@@ -47,6 +47,14 @@ private:
   GLuint                _program;
   std::vector<Shader *> _shaders;
   static std::map<std::string, GLuint> _ubos;
+
+#ifndef NDEBUG
+public:
+  void SetName(const std::string & name);
+  const std::string & GetName() const;
+private:
+  std::string _name;
+#endif
 };
 
 #endif

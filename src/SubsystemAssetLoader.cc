@@ -81,18 +81,21 @@ void SubsystemAssetLoader::LoadCache()
   _collectibles_meshes[ObjectCollectible::Type::SCORE_BONUS] = LoadMesh("ScoreBonus");
   {
     auto m = new Mesh(*LoadMesh("BonusCylinder"));
+    m->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
     m->SetTexture(0, LoadImage("BonusIcon-2xDamage"), true);
     m->UpdateGPU();
     _collectibles_meshes[ObjectCollectible::Type::DAMAGE_MULTIPLIER] = m;
   }
   {
     auto m = new Mesh(*LoadMesh("BonusCylinder"));
+    m->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
     m->SetTexture(0, LoadImage("BonusIcon-2xScore"), true);
     m->UpdateGPU();
     _collectibles_meshes[ObjectCollectible::Type::SCORE_MULTIPLIER] = m;
   }
   {
     auto m = new Mesh(*LoadMesh("BonusCylinder"));
+    m->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
     m->SetTexture(0, LoadImage("BonusIcon-Shield"), true);
     m->UpdateGPU();
     _collectibles_meshes[ObjectCollectible::Type::SHIELD] = m;
@@ -145,6 +148,9 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   auto gs = LoadText("Shaders/" + name + ".geom", true);
   auto sp = new ShaderProgram(vs, fs, gs);
   assert(sp);
+#ifndef NDEBUG
+  sp->SetName(name);
+#endif
   std::cout << "Loaded shader '" << name << "'.\n";
   _shader_programs[name] = sp;
   return sp;

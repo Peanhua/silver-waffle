@@ -247,3 +247,16 @@ void ShaderProgram::SetUBOVec2(const std::string & ubo_name, const std::string &
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
+
+#ifndef NDEBUG
+void ShaderProgram::SetName(const std::string & name)
+{
+  _name = name;
+}
+
+
+const std::string & ShaderProgram::GetName() const
+{
+  return _name;
+}
+#endif

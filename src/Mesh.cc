@@ -98,15 +98,6 @@ void Mesh::PreDrawSetupShader(ShaderProgram * shader_program) const
 
 void Mesh::DrawSameShader(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program) const
 {
-#ifndef NDEBUG
-  if(GLEW_VERSION_4_3)
-    if(!_opengl_debug_message.empty())
-      {
-        const std::string msg("Begin DrawSameShader(): " + _opengl_debug_message);
-        glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, reinterpret_cast<std::uintptr_t>(this), GL_DEBUG_SEVERITY_NOTIFICATION, msg.length(), msg.c_str());
-      }
-#endif
-  
   glm::mat4 mymvp(mvp);
   glm::mat4 mymodel(model);
   if(!_transform_is_identity)
@@ -150,15 +141,6 @@ void Mesh::DrawSameShader(const glm::mat4 & model, const glm::mat4 & mvp, Shader
 
   for(auto c : _children)
     c->Draw(mymodel, mymvp, shader_program);
-
-#ifndef NDEBUG
-  if(GLEW_VERSION_4_3)
-    if(!_opengl_debug_message.empty())
-      {
-        const std::string msg("End DrawSameShader(): " + _opengl_debug_message);
-        glDebugMessageInsert(GL_DEBUG_SOURCE_APPLICATION, GL_DEBUG_TYPE_MARKER, reinterpret_cast<std::uintptr_t>(this), GL_DEBUG_SEVERITY_NOTIFICATION, msg.length(), msg.c_str());
-      }
-#endif
 }
 
 
@@ -735,5 +717,7 @@ void Mesh::Dump(int indent) const
 void Mesh::SetDebugMessageOpenGL(const std::string & message)
 {
   _opengl_debug_message = message;
+  for(auto c : _children)
+    c->SetDebugMessageOpenGL("[child]" + message);
 }
 
