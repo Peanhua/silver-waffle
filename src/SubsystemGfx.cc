@@ -11,7 +11,6 @@
 */
 #include "SubsystemGfx.hh"
 #include "ShaderProgram.hh"
-#include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
 #include <GL/glew.h>
 #include <SDL.h>
@@ -71,7 +70,6 @@ bool SubsystemGfx::Start()
                       glDebugMessageCallback(MessageCallback, 0);
                     }
 #endif
-                  AssetLoader->LoadCache();
                 }
               else
                 std::cerr << "Invalid OpenGL version." << std::endl;

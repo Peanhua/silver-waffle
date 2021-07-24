@@ -38,6 +38,7 @@ void WidgetScoreReel::Tick(double deltatime)
   bool should_redraw = _score_reel->Tick(deltatime);
   if(should_redraw)
     {
+      glEnable(GL_DEPTH_TEST);
       _texture_renderer->BeginRender();
       _score_reel->Draw();
       _texture_renderer->EndRender();

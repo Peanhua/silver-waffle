@@ -29,9 +29,6 @@ ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_objec
   planet->UpdateGPU();
   planet->SetBoundingSphereRadius(planet_radius);
   SetMesh(planet);
-  auto f = AssetLoader->LoadImage("White");
-  assert(f);
-  assert(f != planet->GetTexture());
   SetTickingRequiresPlayerAlive(true);
 }
 

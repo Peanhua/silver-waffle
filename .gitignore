@@ -80,6 +80,9 @@ stamp-h1
 /Shaders/SpaceJunkLines.geom
 /Shaders/SpaceJunkLines.vert
 Doxyfile
+vgcore.*
+*.trace
+callgrind.out.*
 
 # Other
 .bash_history

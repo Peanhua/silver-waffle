@@ -65,6 +65,8 @@ int main(int argc, char *argv[])
             if(unlimited_fps || demo)
               SDL_GL_SetSwapInterval(0);
             Settings->SetBool("demo", demo);
+
+            ass.LoadCache();
             
             std::chrono::steady_clock clock;
             std::chrono::duration<double> deltatime(1.0 / 60.0);

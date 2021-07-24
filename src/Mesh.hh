@@ -112,6 +112,8 @@ public:
   void CombineWithChildren();
 
   void Dump(int indent = 0) const;
+
+  void SetDebugMessageOpenGL(const std::string & message);
   
 private:
   std::string  _name;
@@ -143,6 +145,8 @@ private:
 
   double    _bounding_sphere_radius;
   glm::vec3 _bounding_box_size;
+
+  std::string _opengl_debug_message;
 
   std::vector<Mesh *> _children;
 
