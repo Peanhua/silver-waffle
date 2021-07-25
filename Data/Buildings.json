@@ -20,6 +20,12 @@
         "max":       7,
         "control_program": "face-player-shoot"
       }
+    },
+    {
+      "mesh":            "PlayerBase",
+      "collision_shape": "obb",
+      "health":          10000,
+      "spaceport":       true
     }
   ]
 }

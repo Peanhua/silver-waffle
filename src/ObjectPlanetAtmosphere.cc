@@ -49,5 +49,7 @@ ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & 
     SetMesh(mesh);
   }
 
+  SetCollisionChannels(0);
+  SetCollidesWithChannels(0);
   SetUseHealth(false);
 }

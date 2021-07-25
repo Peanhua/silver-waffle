@@ -12,6 +12,7 @@ public:
   void Tick(double deltatime) override;
 
   void AddSpawn(unsigned int spawn_type, double spawn_interval, unsigned int max_count, const std::string & control_program);
+  bool GetIsSpaceport() const;
 
 private:
   struct SpawnEntry
@@ -35,6 +36,7 @@ private:
   };
 
   std::vector<SpawnEntry> _spawns;
+  bool   _is_spaceport;
 };
 
 #endif

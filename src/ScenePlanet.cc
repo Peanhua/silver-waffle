@@ -36,8 +36,7 @@ ScenePlanet::ScenePlanet()
   ground->SetPosition({0, 0, -(GetPlayAreaSize().z / 2.0f + 0.5f)});
 
   auto atmosphere = new ObjectPlanetAtmosphere(this, GetPlayAreaSize().xz(), {1, 0, 0}, {0, 0, 0.5});
-  atmosphere->Translate({0, groundsize / 2.0f, 0});
-  AddPlanet(atmosphere);
+  AddObject(atmosphere, {0, groundsize / 2.0f, 0});
 
   auto GetRand = [this]()
   {

@@ -355,12 +355,7 @@ const glm::vec3 & Scene::GetPlayAreaSize() const
 void Scene::AddPlanet(Object * object)
 {
   assert(object);
-  auto ind = _planets.GetNextFreeIndex();
-  if(ind < _planets.size())
-    _planets[ind] = object;
-  else
-    _planets.push_back(object);
-
+  _planets.Add(object);
   SetupSceneObject(object, true);
 }
 

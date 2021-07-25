@@ -38,12 +38,14 @@ public:
   double       GetWeaponHeat(unsigned int weapon_id) const;
   bool         FireWeapon(unsigned int weapon_id);
   void         SetWeaponAutofire(unsigned int weapon_id, bool enabled);
+  void         EnableWeapons(bool enabled);
   
   void         AddEngine(const glm::vec3 & thrust_direction, double power);
   unsigned int GetEngineCount() const;
   void         SetEngineThrottle(unsigned int engine_id, double throttle);
   void         UpgradeEngines(double power_multiplier);
   void         EnableEngine(unsigned int engine_id, bool enabled);
+  void         EnableEngines(bool enabled);
 
   void               UpgradeFromCollectible(ObjectCollectible * collectible);
   SpaceshipUpgrade * GetUpgrade(SpaceshipUpgrade::Type type) const;

@@ -10,12 +10,16 @@
   Complete license can be found in the LICENSE file.
 */
 #include "SpaceshipUpgrade.hh"
+#include "Mesh.hh"
+#include "ObjectBuilding.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectPlanet.hh"
 #include "ObjectSpaceship.hh"
+#include "QuadTree.hh"
 #include "Scene.hh"
 #include "ScreenLevelPlanet.hh"
 #include "SolarSystemObject.hh"
+#include "SpaceshipControlProgram.hh"
 #include "SubsystemScreen.hh"
 #include "SubsystemSettings.hh"
 #include <algorithm>
@@ -33,7 +37,8 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     _timer(0),
     _timer_max(0),
     _cooldown_default(30),
-    _cooldown(0)
+    _cooldown(0),
+    _landed(false)
 {
   switch(_type)
     {
@@ -46,8 +51,15 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; break;
     case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  break;
     case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; _cooldown_default = 0; break;
-    case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; _cooldown_default = 3; break;
+    case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; _cooldown_default = 1; break;
     }
+}
+
+
+
+void SpaceshipUpgrade::SetOwner(ObjectSpaceship * spaceship)
+{
+  _spaceship = spaceship;
 }
 
 
@@ -93,7 +105,7 @@ void SpaceshipUpgrade::Install()
     case Type::PLANET_LANDER:
       break;
     }
-  _spaceship->SystemlogAppend("Install " + _name + "\n");
+  _spaceship->SystemlogAppend("Installed: " + _name + "\n");
 }
 
 
@@ -265,6 +277,9 @@ void SpaceshipUpgrade::Tick(double deltatime)
       if(_cooldown > 0.0)
         _cooldown -= deltatime;
     }
+
+  if(_landed)
+    _spaceship->SetHealth(_spaceship->GetHealth() + 25.0 * deltatime);
 }
 
 
@@ -357,24 +372,70 @@ void SpaceshipUpgrade::Activate(double value, double time)
   if(_type == Type::PLANET_LANDER)
     {
       auto playerpos = _spaceship->GetPosition();
-      auto planet = dynamic_cast<ObjectPlanet *>(_spaceship->GetScene()->GetClosestPlanet(playerpos));
-      if(planet)
+
+      bool done = false;
+
+      if(_landed)
+        { // launch
+          _spaceship->SystemlogAppend(_name + ": Launch!\n");
+          done = true;
+          _spaceship->SetUseHealth(true);
+          _spaceship->AddImpulse({0, 0, 10});
+          _spaceship->EnableEngines(true);
+          _spaceship->EnableWeapons(true);
+          _landed = false;
+        }
+      
+      auto objs = _spaceship->GetScene()->GetQuadTree()->GetNearby(playerpos); // todo: Add distance parameter. Because currently, from this point of view, we don't know what the "nearby" means.
+      // todo: Move finding to Scene->GetClosestSpaceport() like with GetClosestPlanet() later.
+      auto o = objs.Next();
+      while(!done && o)
         {
-          auto distance = std::abs(playerpos.y - planet->GetPosition().y);
-          if(distance < 20 || Settings->GetBool("cheat_planet_lander_disable_distance_check"))
+          auto spaceport = dynamic_cast<ObjectBuilding *>(o);
+          if(spaceport && spaceport->GetIsSpaceport())
+            { // land on spaceport
+              auto distance = glm::length(spaceport->GetPosition() - _spaceship->GetPosition());
+              if(distance < 5)
+                {
+                  _spaceship->SystemlogAppend(_name + ": Landing on nearby spaceport.\n");
+                  done = true;
+
+                  auto target = spaceport->GetPosition();
+                  target.z += spaceport->GetMesh()->GetBoundingBoxHalfSize().z;
+                  target.z += _spaceship->GetMesh()->GetBoundingBoxHalfSize().z;
+                  auto p = new SCP_MoveTo(_spaceship, target, 5);
+                  _spaceship->AddControlProgram(p);
+                  _spaceship->SetUseHealth(false);
+                  _spaceship->SetVelocity({0, 0, 0});
+                  _spaceship->EnableEngines(false);
+                  _spaceship->EnableWeapons(false);
+                  _landed = true;
+                }
+            }
+          o = objs.Next();
+        }
+            
+      if(!done)
+        {
+          auto planet = dynamic_cast<ObjectPlanet *>(_spaceship->GetScene()->GetClosestPlanet(playerpos));
+          if(planet)
             {
-              auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
-              assert(current);
-              
-              auto ns = new ScreenLevelPlanet(current, planet->GetSolarSystemObject());
-              ns->SetupLevels();
-              current->TransitionToScreen(ns, _name + ": Destination " + planet->GetSolarSystemObject()->GetName());
+              auto distance = std::abs(playerpos.y - planet->GetPosition().y);
+              if(distance < 20 || Settings->GetBool("cheat_planet_lander_disable_distance_check"))
+                {
+                  auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
+                  assert(current);
+                  
+                  auto ns = new ScreenLevelPlanet(current, planet->GetSolarSystemObject());
+                  ns->SetupLevels();
+                  current->TransitionToScreen(ns, _name + ": Destination " + planet->GetSolarSystemObject()->GetName() + "\n");
+                }
+              else
+                _spaceship->SystemlogAppend(_name + ": Error, planet too far.\n");
             }
           else
-            _spaceship->SystemlogAppend(_name + ": Error, planet too far.\n");
+            _spaceship->SystemlogAppend(_name + ": Error, no planet or spaceport nearby.\n");
         }
-      else
-        _spaceship->SystemlogAppend(_name + ": Error, no planet.\n");
       Deactivate();
     }
 }

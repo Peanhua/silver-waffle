@@ -338,3 +338,26 @@ bool SCP_FacePlayer::IsFinished() const
 {
   return std::abs(GetFacingDiff()) < glm::radians(1.0f);
 }
+
+
+
+SCP_MoveTo::SCP_MoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destination, double speed)
+  : SpaceshipControlProgram(spaceship),
+    _destination(destination),
+    _speed(speed)
+{
+}
+
+
+void SCP_MoveTo::PTick(double deltatime)
+{
+  auto movement = _destination - _spaceship->GetPosition();
+  auto m = static_cast<float>(_speed * deltatime);
+  _spaceship->SetPosition(_spaceship->GetPosition() + movement * m);
+}
+
+
+bool SCP_MoveTo::IsFinished() const
+{
+  return glm::length(_spaceship->GetPosition() - _destination) < 0.1f;
+}

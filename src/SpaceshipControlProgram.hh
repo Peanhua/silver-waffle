@@ -96,6 +96,18 @@ private:
 };
 
 
+class SCP_MoveTo : public SpaceshipControlProgram
+{
+public:
+  SCP_MoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destination, double speed);
+  void PTick(double deltatime) override;
+  bool IsFinished() const override;
+private:
+  glm::vec3 _destination;
+  double    _speed;
+};
+
+
 class SCP_Roll : public SpaceshipControlProgram
 {
 public:

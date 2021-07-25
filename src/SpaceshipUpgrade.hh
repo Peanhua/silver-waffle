@@ -37,6 +37,7 @@ public:
   
   SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type);
 
+  void         SetOwner(ObjectSpaceship * spaceship);
   bool         CanBeInstalled() const;
   unsigned int GetNextPurchaseCost(UpgradeMaterial::Type for_material) const;
   int          GetInstallCount() const;
@@ -79,6 +80,7 @@ private:
   double      _timer_max;
   double      _cooldown_default;
   double      _cooldown;
+  bool        _landed;
 };
 
 #endif

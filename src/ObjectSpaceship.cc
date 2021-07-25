@@ -17,6 +17,7 @@
 #include "ShaderProgram.hh"
 #include "SpaceshipControlProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include <iostream>
 
 
 ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
@@ -148,6 +149,14 @@ void ObjectSpaceship::EnableEngine(unsigned int engine_id, bool enabled)
   _engines[engine_id]->_enabled = enabled;
 }
 
+
+void ObjectSpaceship::EnableEngines(bool enabled)
+{
+  for(auto e : _engines)
+    e->_enabled = enabled;
+}
+
+
 unsigned int ObjectSpaceship::GetEngineCount() const
 {
   return static_cast<unsigned int>(_engines.size());
@@ -239,6 +248,13 @@ double ObjectSpaceship::GetWeaponHeat(unsigned int weapon_id) const
   auto weapon = _weapons[weapon_id];
   return weapon->_heat;
 }
+
+
+void ObjectSpaceship::EnableWeapons(bool enabled)
+{
+  // todo
+}
+
 
 
 void ObjectSpaceship::SetEngineThrottle(unsigned int engine_id, double throttle)
@@ -341,7 +357,11 @@ void ObjectSpaceship::CopyUpgrades(const ObjectSpaceship & source)
 
   _upgrades.clear();
   for(auto u : source._upgrades)
-    _upgrades.push_back(new SpaceshipUpgrade(*u));
+    {
+      auto nu = new SpaceshipUpgrade(*u);
+      nu->SetOwner(this);
+      _upgrades.push_back(nu);
+    }
 }
 
 
@@ -548,7 +568,10 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
 void ObjectSpaceship::SystemlogAppend(const std::string & message)
 {
   if(_systemlog_enabled)
-    _systemlog += message;
+    {
+      std::cout << message;
+      _systemlog += message;
+    }
 }
 
 

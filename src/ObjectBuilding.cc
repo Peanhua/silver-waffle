@@ -6,7 +6,8 @@
 
 
 ObjectBuilding::ObjectBuilding(Scene * scene, unsigned int random_seed, unsigned int type)
-  : Object(scene, random_seed)
+  : Object(scene, random_seed),
+    _is_spaceport(false)
 {
   SetIsSleeping(true);
   SetTickingRequiresPlayerAlive(true);
@@ -60,6 +61,9 @@ ObjectBuilding::ObjectBuilding(Scene * scene, unsigned int random_seed, unsigned
                d["spawn"]["control_program"].string_value());
       SetIsSleeping(false);
     }
+
+  if(d["spaceport"].is_bool() && d["spaceport"].bool_value())
+    _is_spaceport = true;
 }
 
 
@@ -102,3 +106,10 @@ void ObjectBuilding::AddSpawn(unsigned int spawn_type, double spawn_interval, un
 {
   _spawns.emplace_back(spawn_type, spawn_interval, spawn_interval, max_count, control_program);
 }
+
+
+bool ObjectBuilding::GetIsSpaceport() const
+{
+  return _is_spaceport;
+}
+

@@ -385,16 +385,25 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
     return;
 
   assert(_state == State::RUNNING);
+
   auto player = _scene->GetPlayer();
   auto controller = player->GetController();
-  bool disablecontrols = _scene->IsWarpEngineStarting();
 
+  bool disablecontrols = false;
   if(player && player->IsAlive())
     {
+      if(_scene->IsWarpEngineStarting())
+        disablecontrols = true;
+    
       auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
       if(u->IsActive())
         disablecontrols = true;
+      else if(player->GetActiveControlProgramCount() > 0)
+        disablecontrols = true;
     }
+  else
+    disablecontrols = true;
+  
   switch(key)
     {
     case SDLK_ESCAPE:
@@ -442,14 +451,14 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
       break;
 
     case SDLK_w:
-      if(pressed)
+      if(!disablecontrols && pressed)
         _scene->StartWarpEngine();
       else
         _scene->StopWarpEngine();
       break;
 
     case SDLK_s:
-      if(pressed)
+      if(!disablecontrols && pressed)
         {
           auto lander = player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER);
           if(lander->CanActivate())
@@ -755,6 +764,7 @@ void ScreenLevel::CopyPlayerData(ScreenLevel * src)
 {
   auto myplr = _scene->GetPlayer();
   auto srcplr = src->GetScene()->GetPlayer();
+  assert(myplr != srcplr);
 
   for(unsigned int i = 0; i < srcplr->GetEngineCount(); i++)
     srcplr->SetEngineThrottle(i, 0.0);
