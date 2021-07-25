@@ -299,20 +299,7 @@ SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(SolarSystemObjec
       auto objs = new std::vector<SolarSystemObject *>();
       for(auto data : (*config)[arrname].array_items())
         {
-          glm::vec2 ring(0, 0);
-          if(data["ring"].is_array())
-            {
-              auto a = data["ring"].array_items();
-              assert(a.size() == 2);
-              ring.x = static_cast<float>(a[0].number_value());
-              ring.y = static_cast<float>(a[1].number_value());
-            }
-          
-          auto obj = new SolarSystemObject(type,
-                                           data["name"].string_value(),
-                                           data["texture"].string_value(),
-                                           data["radius"].number_value(),
-                                           ring);
+          auto obj = new SolarSystemObject(type, data);
           objs->push_back(obj);
         }
       _solar_system_objects[type] = objs;

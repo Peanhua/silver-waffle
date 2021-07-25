@@ -10,43 +10,59 @@
     {
       "name":    "Mercury",
       "texture": "8k_mercury",
-      "radius":    2440.0
+      "radius":    2440.0,
+      "gravity":      3.7,
+      "rotation":    58.7
     },
     {
       "name":    "Venus",
       "texture": "4k_venus_atmosphere",
-      "radius":    6052.0
+      "radius":    6052.0,
+      "gravity":      8.87,
+      "rotation":   243.0
     },
     {
       "name":    "Earth",
       "texture": "8k_earth_daymap",
-      "radius":    6371.0
+      "radius":    6371.0,
+      "gravity":      9.81,
+      "rotation":     1.0
     },
     {
       "name":    "Mars",
       "texture": "8k_mars",
-      "radius":    3390.0
+      "radius":    3390.0,
+      "gravity":      3.71,
+      "rotation":     1.0
     },
     {
       "name":    "Jupiter",
       "texture": "8k_jupiter",
-      "radius":   69911.0
+      "radius":   69911.0,
+      "gravity":     24.79,
+      "rotation":     0.4
     },
     {
       "name":    "Saturn",
       "texture": "8k_saturn",
       "radius":   58232.0,
+      "gravity":     10.44,
+      "rotation":     0.5,
       "ring":    [ 0.65, 1.50 ]
     },
     {
       "name":    "Uranus",
       "texture": "2k_uranus",
-      "radius":   25362.0
+      "radius":   25362.0,
+      "gravity":      8.87,
+      "rotation":     0.7
     },
     {
       "name":    "Neptune",
       "texture": "2k_neptune",
-      "radius":   24622.0
+      "radius":   24622.0,
+      "gravity":     11.15,
+      "rotation":     0.6
     }
   ]
 }

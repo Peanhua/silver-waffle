@@ -15,12 +15,13 @@
 #include "Scene.hh"
 
 class Camera;
+class SolarSystemObject;
 
 
 class ScenePlanet : public Scene
 {
 public:
-  ScenePlanet();
+  ScenePlanet(const SolarSystemObject & planet);
 
   void      Draw(const Camera & camera) const override;
   void      SetupPlayer() override;

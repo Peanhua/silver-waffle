@@ -13,6 +13,7 @@
 */
 
 #include "glm.hh"
+#include <json11.hpp>
 
 class Image;
 class Object;
@@ -28,9 +29,10 @@ public:
       PLANET
     };
 
-  SolarSystemObject(Type type, const std::string & name, const std::string & texture, double radius, const glm::vec2 & ring = glm::vec2(0, 0));
+  SolarSystemObject(Type type, const json11::Json & config);
 
   double   GetRelativeSize() const;
+  double   GetGravity() const;
   Type     GetType() const;
   const std::string & GetName() const;
   
@@ -41,6 +43,7 @@ private:
   Type        _type;
   std::string _name;
   double      _relative_size;
+  double      _gravity;
   glm::vec2   _ring;
   Image *     _texture;
 };

@@ -25,7 +25,8 @@ ScreenLevelPlanet::ScreenLevelPlanet(ScreenLevel * parent, SolarSystemObject * p
   _camera->SetClippingPlanes(0.01, 10000.0);
   _camera->SetPosition({0, -20, 0});
 
-  _scene = new ScenePlanet();
+  assert(planet);
+  _scene = new ScenePlanet(*planet);
 
   Initialize();
 }

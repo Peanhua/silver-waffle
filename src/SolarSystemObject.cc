@@ -14,14 +14,23 @@
 #include "SubsystemAssetLoader.hh"
 
 
-SolarSystemObject::SolarSystemObject(Type type, const std::string & name, const std::string & texture, double radius, const glm::vec2 & ring)
+SolarSystemObject::SolarSystemObject(Type type, const json11::Json & config)
   : _type(type),
-    _name(name),
-    _relative_size(radius / 6371.0),
-    _ring(ring)
+    _ring(0, 0)
 {
-  _texture = AssetLoader->LoadImage(texture);
+  _name = config["name"].string_value();
+  _relative_size = config["radius"].number_value() / 6371.0;
+  _gravity = config["gravity"].number_value();
+  _texture = AssetLoader->LoadImage(config["texture"].string_value());
   assert(_texture);
+
+  if(config["ring"].is_array())
+    {
+      auto a = config["ring"].array_items();
+      assert(a.size() == 2);
+      _ring.x = static_cast<float>(a[0].number_value());
+      _ring.y = static_cast<float>(a[1].number_value());
+    }
 }
 
 
@@ -46,3 +55,8 @@ const std::string & SolarSystemObject::GetName() const
   return _name;
 }
 
+
+double SolarSystemObject::GetGravity() const
+{
+    return _gravity;
+}

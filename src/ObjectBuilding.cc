@@ -16,9 +16,6 @@ ObjectBuilding::ObjectBuilding(Scene * scene, unsigned int random_seed, unsigned
   SetCollisionChannels(0);
   AddToCollisionChannel(Object::CollisionChannel::TERRAIN);
   SetCollidesWithChannels(0);
-  AddCollidesWithChannel(Object::CollisionChannel::ENEMY);
-  AddCollidesWithChannel(Object::CollisionChannel::PLAYER);
-
   auto config = AssetLoader->LoadJson("Data/Buildings");
   assert(config->is_object());
   assert((*config)["definitions"].is_array());

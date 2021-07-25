@@ -21,11 +21,11 @@
 #include "SubsystemAssetLoader.hh"
 
 
-ScenePlanet::ScenePlanet()
-  : Scene({2000, 0, 200}, {true, false, false}),
+ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
+  : Scene({planet.GetRelativeSize() * 2000.0, 0, planet.GetRelativeSize() * 200.0}, {true, false, false}),
     _landing_sequence(true)
 {
-  _gravity = { 0, 0, -9.81 };
+  _gravity = { 0, 0, -planet.GetGravity() };
 
   _quadtree = new QuadTreeXZ(GetPlayAreaSize(), 10.0f);
   

@@ -88,7 +88,6 @@ void Level::Start()
                 pos.z += static_cast<float>(y) * blocksize.z;
                 auto block = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 1);
                 _scene->AddObject(block, pos);
-                block->SetCollidesWithChannels(0);
                 if(!mesh)
                   {
                     mesh = new Mesh(*block->GetMesh());
