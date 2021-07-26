@@ -33,6 +33,7 @@ public:
 
   double   GetRelativeSize() const;
   double   GetGravity() const;
+  Image *  GetTexture() const;
   Type     GetType() const;
   const std::string & GetName() const;
   

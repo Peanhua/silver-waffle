@@ -1,6 +1,6 @@
 {
   "terrain": "PlanetDestructibleTerrainTest",
-  "buildings" : [
+  "xbuildings" : [
     {
       "type":   0,
       "boss":   true,
@@ -87,7 +87,7 @@
       "offset": [ 0.99, 0.0, 0.0 ]
     }
   ],
-  "spawns": [
+  "xspawns": [
     {
       "start":        0.0,
       "stop":         5.0,
@@ -102,6 +102,16 @@
       "interval":     0.01,
       "max":        100,
       "invader_type": 1,
+      "control_program": "face-player-shoot"
+    }
+  ],
+  "enemies": [
+    {
+      "type":            0,
+      "control_program": "face-player-shoot"
+    },
+    {
+      "type":            1,
       "control_program": "face-player-shoot"
     }
   ]

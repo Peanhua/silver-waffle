@@ -398,7 +398,7 @@ double Object::GetHealth() const
 
 void Object::SetHealth(double health)
 {
-  _health = health;
+  _health = std::min(health, _max_health);
 }
 
 
@@ -411,6 +411,7 @@ double Object::GetMaxHealth() const
 void Object::SetMaxHealth(double health)
 {
   _max_health = health;
+  SetHealth(_health);
 }
 
 

@@ -69,11 +69,13 @@ protected:
   
   Scene *                     _scene;
   std::mt19937_64             _random_generator;
+  std::uniform_real_distribution<float> _rdist;
   std::string                 _name;
   double                      _time;
   std::vector<ProgramEntry *> _program;
   unsigned int                _boss_buildings_alive;
   json11::Json                _buildings_config;
+  json11::Json                _enemy_config;
   Image *                     _destructible_terrain_config;
 
   void LoadConfig(const std::string & filename);

@@ -60,3 +60,9 @@ double SolarSystemObject::GetGravity() const
 {
     return _gravity;
 }
+
+
+Image * SolarSystemObject::GetTexture() const
+{
+  return _texture;
+}

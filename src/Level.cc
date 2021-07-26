@@ -67,41 +67,94 @@ void Level::Start()
   _time = 0;
   _boss_buildings_alive = 0;
 
+  auto GetRand = [this]()
+  {
+    return _rdist(_random_generator);
+  };
+  
   if(_destructible_terrain_config)
-    { // For each pixel with alpha > 0, generate a destructible terrain block of relative size.
+    { // For each pixel with alpha > 0, generate object(s).
       auto img = _destructible_terrain_config;
       glm::vec3 blocksize;
       blocksize.x = _scene->GetPlayAreaSize().x / static_cast<float>(img->GetWidth());
       blocksize.y = 4;
-      blocksize.z = _scene->GetPlayAreaSize().z / static_cast<float>(img->GetHeight());
+      const float emptytop = _scene->GetPlayAreaSize().z * 0.5f;
+      blocksize.z = (_scene->GetPlayAreaSize().z - emptytop)  / static_cast<float>(img->GetHeight());
 
       Mesh * mesh = nullptr;
       for(unsigned int y = 0; y < img->GetHeight(); y++)
         for(unsigned int x = 0; x < img->GetWidth(); x++)
           {
             auto rgba = img->GetRGBA(x, y);
-            if(rgba.a > 0.0f)
+            if(rgba.a > 0)
               {
-                glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f + glm::vec3(blocksize.x, 0, blocksize.z) * 0.5f;
+                glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f;
+                pos += blocksize * 0.5f;
                 pos.x += static_cast<float>(x) * blocksize.x;
                 pos.y = 0;
                 pos.z += static_cast<float>(y) * blocksize.z;
-                auto block = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 1);
-                _scene->AddObject(block, pos);
-                if(!mesh)
-                  {
-                    mesh = new Mesh(*block->GetMesh());
-                    mesh->UpdateGPU();
-                    mesh->SetBoundingBoxHalfSize(blocksize * 0.5f);
-                    mesh->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
-                    mesh->ApplyTransform(glm::scale(blocksize));
+
+                if(rgba.r >= 1 && rgba.g >= 1 && rgba.b >= 1)
+                  { // Full white pixel is a random building.
+                    auto type = static_cast<unsigned int>(GetRand() * 3.0f);
+                    auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 1 + type);
+                    pos.z -= blocksize.z * 0.5f;
+                    pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
+                    _scene->AddObject(building, pos);
+                    // if(building->IsBoss())
+                      {
+                        _boss_buildings_alive++;
+                        building->SetOnDestroyed([this](Object * destroyer)
+                        {
+                          assert(destroyer == destroyer);
+                          _boss_buildings_alive--;
+                        });
+                      }
                   }
-                block->SetMesh(mesh);
-                block->SetColor(rgba.rgb());
-                block->SetMaxHealth(block->GetMaxHealth() * static_cast<double>(rgba.a));
-                block->SetHealth(block->GetMaxHealth());
-                block->SetUseHealth(rgba.a < 1.0f);
-                block->CreateCollisionShape(block->GetCollisionShape()->GetType());
+                else if(rgba.r >= 1 && rgba.g <= 0 && rgba.b <= 0)
+                  { // Full red pixel is a random enemy spawn.
+                    assert(_enemy_config.is_array());
+                    assert(_enemy_config.array_items().size() > 0);
+
+                    auto ecount = _enemy_config.array_items().size();
+                    assert(ecount > 0);
+                    auto confind = static_cast<std::size_t>(GetRand() * static_cast<float>(ecount));
+                    assert(confind < ecount);
+                    auto conf = _enemy_config[confind];
+                    auto enemy = _scene->AddInvader(static_cast<unsigned int>(conf["type"].int_value()), pos);
+                    assert(enemy);
+                    enemy->AddNamedControlProgram(conf["control_program"].string_value());
+                    /*
+                      if(conf["is_boss"].is_bool() && conf["is_boss"].bool_value())
+                        {
+                          _boss_enemies_alive++;
+                          enemy->SetOnDestroyed([this](Object * destroyer)
+                          {
+                            assert(destroyer == destroyer);
+                            _boss_enemies_alive--;
+                          });
+                        }
+                    */
+                  }
+                else
+                  { // Terrain block.
+                    auto block = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 0);
+                    _scene->AddObject(block, pos);
+                    if(!mesh)
+                      {
+                        mesh = new Mesh(*block->GetMesh());
+                        mesh->UpdateGPU();
+                        mesh->SetBoundingBoxHalfSize(blocksize * 0.5f);
+                        mesh->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
+                        mesh->ApplyTransform(glm::scale(blocksize));
+                      }
+                    block->SetMesh(mesh);
+                    block->SetColor(rgba.rgb());
+                    block->SetMaxHealth(block->GetMaxHealth() * static_cast<double>(rgba.a));
+                    block->SetHealth(block->GetMaxHealth());
+                    block->SetUseHealth(rgba.a < 1.0f);
+                    block->CreateCollisionShape(block->GetCollisionShape()->GetType());
+                  }
               }
           }
     }
@@ -297,5 +350,7 @@ void Level::LoadConfig(const std::string & filename)
 
       if((*levelconfig)["terrain"].is_string())
         _destructible_terrain_config = AssetLoader->LoadImage((*levelconfig)["terrain"].string_value());
+
+      _enemy_config = (*levelconfig)["enemies"];
     }
 }

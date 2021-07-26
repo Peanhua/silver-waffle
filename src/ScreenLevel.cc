@@ -212,7 +212,7 @@ void ScreenLevel::Tick(double deltatime)
   if(Settings->GetBool("demo"))
     {
       if(!_demo_lander_activated)
-        if(!_parent && GetGameStats()->GetTime() > 9.75)
+        if(!_parent && GetGameStats()->GetTime() > 9.4)
           { // Activates only if "cheat_planet_lander_disable_distance_check" settings is true.
             _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Activate();
             _demo_lander_activated = true;

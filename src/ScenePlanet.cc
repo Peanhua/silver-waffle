@@ -22,7 +22,7 @@
 
 
 ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
-  : Scene({planet.GetRelativeSize() * 2000.0, 0, planet.GetRelativeSize() * 200.0}, {true, false, false}),
+  : Scene({planet.GetRelativeSize() * 2000.0, 0, planet.GetRelativeSize() * 400.0}, {true, false, false}),
     _landing_sequence(true)
 {
   _gravity = { 0, 0, -planet.GetGravity() };
@@ -30,7 +30,7 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
   _quadtree = new QuadTreeXZ(GetPlayAreaSize(), 10.0f);
   
   const float groundsize = 40;
-  auto ground = new ObjectPlanetGround(this, {GetPlayAreaSize().x, groundsize}, AssetLoader->LoadImage("8k_earth_daymap"));
+  auto ground = new ObjectPlanetGround(this, {GetPlayAreaSize().x, groundsize}, planet.GetTexture());
   AddObject(ground);
   ground->SetAutoDestroyBox({1, 1, 1}, {0, 0, 0});
   ground->SetPosition({0, 0, -(GetPlayAreaSize().z / 2.0f + 0.5f)});
