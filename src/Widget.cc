@@ -348,6 +348,7 @@ void Widget::SetIsFocused(bool is_focused)
   if(is_focused)
     assert(_focusable);
 
+  
   _focused = is_focused;
 }
 
@@ -355,6 +356,23 @@ void Widget::SetIsFocused(bool is_focused)
 bool Widget::GetIsFocused() const
 {
   return _focused;
+}
+
+
+Widget * Widget::GetFocusedWidget()
+{
+  if(_focused)
+    return this;
+
+  for(auto c : _children)
+    if(c)
+      {
+        auto w = c->GetFocusedWidget();
+        if(w)
+          return w;
+      }
+  
+  return nullptr;
 }
 
 

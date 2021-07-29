@@ -19,7 +19,6 @@ Screen::Screen()
   : _running(true),
     _child(nullptr),
     _root_widget(nullptr),
-    _focused_widget(nullptr),
     _modal_widget(nullptr)
 {
 }
@@ -94,23 +93,22 @@ void Screen::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relativ
   if(_modal_widget)
     start = _modal_widget;
   
+  auto current = _root_widget->GetFocusedWidget();
   auto focused = start->GetWidgetAt(position);
   if(focused)
     {
       if(focused->GetIsFocusable())
-        if(focused != _focused_widget)
+        if(focused != current)
           {
-            if(_focused_widget)
-              _focused_widget->SetIsFocused(false);
-            _focused_widget = focused;
-            _focused_widget->SetIsFocused(true);
+            if(current)
+              current->SetIsFocused(false);
+            focused->SetIsFocused(true);
           }
     }
   else
     {
-      if(_focused_widget)
-        _focused_widget->SetIsFocused(false);
-      _focused_widget = nullptr;
+      if(current)
+        current->SetIsFocused(false);
     }
 }
 

@@ -56,6 +56,7 @@ public:
   
   void SetIsFocused(bool is_focused);
   bool GetIsFocused() const;
+  Widget * GetFocusedWidget();
 
   void SetIsFocusable(bool is_focusable);
   bool GetIsFocusable() const;

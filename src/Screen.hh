@@ -46,7 +46,6 @@ private:
   Screen * _child;
 
   Widget * _root_widget;
-  Widget * _focused_widget;
   Widget * _modal_widget;
 };
 
