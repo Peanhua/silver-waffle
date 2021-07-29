@@ -1,58 +1,64 @@
 shadersdir = $(pkgdatadir)/Shaders
 
 GaussianBlur-Horizontal.vert : GaussianBlur.vert
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'HORIZONTAL'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'HORIZONTAL'
 
 GaussianBlur-Horizontal.frag : GaussianBlur.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'HORIZONTAL'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'HORIZONTAL'
 
 GaussianBlur-Vertical.vert : GaussianBlur.vert
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'VERTICAL'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'VERTICAL'
 
 GaussianBlur-Vertical.frag : GaussianBlur.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'VERTICAL'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'VERTICAL'
 
 SceneObject-Color.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@ ''
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ ''
 
 SceneObject-Color.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@ ''
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ ''
+
+SceneObject-Color-Emission.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_EMISSION'
+
+SceneObject-Color-Emission.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_EMISSION'
 
 SceneObject-Texture.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl 
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_TEXTURE'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_TEXTURE'
 
 SceneObject-Texture.frag : SceneObject.frag Include/Data.glsl Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_TEXTURE'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_TEXTURE'
 
 BonusLevelEntrance.vert : SceneObject.vert  Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
 
 BonusLevelEntrance.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
 
 SpaceJunk.vert : Star.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_GENERIC_VEC2 USE_VEC4_IN_VERTEX'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_GENERIC_VEC2 USE_VEC4_IN_VERTEX'
 
 SpaceJunk.frag : Star.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
 
 SpaceJunk.geom : Star.geom Include/Input.geom Include/Output.geom Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
 
 SpaceJunkLines.vert : Star.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@ 'USE_GENERIC_VEC2 USE_VEC4_IN_VERTEX'
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_GENERIC_VEC2 USE_VEC4_IN_VERTEX'
 
 SpaceJunkLines.frag : Star.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
 
 SpaceJunkLines.geom : StarLines.geom Include/Input.geom Include/Output.geom Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
 
 Cloud.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) ./generate-variants.sh $< $@
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
 
 Cloud.frag : src/Cloud.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) ./generate-variants.sh $< $@
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
 
 
 shaders_DATA = \
@@ -81,6 +87,8 @@ shaders_DATA = \
 	ProgressBar.vert		\
 	SceneObject-Color.frag		\
 	SceneObject-Color.vert		\
+	SceneObject-Color-Emission.frag	\
+	SceneObject-Color-Emission.vert	\
 	SceneObject-Texture.frag	\
 	SceneObject-Texture.vert	\
 	SpaceJunk.frag			\
@@ -101,6 +109,8 @@ CLEANFILES = \
 	GaussianBlur-Vertical.vert	\
 	SceneObject-Color.frag		\
 	SceneObject-Color.vert		\
+	SceneObject-Color-Emission.frag	\
+	SceneObject-Color-Emission.vert	\
 	SceneObject-Texture.frag	\
 	SceneObject-Texture.vert	\
 	SpaceJunk.frag			\
@@ -124,6 +134,15 @@ EXTRA_DIST = \
 	Generic-Texture.frag		\
 	Generic-Texture.frag		\
 	Generic-Texture.vert		\
+	Include/Data.glsl		\
+	Include/DirectionalLight.frag	\
+	Include/Input.frag		\
+	Include/Input.geom		\
+	Include/Input.vert		\
+	Include/Output.frag		\
+	Include/Output.geom		\
+	Include/Output.vert		\
+	Include/Uniforms.glsl		\
 	Mask.frag			\
 	Mask.vert			\
 	ProgressBar.frag		\
@@ -133,5 +152,7 @@ EXTRA_DIST = \
 	SceneObject.vert		\
 	Star.frag			\
 	Star.geom			\
+	Star.vert			\
 	StarLines.geom			\
-	Star.vert			
+	includes.awk			
+

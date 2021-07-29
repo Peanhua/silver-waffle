@@ -510,18 +510,19 @@ glm::vec3 Scene::GetClosestGroundSurface(const glm::vec3 & position) const
     {
       retry = false;
       for(auto o : *objs)
-        {
-          auto op = o->GetPosition();
-          auto dims = o->GetMesh()->GetBoundingBoxHalfSize();
-          auto topleft = op + glm::vec3(-dims.x, 0, dims.z);
-          auto botright = op + glm::vec3(dims.x, 0, -dims.z);
-          if(pos.x >= topleft.x  && pos.x <= botright.x &&
-             pos.z >= botright.z && pos.z <= topleft.z    )
-            {
-              retry = true;
-              pos.z = topleft.z + 0.001f;
-            }
-        }
+        if(o->GetCollisionShape())
+          {
+            auto op = o->GetPosition();
+            auto dims = o->GetMesh()->GetBoundingBoxHalfSize();
+            auto topleft = op + glm::vec3(-dims.x, 0, dims.z);
+            auto botright = op + glm::vec3(dims.x, 0, -dims.z);
+            if(pos.x >= topleft.x  && pos.x <= botright.x &&
+               pos.z >= botright.z && pos.z <= topleft.z    )
+              {
+                retry = true;
+                pos.z = topleft.z + 0.001f;
+              }
+          }
     }
   delete objs;
   return pos;

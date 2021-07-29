@@ -21,6 +21,9 @@ void main()
 #ifdef USE_TEXTURE
       gout.texcoord = gin[ind].texcoord;
 #endif
+#ifdef USE_EMISSION
+      gout.emission = gin[ind].emission;
+#endif
       gl_Position = gl_in[ind].gl_Position;
       EmitVertex();
     }

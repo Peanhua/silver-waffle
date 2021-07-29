@@ -24,6 +24,7 @@ Mesh::Mesh(unsigned int options)
     _element_vbo(0),
     _color_vbo(0),
     _texcoord_vbo(0),
+    _emission_vbo(0),
     _normal_vbo(0),
     _generic_vec2_vbo(0),
     _generic_vec3_vbo(0),
@@ -45,6 +46,7 @@ Mesh::~Mesh()
     _element_vbo,
     _color_vbo,
     _texcoord_vbo,
+    _emission_vbo,
     _normal_vbo,
     _generic_vec2_vbo,
     _generic_vec3_vbo,
@@ -67,6 +69,7 @@ Mesh::Mesh(const Mesh & other)
     _element_vbo(0),
     _color_vbo(0),
     _texcoord_vbo(0),
+    _emission_vbo(0),
     _normal_vbo(0),
     _generic_vec2_vbo(0),
     _generic_vec3_vbo(0),
@@ -75,6 +78,7 @@ Mesh::Mesh(const Mesh & other)
     _indices(other._indices),
     _colors(other._colors),
     _texcoords(other._texcoords),
+    _emissions(other._emissions),
     _normals(other._normals),
     _generic_vec2s(other._generic_vec2s),
     _generic_vec3s(other._generic_vec3s),
@@ -174,6 +178,7 @@ void Mesh::Clear()
   _indices.clear();
   _colors.clear();
   _texcoords.clear();
+  _emissions.clear();
   _normals.clear();
   _generic_vec2s.clear();
   _generic_vec3s.clear();
@@ -299,6 +304,13 @@ void Mesh::AddTexCoord(const glm::vec2 & coord)
   assert(_options & OPTION_TEXTURE);
   _texcoords.push_back(coord.x);
   _texcoords.push_back(coord.y);
+}
+
+
+void Mesh::AddEmission(float emission)
+{
+  assert(_options & OPTION_EMISSION);
+  _emissions.push_back(emission);
 }
 
 
@@ -472,6 +484,20 @@ void Mesh::UpdateGPU()
       glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_generic_vec3s.size() * sizeof(GLfloat)), _generic_vec3s.data(), GL_STATIC_DRAW);
       glEnableVertexAttribArray(ALOC_GENERIC_VEC3);
       glVertexAttribPointer(ALOC_GENERIC_VEC3, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    }
+
+  if(_options & OPTION_EMISSION)
+    {
+      const unsigned int components = (_options & OPTION_VERTEX_W) ? 4 : 3;
+      assert(_emissions.size() == _vertices.size() / components);
+      if(_emission_vbo == 0)
+        glGenBuffers(1, &_emission_vbo);
+      assert(_emission_vbo != 0);
+
+      glBindBuffer(GL_ARRAY_BUFFER, _emission_vbo);
+      glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(_emissions.size() * sizeof(GLfloat)), _emissions.data(), GL_STATIC_DRAW);
+      glEnableVertexAttribArray(ALOC_EMISSION);
+      glVertexAttribPointer(ALOC_EMISSION, 1, GL_FLOAT, GL_FALSE, 0, nullptr);
     }
 
   for(auto c : _children)
@@ -668,6 +694,9 @@ bool Mesh::AppendMesh(Mesh * other)
   if(_options & OPTION_TEXTURE)
     for(auto t : other->_texcoords)
       _texcoords.push_back(t);
+  if(_options & OPTION_EMISSION)
+    for(auto e : other->_emissions)
+      _emissions.push_back(e);
   if(_options & OPTION_NORMAL)
     for(auto n : other->_normals)
       _normals.push_back(n);

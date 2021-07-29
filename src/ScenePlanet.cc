@@ -19,6 +19,7 @@
 #include "ObjectSpaceship.hh"
 #include "QuadTree.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSettings.hh"
 
 
 ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
@@ -61,7 +62,7 @@ void ScenePlanet::SetupPlayer()
   Scene::SetupPlayer();
   auto player = GetPlayer();
   player->EnableVelocity(true, false, true);
-  player->SetPosition({50, 0, GetPlayAreaSize().z * 0.5f});
+  player->SetPosition({0, 0, GetPlayAreaSize().z * 0.5f - player->GetMesh()->GetBoundingBoxHalfSize().z});
   player->RotateYaw(-90.0);
   for(unsigned int i = 0; i < 4; i++)
     {
@@ -72,7 +73,8 @@ void ScenePlanet::SetupPlayer()
   if(_landing_sequence)
     {
       _landing_sequence = false;
-      player->AddImpulse({300, 0, -10});
+      if(!Settings->GetBool("cheat_disable_planet_entering_impulse"))
+        player->AddImpulse({300, 0, -10});
     }
 }
 

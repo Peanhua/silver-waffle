@@ -48,6 +48,9 @@ private:
   std::vector<Shader *> _shaders;
   static std::map<std::string, GLuint> _ubos;
 
+  static GLuint       GetUBO(const std::string & name);
+  static unsigned int GetUBOPosition(GLuint ubo, const std::string & name);
+
 #ifndef NDEBUG
 public:
   void SetName(const std::string & name);

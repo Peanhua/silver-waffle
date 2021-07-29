@@ -11,3 +11,6 @@ in vec2 in_texcoord;
 #ifdef USE_GENERIC_VEC2
 in vec2 in_generic_vec2;
 #endif
+#ifdef USE_EMISSION
+in float in_emission;
+#endif

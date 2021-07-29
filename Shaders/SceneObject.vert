@@ -28,6 +28,9 @@ void main()
 #ifdef USE_TEXTURE
   vout.texcoord = in_texcoord;
 #endif
+#ifdef USE_EMISSION
+  vout.emission = in_emission;
+#endif
   
   vout.distance_to_center = distance_to_center;
   

@@ -41,8 +41,16 @@ void main()
   float d = fin.distance_to_center - point;
   alpha *= 0.9 + 0.1 * sin(d);
 #endif
+
+  vec4 glow = vec4(in_glow, alpha);
+  vec3 colormod = in_colormod;
+
+#ifdef USE_EMISSION
+  float e = fin.emission;
+  color = mix(color, basecolor, e);
+  glow = mix(glow, vec4(basecolor, 1), e);
+#endif
   
-  
-  out_color = vec4(color * in_colormod, alpha);
-  out_glow = vec4(in_glow, alpha);
+  out_color = vec4(color * colormod, alpha);
+  out_glow = glow;
 }

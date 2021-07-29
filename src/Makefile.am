@@ -24,82 +24,162 @@ silverwaffle_LDADD =       \
 
 silverwaffle_SOURCES =				\
 	AdditiveBlending.cc			\
+	AdditiveBlending.hh			\
 	Camera.cc				\
+	Camera.hh				\
 	Controller.cc				\
+	Controller.hh				\
 	CollisionShape.cc			\
+	CollisionShape.hh			\
 	CollisionShapeOBB.cc			\
+	CollisionShapeOBB.hh			\
 	CollisionShapeSphere.cc			\
+	CollisionShapeSphere.hh			\
 	ControllerPlanet.cc			\
+	ControllerPlanet.hh			\
 	ControllerSpace.cc			\
+	ControllerSpace.hh			\
 	Explosion.cc				\
+	Explosion.hh				\
 	Font.cc					\
+	Font.hh					\
 	Frustum.cc				\
+	Frustum.hh				\
 	GameStats.cc				\
+	GameStats.hh				\
 	GaussianBlur.cc				\
+	GaussianBlur.hh				\
 	HighscoreEntry.cc			\
+	HighscoreEntry.hh			\
 	Image.cc				\
+	Image.hh				\
 	Image_Save.cc				\
 	Level.cc				\
+	Level.hh				\
 	LevelBonus.cc				\
+	LevelBonus.hh				\
 	LevelPlanet.cc				\
+	LevelPlanet.hh				\
 	LevelSpace.cc				\
+	LevelSpace.hh				\
 	Loot.cc					\
+	Loot.hh					\
 	Mesh.cc					\
+	Mesh.hh					\
 	MeshOverlay.cc				\
+	MeshOverlay.hh				\
 	MeshProgressBar.cc			\
+	MeshProgressBar.hh			\
 	Mesh_LoadFromFile.cc			\
 	Milkyway.cc				\
+	Milkyway.hh				\
 	Object.cc				\
+	Object.hh				\
 	ObjectBonusLevelEntrance.cc		\
+	ObjectBonusLevelEntrance.hh		\
 	ObjectBuilding.cc			\
+	ObjectBuilding.hh			\
 	ObjectCloud.cc				\
+	ObjectCloud.hh				\
 	ObjectCollectible.cc			\
+	ObjectCollectible.hh			\
 	ObjectInvader.cc			\
+	ObjectInvader.hh			\
 	ObjectMovable.cc			\
+	ObjectMovable.hh			\
 	ObjectPlanet.cc				\
+	ObjectPlanet.hh				\
 	ObjectPlanetAtmosphere.cc		\
+	ObjectPlanetAtmosphere.hh		\
 	ObjectPlanetGround.cc			\
+	ObjectPlanetGround.hh			\
 	ObjectProjectile.cc			\
+	ObjectProjectile.hh			\
 	ObjectSpaceship.cc			\
+	ObjectSpaceship.hh			\
+	Observer.hh				\
 	Plane.cc				\
+	Plane.hh				\
+	QuadTree.hh				\
+	RingBuffer.hh				\
 	Scene.cc				\
+	Scene.hh				\
 	ScenePlanet.cc				\
+	ScenePlanet.hh				\
 	SceneSpace.cc				\
+	SceneSpace.hh				\
 	ScoreReel.cc				\
+	ScoreReel.hh				\
 	Screen.cc				\
+	Screen.hh				\
 	ScreenLevel.cc				\
+	ScreenLevel.hh				\
 	ScreenLevelBonus.cc			\
+	ScreenLevelBonus.hh			\
 	ScreenLevelPlanet.cc			\
+	ScreenLevelPlanet.hh			\
 	ScreenLevelSpace.cc			\
+	ScreenLevelSpace.hh			\
 	ScreenTitle.cc				\
+	ScreenTitle.hh				\
 	Shader.cc				\
+	Shader.hh				\
 	ShaderProgram.cc			\
+	ShaderProgram.hh			\
 	SolarSystemObject.cc			\
+	SolarSystemObject.hh			\
 	SpaceParticles.cc			\
+	SpaceParticles.hh			\
 	SpaceshipControlProgram.cc		\
+	SpaceshipControlProgram.hh		\
 	SpaceshipUpgrade.cc			\
+	SpaceshipUpgrade.hh			\
 	Subsystem.cc				\
+	Subsystem.hh				\
 	SubsystemAssetLoader.cc			\
+	SubsystemAssetLoader.hh			\
 	SubsystemGfx.cc				\
+	SubsystemGfx.hh				\
 	SubsystemHandler.cc			\
+	SubsystemHandler.hh			\
 	SubsystemHighscores.cc			\
+	SubsystemHighscores.hh			\
 	SubsystemInput.cc			\
+	SubsystemInput.hh			\
 	SubsystemScreen.cc			\
+	SubsystemScreen.hh			\
 	SubsystemSettings.cc			\
+	SubsystemSettings.hh			\
 	TextureRenderer.cc			\
+	TextureRenderer.hh			\
 	UpgradeMaterial.cc			\
+	UpgradeMaterial.hh			\
 	Widget.cc				\
+	Widget.hh				\
 	WidgetButton.cc				\
+	WidgetButton.hh				\
 	WidgetHighscores.cc			\
+	WidgetHighscores.hh			\
 	WidgetPlayerShip.cc			\
+	WidgetPlayerShip.hh			\
 	WidgetScoreReel.cc			\
+	WidgetScoreReel.hh			\
 	WidgetShopItem.cc			\
+	WidgetShopItem.hh			\
 	WidgetSpaceshipMaintenance.cc		\
+	WidgetSpaceshipMaintenance.hh		\
 	WidgetSpaceshipStatus.cc		\
+	WidgetSpaceshipStatus.hh		\
 	WidgetSpaceshipUpgradeStatus.cc		\
+	WidgetSpaceshipUpgradeStatus.hh		\
 	WidgetTeletyper.cc			\
+	WidgetTeletyper.hh			\
 	WidgetUpgradeMaterial.cc		\
+	WidgetUpgradeMaterial.hh		\
 	WidgetWeaponStatus.cc			\
+	WidgetWeaponStatus.hh			\
 	WormholeWall.cc				\
+	WormholeWall.hh				\
 	glm.cc					\
+	glm.hh					\
 	main.cc

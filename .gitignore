@@ -71,6 +71,8 @@ stamp-h1
 /Shaders/GaussianBlur-Vertical.vert
 /Shaders/SceneObject-Color.frag
 /Shaders/SceneObject-Color.vert
+/Shaders/SceneObject-Color-Emission.frag
+/Shaders/SceneObject-Color-Emission.vert
 /Shaders/SceneObject-Texture.frag
 /Shaders/SceneObject-Texture.vert
 /Shaders/SpaceJunk.frag

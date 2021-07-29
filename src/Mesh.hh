@@ -35,6 +35,7 @@ public:
       OPTION_GENERIC_VEC2_INPUT = 1<<7,
       OPTION_VERTEX             = 1<<8,
       OPTION_DYNAMIC_VERTEX     = 1<<9,
+      OPTION_EMISSION           = 1<<10,
     };
   enum AttribLocation
     {
@@ -44,6 +45,7 @@ public:
       ALOC_NORMAL,
       ALOC_GENERIC_VEC2,
       ALOC_GENERIC_VEC3,
+      ALOC_EMISSION,
     };
   
 
@@ -95,7 +97,8 @@ public:
   void AddGenericVecInput(const glm::vec2 & vector);
   void AddGenericVecInput(const glm::vec3 & vector);
   glm::vec2 GetGenericVec2(unsigned int index) const;
-
+  void AddEmission(float emission);
+  
   GLenum GetPrimitiveType() const;
   void   SetPrimitiveType(const GLenum primitive_type);
   
@@ -127,6 +130,7 @@ private:
   GLuint _element_vbo;
   GLuint _color_vbo;
   GLuint _texcoord_vbo;
+  GLuint _emission_vbo;
   GLuint _normal_vbo;
   GLuint _generic_vec2_vbo;
   GLuint _generic_vec3_vbo;
@@ -136,6 +140,7 @@ private:
   std::vector<GLuint>  _indices;
   std::vector<GLfloat> _colors;
   std::vector<GLfloat> _texcoords;
+  std::vector<GLfloat> _emissions;
   std::vector<GLfloat> _normals;
   std::vector<GLfloat> _generic_vec2s;
   std::vector<GLfloat> _generic_vec3s;

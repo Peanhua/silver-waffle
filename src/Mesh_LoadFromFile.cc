@@ -65,6 +65,17 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first, 
           diffuse_color.b = tmpcolor.b;
           diffuse_color.a = tmpcolor.a;
         }
+      float emission = 0;
+      if(aiGetMaterialColor(material, AI_MATKEY_COLOR_EMISSIVE, &tmpcolor) == AI_SUCCESS)
+        if(tmpcolor.r > 0 || tmpcolor.g > 0 || tmpcolor.b > 0)
+          {
+            _options |= OPTION_EMISSION;
+            /* todo: Could use the real color from the 3d model to set the value for emission, but not doing it (yet?) because:
+             *       Blender renders differently by overwriting the diffuse color if emission color is set,
+             *       and the emission effect here is not strong (values between 0 and 1 would probably not make much difference).
+             */
+            emission = 1.0;
+          }
 
       if(material->GetTextureCount(aiTextureType_DIFFUSE) == 1)
         {
@@ -91,6 +102,9 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first, 
             AddColor(diffuse_color);
           else
             AddColor(diffuse_color.rgb());
+
+          if(_options & OPTION_EMISSION)
+            AddEmission(emission);
           
           AddNormal(glm::vec3(mesh->mNormals[vi].x,
                               mesh->mNormals[vi].y,
@@ -122,6 +136,8 @@ bool Mesh::LoadFromAssimpNode(const aiScene * scene, aiNode * node, bool first, 
     suffix += "-Texture";
   else
     suffix += "-Color";
+  if(_options & OPTION_EMISSION)
+    suffix += "-Emission";
   /*  if(_options & OPTION_BLEND)
     suffix += "-Color4";
   */

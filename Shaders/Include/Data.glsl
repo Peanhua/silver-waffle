@@ -7,5 +7,8 @@ DATA
 #ifdef USE_TEXTURE
   vec2 texcoord;
 #endif
+#ifdef USE_EMISSION
+  float emission;
+#endif
   float distance_to_center;
 }
