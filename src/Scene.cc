@@ -131,7 +131,10 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
   auto ind = _projectiles.GetNextFreeIndex();
   if(ind >= _projectiles.size())
     {
-      assert(_projectiles.size() < 300);
+#ifndef NDEBUG
+      if(_projectiles.size() > 300)
+        std::cout << "Warning, projectiles size has grown large, it is now " << _projectiles.size() << std::endl;
+#endif
       ind = static_cast<unsigned int>(_projectiles.size());
       
       auto b = new ObjectProjectile(this);
