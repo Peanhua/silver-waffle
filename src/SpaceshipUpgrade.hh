@@ -77,6 +77,7 @@ private:
   bool        _enabled;
   bool        _always_activated;
   bool        _activated;
+  bool        _uses_timer;
   double      _timer;
   double      _timer_max;
   double      _cooldown_default;

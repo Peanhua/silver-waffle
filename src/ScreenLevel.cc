@@ -342,7 +342,7 @@ void ScreenLevel::Tick(double deltatime)
   
   _active_bonus_widgets[0]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
   _active_bonus_widgets[1]->SetIsVisible(_gamestats->GetScoreMultiplier() > 1);
-  _active_bonus_widgets[2]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->IsActive());
+  _active_bonus_widgets[2]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->GetValue() > 0);
 
   auto fmt = [](double v)
   {

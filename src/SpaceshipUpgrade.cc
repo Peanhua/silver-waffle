@@ -42,16 +42,16 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
 {
   switch(_type)
     {
-    case Type::BONUS_DAMAGE:     _name = "Bonus damage";   _always_activated = false; _install_count = 1; break;
-    case Type::SHIELD:           _name = "Shield";         _always_activated = false; _install_count = 1; break;
-    case Type::WEAPON:           _name = "Weapon";         _always_activated = true;  break;
-    case Type::WEAPON_COOLER:    _name = "Weapon cooler";  _always_activated = true;  break;
-    case Type::ENGINE_UPGRADE:   _name = "Engine upgrade"; _always_activated = true;  break;
-    case Type::HULL_UPGRADE:     _name = "Hull upgrade";   _always_activated = true;  break;
-    case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; break;
-    case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  break;
-    case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; _cooldown_default = 0; break;
-    case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; _cooldown_default = 1; break;
+    case Type::BONUS_DAMAGE:     _name = "Bonus damage";   _always_activated = false; _uses_timer = true;  _install_count = 1; break;
+    case Type::SHIELD:           _name = "Shield";         _always_activated = true;  _uses_timer = false; _install_count = 1; break;
+    case Type::WEAPON:           _name = "Weapon";         _always_activated = true;  _uses_timer = false; break;
+    case Type::WEAPON_COOLER:    _name = "Weapon cooler";  _always_activated = true;  _uses_timer = false; break;
+    case Type::ENGINE_UPGRADE:   _name = "Engine upgrade"; _always_activated = true;  _uses_timer = false; break;
+    case Type::HULL_UPGRADE:     _name = "Hull upgrade";   _always_activated = true;  _uses_timer = false; break;
+    case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; _uses_timer = true;  break;
+    case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  _uses_timer = false; break;
+    case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; _uses_timer = true;  _cooldown_default = 0; break;
+    case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; _uses_timer = false; _cooldown_default = 1; break;
     }
 }
 
@@ -236,10 +236,13 @@ void SpaceshipUpgrade::Tick(double deltatime)
   
   if(IsActive())
     {
-      if(_timer > 0.0)
-        _timer -= deltatime;
-      else
-        Deactivate();
+      if(_uses_timer)
+        {
+          if(_timer > 0.0)
+            _timer -= deltatime;
+          else
+            Deactivate();
+        }
 
       switch(_type)
         {
@@ -300,7 +303,7 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
     case Type::SHIELD:
       if(collectible->HasBonus(ObjectCollectible::Type::SHIELD))
         Activate(std::clamp(std::max(_value, collectible->GetBonus(ObjectCollectible::Type::SHIELD)), 0.0, _spaceship->GetMaxHealth()),
-                 30.0);
+                 0.0);
       break;
     case Type::WARP_ENGINE:
       if(GetInstallCount() > 0)
