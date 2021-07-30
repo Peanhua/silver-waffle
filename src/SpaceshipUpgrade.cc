@@ -313,7 +313,7 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
             _timer += collectible->GetBonus(ObjectCollectible::Type::WARP_FUEL);
             if(_timer > _timer_max)
               _timer = _timer_max;
-            _spaceship->SystemlogAppend("Warp fuel +" + std::to_string(_timer - prev) + "\n");
+            _spaceship->SystemlogAppend("Warp fuel +" + std::to_string(static_cast<int>(_timer - prev)) + "\n");
           }
       break;
       // The Following are not available from ObjectCollectible:
