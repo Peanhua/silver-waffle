@@ -80,6 +80,7 @@ public:
   void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
   void              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position);
   void              AddObject(Object * object, const glm::vec3 & position = { 0, 0, 0 });
+  void              RemoveObject(Object * object);
 
   std::vector<Object *> * GetNearbyObjects(const glm::vec3 & position, float radius) const;
 

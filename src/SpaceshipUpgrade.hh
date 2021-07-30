@@ -62,7 +62,8 @@ public:
   void ActivateFromCollectible(ObjectCollectible * collectible);
   void Deactivate();
   bool IsActive() const;
-
+  bool IsLanded() const;
+  
   void SetEnabled(bool enabled);
 
   void Dump() const;

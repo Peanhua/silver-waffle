@@ -503,3 +503,10 @@ void SpaceshipUpgrade::SetEnabled(bool enabled)
   _spaceship->SystemlogAppend(_name + (enabled ? " online" : " offline") + "\n");
   _enabled = enabled;
 }
+
+
+bool SpaceshipUpgrade::IsLanded() const
+{
+  assert(_type == Type::PLANET_LANDER);
+  return _landed;
+}

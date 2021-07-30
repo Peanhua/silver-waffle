@@ -533,3 +533,15 @@ QuadTree * Scene::GetQuadTree() const
 {
   return _quadtree;
 }
+
+
+void Scene::RemoveObject(Object * object)
+{
+  for(unsigned int i = 0; object && i < _objects.size(); i++)
+    if(_objects[i] == object)
+      {
+        _quadtree->Remove(object);
+        object->SetScene(nullptr);
+        object = _objects[i] = nullptr;
+      }
+}

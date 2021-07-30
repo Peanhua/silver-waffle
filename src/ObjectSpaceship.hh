@@ -24,6 +24,8 @@ class SpaceshipControlProgram;
 class ObjectSpaceship : public ObjectMovable
 {
 public:
+  typedef std::function<void()> on_human_count_changed_t;
+  
   ObjectSpaceship(Scene * scene, unsigned int random_seed);
 
   void Tick(double deltatime) override;
@@ -64,6 +66,12 @@ public:
   void                SystemlogAppend(const std::string & message);
   const std::string & SystemlogGet() const;
   void                SystemlogClear();
+
+  void AddHuman();
+  int  GetHumanCount() const;
+  void ClearHumans();
+
+  void SetOnHumanCountChanged(on_human_count_changed_t callback);
   
 private:
   class Engine
@@ -99,7 +107,8 @@ private:
   std::vector<Weapon *>  _weapons;
   std::vector<SpaceshipUpgrade *> _upgrades;
   std::vector<SpaceshipControlProgram *> _control_programs;
-
+  int                    _human_count;
+  on_human_count_changed_t _on_human_count_changed;
   bool        _systemlog_enabled;
   std::string _systemlog;
 };

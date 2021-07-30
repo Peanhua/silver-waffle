@@ -87,10 +87,16 @@ void ScreenLevel::Initialize()
     _gamestats = new GameStats();
   
   _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
+
   _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
   {
     assert(destroyer == destroyer);
     OnPlayerDies();
+  });
+
+  _scene->GetPlayer()->SetOnHumanCountChanged([this]()
+  {
+    OnHumanCountUpdated();
   });
 
  
@@ -155,6 +161,18 @@ void ScreenLevel::Initialize()
         l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
         l->SetTextPaddingCentered(true, true);
       }
+
+    y += size.y + 20;
+    x = static_cast<int>(width) - 120;
+    {
+      auto w = new Widget(root, glm::ivec2(x, y), glm::ivec2(120, 20));
+      w->SetTextFont(AssetLoader->LoadFont(15));
+      w->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
+      w->SetTextPaddingCentered(false, true);
+      _human_count_widget = w;
+      _human_count_widget_last = -1;
+      OnHumanCountUpdated();
+    }
   }
   
   {
@@ -314,6 +332,8 @@ void ScreenLevel::Tick(double deltatime)
                   _scene->GetPlayer()->SetOrientation(glm::quat(1, 0, 0, 0));
                   RefreshUI();
                   OnLivesUpdated();
+                  _human_count_widget_last = -1;
+                  OnHumanCountUpdated();
                   ChangeState(State::RUNNING);
                 }
             }
@@ -466,6 +486,23 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
         }
       break;
 
+    case SDLK_u:
+      if(!disablecontrols && pressed)
+        {
+          auto lander = player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER);
+          if(lander->IsLanded())
+            {
+              auto humancount = player->GetHumanCount();
+              if(humancount > 0)
+                {
+                  player->SystemlogAppend("You rescued " + std::to_string(humancount) + " human individuals!\n");
+                  player->GetOwnerGameStats()->AddScore(10 * humancount);
+                  player->ClearHumans();
+                }
+            }
+        }
+      break;
+
     case SDLK_F1:
       if(pressed)
         {
@@ -486,6 +523,25 @@ void ScreenLevel::OnLivesUpdated()
     {
       w->SetIsVisible(used < _gamestats->GetLives());
       used++;
+    }
+}
+
+
+void ScreenLevel::OnHumanCountUpdated()
+{
+  auto player = _scene->GetPlayer();
+  auto count = player->GetHumanCount();
+  if(count == _human_count_widget_last)
+    return;
+  if(count == 0)
+    {
+      _human_count_widget->SetIsVisible(false);
+    }
+  else
+    {
+      _human_count_widget->SetIsVisible(true);
+      _human_count_widget->SetText("Humans: " + std::to_string(count));
+      _human_count_widget_last = count;
     }
 }
 
@@ -525,6 +581,14 @@ void ScreenLevel::NextLifeOrQuit()
         assert(destroyer == destroyer);
         OnPlayerDies();
       });
+      
+      _scene->GetPlayer()->SetOnHumanCountChanged([this]()
+      {
+        OnHumanCountUpdated();
+      });
+      _human_count_widget_last = -1;
+      OnHumanCountUpdated();
+      
       RefreshUI();
     }
   else

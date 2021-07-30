@@ -23,6 +23,8 @@
 ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
   : ObjectMovable(scene, random_seed),
     _gamestats(nullptr),
+    _human_count(0),
+    _on_human_count_changed(nullptr),
     _systemlog_enabled(false)
 {
   SetIsAffectedByGravity(false);
@@ -591,4 +593,36 @@ void ObjectSpaceship::SystemlogClear()
 void ObjectSpaceship::SystemlogEnable()
 {
   _systemlog_enabled = true;
+}
+
+
+void ObjectSpaceship::AddHuman()
+{
+  _human_count++;
+  if(_on_human_count_changed)
+    _on_human_count_changed();
+}
+
+
+int ObjectSpaceship::GetHumanCount() const
+{
+  return _human_count;
+}
+
+
+void ObjectSpaceship::ClearHumans()
+{
+  _human_count = 0;
+  if(_on_human_count_changed)
+    _on_human_count_changed();
+}
+
+
+void ObjectSpaceship::SetOnHumanCountChanged(on_human_count_changed_t callback)
+{
+  if(callback)
+    assert(!_on_human_count_changed);
+  else
+    assert(_on_human_count_changed);
+  _on_human_count_changed = callback;
 }

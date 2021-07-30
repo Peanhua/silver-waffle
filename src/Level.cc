@@ -136,6 +136,18 @@ void Level::Start()
                         }
                     */
                   }
+                else if(rgba.r <= 0 && rgba.g >= 1 && rgba.b <= 0)
+                  { // Full green pixel is a human survivor.
+                    auto t = ObjectCollectible::Type::HUMAN;
+                    auto c = AssetLoader->LoadObjectCollectible(static_cast<int>(t));
+                    assert(c);
+                    auto human = new ObjectCollectible(*c);
+                    human->SetBonus(t, 1);
+
+                    pos.z -= blocksize.z * 0.5f;
+                    pos.z += human->GetMesh()->GetBoundingBoxHalfSize().z;
+                    _scene->AddCollectible(human, pos);
+                  }
                 else
                   { // Terrain block.
                     auto block = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 0);

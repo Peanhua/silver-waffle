@@ -31,6 +31,7 @@ public:
       UPGRADEMATERIAL_DEFENSE,
       UPGRADEMATERIAL_PHYSICAL,
       WARP_FUEL,
+      HUMAN,
       SIZEOF_,
       NONE = SIZEOF_
     };

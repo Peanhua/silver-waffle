@@ -51,6 +51,7 @@ public:
   void TransitionToScreen(Screen * new_screen, const std::string & message);
 
   void OnLivesUpdated();
+  void OnHumanCountUpdated();
 
 protected:
   Camera *             _camera;
@@ -94,6 +95,8 @@ private:
   Widget *              _pausebutton;
   Widget *              _levelinfo_widget;
   WidgetTeletyper *     _teletyper;
+  Widget *              _human_count_widget;
+  int                   _human_count_widget_last;
   
   bool _demo_lander_activated;
   bool _demo_ending_activated;

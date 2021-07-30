@@ -352,6 +352,9 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
     case ObjectCollectible::Type::WARP_FUEL:
       collectible->SetMesh(LoadMesh("WarpFuel"));
       break;
+    case ObjectCollectible::Type::HUMAN:
+      collectible->SetMesh(LoadMesh("Human"));
+      break;
     }
   collectible->SetCollisionShape(new CollisionShapeOBB(collectible, collectible->GetMesh()->GetBoundingBoxHalfSize()));
 

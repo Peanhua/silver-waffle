@@ -81,6 +81,11 @@ void ObjectCollectible::CollectBy(ObjectSpaceship * spaceship)
       gamestats->SetScoreMultiplier(mult, 30);
       spaceship->SystemlogAppend("Score multiplier: " + std::to_string(mult) + "\n");
     }
+  if(HasBonus(Type::HUMAN))
+    {
+      spaceship->AddHuman();
+      spaceship->SystemlogAppend("You pick up a human individual,\ntake them to the base!\n");
+    }
   {
     UpgradeMaterial::Type upg_types[] =
       {
