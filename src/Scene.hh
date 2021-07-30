@@ -22,6 +22,7 @@ class Camera;
 class Explosion;
 class Mesh;
 class Object;
+class ObjectBuilding;
 class ObjectCollectible;
 class ObjectInvader;
 class ObjectMovable;
@@ -74,6 +75,7 @@ public:
 
   void              AddPlanet(Object * planet);
   Object *          GetClosestPlanet(const glm::vec3 & position) const;
+  ObjectBuilding *  GetClosestSpaceport(const glm::vec3 & position) const;
 
   ObjectInvader *   AddInvader(unsigned int type, const glm::vec3 & position);
   void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);

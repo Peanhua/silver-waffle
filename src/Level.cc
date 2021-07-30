@@ -22,6 +22,7 @@
 
 Level::Level(Scene * scene)
   : _scene(scene),
+    _running(false),
     _random_generator(0),
     _time(0),
     _boss_buildings_alive(0),
@@ -64,6 +65,7 @@ double Level::GetTime() const
 
 void Level::Start()
 {
+  _running = true;
   _time = 0;
   _boss_buildings_alive = 0;
 
@@ -203,6 +205,12 @@ void Level::Start()
 }
 
 
+void Level::Stop()
+{
+  _running = false;
+}
+
+
 Level::ProgramEntry::ProgramEntry()
   : _invader_spawn_timer(0),
     _invader_spawn_start_time(0),
@@ -278,6 +286,9 @@ double Level::ProgramEntry::GetRemainingTime() const
 
 bool Level::IsFinished() const
 {
+  if(!_running)
+    return true;
+  
   if(_boss_buildings_alive > 0)
     return false;
 

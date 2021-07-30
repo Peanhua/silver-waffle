@@ -17,10 +17,8 @@
 #include "ObjectSpaceship.hh"
 #include "QuadTree.hh"
 #include "Scene.hh"
-#include "ScreenLevelPlanet.hh"
 #include "SolarSystemObject.hh"
 #include "SpaceshipControlProgram.hh"
-#include "SubsystemScreen.hh"
 #include "SubsystemSettings.hh"
 #include <algorithm>
 #include <map>
@@ -37,8 +35,7 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     _timer(0),
     _timer_max(0),
     _cooldown_default(30),
-    _cooldown(0),
-    _landed(false)
+    _cooldown(0)
 {
   switch(_type)
     {
@@ -281,7 +278,7 @@ void SpaceshipUpgrade::Tick(double deltatime)
         _cooldown -= deltatime;
     }
 
-  if(_landed)
+  if(_spaceship->IsLanded())
     _spaceship->SetHealth(_spaceship->GetHealth() + 25.0 * deltatime);
 }
 
@@ -373,73 +370,45 @@ void SpaceshipUpgrade::Activate(double value, double time)
     }
 
   if(_type == Type::PLANET_LANDER)
-    {
-      auto playerpos = _spaceship->GetPosition();
+    { // Launch from spaceport, Land on spaceport, or Descend to planet.
+      Deactivate();
 
+      auto playerpos = _spaceship->GetPosition();
+      auto scene = _spaceship->GetScene();
       bool done = false;
 
-      if(_landed)
-        { // launch
-          _spaceship->SystemlogAppend(_name + ": Launch!\n");
-          done = true;
-          _spaceship->SetUseHealth(true);
-          _spaceship->AddImpulse({0, 0, 10});
-          _spaceship->EnableEngines(true);
-          _spaceship->EnableWeapons(true);
-          _landed = false;
-        }
-      
-      auto objs = _spaceship->GetScene()->GetQuadTree()->GetNearby(playerpos); // todo: Add distance parameter. Because currently, from this point of view, we don't know what the "nearby" means.
-      // todo: Move finding to Scene->GetClosestSpaceport() like with GetClosestPlanet() later.
-      auto o = objs.Next();
-      while(!done && o)
+      if(_spaceship->IsLanded())
         {
-          auto spaceport = dynamic_cast<ObjectBuilding *>(o);
-          if(spaceport && spaceport->GetIsSpaceport())
-            { // land on spaceport
-              auto distance = glm::length(spaceport->GetPosition() - _spaceship->GetPosition());
-              if(distance < 5)
-                {
-                  _spaceship->SystemlogAppend(_name + ": Landing on nearby spaceport.\n");
-                  done = true;
-
-                  auto target = spaceport->GetPosition();
-                  target.z += spaceport->GetMesh()->GetBoundingBoxHalfSize().z;
-                  target.z += _spaceship->GetMesh()->GetBoundingBoxHalfSize().z;
-                  auto p = new SCP_MoveTo(_spaceship, target, 5);
-                  _spaceship->AddControlProgram(p);
-                  _spaceship->SetUseHealth(false);
-                  _spaceship->SetVelocity({0, 0, 0});
-                  _spaceship->EnableEngines(false);
-                  _spaceship->EnableWeapons(false);
-                  _landed = true;
-                }
-            }
-          o = objs.Next();
+          done = true;
+          _spaceship->LaunchFromSpaceport();
+        }
+      else
+        {
+          auto spaceport = scene->GetClosestSpaceport(playerpos);
+          if(spaceport)
+            if(glm::distance(playerpos, spaceport->GetPosition()) < 5)
+              {
+                done = true;
+                _spaceship->LandOnSpaceport(spaceport);
+              }
         }
             
       if(!done)
         {
-          auto planet = dynamic_cast<ObjectPlanet *>(_spaceship->GetScene()->GetClosestPlanet(playerpos));
+          auto planet = dynamic_cast<ObjectPlanet *>(scene->GetClosestPlanet(playerpos));
           if(planet)
             {
+              done = true;
               auto distance = std::abs(playerpos.y - planet->GetPosition().y);
               if(distance < 20 || Settings->GetBool("cheat_planet_lander_disable_distance_check"))
-                {
-                  auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
-                  assert(current);
-                  
-                  auto ns = new ScreenLevelPlanet(current, planet->GetSolarSystemObject());
-                  ns->SetupLevels();
-                  current->TransitionToScreen(ns, _name + ": Destination " + planet->GetSolarSystemObject()->GetName() + "\n");
-                }
+                _spaceship->DescendToPlanet(planet);
               else
                 _spaceship->SystemlogAppend(_name + ": Error, planet too far.\n");
             }
-          else
-            _spaceship->SystemlogAppend(_name + ": Error, no planet or spaceport nearby.\n");
         }
-      Deactivate();
+
+      if(!done)
+        _spaceship->SystemlogAppend(_name + ": Error, no planet or spaceport nearby.\n");
     }
 }
 
@@ -505,11 +474,4 @@ void SpaceshipUpgrade::SetEnabled(bool enabled)
 {
   _spaceship->SystemlogAppend(_name + (enabled ? " online" : " offline") + "\n");
   _enabled = enabled;
-}
-
-
-bool SpaceshipUpgrade::IsLanded() const
-{
-  assert(_type == Type::PLANET_LANDER);
-  return _landed;
 }

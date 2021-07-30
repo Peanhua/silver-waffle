@@ -23,6 +23,7 @@
 #include "Level.hh"
 #include "MeshOverlay.hh"
 #include "ObjectSpaceship.hh"
+#include "QuickTimeEventLaunchToSpace.hh"
 #include "Scene.hh"
 #include "ScoreReel.hh"
 #include "SolarSystemObject.hh"
@@ -54,6 +55,7 @@ ScreenLevel::ScreenLevel(ScreenLevel * parent)
   : Screen(),
     _parent(parent),
     _state(State::RUNNING),
+    _current_quicktimeevent(nullptr),
     _random(0),
     _rdist(0, 1),
     _current_level(0),
@@ -362,6 +364,19 @@ void ScreenLevel::Tick(double deltatime)
         }
   }
 
+  if(_current_quicktimeevent)
+    {
+      if(_current_quicktimeevent->IsAlive())
+        {
+          _current_quicktimeevent->Tick(deltatime);
+        }
+      else
+        {
+          delete _current_quicktimeevent;
+          _current_quicktimeevent = nullptr;
+        }
+    }
+  
   _texture_renderer->BeginRender();
   _camera->Update();
   _camera->stats.elapsed_frames++;
@@ -423,6 +438,10 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
     }
   else
     disablecontrols = true;
+
+  if(!disablecontrols)
+    if(_current_quicktimeevent)
+      disablecontrols = _current_quicktimeevent->OnKeyboard(pressed, key, mod);
   
   switch(key)
     {
@@ -486,21 +505,24 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
         }
       break;
 
+    case SDLK_l:
+      if(!disablecontrols && pressed)
+        if(player->IsLanded())
+          _current_quicktimeevent = new QuickTimeEventLaunchToSpace(player, GetRootWidget(), 3);
+      break;
+
     case SDLK_u:
       if(!disablecontrols && pressed)
-        {
-          auto lander = player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER);
-          if(lander->IsLanded())
-            {
-              auto humancount = player->GetHumanCount();
-              if(humancount > 0)
-                {
-                  player->SystemlogAppend("You rescued " + std::to_string(humancount) + " human individuals!\n");
-                  player->GetOwnerGameStats()->AddScore(10 * humancount);
-                  player->ClearHumans();
-                }
-            }
-        }
+        if(player->IsLanded())
+          {
+            auto humancount = player->GetHumanCount();
+            if(humancount > 0)
+              {
+                player->SystemlogAppend("You rescued " + std::to_string(humancount) + " human individuals!\n");
+                player->GetOwnerGameStats()->AddScore(10 * static_cast<unsigned int>(humancount));
+                player->ClearHumans();
+              }
+          }
       break;
 
     case SDLK_F1:
@@ -588,6 +610,9 @@ void ScreenLevel::NextLifeOrQuit()
       });
       _human_count_widget_last = -1;
       OnHumanCountUpdated();
+
+      delete _current_quicktimeevent;
+      _current_quicktimeevent = nullptr;
       
       RefreshUI();
     }
@@ -706,6 +731,12 @@ GameStats * ScreenLevel::GetGameStats() const
 Scene * ScreenLevel::GetScene() const
 {
   return _scene;
+}
+
+
+Level * ScreenLevel::GetCurrentLevel() const
+{
+  return _levels[_current_level];
 }
 
 

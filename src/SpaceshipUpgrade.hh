@@ -62,7 +62,6 @@ public:
   void ActivateFromCollectible(ObjectCollectible * collectible);
   void Deactivate();
   bool IsActive() const;
-  bool IsLanded() const;
   
   void SetEnabled(bool enabled);
 
@@ -82,7 +81,6 @@ private:
   double      _timer_max;
   double      _cooldown_default;
   double      _cooldown;
-  bool        _landed;
 };
 
 #endif

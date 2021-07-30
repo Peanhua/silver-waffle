@@ -15,6 +15,7 @@
 #include "CollisionShapeSphere.hh"
 #include "Explosion.hh"
 #include "Mesh.hh"
+#include "ObjectBuilding.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectInvader.hh"
 #include "ObjectPlanet.hh"
@@ -548,3 +549,23 @@ void Scene::RemoveObject(Object * object)
         object = _objects[i] = nullptr;
       }
 }
+
+
+ObjectBuilding * Scene::GetClosestSpaceport(const glm::vec3 & position) const
+{
+  auto objs = _quadtree->GetNearby(position); // todo: Add distance parameter. Because currently, from this point of view, we don't know what the "nearby" means.
+
+  auto o = objs.Next();
+  while(o)
+    {
+      auto spaceport = dynamic_cast<ObjectBuilding *>(o);
+
+      if(spaceport && spaceport->GetIsSpaceport())
+        return spaceport;
+
+      o = objs.Next();
+    }
+  
+  return nullptr;
+}
+

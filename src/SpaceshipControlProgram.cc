@@ -10,10 +10,11 @@
   Complete license can be found in the LICENSE file.
 */
 #include "SpaceshipControlProgram.hh"
+#include "Level.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
-#include <cassert>
-#include <iostream>
+#include "ScreenLevel.hh"
+#include "SubsystemScreen.hh"
 
 
 SpaceshipControlProgram::SpaceshipControlProgram(ObjectSpaceship * spaceship)
@@ -341,10 +342,11 @@ bool SCP_FacePlayer::IsFinished() const
 
 
 
-SCP_MoveTo::SCP_MoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destination, double speed)
+SCP_MoveTo::SCP_MoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destination, double speed, bool use_constant_speed)
   : SpaceshipControlProgram(spaceship),
     _destination(destination),
-    _speed(speed)
+    _speed(speed),
+    _constant_speed(use_constant_speed)
 {
 }
 
@@ -352,6 +354,12 @@ SCP_MoveTo::SCP_MoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destinatio
 void SCP_MoveTo::PTick(double deltatime)
 {
   auto movement = _destination - _spaceship->GetPosition();
+  if(_constant_speed)
+    {
+      auto distance = glm::length(movement);
+      if(distance > 1.0f)
+        movement = glm::normalize(movement);
+    }
   auto m = static_cast<float>(_speed * deltatime);
   _spaceship->SetPosition(_spaceship->GetPosition() + movement * m);
 }
@@ -361,3 +369,27 @@ bool SCP_MoveTo::IsFinished() const
 {
   return glm::length(_spaceship->GetPosition() - _destination) < 0.1f;
 }
+
+
+SCP_ExitCurrentLevel::SCP_ExitCurrentLevel(ObjectSpaceship * spaceship)
+  : SpaceshipControlProgram(spaceship),
+    _done(false)
+{
+}
+
+
+void SCP_ExitCurrentLevel::PTick(double deltatime)
+{
+  assert(deltatime == deltatime);
+  auto screen = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
+  assert(screen);
+  screen->GetCurrentLevel()->Stop();
+  _done = true;
+}
+
+
+bool SCP_ExitCurrentLevel::IsFinished() const
+{
+  return _done;
+}
+

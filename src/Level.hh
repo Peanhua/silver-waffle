@@ -32,6 +32,7 @@ public:
   virtual ~Level();
   
   virtual void   Start();
+  void           Stop();
   virtual void   Tick(double deltatime);
 
   bool                IsFinished() const;
@@ -68,6 +69,7 @@ protected:
   };
   
   Scene *                     _scene;
+  bool                        _running;
   std::mt19937_64             _random_generator;
   std::uniform_real_distribution<float> _rdist;
   std::string                 _name;

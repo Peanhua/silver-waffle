@@ -23,6 +23,7 @@ class GaussianBlur;
 class Image;
 class Level;
 class Mesh;
+class QuickTimeEvent;
 class Scene;
 class ScoreReel;
 class TextureRenderer;
@@ -45,9 +46,10 @@ public:
   void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod) override;
   void OnQuit() override;
 
-  Camera *    GetCamera()    const;
-  GameStats * GetGameStats() const;
-  Scene *     GetScene()     const;
+  Camera *    GetCamera()       const;
+  GameStats * GetGameStats()    const;
+  Scene *     GetScene()        const;
+  Level *     GetCurrentLevel() const;
   void TransitionToScreen(Screen * new_screen, const std::string & message);
 
   void OnLivesUpdated();
@@ -74,6 +76,7 @@ private:
   ScreenLevel * _parent;
   State _state;
   bool  _state_death_pause_key_eaten;
+  QuickTimeEvent * _current_quicktimeevent;
   std::mt19937_64                       _random;
   std::uniform_real_distribution<float> _rdist;
   TextureRenderer *  _texture_renderer;

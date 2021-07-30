@@ -99,12 +99,13 @@ private:
 class SCP_MoveTo : public SpaceshipControlProgram
 {
 public:
-  SCP_MoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destination, double speed);
+  SCP_MoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destination, double speed, bool use_constant_speed);
   void PTick(double deltatime) override;
   bool IsFinished() const override;
 private:
   glm::vec3 _destination;
   double    _speed;
+  bool      _constant_speed;
 };
 
 
@@ -184,6 +185,17 @@ private:
   bool _done;
 
   float GetFacingDiff() const;
+};
+
+
+class SCP_ExitCurrentLevel : public SpaceshipControlProgram
+{
+public:
+  SCP_ExitCurrentLevel(ObjectSpaceship * spaceship);
+  void PTick(double deltatime) override;
+  bool IsFinished() const override;
+private:
+  bool _done;
 };
 
 

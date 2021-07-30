@@ -16,7 +16,9 @@
 #include "SpaceshipUpgrade.hh"
 #include <vector>
 
+class ObjectBuilding;
 class ObjectCollectible;
+class ObjectPlanet;
 class GameStats;
 class SpaceshipControlProgram;
 
@@ -72,6 +74,13 @@ public:
   void ClearHumans();
 
   void SetOnHumanCountChanged(on_human_count_changed_t callback);
+
+  void LandOnSpaceport(ObjectBuilding * spaceport);
+  void LaunchFromSpaceport();
+  void DescendToPlanet(ObjectPlanet * planet);
+  void LaunchToSpace();
+
+  bool IsLanded() const;
   
 private:
   class Engine
@@ -103,6 +112,7 @@ private:
   };
 
   GameStats *            _gamestats;
+  bool                   _landed;
   std::vector<Engine *>  _engines;
   std::vector<Weapon *>  _weapons;
   std::vector<SpaceshipUpgrade *> _upgrades;

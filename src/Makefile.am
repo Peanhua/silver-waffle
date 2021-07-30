@@ -101,6 +101,8 @@ silverwaffle_SOURCES =				\
 	Plane.cc				\
 	Plane.hh				\
 	QuadTree.hh				\
+	QuickTimeEventLaunchToSpace.cc		\
+	QuickTimeEventLaunchToSpace.hh		\
 	RingBuffer.hh				\
 	Scene.cc				\
 	Scene.hh				\

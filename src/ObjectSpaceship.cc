@@ -13,16 +13,21 @@
 #include "Scene.hh"
 #include "Mesh.hh"
 #include "ObjectBonusLevelEntrance.hh"
+#include "ObjectBuilding.hh"
 #include "ObjectCollectible.hh"
+#include "ObjectPlanet.hh"
+#include "ScreenLevelPlanet.hh"
 #include "ShaderProgram.hh"
 #include "SpaceshipControlProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemScreen.hh"
 #include <iostream>
 
 
 ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
   : ObjectMovable(scene, random_seed),
     _gamestats(nullptr),
+    _landed(false),
     _human_count(0),
     _on_human_count_changed(nullptr),
     _systemlog_enabled(false)
@@ -255,6 +260,7 @@ double ObjectSpaceship::GetWeaponHeat(unsigned int weapon_id) const
 void ObjectSpaceship::EnableWeapons(bool enabled)
 {
   // todo
+  assert(enabled == enabled);
 }
 
 
@@ -625,4 +631,66 @@ void ObjectSpaceship::SetOnHumanCountChanged(on_human_count_changed_t callback)
   else
     assert(_on_human_count_changed);
   _on_human_count_changed = callback;
+}
+
+
+void ObjectSpaceship::LandOnSpaceport(ObjectBuilding * spaceport)
+{
+  assert(spaceport);
+  SystemlogAppend("Landing on nearby spaceport.\n");
+  _landed = true;
+  
+  auto target = spaceport->GetPosition();
+  target.z += spaceport->GetMesh()->GetBoundingBoxHalfSize().z;
+  target.z += GetMesh()->GetBoundingBoxHalfSize().z;
+  auto p = new SCP_MoveTo(this, target, 5, false);
+  AddControlProgram(p);
+  SetUseHealth(false);
+  SetVelocity({0, 0, 0});
+  EnableEngines(false);
+  EnableWeapons(false);
+}
+
+
+void ObjectSpaceship::LaunchFromSpaceport()
+{
+  SystemlogAppend("Launch!\n");
+  _landed = false;
+  SetUseHealth(true);
+  AddImpulse({0, 0, 10});
+  EnableEngines(true);
+  EnableWeapons(true);
+}
+
+
+void ObjectSpaceship::DescendToPlanet(ObjectPlanet * planet)
+{
+  auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
+  assert(current);
+
+  auto ns = new ScreenLevelPlanet(current, planet->GetSolarSystemObject());
+  ns->SetupLevels();
+  current->TransitionToScreen(ns, "Descending to " + planet->GetSolarSystemObject()->GetName() + "\n");
+}
+
+
+void ObjectSpaceship::LaunchToSpace()
+{
+  LaunchFromSpaceport();
+  SetVelocity({0, 0, 0});
+
+  auto targetpos = glm::vec3(GetPosition().xy(), GetScene()->GetPlayAreaSize().z * 0.5f);
+  targetpos.z -= static_cast<float>(GetMesh()->GetBoundingSphereRadius());
+  
+  auto p = new SCP_MoveTo(this, targetpos, 20, true);
+  AddControlProgram(p);
+
+  auto pp = new SCP_ExitCurrentLevel(this);
+  p->SetNext(pp);
+}
+
+
+bool ObjectSpaceship::IsLanded() const
+{
+  return _landed;
 }
