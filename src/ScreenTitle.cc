@@ -133,10 +133,10 @@ ScreenTitle::ScreenTitle()
   }
 
   {
-    int bw = 150;
-    int bh = 60;
+    int bw = 300;
+    int bh = 300;
   
-    new WidgetHighscores(root, glm::ivec2(20, height / 2 + (height / 2 - bh) / 2), glm::ivec2(bw, bh));
+    new WidgetHighscores(root, glm::ivec2(20, height / 2 + (height / 2 - bh) / 2), glm::ivec2(bw, bh), false);
   }
 }
 

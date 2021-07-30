@@ -20,7 +20,8 @@ SubsystemHighscores * Highscores = nullptr;
 
 
 SubsystemHighscores::SubsystemHighscores()
-  : Subsystem("Highscores")
+  : Subsystem("Highscores"),
+    _last(nullptr)
 {
 }
 
@@ -86,4 +87,17 @@ void SubsystemHighscores::Write()
   
   std::ofstream file("Highscores.json");
   file << data.dump();
+}
+
+
+
+void SubsystemHighscores::SetLast(HighscoreEntry * last)
+{
+  _last = last;
+}
+
+
+HighscoreEntry * SubsystemHighscores::GetLast() const
+{
+  return _last;
 }

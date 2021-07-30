@@ -2,16 +2,6 @@
   "spawns": [
     {
       "start":  0.0,
-      "stop":  60.0,
-      "interval": 0.25,
-      "max": 10,
-      "invader_type": 0,
-      "control_program": "waithoriz5-shoot"
-    }
-  ],
-  "spawns": [
-    {
-      "start":  0.0,
       "stop":  30.0,
       "interval": 0.5,
       "invader_type": 0,

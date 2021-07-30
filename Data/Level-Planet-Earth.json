@@ -1,0 +1,40 @@
+{
+  "terrain": "Level-Planet-Earth",
+  "buildings" : [
+    {
+      "type":   1,
+      "boss":   true,
+      "offset": [ 0.50, 0.0, 0.0 ]
+    },
+    {
+      "type":   2,
+      "boss":   false,
+      "offset": [ 0.51, 0.0, 0.0 ]
+    },
+    {
+      "type":   3,
+      "boss":   false,
+      "offset": [ 0.52, 0.0, 0.0 ]
+    }
+  ],
+  "spawns": [
+    {
+      "start":        0.0,
+      "stop":         5.0,
+      "interval":     0.01,
+      "max":        100,
+      "invader_type": 0,
+      "control_program": "face-player-shoot"
+    }
+  ],
+  "enemies": [
+    {
+      "type":            0,
+      "control_program": "face-player-shoot"
+    },
+    {
+      "type":            1,
+      "control_program": "face-player-shoot"
+    }
+  ]
+}

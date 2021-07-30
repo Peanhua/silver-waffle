@@ -20,14 +20,14 @@ class HighscoreEntry;
 class WidgetHighscores : public Widget
 {
 public:
-  WidgetHighscores(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
+  WidgetHighscores(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, bool is_dialog);
 
   void Tick(double deltatime) override;
 
   void Refresh();
   
 private:
-  HighscoreEntry * _hilited;
+  bool             _is_dialog;
   unsigned int     _last_refresh;
 };
 

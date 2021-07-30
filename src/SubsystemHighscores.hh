@@ -29,11 +29,15 @@ public:
   void Add(HighscoreEntry * entry);
   const std::vector<HighscoreEntry *> & Get() const;
 
+  void             SetLast(HighscoreEntry * last);
+  HighscoreEntry * GetLast() const;
+
   void Read();
   void Write();
 
 private:
   std::vector<HighscoreEntry *> _entries;
+  HighscoreEntry *              _last;
 };
 
 extern SubsystemHighscores * Highscores;

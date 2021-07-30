@@ -466,16 +466,16 @@ Object * Scene::GetClosestPlanet(const glm::vec3 & position) const
   float rvdist = 0.0f;
 
   for(auto planet : _planets)
-    {
-      assert(planet && planet->IsAlive());
-      auto dist = glm::distance(position, planet->GetPosition());
-      if(!rv || dist < rvdist)
-        {
-          rv = planet;
-          rvdist = dist;
-        }
-    }
-
+    if(planet && planet->IsAlive())
+      {
+        auto dist = glm::distance(position, planet->GetPosition());
+        if(!rv || dist < rvdist)
+          {
+            rv = planet;
+            rvdist = dist;
+          }
+      }
+  
   return rv;
 }
 

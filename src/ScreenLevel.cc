@@ -34,6 +34,7 @@
 #include "TextureRenderer.hh"
 #include "UpgradeMaterial.hh"
 #include "WidgetButton.hh"
+#include "WidgetHighscores.hh"
 #include "WidgetPlayerShip.hh"
 #include "WidgetScoreReel.hh"
 #include "WidgetSpaceshipMaintenance.hh"
@@ -615,11 +616,11 @@ void ScreenLevel::NextLifeOrQuit()
       _current_quicktimeevent = nullptr;
       
       RefreshUI();
+
+      ChangeState(State::RUNNING);
     }
   else
     GameOver(false);
-
-  ChangeState(State::RUNNING);
 }
 
 
@@ -837,14 +838,30 @@ void ScreenLevel::GameOver(bool game_was_completed)
 {
   auto hs = new HighscoreEntry(_score_reel->GetScore(), _current_level, _scene, game_was_completed);
   Highscores->Add(hs);
+  Highscores->SetLast(hs);
 
-  Quit();
-  auto parent = _parent;
-  while(parent)
-    {
-      parent->Quit();
-      parent = parent->_parent;
-    }
+  auto w = Settings->GetInt("screen_width");
+  auto h = Settings->GetInt("screen_height");
+  
+  auto wht = new WidgetHighscores(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(w, h), true);
+  wht->SetOnDestroy([this](Widget * destroyed_widget)
+  {
+    assert(destroyed_widget == destroyed_widget);
+    Quit();
+    auto parent = _parent;
+    while(parent)
+      {
+        parent->Quit();
+        parent = parent->_parent;
+      }
+  });
+
+  SetModalWidget(wht);
+
+  if(_pausebutton)
+    _pausebutton->Destroy();
+  
+  _pausebutton = wht;
 }
 
 

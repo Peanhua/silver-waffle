@@ -25,6 +25,7 @@ class Widget
 {
 public:
   typedef std::function<void(bool pressed, unsigned int button, const glm::ivec2 & position)> on_clicked_t;
+  typedef std::function<void(Widget * destroyed_widget)> on_destroy_t;
   
   Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
   virtual ~Widget();
@@ -66,6 +67,7 @@ public:
 
   void OnClicked(bool pressed);
   void SetOnClicked(on_clicked_t callback);
+  void SetOnDestroy(on_destroy_t callback);
 
   void DestroyChildren();
 
@@ -106,6 +108,7 @@ private:
   bool _activated;
 
   on_clicked_t _on_clicked;
+  on_destroy_t _on_destroy;
 
   void UpdateMVP();
   void OnSizeUpdated();

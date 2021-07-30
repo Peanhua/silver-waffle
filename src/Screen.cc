@@ -149,10 +149,6 @@ Widget * Screen::GetRootWidget() const
 
 void Screen::SetModalWidget(Widget * widget)
 {
-  if(widget)
-    assert(!_modal_widget);
-  else
-    assert(_modal_widget);
   _modal_widget = widget;
 }
 

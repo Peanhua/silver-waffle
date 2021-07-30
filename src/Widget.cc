@@ -59,6 +59,9 @@ void Widget::Destroy()
   assert(_parent);
   if(_parent)
     _parent->_destroyed_children.push_back(this);
+
+  if(_on_destroy)
+    _on_destroy(this);
 }
 
 
@@ -165,6 +168,12 @@ void Widget::OnClicked(bool pressed)
 void Widget::SetOnClicked(on_clicked_t callback)
 {
   _on_clicked = callback;
+}
+
+
+void Widget::SetOnDestroy(on_destroy_t callback)
+{
+  _on_destroy = callback;
 }
 
 
@@ -473,3 +482,4 @@ void Widget::DestroyChildren()
       c->Destroy();
   _children.clear();
 }
+
