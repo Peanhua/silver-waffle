@@ -595,6 +595,7 @@ void Object::SpawnLoot()
             case ObjectCollectible::Type::UPGRADEMATERIAL_DEFENSE:
             case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
             case ObjectCollectible::Type::WARP_FUEL:
+            case ObjectCollectible::Type::HUMAN:
               {
                 auto rotangle = glm::normalize(glm::vec3(GetRand() * 2.0f - 1.0f,
                                                          GetRand() * 2.0f - 1.0f,

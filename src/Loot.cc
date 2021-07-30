@@ -40,6 +40,8 @@ Loot::Loot(json11::Json * config)
         d->_type = ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL;
       else if(stype == "WARP_FUEL")
         d->_type = ObjectCollectible::Type::WARP_FUEL;
+      else if(stype == "HUMAN")
+        d->_type = ObjectCollectible::Type::HUMAN;
       else
         assert(false);
 
