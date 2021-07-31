@@ -63,6 +63,7 @@ void ScenePlanet::SetupPlayer()
   auto player = GetPlayer();
   player->EnableVelocity(true, false, true);
   player->SetPosition({0, 0, GetPlayAreaSize().z * 0.5f - player->GetMesh()->GetBoundingBoxHalfSize().z});
+  player->SetOrientation(glm::quat(1, 0, 0, 0));
   player->RotateYaw(-90.0);
   for(unsigned int i = 0; i < 4; i++)
     {
