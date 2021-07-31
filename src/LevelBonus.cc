@@ -15,6 +15,7 @@ LevelBonus::LevelBonus(Scene * scene, double enemy_difficulty, double warp_fuel_
   : Level(scene)
 {
   _name = "Bonus Level " + std::to_string(enemy_difficulty) + "/" + std::to_string(warp_fuel_bonus);
+  _halt_without_program = true;
 
   LoadConfig("Data/Level-Bonus");
 }

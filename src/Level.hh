@@ -75,6 +75,7 @@ protected:
   std::string                 _name;
   double                      _time;
   std::vector<ProgramEntry *> _program;
+  bool                        _halt_without_program;
   json11::Json                _buildings_config;
   json11::Json                _enemy_config;
   Image *                     _destructible_terrain_config;

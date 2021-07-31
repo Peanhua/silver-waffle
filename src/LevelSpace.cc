@@ -27,7 +27,8 @@ LevelSpace::LevelSpace(Scene * scene, SolarSystemObject * planet)
 {
   _planet_size = planet->GetRelativeSize() * SCALE;
   _name = planet->GetName();
-
+  _halt_without_program = true;
+  
   LoadConfig("Data/Level-" + _name);
 
   double len = 0.0;

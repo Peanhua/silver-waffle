@@ -25,6 +25,7 @@ Level::Level(Scene * scene)
     _running(false),
     _random_generator(0),
     _time(0),
+    _halt_without_program(false),
     _destructible_terrain_config(nullptr)
 {
 }
