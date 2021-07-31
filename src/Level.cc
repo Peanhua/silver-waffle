@@ -256,12 +256,16 @@ bool Level::IsFinished() const
 {
   if(!_running)
     return true;
-  
-  for(auto p : _program)
-    if(p)
-      return false;
-  
-  return true;
+
+  if(_halt_without_program)
+    {
+      for(auto p : _program)
+        if(p)
+          return false;
+      return true;
+    }
+      
+  return false;
 }
 
 
