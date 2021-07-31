@@ -285,7 +285,7 @@ void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 &
     {
       std::string syslog("Hit!");
       auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-      if(shield->IsActive())
+      if(shield->GetValue() > 0)
         {
           double reduction = std::min(shield->GetValue(), damage);
           
@@ -293,7 +293,7 @@ void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 &
           
           damage -= reduction;
           
-          if(shield->IsActive())
+          if(shield->GetValue() > 0)
             syslog += " Shields hold!";
           else
             syslog += " Shields down!";
