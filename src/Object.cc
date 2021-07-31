@@ -412,6 +412,12 @@ void Object::SetMaxHealth(double health)
 }
 
 
+bool Object::GetUseHealth() const
+{
+  return _use_health;
+}
+
+
 void Object::SetUseHealth(bool enable)
 {
   _use_health = enable;

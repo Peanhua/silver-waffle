@@ -78,6 +78,7 @@ public:
   void SetCollidesWithChannels(uint64_t channels);
   virtual uint64_t GetCollidesWithChannels() const;
 
+  bool   GetUseHealth() const;
   void   SetUseHealth(bool enable);
   bool   IsAlive() const;
   double GetHealth() const;

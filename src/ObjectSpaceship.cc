@@ -281,22 +281,25 @@ void ObjectSpaceship::UpgradeEngines(double power_multiplier)
 
 void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
-  std::string syslog("Hit!");
-  auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
-  if(shield->IsActive())
+  if(GetUseHealth())
     {
-      double reduction = std::min(shield->GetValue(), damage);
-      
-      shield->AdjustValue(-reduction);
-     
-      damage -= reduction;
-
+      std::string syslog("Hit!");
+      auto shield = GetUpgrade(SpaceshipUpgrade::Type::SHIELD);
       if(shield->IsActive())
-        syslog += " Shields hold!";
-      else
-        syslog += " Shields down!";
+        {
+          double reduction = std::min(shield->GetValue(), damage);
+          
+          shield->AdjustValue(-reduction);
+          
+          damage -= reduction;
+          
+          if(shield->IsActive())
+            syslog += " Shields hold!";
+          else
+            syslog += " Shields down!";
+        }
+      SystemlogAppend(syslog + " Hull damage: " + std::to_string(std::lround(damage)) + "\n");
     }
-  SystemlogAppend(syslog + " Hull damage: " + std::to_string(std::lround(damage)) + "\n");
   ObjectMovable::Hit(perpetrator, damage, impulse);
 }
 

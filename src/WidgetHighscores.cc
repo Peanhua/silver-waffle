@@ -21,6 +21,7 @@ WidgetHighscores::WidgetHighscores(Widget * parent, const glm::ivec2 & position,
     _is_dialog(is_dialog),
     _last_refresh(0)
 {
+  SetIsFocusable(false);
   Refresh();
 }
 
@@ -44,13 +45,6 @@ void WidgetHighscores::Refresh()
 
   auto font_weight = 0.3f;
   auto font_color = glm::vec3(0, 1, 1);
-
-  if(_is_dialog)
-    {
-      SetImage("White");
-      SetImageColor(glm::vec4(0, 0, 0, 0.5f));
-    }
-  SetIsFocusable(false);
 
   const int width = 300;
   const int height = std::min(GetSize().y, 10 + 30 + 5 * 25 + 10 + (_is_dialog ? 30 + 10 : 0));

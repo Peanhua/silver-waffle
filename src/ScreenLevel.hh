@@ -70,6 +70,7 @@ private:
       RUNNING,
       DEATH_PAUSE,
       FULL_PAUSE,
+      GAMEOVER_PAUSE,
       SCREEN_TRANSITION
     };
 

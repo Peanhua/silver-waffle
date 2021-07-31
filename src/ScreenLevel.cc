@@ -264,7 +264,7 @@ void ScreenLevel::Tick(double deltatime)
         _scene->TutorialMessage(0, "Fire at will.\n");
     }
 
-  if(_state == State::RUNNING || _state == State::DEATH_PAUSE)
+  if(_state == State::RUNNING || _state == State::DEATH_PAUSE || _state == State::GAMEOVER_PAUSE)
     _scene->Tick(deltatime);
 
   if(_state == State::RUNNING)
@@ -395,6 +395,18 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 {
   assert(mod == mod);
 
+  if(_state == State::GAMEOVER_PAUSE)
+    {
+      if(pressed)
+        if(_pausebutton)
+          {
+            SetModalWidget(nullptr);
+            _pausebutton->Destroy();
+            _pausebutton = nullptr;
+          }
+      return;
+    }
+  
   if(_state == State::DEATH_PAUSE)
     {
       if(key == SDLK_ESCAPE && !pressed)
@@ -690,6 +702,9 @@ void ScreenLevel::ChangeState(State new_state)
     case State::FULL_PAUSE:
       break;
 
+    case State::GAMEOVER_PAUSE:
+      break;
+      
     case State::SCREEN_TRANSITION:
       {
         assert(!_pausebutton);
@@ -840,28 +855,54 @@ void ScreenLevel::GameOver(bool game_was_completed)
   Highscores->Add(hs);
   Highscores->SetLast(hs);
 
+  auto player = _scene->GetPlayer();
+  if(player && player->IsAlive())
+    player->SetUseHealth(false);
+  ChangeState(State::GAMEOVER_PAUSE);
+  
   auto w = Settings->GetInt("screen_width");
   auto h = Settings->GetInt("screen_height");
-  
-  auto wht = new WidgetHighscores(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(w, h), true);
-  wht->SetOnDestroy([this](Widget * destroyed_widget)
+
+  Widget * result;
   {
-    assert(destroyed_widget == destroyed_widget);
-    Quit();
-    auto parent = _parent;
-    while(parent)
-      {
-        parent->Quit();
-        parent = parent->_parent;
-      }
-  });
+    std::string t;
+    if(game_was_completed)
+      t = "Congratulations! You have successfully saved everyone!";
+    else
+      t = "Unfortunately you lost, and the evil alien invaders won.";
 
-  SetModalWidget(wht);
+    auto font = AssetLoader->LoadFont(20);
+    auto tw = static_cast<int>(font->GetWidth(t));
+    result = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(w, h));
+    result->SetText(t);
+    result->SetTextFont(font);
+    result->SetTextFontWeight(0.5);
+    result->SetTextColor(glm::vec3(0.5, 1, 1));
+    result->SetTextPadding(glm::vec2((w - tw) / 2, h / 5));
+  }
+  {
+    auto wht = new WidgetHighscores(result, glm::ivec2(0, 0), glm::ivec2(w, h), true);
+    wht->SetOnDestroy([this, result](Widget * destroyed_widget)
+    {
+      assert(destroyed_widget == destroyed_widget);
+      Quit();
+      auto parent = _parent;
+      while(parent)
+        {
+          parent->Quit();
+          parent = parent->_parent;
+        }
+    });
+  }
 
+
+  SetModalWidget(result);
+
+  assert(!_pausebutton);
   if(_pausebutton)
     _pausebutton->Destroy();
   
-  _pausebutton = wht;
+  _pausebutton = result;
 }
 
 

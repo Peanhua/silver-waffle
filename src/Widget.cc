@@ -56,6 +56,8 @@ Widget::~Widget()
 
 void Widget::Destroy()
 {
+  DestroyChildren();
+  
   assert(_parent);
   if(_parent)
     _parent->_destroyed_children.push_back(this);
