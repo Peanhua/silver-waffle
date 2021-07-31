@@ -51,6 +51,18 @@ unsigned int HighscoreEntry::GetScore() const
 }
 
 
+double HighscoreEntry::GetGameTime() const
+{
+  return _total_time;
+}
+
+
+bool HighscoreEntry::GameCompleted() const
+{
+  return _game_completed;
+}
+    
+
 json11::Json HighscoreEntry::ToJson() const
 {
   return json11::Json::object

@@ -25,6 +25,8 @@ public:
   HighscoreEntry(const json11::Json & json);
 
   unsigned int GetScore() const;
+  bool         GameCompleted() const;
+  double       GetGameTime() const;
 
   json11::Json ToJson() const;
   

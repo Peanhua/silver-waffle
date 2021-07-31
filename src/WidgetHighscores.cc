@@ -46,11 +46,11 @@ void WidgetHighscores::Refresh()
   auto font_weight = 0.3f;
   auto font_color = glm::vec3(0, 1, 1);
 
-  const int width = 300;
-  const int height = std::min(GetSize().y, 10 + 30 + 5 * 25 + 10 + (_is_dialog ? 30 + 10 : 0));
+  const int panelwidth = 300;
+  const int panelheight = std::min(GetSize().y, 10 + 30 + 5 * 25 + 10 + (_is_dialog ? 30 + 10 : 0));
   auto panel = new Widget(this,
-                          (GetSize() - glm::ivec2(width, height)) / 2,
-                          glm::ivec2(width, height));
+                          (GetSize() - glm::ivec2(panelwidth, panelheight)) / 2,
+                          glm::ivec2(panelwidth, panelheight));
   if(_is_dialog)
     {
       panel->SetImage("PanelBorders");
@@ -60,7 +60,7 @@ void WidgetHighscores::Refresh()
 
   int y = 10;
 
-  auto title = new Widget(panel, glm::ivec2(0, y), glm::ivec2(width, 30));
+  auto title = new Widget(panel, glm::ivec2(0, y), glm::ivec2(panelwidth, 30));
   title->SetText("Highscores:");
   title->SetTextFont(AssetLoader->LoadFont(18));
   title->SetTextFontWeight(font_weight * 1.2f);
@@ -73,24 +73,45 @@ void WidgetHighscores::Refresh()
   auto entries = Highscores->Get();
   for(unsigned int i = 0; i < 5 && i < entries.size(); i++)
     {
+      auto entry = entries[i];
+      int rowheight;
       auto x = title->GetPosition().x + 10;
-      auto w = new Widget(panel, glm::ivec2(x, y), glm::ivec2(width - 2 * x, 25));
-      w->SetText(std::to_string(i + 1) + ".  " + std::to_string(entries[i]->GetScore()));
-      if(entries[i] == Highscores->GetLast())
-        {
-          w->SetTextFont(fonthi);
-          w->SetTextColor(font_color);
-          w->SetTextFontWeight(font_weight * 1.1f);
-        }
-      else
-        {
-          w->SetTextFont(font);
-          w->SetTextColor(font_color * 0.5f);
-          w->SetTextFontWeight(font_weight);
-        }
-      w->SetTextPaddingCentered(false, true);
-
-      y += w->GetSize().y;
+      {
+        auto w = new Widget(panel, glm::ivec2(x, y), glm::ivec2(150, 25));
+        w->SetText(std::to_string(i + 1) + ".  " + std::to_string(entry->GetScore()));
+        if(entry == Highscores->GetLast())
+          {
+            w->SetTextFont(fonthi);
+            w->SetTextColor(font_color);
+            w->SetTextFontWeight(font_weight * 1.1f);
+          }
+        else
+          {
+            w->SetTextFont(font);
+            w->SetTextColor(font_color * 0.5f);
+            w->SetTextFontWeight(font_weight);
+          }
+        w->SetTextPaddingCentered(false, true);
+        x += w->GetSize().x;
+        rowheight = w->GetSize().y;
+      }
+      {
+        auto w = new Widget(panel, glm::ivec2(x, y + 3), glm::ivec2(20, 20));
+        if(entry->GameCompleted())
+          w->SetImage("Checkmark-Green");
+        x += w->GetSize().x + 10;
+        rowheight = std::max(rowheight, w->GetSize().y);
+      }
+      {
+        auto w = new Widget(panel, glm::ivec2(x, y), glm::ivec2(100, 25));
+        w->SetText(std::to_string(static_cast<unsigned int>(entry->GetGameTime())) + "s");
+        w->SetTextFont(font);
+        w->SetTextColor(font_color * 0.5f);
+        w->SetTextFontWeight(font_weight);
+        x += w->GetSize().x;
+        rowheight = std::max(rowheight, w->GetSize().y);
+      }
+      y += rowheight;
     }
 
   if(_is_dialog)
@@ -98,7 +119,7 @@ void WidgetHighscores::Refresh()
       y += 10;
       std::string t = "Close";
       auto ww = 10 + font->GetWidth(t) + 10;
-      auto w = new Widget(panel, glm::ivec2((width - ww) / 2, y), glm::ivec2(ww, 30));
+      auto w = new Widget(panel, glm::ivec2((panelwidth - ww) / 2, y), glm::ivec2(ww, 30));
       y += w->GetSize().y;
       w->SetText(t);
       w->SetTextFont(font);
