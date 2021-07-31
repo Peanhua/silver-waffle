@@ -36,6 +36,7 @@ public:
   Image *  GetTexture() const;
   Type     GetType() const;
   const std::string & GetName() const;
+  const std::vector<glm::vec3> & GetAtmosphereColors() const;
   
   Object * CreateSceneObject(Scene * scene, double scale);
 
@@ -47,6 +48,7 @@ private:
   double      _gravity;
   glm::vec2   _ring;
   Image *     _texture;
+  std::vector<glm::vec3> _atmosphere_colors;
 };
 
 #endif

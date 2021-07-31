@@ -24,6 +24,17 @@ SolarSystemObject::SolarSystemObject(Type type, const json11::Json & config)
   _texture = AssetLoader->LoadImage(config["texture"].string_value());
   assert(_texture);
 
+  {
+    auto colors = config["atmosphere"].array_items();
+    assert(colors.size() > 1);
+    for(auto c : colors)
+      {
+        glm::vec3 color(c["r"].number_value(), c["g"].number_value(), c["b"].number_value());
+        _atmosphere_colors.push_back(color);
+      }
+    assert(_atmosphere_colors.size() > 1);
+  }
+
   if(config["ring"].is_array())
     {
       auto a = config["ring"].array_items();
@@ -65,4 +76,9 @@ double SolarSystemObject::GetGravity() const
 Image * SolarSystemObject::GetTexture() const
 {
   return _texture;
+}
+
+const std::vector<glm::vec3> & SolarSystemObject::GetAtmosphereColors() const
+{
+  return _atmosphere_colors;
 }

@@ -36,7 +36,7 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
   ground->SetAutoDestroyBox({1, 1, 1}, {0, 0, 0});
   ground->SetPosition({0, 0, -(GetPlayAreaSize().z / 2.0f + 0.5f)});
 
-  auto atmosphere = new ObjectPlanetAtmosphere(this, GetPlayAreaSize().xz(), {1, 0, 0}, {0, 0, 0.5});
+  auto atmosphere = new ObjectPlanetAtmosphere(this, GetPlayAreaSize().xz(), planet.GetAtmosphereColors());
   AddObject(atmosphere, {0, groundsize / 2.0f, 0});
 
   auto GetRand = [this]()

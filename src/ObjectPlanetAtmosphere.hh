@@ -13,12 +13,13 @@
 */
 
 #include "Object.hh"
+#include <vector>
 
 
 class ObjectPlanetAtmosphere : public Object
 {
 public:
-  ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & size, const glm::vec3 & bottom_color, const glm::vec3 & top_color);
+  ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & size, const std::vector<glm::vec3> & colors);
 };
 
 #endif

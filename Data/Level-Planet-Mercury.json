@@ -3,7 +3,7 @@
   "buildings" : [
     {
       "type":   1,
-      "boss":   true,
+      "boss":   false,
       "offset": [ 0.50, 0.0, 0.0 ]
     },
     {

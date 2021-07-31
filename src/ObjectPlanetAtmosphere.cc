@@ -14,7 +14,7 @@
 #include "SubsystemAssetLoader.hh"
 
 
-ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & size, const glm::vec3 & bottom_color, const glm::vec3 & top_color)
+ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & size, const std::vector<glm::vec3> & colors)
   : Object(scene, 0)
 {
   {
@@ -27,23 +27,30 @@ ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & 
       glm::vec3(-1, 0, -1),
       glm::vec3(-1, 0,  1),
     };
+    std::vector<int> colinds {
+      1,
+      0,
+      0,
+      1
+    };
     std::vector<unsigned int> indices {
       0, 3, 1,
       1, 3, 2
     };
-    std::vector<glm::vec3> colors {
-      top_color,
-      bottom_color,
-      bottom_color,
-      top_color
-    };
-    for(auto v : vertices)
-      mesh->AddVertex(v * glm::vec3(size.x * 0.5f, 1, size.y * 0.5f));
-    for(auto c : colors)
-      mesh->AddColor(c);
-    for(auto i : indices)
-      mesh->AddElement(i);
-    
+
+    assert(colors.size() > 1);
+    float zsize = size.y / static_cast<float>(colors.size() - 1);
+    float z = (zsize - size.y) * 0.5f;
+    for(unsigned int i = 0; i < colors.size() - 1; i++)
+      {
+        for(auto v : vertices)
+          mesh->AddVertex(glm::vec3(0, 0, z) + v * glm::vec3(size.x * 0.5f, 1, 0.5f * zsize));
+        for(auto ci : colinds)
+          mesh->AddColor(colors[i + ci]);
+        for(auto ind : indices)
+          mesh->AddElement(i * 4 + ind);
+        z += zsize;
+      }
     mesh->UpdateGPU();
     mesh->CalculateBoundingVolumes();
     SetMesh(mesh);
