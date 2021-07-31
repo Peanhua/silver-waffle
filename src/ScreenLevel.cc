@@ -898,7 +898,6 @@ void ScreenLevel::GameOver(bool game_was_completed)
 
   SetModalWidget(result);
 
-  assert(!_pausebutton);
   if(_pausebutton)
     _pausebutton->Destroy();
   

@@ -25,7 +25,6 @@ Level::Level(Scene * scene)
     _running(false),
     _random_generator(0),
     _time(0),
-    _boss_buildings_alive(0),
     _destructible_terrain_config(nullptr)
 {
 }
@@ -67,7 +66,6 @@ void Level::Start()
 {
   _running = true;
   _time = 0;
-  _boss_buildings_alive = 0;
 
   auto GetRand = [this]()
   {
@@ -103,15 +101,6 @@ void Level::Start()
                     pos.z -= blocksize.z * 0.5f;
                     pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
                     _scene->AddObject(building, pos);
-                    // if(building->IsBoss())
-                      {
-                        _boss_buildings_alive++;
-                        building->SetOnDestroyed([this](Object * destroyer)
-                        {
-                          assert(destroyer == destroyer);
-                          _boss_buildings_alive--;
-                        });
-                      }
                   }
                 else if(rgba.r >= 1 && rgba.g <= 0 && rgba.b <= 0)
                   { // Full red pixel is a random enemy spawn.
@@ -126,17 +115,6 @@ void Level::Start()
                     auto enemy = _scene->AddInvader(static_cast<unsigned int>(conf["type"].int_value()), pos);
                     assert(enemy);
                     enemy->AddNamedControlProgram(conf["control_program"].string_value());
-                    /*
-                      if(conf["is_boss"].is_bool() && conf["is_boss"].bool_value())
-                        {
-                          _boss_enemies_alive++;
-                          enemy->SetOnDestroyed([this](Object * destroyer)
-                          {
-                            assert(destroyer == destroyer);
-                            _boss_enemies_alive--;
-                          });
-                        }
-                    */
                   }
                 else if(rgba.r <= 0 && rgba.g >= 1 && rgba.b <= 0)
                   { // Full green pixel is a human survivor.
@@ -177,7 +155,6 @@ void Level::Start()
     for(auto config : _buildings_config.array_items())
       {
         auto type = static_cast<unsigned int>(config["type"].int_value());
-        auto boss = config["boss"].bool_value();
         glm::vec3 offset;
         for(int i = 0; i < 3; i++)
           offset[i] = static_cast<float>(config["offset"][static_cast<unsigned int>(i)].number_value());
@@ -190,16 +167,6 @@ void Level::Start()
           pos = _scene->GetClosestGroundSurface(pos);
           pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
           building->SetPosition(pos);
-          
-          if(boss)
-            {
-              _boss_buildings_alive++;
-              building->SetOnDestroyed([this](Object * destroyer)
-              {
-                assert(destroyer == destroyer);
-                _boss_buildings_alive--;
-              });
-            }
         }
       }
 }
@@ -289,9 +256,6 @@ bool Level::IsFinished() const
   if(!_running)
     return true;
   
-  if(_boss_buildings_alive > 0)
-    return false;
-
   for(auto p : _program)
     if(p)
       return false;

@@ -501,7 +501,7 @@ void Object::SetScene(Scene * scene)
 
 void Object::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
-  Hit(&other, 50, hit_direction);
+  Hit(&other, 10, hit_direction);
 }
  
 
