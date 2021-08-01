@@ -495,6 +495,12 @@ Scene * Object::GetScene() const
 
 void Object::SetScene(Scene * scene)
 {
+  assert(scene != _scene);
+  if(scene)
+    assert(!_scene);
+  else
+    assert(_scene);
+
   _scene = scene;
 }
 
@@ -503,7 +509,7 @@ void Object::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
   Hit(&other, 10, hit_direction);
 }
- 
+
 
 void Object::SetAutoDestroyBox(const glm::vec3 & low, const glm::vec3 & high)
 {

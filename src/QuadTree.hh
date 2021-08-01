@@ -148,7 +148,12 @@ public:
   
   void Move(Object * object, const glm::vec3 & previous_position)
   {
-    auto prevpos = GetIndex(previous_position);
+    unsigned int prevpos;
+    if(IsObjectFit(object))
+      prevpos = GetIndex(previous_position);
+    else
+      prevpos = static_cast<unsigned int>(_width * _height + 1);
+    
     auto newpos = GetIndex(object);
     if(prevpos != newpos)
       {

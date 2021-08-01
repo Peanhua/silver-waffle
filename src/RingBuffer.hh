@@ -64,6 +64,10 @@ public:
 
   void Add(T object)
   {
+#if 0
+    for(std::vector<void *>::size_type i = 0; i < std::vector<T>::size(); i++)
+      assert(std::vector<T>::at(i) != object);
+#endif
     auto ind = GetNextFreeIndex();
     if(ind < std::vector<T>::size())
       (*this)[ind] = object;
