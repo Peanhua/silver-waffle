@@ -346,8 +346,13 @@ bool SpaceshipUpgrade::CanActivate() const
   if(_cooldown > 0.0)
     return false;
 
-  if(_type == Type::WARP_ENGINE && _timer < 0.01)
-    return false;
+  if(_type == Type::WARP_ENGINE)
+    {
+      if(_timer < 0.01)
+        return false;
+      if(!_spaceship->GetScene()->CanUseWarpEngine())
+        return false;
+    }
 
   return true;
 }
@@ -400,7 +405,7 @@ void SpaceshipUpgrade::Activate(double value, double time)
             {
               done = true;
               auto distance = std::abs(playerpos.y - planet->GetPosition().y);
-              if(distance < 20 || Settings->GetBool("cheat_planet_lander_disable_distance_check"))
+              if(distance < 30 || Settings->GetBool("cheat_planet_lander_disable_distance_check"))
                 _spaceship->DescendToPlanet(planet);
               else
                 _spaceship->SystemlogAppend(_name + ": Error, planet too far.\n");

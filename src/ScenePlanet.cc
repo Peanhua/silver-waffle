@@ -27,7 +27,7 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
     _landing_sequence(true)
 {
   _gravity = { 0, 0, -planet.GetGravity() };
-
+  _can_use_warp_engine = false;
   _quadtree = new QuadTreeXZ(GetPlayAreaSize(), 10.0f);
   
   const float groundsize = 40;

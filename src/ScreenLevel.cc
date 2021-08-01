@@ -920,7 +920,6 @@ void ScreenLevel::CopyPlayerData(ScreenLevel * src)
 
   for(unsigned int i = 0; i < srcplr->GetEngineCount(); i++)
     srcplr->SetEngineThrottle(i, 0.0);
-  srcplr->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->SetEnabled(false);
   for(unsigned int i = 0; i < srcplr->GetWeaponCount(); i++)
     srcplr->SetWeaponAutofire(i, false);
 

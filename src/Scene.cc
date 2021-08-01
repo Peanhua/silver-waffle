@@ -569,3 +569,9 @@ ObjectBuilding * Scene::GetClosestSpaceport(const glm::vec3 & position) const
   return nullptr;
 }
 
+
+
+bool Scene::CanUseWarpEngine() const
+{
+  return _can_use_warp_engine;
+}

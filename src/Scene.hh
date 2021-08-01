@@ -89,6 +89,7 @@ public:
   void StartWarpEngine();
   void StopWarpEngine();
   bool IsWarpEngineStarting() const;
+  bool CanUseWarpEngine() const;
 
   void TutorialMessage(unsigned int id, const std::string & message);
   void EnableTutorialMessages(bool enabled);
@@ -110,6 +111,7 @@ protected:
   std::mt19937_64                _random_generator;
   std::uniform_real_distribution<float> _rdist;
   QuadTree *          _quadtree;
+  bool                _can_use_warp_engine;
 
   virtual void      SetupSceneObject(Object * object, bool destroy_on_block) = 0;
   
