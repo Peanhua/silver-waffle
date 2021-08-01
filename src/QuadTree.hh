@@ -35,13 +35,20 @@ public:
   
   void Add(RingBuffer<T> * list)
   {
-    for(auto l : _lists)
-      assert(l != list);
-    
+    assert(!Contains(list));
     _lists.push_back(list);
   }
-  
 
+  
+  bool Contains(RingBuffer<T> * list)
+  {
+    for(auto l : _lists)
+      if(l == list)
+        return true;
+    return false;
+  }
+
+  
   void Rewind()
   {
     _current_list = 0;
@@ -106,8 +113,8 @@ public:
         _grid.push_back(rb);
         _all.Add(rb);
         
-        auto r = new Result<Object *>();
-        _nearby.push_back(r);
+        _nearby.push_back(new Result<Object *>());
+        _nearby2.push_back(new Result<Object *>());
       }
 
     _grid.push_back(new RingBuffer<Object *>()); // outer space objects
@@ -119,20 +126,34 @@ public:
     _all.Add(_grid[outerspace]);
     _all.Add(_grid[toobig]);
 
-    for(int yyy = 0; yyy < _height; yyy++)
-      for(int xxx = 0 ; xxx < _width; xxx++)
+    
+    auto fill = [this, outerspace, toobig](Result<Object *> * buf, int size, int xxx, int yyy)
+    {
+      if(size * 2 + 1 > _width || size * 2 + 1 > _height)
         {
-          auto nearby = _nearby[static_cast<unsigned int>(xxx + yyy * _width)];
-          for(int yy = -1 ; yy <= 1; yy++)
-            for(int xx = -1; xx <= 1; xx++)
-              {
-                int x = xx + xxx;
-                int y = yy + yyy;
-                if(x >= 0 && x < _width  &&  y >= 0 && y < _height)
-                  nearby->Add(_grid[static_cast<unsigned int>(x + y * _width)]);
-              }
-          nearby->Add(_grid[outerspace]);
-          nearby->Add(_grid[toobig]);
+          for(auto i : _grid)
+            buf->Add(i);
+          return;
+        }
+      
+      // todo: Fix to handle cases where the results width or height is greater than the size of _grid (can then get rid of the code above, which currently handles those cases).
+      for(int yy = -size ; yy <= size; yy++)
+        for(int xx = -size; xx <= size; xx++)
+          {
+            int x = xx + xxx;
+            int y = yy + yyy;
+            if(x >= 0 && x < _width  &&  y >= 0 && y < _height)
+              buf->Add(_grid[static_cast<unsigned int>(x + y * _width)]);
+          }
+      buf->Add(_grid[outerspace]);
+      buf->Add(_grid[toobig]);
+    };
+  
+    for(int y = 0; y < _height; y++)
+      for(int x = 0 ; x < _width; x++)
+        {
+          fill(_nearby [static_cast<unsigned int>(x + y * _width)], 1, x, y);
+          fill(_nearby2[static_cast<unsigned int>(x + y * _width)], 2, x, y);
         }
   }
 
@@ -184,6 +205,21 @@ public:
     
     return *rv;
   }
+
+  Result<Object *> & GetNearby2(const glm::vec3 & position)
+  {
+    Result<Object *> * rv;
+
+    const auto ind = GetIndex(position);
+    if(ind < static_cast<unsigned int>(_width * _height))
+      rv = _nearby2[ind];
+    else
+      rv = &_all;
+    
+    rv->Rewind();
+    
+    return *rv;
+  }
   
 protected:
   glm::vec3                    _dimensions;
@@ -192,6 +228,7 @@ protected:
   int                          _width;
   int                          _height;
   std::vector<Result<Object *> *>     _nearby; // Contains pointers to 3x3 closest grid elements (ie. 8 neighbors & self). Could also be std::array
+  std::vector<Result<Object *> *>     _nearby2; // Same but for 5x5.
   Result<Object *>                    _all;
 
   bool IsObjectFit(const Object * object) const

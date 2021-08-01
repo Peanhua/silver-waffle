@@ -46,7 +46,8 @@ Object::Object(Scene * scene, unsigned int random_seed)
     _destroybox_low(1, 1, 1),
     _destroybox_high(0, 0, 0),
     _ticking_requires_player_alive(false),
-    _ticking_requires_player_visibility(false)
+    _ticking_requires_player_visibility(false),
+    _use_garbagecollection(true)
 {
 }
 
@@ -76,7 +77,8 @@ Object::Object(const Object & source)
     _destroybox_low(source._destroybox_low),
     _destroybox_high(source._destroybox_high),
     _ticking_requires_player_alive(source._ticking_requires_player_alive),
-    _ticking_requires_player_visibility(source._ticking_requires_player_visibility)
+    _ticking_requires_player_visibility(source._ticking_requires_player_visibility),
+    _use_garbagecollection(source._use_garbagecollection)
 {
   _random_generator.seed(_random_generator());
   
@@ -675,4 +677,16 @@ void Object::CreateCollisionShape(CollisionShape::Type type)
 void Object::SetColor(const glm::vec3 & color)
 {
   _color = color;
+}
+
+
+bool Object::GetUseGarbageCollection() const
+{
+  return _use_garbagecollection;
+}
+
+
+void Object::SetUseGarbageCollection(bool enabled)
+{
+  _use_garbagecollection = enabled;
 }

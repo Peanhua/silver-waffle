@@ -84,8 +84,6 @@ public:
   void              AddObject(Object * object, const glm::vec3 & position = { 0, 0, 0 });
   void              RemoveObject(Object * object);
 
-  std::vector<Object *> * GetNearbyObjects(const glm::vec3 & position, float radius) const;
-
   void StartWarpEngine();
   void StopWarpEngine();
   bool IsWarpEngineStarting() const;
@@ -121,7 +119,6 @@ private:
   glm::vec3                      _play_area_size;
   ObjectSpaceship *              _player;
   RingBuffer<ObjectProjectile *> _projectiles;
-  RingBuffer<Object *>           _objects;
   RingBuffer<Explosion *>        _explosions;
   RingBuffer<Object *>           _planets;
   double                         _time;
@@ -130,7 +127,9 @@ private:
   bool                           _tutorialmessages_enabled;
   std::vector<bool>              _tutorialmessages;
   CollisionCheckStatistics       _collisioncheck_statistics;
-
+  std::vector<Object *>          _tick_work_objects;
+  std::vector<Object *>          _garbage;
+  
   void CollisionsForObject(Object * o);
 };
 

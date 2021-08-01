@@ -128,6 +128,9 @@ public:
   void SetTickingRequiresPlayerVisibility(bool visibility_required);
 
   void CreateCollisionShape(CollisionShape::Type type);
+
+  bool GetUseGarbageCollection() const;
+  void SetUseGarbageCollection(bool enabled);
   
 private:
   std::mt19937_64                       _random_generator;
@@ -152,6 +155,7 @@ private:
   std::vector<Loot *> _lootset;
   bool      _ticking_requires_player_alive;
   bool      _ticking_requires_player_visibility;
+  bool      _use_garbagecollection;
   
   //  std::vector<on_collision_t> _on_collision;
   std::vector<on_destroyed_t> _on_destroyed;

@@ -46,6 +46,8 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
   std::minstd_rand random(_random_generator());
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
+
+  _tick_work_objects.reserve(1024);
 }
 
 
@@ -67,10 +69,11 @@ void Scene::Draw(const Camera & camera) const
     _particles->Draw(camera);
 
   {
-    auto objects = _quadtree->GetAll();
+    auto objects = _quadtree->GetNearby2(camera.GetPosition());
     auto o = objects.Next();
     while(o)
       {
+        assert(o->IsAlive());
         o->Draw(camera);
         o = objects.Next();
       }
@@ -84,6 +87,9 @@ void Scene::Draw(const Camera & camera) const
 
 Scene::~Scene()
 {
+  for(auto o : _garbage)
+    if(o->GetUseGarbageCollection())
+      delete o;
 }
 
 
@@ -133,7 +139,7 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
       ind = static_cast<unsigned int>(_projectiles.size());
       
       auto b = new ObjectProjectile(this);
-
+      b->SetUseGarbageCollection(false);
       auto rotangle = glm::normalize(glm::vec3(_rdist(_random_generator), _rdist(_random_generator), _rdist(_random_generator)));
       b->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1 + static_cast<double>(_rdist(_random_generator)) * 10.0);
       SetupSceneObject(b, true);
@@ -184,8 +190,8 @@ void Scene::Tick(double deltatime)
   
   _time += deltatime;
 
-  std::vector<Object *> objects;
-  objects.reserve(32 + 1 + _objects.size() + _planets.size());
+  auto & objects = _tick_work_objects;
+  objects.clear();
   {
     auto all = _quadtree->GetAll();
     auto o = all.Next();
@@ -217,6 +223,7 @@ void Scene::Tick(double deltatime)
             
             if(!o->IsAlive())
               {
+                _garbage.push_back(o);
                 auto ClearReferences = [this](Object * obj)
                 { // todo: Use smart pointers instead of manually fixing references.
                   for(auto proj : _projectiles)
@@ -229,6 +236,8 @@ void Scene::Tick(double deltatime)
               }
           }
       }
+    else
+      _garbage.push_back(o);
 
   for(auto e : _explosions)
     if(e && e->IsAlive())
@@ -244,16 +253,6 @@ void Scene::Tick(double deltatime)
         _particles->Tick(deltatime * (1.0 + static_cast<double>(5.0f * _warp_throttle)));
       else
         _particles->Tick(deltatime);
-    }
-
-  for(std::vector<Object *>::size_type i = 0; i < _objects.size(); i++)
-    {
-      auto o = _objects[i];
-      if(o && !o->IsAlive())
-        {
-          delete o;
-          _objects[i] = nullptr;
-        }
     }
 }
 
@@ -329,12 +328,6 @@ void Scene::AddObject(Object * object, const glm::vec3 & position)
 {
   assert(object->IsAlive());
 
-  auto ind = _objects.GetNextNullIndex();
-  if(ind < _objects.size())
-    _objects[ind] = object;
-  else
-    _objects.push_back(object);
-
   object->SetPosition(position);
 
   SetupSceneObject(object, true);
@@ -357,24 +350,6 @@ void Scene::AddPlanet(Object * object)
   assert(object);
   _planets.Add(object);
   SetupSceneObject(object, true);
-}
-
-
-std::vector<Object *> * Scene::GetNearbyObjects(const glm::vec3 & position, float radius) const
-{
-  auto rv = new std::vector<Object *>();
-  assert(rv);
-
-  if(_player && _player->IsAlive())
-    if(glm::distance(position, _player->GetPosition()) < radius)
-      rv->push_back(_player);
-
-  for(auto o : _objects)
-    if(o && o->IsAlive())
-      if(glm::distance(position, o->GetPosition()) < radius)
-        rv->push_back(o);
-
-  return rv;
 }
 
 
@@ -504,27 +479,34 @@ void Scene::ResetCollisionCheckStatistics()
 glm::vec3 Scene::GetClosestGroundSurface(const glm::vec3 & position) const
 {
   auto pos = position;
-  auto objs = GetNearbyObjects(position, GetPlayAreaSize().z);
+  auto objs = _quadtree->GetNearby(position);
+  auto radius = GetPlayAreaSize().z;
   bool retry = true;
   while(retry)
     {
       retry = false;
-      for(auto o : *objs)
-        if(o->GetCollisionShape())
-          {
-            auto op = o->GetPosition();
-            auto dims = o->GetMesh()->GetBoundingBoxHalfSize();
-            auto topleft = op + glm::vec3(-dims.x, 0, dims.z);
-            auto botright = op + glm::vec3(dims.x, 0, -dims.z);
-            if(pos.x >= topleft.x  && pos.x <= botright.x &&
-               pos.z >= botright.z && pos.z <= topleft.z    )
+      objs.Rewind();
+      auto o = objs.Next();
+      while(o)
+        {
+          auto op = o->GetPosition();
+          if(glm::distance(position, op) < radius)
+            if(o->GetCollisionShape())
               {
-                retry = true;
-                pos.z = topleft.z + 0.001f;
+                auto dims = o->GetMesh()->GetBoundingBoxHalfSize();
+                auto topleft = op + glm::vec3(-dims.x, 0, dims.z);
+                auto botright = op + glm::vec3(dims.x, 0, -dims.z);
+                if(pos.x >= topleft.x  && pos.x <= botright.x &&
+                   pos.z >= botright.z && pos.z <= topleft.z    )
+                  {
+                    retry = true;
+                    pos.z = topleft.z + 0.001f;
+                  }
               }
-          }
+          o = objs.Next();
+        }
     }
-  delete objs;
+
   return pos;
 }
 
@@ -537,13 +519,8 @@ QuadTree * Scene::GetQuadTree() const
 
 void Scene::RemoveObject(Object * object)
 {
-  for(unsigned int i = 0; object && i < _objects.size(); i++)
-    if(_objects[i] == object)
-      {
-        _quadtree->Remove(object);
-        object->SetScene(nullptr);
-        object = _objects[i] = nullptr;
-      }
+  _quadtree->Remove(object);
+  object->SetScene(nullptr);
 }
 
 
@@ -578,7 +555,6 @@ void Scene::DumpStats() const
   std::cout << "scene: " << this
             << " play_area_size=" << _play_area_size
             << " projectiles.size=" << _projectiles.size()
-            << " objects.size=" << _objects.size()
             << " explosions.size=" << _explosions.size()
             << " planets.size=" << _planets.size()
             << " time=" << _time
