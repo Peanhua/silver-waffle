@@ -533,7 +533,7 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
               {
                 player->SystemlogAppend("You rescued " + std::to_string(humancount) + " human individuals!\n");
                 player->GetOwnerGameStats()->AddScore(10 * static_cast<unsigned int>(humancount));
-                player->ClearHumans();
+                player->SaveHumans();
               }
           }
       break;
@@ -851,7 +851,7 @@ void ScreenLevel::OpenPauseUI()
 
 void ScreenLevel::GameOver(bool game_was_completed)
 {
-  auto hs = new HighscoreEntry(_score_reel->GetScore(), _current_level, _scene, game_was_completed);
+  auto hs = new HighscoreEntry(_scene, _current_level, game_was_completed);
   Highscores->Add(hs);
   Highscores->SetLast(hs);
 

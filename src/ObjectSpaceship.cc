@@ -610,6 +610,8 @@ void ObjectSpaceship::AddHuman()
   _human_count++;
   if(_on_human_count_changed)
     _on_human_count_changed();
+  if(_gamestats)
+    _gamestats->OnHumanCollected();
 }
 
 
@@ -619,8 +621,11 @@ int ObjectSpaceship::GetHumanCount() const
 }
 
 
-void ObjectSpaceship::ClearHumans()
+void ObjectSpaceship::SaveHumans()
 {
+  if(_gamestats)
+    _gamestats->OnHumansSaved(_human_count);
+
   _human_count = 0;
   if(_on_human_count_changed)
     _on_human_count_changed();

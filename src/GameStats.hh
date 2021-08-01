@@ -36,6 +36,11 @@ public:
   UpgradeMaterial * GetUpgradeMaterial(UpgradeMaterial::Type type);
   std::vector<UpgradeMaterial *> & GetUpgradeMaterials();
 
+  void         OnHumanCollected();
+  void         OnHumansSaved(unsigned int count);
+  unsigned int GetHumansCollected() const;
+  unsigned int GetHumansSaved() const;
+
 private:
   int _lives;
 
@@ -44,6 +49,9 @@ private:
   unsigned int _score;
   unsigned int _score_multiplier;
   double       _score_multiplier_timer;
+
+  unsigned int _total_humans_collected;
+  unsigned int _total_humans_saved;
 
   std::vector<UpgradeMaterial *> _upgradematerials;
 };

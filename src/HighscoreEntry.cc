@@ -16,23 +16,28 @@
 #include <cassert>
 
 
-HighscoreEntry::HighscoreEntry(unsigned int score, unsigned int level, Scene * scene, bool game_completed)
+HighscoreEntry::HighscoreEntry(Scene * scene, unsigned int level, bool game_completed)
   : _level(level),
     _level_time(scene->GetTime()),
-    _total_time(scene->GetPlayer()->GetOwnerGameStats()->GetTime()),
-    _score(score),
     _game_completed(game_completed)
 {
+  auto gamestats = scene->GetPlayer()->GetOwnerGameStats();
+  _total_time = gamestats->GetTime();
+  _score = gamestats->GetScore();
+  _humans_collected = gamestats->GetHumansCollected();
+  _humans_saved = gamestats->GetHumansSaved();
 }
 
 
 HighscoreEntry::HighscoreEntry(const json11::Json & json)
+  : _humans_collected(0),
+    _humans_saved(0)
 {
   assert(json["score"].is_number());
-  _score = static_cast<unsigned int>(json["score"].number_value());
+  _score = static_cast<unsigned int>(json["score"].int_value());
 
   assert(json["level"].is_number());
-  _level = static_cast<unsigned int>(json["level"].number_value());
+  _level = static_cast<unsigned int>(json["level"].int_value());
 
   assert(json["level_time"].is_number());
   _level_time = json["level_time"].number_value();
@@ -42,6 +47,12 @@ HighscoreEntry::HighscoreEntry(const json11::Json & json)
 
   assert(json["game_completed"].is_bool());
   _game_completed = json["game_completed"].bool_value();
+
+  if(json["humans_collected"].is_number())
+    _humans_collected = static_cast<unsigned int>(json["humans_collected"].int_value());
+
+  if(json["humans_saved"].is_number())
+    _humans_saved = static_cast<unsigned int>(json["humans_saved"].int_value());
 }
 
 
@@ -67,10 +78,12 @@ json11::Json HighscoreEntry::ToJson() const
 {
   return json11::Json::object
     {
-      { "score",          static_cast<int>(_score) },
-      { "level",          static_cast<int>(_level) },
-      { "level_time",     _level_time },
-      { "total_time",     _total_time },
-      { "game_completed", _game_completed }
+      { "score",            static_cast<int>(_score) },
+      { "level",            static_cast<int>(_level) },
+      { "level_time",       _level_time },
+      { "total_time",       _total_time },
+      { "game_completed",   _game_completed },
+      { "humans_collected", static_cast<int>(_humans_collected) },
+      { "humans_saved",     static_cast<int>(_humans_saved) }
     };
 }

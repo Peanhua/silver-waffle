@@ -19,7 +19,9 @@ GameStats::GameStats()
     _time(0),
     _score(0),
     _score_multiplier(1),
-    _score_multiplier_timer(0)
+    _score_multiplier_timer(0),
+    _total_humans_collected(0),
+    _total_humans_saved(0)
 {
   _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::ATTACK,   "Material A"));
   _upgradematerials.push_back(new UpgradeMaterial(UpgradeMaterial::Type::DEFENSE,  "Material D"));
@@ -100,4 +102,28 @@ void GameStats::AdjustLives(int amount)
 double GameStats::GetTime() const
 {
   return _time;
+}
+
+
+void GameStats::OnHumanCollected()
+{
+  _total_humans_collected++;
+}
+
+
+void GameStats::OnHumansSaved(unsigned int count)
+{
+  _total_humans_saved += count;
+}
+
+
+unsigned int GameStats::GetHumansCollected() const
+{
+  return _total_humans_collected;
+}
+
+
+unsigned int GameStats::GetHumansSaved() const
+{
+  return _total_humans_saved;
 }

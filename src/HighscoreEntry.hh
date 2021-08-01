@@ -15,13 +15,14 @@
 #include <json11.hpp>
 #include <string>
 
+class GameStats;
 class Scene;
 
 
 class HighscoreEntry
 {
 public:
-  HighscoreEntry(unsigned int score, unsigned int level, Scene * scene, bool game_completed);
+  HighscoreEntry(Scene * scene, unsigned int level, bool game_completed);
   HighscoreEntry(const json11::Json & json);
 
   unsigned int GetScore() const;
@@ -36,6 +37,8 @@ private:
   double       _total_time;
   unsigned int _score;
   bool         _game_completed;
+  unsigned int _humans_collected;
+  unsigned int _humans_saved;
 };
 
 #endif

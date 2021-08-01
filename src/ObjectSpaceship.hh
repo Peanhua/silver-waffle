@@ -71,7 +71,7 @@ public:
 
   void AddHuman();
   int  GetHumanCount() const;
-  void ClearHumans();
+  void SaveHumans();
 
   void SetOnHumanCountChanged(on_human_count_changed_t callback);
 
