@@ -98,6 +98,8 @@ public:
 
   void Initialize()
   {
+    assert(_grid.size() == 0);
+
     for(int i = 0; i < _width * _height; i++)
       {
         auto rb = new RingBuffer<Object *>();

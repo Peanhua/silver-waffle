@@ -65,21 +65,16 @@ void Scene::Draw(const Camera & camera) const
 
   if(_particles)
     _particles->Draw(camera);
-  
-  std::vector<Object *> objects;
-  for(auto o : _objects)
-    if(o && o->IsAlive())
-      objects.push_back(o);
 
-  if(_player->IsAlive())
-    objects.push_back(_player);
-
-  for(auto b : _projectiles)
-    if(b->IsAlive())
-      objects.push_back(b);
-
-  for(auto o : objects)
-    o->Draw(camera);
+  {
+    auto objects = _quadtree->GetAll();
+    auto o = objects.Next();
+    while(o)
+      {
+        o->Draw(camera);
+        o = objects.Next();
+      }
+  }
 
   for(auto e : _explosions)
     if(e->IsAlive())
@@ -117,7 +112,6 @@ void Scene::CreatePlayer()
   
   _player->SystemlogEnable();
   _player->SystemlogAppend("Spaceship computer online.\n");
-  
 }
 
 
@@ -191,17 +185,16 @@ void Scene::Tick(double deltatime)
   _time += deltatime;
 
   std::vector<Object *> objects;
-
-  if(_player && _player->IsAlive())
-    objects.push_back(_player);
-
-  for(auto p : _projectiles)
-    if(p && p->IsAlive())
-      objects.push_back(p);
-
-  for(auto o : _objects)
-    if(o && o->IsAlive())
-      objects.push_back(o);
+  objects.reserve(32 + 1 + _objects.size() + _planets.size());
+  {
+    auto all = _quadtree->GetAll();
+    auto o = all.Next();
+    while(o)
+      {
+        objects.push_back(o);
+        o = all.Next();
+      }
+  }
 
   for(auto p : _planets)
     if(p && p->IsAlive())
@@ -324,6 +317,8 @@ void Scene::AddCollectible(ObjectCollectible * collectible, const glm::vec3 & po
 {
   assert(collectible->IsAlive());
 
+  collectible->SetScene(this);
+  _quadtree->Add(collectible);
   AddObject(collectible, position);
 
   TutorialMessage(2, "A valuable item from the explosion,\ncollect it!\n");
@@ -340,10 +335,11 @@ void Scene::AddObject(Object * object, const glm::vec3 & position)
   else
     _objects.push_back(object);
 
-  object->SetScene(this);
   object->SetPosition(position);
 
   SetupSceneObject(object, true);
+
+  assert(object->GetScene() == this);
 }
 
 

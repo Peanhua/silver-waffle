@@ -37,7 +37,8 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
   ground->SetPosition({0, 0, -(GetPlayAreaSize().z / 2.0f + 0.5f)});
 
   auto atmosphere = new ObjectPlanetAtmosphere(this, GetPlayAreaSize().xz(), planet.GetAtmosphereColors());
-  AddObject(atmosphere, {0, groundsize / 2.0f, 0});
+  AddPlanet(atmosphere);
+  atmosphere->SetPosition({0, groundsize / 2.0f, 0});
 
   auto GetRand = [this]()
   {
@@ -46,10 +47,12 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
   for(int i = 0; i < 100; i++)
     {
       auto cloud = new ObjectCloud(this, static_cast<unsigned int>(_random_generator()));
-      glm::vec3 pos(GetPlayAreaSize().x * GetRand(),
-                    GetPlayAreaSize().y * GetRand(),
-                    GetPlayAreaSize().z * GetRand() * 0.2f);
-      AddObject(cloud, pos);
+      AddPlanet(cloud);
+      cloud->SetPosition({
+          GetPlayAreaSize().x * GetRand(),
+          GetPlayAreaSize().y * GetRand(),
+          GetPlayAreaSize().z * GetRand() * 0.2f
+        });
     }
 
   CreatePlayer();
