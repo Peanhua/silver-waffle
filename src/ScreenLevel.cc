@@ -49,6 +49,7 @@
 # pragma GCC diagnostic ignored "-Wuseless-cast"
 # include <callgrind.h>
 # pragma GCC diagnostic pop
+# include <iostream>
 #endif
 
 
@@ -209,13 +210,8 @@ void ScreenLevel::Initialize()
   _levelinfo_widget->SetTextColor(glm::vec3(1.00, 0.88, 0.00));
   _levelinfo_widget->SetTextFont(AssetLoader->LoadFont(12));
 
-#if defined(WITH_VALGRIND) && true
-# pragma GCC diagnostic push
-# pragma GCC diagnostic ignored "-Wold-style-cast"
-# pragma GCC diagnostic ignored "-Wuseless-cast"
-  CALLGRIND_ZERO_STATS;
-# pragma GCC diagnostic pop
-#endif
+  _scene->DumpStats();
+  
   if(Settings->GetBool("demo"))
     _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Install();
 }
@@ -650,6 +646,15 @@ void ScreenLevel::OnLevelChanged()
   auto level = _levels[_current_level];
   _teletyper->AppendText("Destination: " + level->GetName() + "\n");
   level->Start();
+
+#if defined(WITH_VALGRIND) && true
+# pragma GCC diagnostic push
+# pragma GCC diagnostic ignored "-Wold-style-cast"
+# pragma GCC diagnostic ignored "-Wuseless-cast"
+  std::cout << "CALLGRIND_ZERO_STATS()" << std::endl;
+  CALLGRIND_ZERO_STATS;
+# pragma GCC diagnostic pop
+#endif
 }
 
 

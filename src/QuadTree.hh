@@ -62,7 +62,9 @@ public:
         return Next();
       }
 
-    auto object = cur->at(_current_list_index++);
+    auto object = cur->at(_current_list_index);
+    _current_list_index++;
+    
     if(object)
       return object;
     else
@@ -146,12 +148,7 @@ public:
   
   void Move(Object * object, const glm::vec3 & previous_position)
   {
-    unsigned int prevpos;
-    if(IsObjectFit(object))
-      prevpos = GetIndex(previous_position);
-    else
-      prevpos = static_cast<unsigned int>(_width * _height + 1);
-
+    auto prevpos = GetIndex(previous_position);
     auto newpos = GetIndex(object);
     if(prevpos != newpos)
       {
@@ -162,6 +159,7 @@ public:
 
   Result<Object *> & GetAll()
   {
+    _all.Rewind();
     return _all;
   }
   

@@ -575,3 +575,16 @@ bool Scene::CanUseWarpEngine() const
 {
   return _can_use_warp_engine;
 }
+
+
+void Scene::DumpStats() const
+{
+  std::cout << "scene: " << this
+            << " play_area_size=" << _play_area_size
+            << " projectiles.size=" << _projectiles.size()
+            << " objects.size=" << _objects.size()
+            << " explosions.size=" << _explosions.size()
+            << " planets.size=" << _planets.size()
+            << " time=" << _time
+            << std::endl;
+}

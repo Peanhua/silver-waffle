@@ -104,6 +104,8 @@ public:
 
   QuadTree * GetQuadTree() const;
 
+  void DumpStats() const;
+
 protected:
   glm::vec3           _gravity;
   SpaceParticles *    _particles;

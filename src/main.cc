@@ -144,6 +144,9 @@ int main(int argc, char *argv[])
                         }
                       }
                     std::cout << std::endl;
+
+                    if(s)
+                      s->GetScene()->DumpStats();
                   }
               }
           }
