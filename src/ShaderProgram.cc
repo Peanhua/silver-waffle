@@ -161,9 +161,16 @@ void ShaderProgram::SetInt(const std::string & name, int value)
 }
 
 
+GLuint ShaderProgram::current_program = 0;
+
 void ShaderProgram::Use() const
 {
   assert(_program);
+
+  if(_program == current_program)
+    return;
+
+  current_program = _program;
   glUseProgram(_program);
 }
 

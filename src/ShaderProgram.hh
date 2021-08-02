@@ -42,6 +42,8 @@ public:
   static void SetUBOFloat(const std::string & ubo_name, const std::string & name, const float value);
   static void SetUBOVec2(const std::string & ubo_name, const std::string & name, const glm::vec2 & value);
   static void SetUBOVec3(const std::string & ubo_name, const std::string & name, const glm::vec3 & value);
+
+  static GLuint current_program;
   
 private:
   GLuint                _program;
