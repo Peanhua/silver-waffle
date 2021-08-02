@@ -102,14 +102,14 @@ void Mesh::PreDrawSetupShader(ShaderProgram * shader_program) const
 
 void Mesh::DrawSameShader(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program) const
 {
-  glm::mat4 mymvp(mvp);
-  glm::mat4 mymodel(model);
-  if(!_transform_is_identity)
-    {
-      mymvp = mymvp * _transform;
-      mymodel = mymodel * _transform;
-    }
+  if(_transform_is_identity)
+    DrawSameShaderIgnoreTransform(model, mvp, shader_program);
+  else
+    DrawSameShaderIgnoreTransform(model * _transform, mvp * _transform, shader_program);
+}
   
+void Mesh::DrawSameShaderIgnoreTransform(const glm::mat4 & model, const glm::mat4 & mvp, ShaderProgram * shader_program) const
+{
   if(_vertices.size() > 0)
     {
       auto shader = shader_program ? shader_program : _shader_program;
@@ -129,8 +129,8 @@ void Mesh::DrawSameShader(const glm::mat4 & model, const glm::mat4 & mvp, Shader
       if(_options & OPTION_BLEND)
         glEnable(GL_BLEND);
 
-      shader->SetMatrix("in_model", mymodel);
-      shader->SetMatrix("in_mvp",   mymvp);
+      shader->SetMatrix("in_model", model);
+      shader->SetMatrix("in_mvp",   mvp);
       PreDrawSetupShader(shader);
       
       glBindVertexArray(_vao);
@@ -144,7 +144,7 @@ void Mesh::DrawSameShader(const glm::mat4 & model, const glm::mat4 & mvp, Shader
     }
 
   for(auto c : _children)
-    c->Draw(mymodel, mymvp, shader_program);
+    c->Draw(model, mvp, shader_program);
 }
 
 
