@@ -24,10 +24,9 @@ ObjectProjectile::ObjectProjectile(Scene * scene)
   SetOwner(nullptr);
   SetMesh(AssetLoader->LoadMesh("Projectile"));
   SetCollisionShape(new CollisionShapeSphere(this, GetMesh()->GetBoundingSphereRadius()));
-  GetScene()->GetQuadTree()->Remove(this); // Was added by SetCollisionShape(), removed here because ObjectProjectile is created dead.
-  SetHealth(0);
   AddToCollisionChannel(CollisionChannel::PROJECTILE);
   SetTickingRequiresPlayerVisibility(true);
+  Destroy(nullptr);
 }
 
 
@@ -37,7 +36,7 @@ void ObjectProjectile::Tick(double deltatime)
 
   _lifetime_left -= deltatime;
   if(_lifetime_left < 0.0)
-    SetHealth(0);
+    Destroy(nullptr);
 }
 
 
