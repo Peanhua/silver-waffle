@@ -58,24 +58,23 @@ public:
   
   T Next()
   {
-    if(_current_list >= _lists.size())
-      return nullptr;
-    
-    auto cur = _lists[_current_list];
-    if(_current_list_index >= cur->size())
+    while(_current_list < _lists.size())
       {
-        _current_list++;
-        _current_list_index = 0;
-        return Next();
-      }
+        auto cur = _lists[_current_list];
+        if(_current_list_index >= cur->size())
+          {
+            _current_list++;
+            _current_list_index = 0;
+            continue;
+          }
 
-    auto object = cur->at(_current_list_index);
-    _current_list_index++;
-    
-    if(object)
-      return object;
-    else
-      return Next();
+        auto object = cur->at(_current_list_index);
+        _current_list_index++;
+
+        if(object)
+          return object;
+      }
+    return nullptr;
   }
   
 private:
