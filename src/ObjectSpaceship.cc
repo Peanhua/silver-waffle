@@ -30,6 +30,7 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
     _landed(false),
     _human_count(0),
     _on_human_count_changed(nullptr),
+    _human_saving_timer(0),
     _systemlog_enabled(false)
 {
   SetIsAffectedByGravity(false);
@@ -133,6 +134,8 @@ void ObjectSpaceship::Tick(double deltatime)
 
   for(auto u : _upgrades)
     u->Tick(deltatime);
+
+  SaveHuman(deltatime);
 
   ObjectMovable::Tick(deltatime);
 }
@@ -621,12 +624,28 @@ int ObjectSpaceship::GetHumanCount() const
 }
 
 
-void ObjectSpaceship::SaveHumans()
+void ObjectSpaceship::SaveHuman(double deltatime)
 {
-  if(_gamestats)
-    _gamestats->OnHumansSaved(_human_count);
+  if(!_landed)
+    return;
 
-  _human_count = 0;
+  if(_human_count == 0)
+    return;
+
+  _human_saving_timer += deltatime;
+  if(_human_saving_timer < 1)
+    return;
+  _human_saving_timer -= 1;
+  
+  SystemlogAppend("You rescued another human individual!\n");
+  if(_gamestats)
+    {
+      _gamestats->AddScore(10);
+      _gamestats->OnHumansSaved(1);
+    }
+  
+  _human_count--;
+  
   if(_on_human_count_changed)
     _on_human_count_changed();
 }
@@ -647,6 +666,7 @@ void ObjectSpaceship::LandOnSpaceport(ObjectBuilding * spaceport)
   assert(spaceport);
   SystemlogAppend("Landing on nearby spaceport.\n");
   _landed = true;
+  _human_saving_timer = 0;
   
   auto target = spaceport->GetPosition();
   target.z += spaceport->GetMesh()->GetBoundingBoxHalfSize().z;

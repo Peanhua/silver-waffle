@@ -28,7 +28,7 @@ class Scene;
 class ScoreReel;
 class TextureRenderer;
 class UpgradeMaterial;
-class WidgetPlayerShip;
+class WidgetMeshRenderer;
 class WidgetSpaceshipStatus;
 class WidgetSpaceshipUpgradeStatus;
 class WidgetTeletyper;
@@ -99,8 +99,7 @@ private:
   Widget *              _pausebutton;
   Widget *              _levelinfo_widget;
   WidgetTeletyper *     _teletyper;
-  Widget *              _human_count_widget;
-  int                   _human_count_widget_last;
+  std::vector<Widget *> _human_widgets;
   
   bool _demo_lander_activated;
   bool _demo_ending_activated;

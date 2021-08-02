@@ -35,7 +35,7 @@
 #include "UpgradeMaterial.hh"
 #include "WidgetButton.hh"
 #include "WidgetHighscores.hh"
-#include "WidgetPlayerShip.hh"
+#include "WidgetMeshRenderer.hh"
 #include "WidgetScoreReel.hh"
 #include "WidgetSpaceshipMaintenance.hh"
 #include "WidgetSpaceshipStatus.hh"
@@ -116,12 +116,23 @@ void ScreenLevel::Initialize()
   _score_reel = new ScoreReel(6);
   new WidgetScoreReel(root, glm::ivec2(0, 30), glm::ivec2(350, 50), _score_reel);
 
-  for(int i = 0; i < 5; i++)
-    {
-      auto w = new WidgetPlayerShip(root, glm::ivec2(width - 64 - i * 50, 10), glm::ivec2(50, 50));
-      _lives_widgets.push_back(w);
-    }
-  OnLivesUpdated();
+  {
+    auto mesh = AssetLoader->LoadMesh("Player");
+    glm::mat4 view = glm::lookAt(glm::vec3(0.0f, -1.5f, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+    glm::mat4 model(1);
+    model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 0, 1));
+    model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(0, 1, 0));
+    model = glm::translate(model, glm::vec3(0.1, -0.4, 0));
+    
+    for(int i = 0; i < 5; i++)
+      {
+        auto w = new WidgetMeshRenderer(root, glm::ivec2(width - 64 - i * 50, 10), glm::ivec2(50, 50), mesh, model, view);
+        _lives_widgets.push_back(w);
+      }
+    OnLivesUpdated();
+  }
+
+  OnHumanCountUpdated();
 
   {
     int x = static_cast<int>(width) - 8;
@@ -167,16 +178,6 @@ void ScreenLevel::Initialize()
       }
 
     y += size.y + 20;
-    x = static_cast<int>(width) - 120;
-    {
-      auto w = new Widget(root, glm::ivec2(x, y), glm::ivec2(120, 20));
-      w->SetTextFont(AssetLoader->LoadFont(15));
-      w->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
-      w->SetTextPaddingCentered(false, true);
-      _human_count_widget = w;
-      _human_count_widget_last = -1;
-      OnHumanCountUpdated();
-    }
   }
   
   {
@@ -331,7 +332,6 @@ void ScreenLevel::Tick(double deltatime)
                   _scene->GetPlayer()->SetOrientation(glm::quat(1, 0, 0, 0));
                   RefreshUI();
                   OnLivesUpdated();
-                  _human_count_widget_last = -1;
                   OnHumanCountUpdated();
                   ChangeState(State::RUNNING);
                 }
@@ -520,20 +520,6 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
           _current_quicktimeevent = new QuickTimeEventLaunchToSpace(player, GetRootWidget(), 3);
       break;
 
-    case SDLK_u:
-      if(!disablecontrols && pressed)
-        if(player->IsLanded())
-          {
-            auto humancount = player->GetHumanCount();
-            if(humancount > 0)
-              {
-                player->SystemlogAppend("You rescued " + std::to_string(humancount) + " human individuals!\n");
-                player->GetOwnerGameStats()->AddScore(10 * static_cast<unsigned int>(humancount));
-                player->SaveHumans();
-              }
-          }
-      break;
-
     case SDLK_F1:
       if(pressed)
         {
@@ -561,18 +547,31 @@ void ScreenLevel::OnLivesUpdated()
 void ScreenLevel::OnHumanCountUpdated()
 {
   auto player = _scene->GetPlayer();
-  auto count = player->GetHumanCount();
-  if(count == _human_count_widget_last)
-    return;
-  if(count == 0)
+  auto count = static_cast<unsigned int>(player->GetHumanCount());
+
+  while(count < _human_widgets.size())
     {
-      _human_count_widget->SetIsVisible(false);
+      _human_widgets[_human_widgets.size() - 1]->Destroy();
+      _human_widgets.pop_back();
     }
-  else
+
+  auto screen_width = Settings->GetInt("screen_width");
+  int height = 100;
+  auto mesh = AssetLoader->LoadMesh("Human");
+  glm::mat4 model(1);
+  model = glm::translate(model, {0, 0, -0.25f});
+  glm::mat4 view = glm::lookAt(glm::vec3(0, -1.4f, 0.2f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+  while(count > _human_widgets.size())
     {
-      _human_count_widget->SetIsVisible(true);
-      _human_count_widget->SetText("Humans: " + std::to_string(count));
-      _human_count_widget_last = count;
+      auto distance = 10.0f * static_cast<float>(_human_widgets.size());
+      glm::vec2 off(_rdist(_random) - 0.5f, _rdist(_random));
+      off = glm::normalize(off) * distance;
+
+      glm::ivec2 pos(screen_width / 2, 10);
+      pos += off;
+      
+      auto w = new WidgetMeshRenderer(GetRootWidget(), pos, glm::ivec2(height, height), mesh, model, view);
+      _human_widgets.push_back(w);
     }
 }
 
@@ -617,7 +616,6 @@ void ScreenLevel::NextLifeOrQuit()
       {
         OnHumanCountUpdated();
       });
-      _human_count_widget_last = -1;
       OnHumanCountUpdated();
 
       delete _current_quicktimeevent;

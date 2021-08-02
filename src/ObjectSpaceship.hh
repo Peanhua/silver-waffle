@@ -71,7 +71,7 @@ public:
 
   void AddHuman();
   int  GetHumanCount() const;
-  void SaveHumans();
+  void SaveHuman(double deltatime);
 
   void SetOnHumanCountChanged(on_human_count_changed_t callback);
 
@@ -119,6 +119,7 @@ private:
   std::vector<SpaceshipControlProgram *> _control_programs;
   int                    _human_count;
   on_human_count_changed_t _on_human_count_changed;
+  double                 _human_saving_timer;
   bool        _systemlog_enabled;
   std::string _systemlog;
 };

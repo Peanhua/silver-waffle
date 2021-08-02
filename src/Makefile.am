@@ -162,8 +162,8 @@ silverwaffle_SOURCES =				\
 	WidgetButton.hh				\
 	WidgetHighscores.cc			\
 	WidgetHighscores.hh			\
-	WidgetPlayerShip.cc			\
-	WidgetPlayerShip.hh			\
+	WidgetMeshRenderer.cc			\
+	WidgetMeshRenderer.hh			\
 	WidgetScoreReel.cc			\
 	WidgetScoreReel.hh			\
 	WidgetShopItem.cc			\
