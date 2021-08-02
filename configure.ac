@@ -42,6 +42,8 @@ if test "x$CONVERT" == "x" ; then
   AC_MSG_ERROR(['convert' not found error, install ImageMagick or alternative.])
 fi
 
+DX_PDF_FEATURE(OFF)
+DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN([SilverWaffle])
 
 AC_CONFIG_HEADERS([config.h])
