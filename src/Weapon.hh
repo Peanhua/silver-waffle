@@ -21,8 +21,14 @@ class Object;
 class Weapon
 {
 public:
-  Weapon(Object * owner, const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
+  enum class AmmoType { KINETIC, PLASMA };
+  
+  Weapon(Object * owner, const glm::vec3 & location, const glm::vec3 & projectile_direction);
 
+  void     SetAmmo(AmmoType type);
+  AmmoType GetAmmo() const;
+  
+  void   SetOwner(Object * owner);
   void   Tick(double deltatime, double coolingmult);
   
   double GetHeat() const;
@@ -33,17 +39,21 @@ public:
   bool   CanFire() const;
   void   Fire();
 
-private:
+protected:
   Object *  _owner;
+  AmmoType  _ammotype;
   glm::vec3 _location;
   bool      _autofire;
   double    _heat;
+  double    _firing_heat;
   double    _last_fire_timer;
   double    _minimum_firing_interval;
-  Mesh *    _projectile;
+  Mesh *    _projectile_mesh;
+  double    _projectile_glow;
   glm::vec3 _projectile_direction;
   double    _projectile_initial_velocity;
   double    _projectile_damage;
+  bool      _projectile_use_gravity;
 };
 
 #endif

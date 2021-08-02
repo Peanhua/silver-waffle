@@ -33,6 +33,7 @@
 #include "SubsystemSettings.hh"
 #include "TextureRenderer.hh"
 #include "UpgradeMaterial.hh"
+#include "Weapon.hh"
 #include "WidgetButton.hh"
 #include "WidgetHighscores.hh"
 #include "WidgetMeshRenderer.hh"
@@ -137,6 +138,7 @@ void ScreenLevel::Initialize()
   {
     int x = static_cast<int>(width) - 8;
     int y = 70;
+    int wtw_x;
     const glm::ivec2 size(20, 100);
     std::vector<Widget *>    widgets;
     std::vector<std::string> labels;
@@ -153,6 +155,7 @@ void ScreenLevel::Initialize()
       _player_status_widgets.push_back(w);
       widgets.push_back(w);
       labels.push_back("W");
+      wtw_x = x;
     }
     {
       x -= size.x + 4;
@@ -178,6 +181,9 @@ void ScreenLevel::Initialize()
       }
 
     y += size.y + 20;
+
+    _weapon_type_widget = new Widget(root, {wtw_x, y}, {size.x, size.x});
+    _weapon_type_widget->SetImage("Projectile");
   }
   
   {
@@ -514,6 +520,26 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
         }
       break;
 
+    case SDLK_1:
+      if(!disablecontrols && pressed)
+        {
+          auto count = player->GetWeaponCount();
+          for(unsigned int i = 0; i < count; i++)
+            player->GetWeapon(i)->SetAmmo(Weapon::AmmoType::KINETIC);
+          _weapon_type_widget->SetImage("Projectile");
+        }
+      break;
+
+    case SDLK_2:
+      if(!disablecontrols && pressed)
+        {
+          auto count = player->GetWeaponCount();
+          for(unsigned int i = 0; i < count; i++)
+            player->GetWeapon(i)->SetAmmo(Weapon::AmmoType::PLASMA);
+          _weapon_type_widget->SetImage("Plasma");
+        }
+      break;
+      
     case SDLK_l:
       if(!disablecontrols && pressed)
         if(player->IsLanded())
@@ -636,6 +662,16 @@ void ScreenLevel::RefreshUI()
     w->SetSpaceship(_scene->GetPlayer());
   for(auto w : _player_upgrade_status_widgets)
     w->SetUpgrade(_scene->GetPlayer()->GetUpgrade(w->GetUpgrade()->GetType()));
+
+  switch(_scene->GetPlayer()->GetWeapon(0)->GetAmmo())
+    {
+    case Weapon::AmmoType::KINETIC:
+      _weapon_type_widget->SetImage("Projectile");
+      break;
+    case Weapon::AmmoType::PLASMA:
+      _weapon_type_widget->SetImage("Plasma");
+      break;
+    }
 }
 
 

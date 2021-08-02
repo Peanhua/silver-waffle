@@ -177,16 +177,13 @@ void ObjectSpaceship::AddWeapon()
   float sign = (GetWeaponCount() % 2) == 0 ? 1 : -1;
 
   AddWeapon(glm::vec3(sign * id * 0.1f, 1, 0),
-            AssetLoader->LoadMesh("Projectile"),
-            glm::normalize(glm::vec3(sign * id * 0.1f, 1, 0)),
-            10.0,
-            34.0);
+            glm::normalize(glm::vec3(sign * id * 0.1f, 1, 0)));
 }
 
 
-void ObjectSpaceship::AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
+void ObjectSpaceship::AddWeapon(const glm::vec3 & location, const glm::vec3 & projectile_direction)
 {
-  auto weapon = new Weapon(this, location, projectile, projectile_direction, projectile_initial_velocity, projectile_damage);
+  auto weapon = new Weapon(this, location, projectile_direction);
   _weapons.push_back(weapon);
 }
 
@@ -199,7 +196,13 @@ void ObjectSpaceship::RemoveWeapons()
 }
 
 
-  
+Weapon * ObjectSpaceship::GetWeapon(unsigned int weapon_id) const
+{
+  assert(weapon_id < _weapons.size());
+  return _weapons[weapon_id];
+}
+
+
 unsigned int ObjectSpaceship::GetWeaponCount() const
 {
   assert(_weapons.size() < 0xffff);
@@ -330,6 +333,8 @@ void ObjectSpaceship::CopyUpgrades(const ObjectSpaceship & source)
   _weapons.clear();
   for(auto w : source._weapons)
     _weapons.push_back(new Weapon(*w));
+  for(auto w : _weapons)
+    w->SetOwner(this);
 
   _upgrades.clear();
   for(auto u : source._upgrades)

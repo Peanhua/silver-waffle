@@ -77,12 +77,12 @@ public:
   Object *          GetClosestPlanet(const glm::vec3 & position) const;
   ObjectBuilding *  GetClosestSpaceport(const glm::vec3 & position) const;
 
-  ObjectInvader *   AddInvader(unsigned int type, const glm::vec3 & position);
-  void              AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
-  void              AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
-  void              AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position);
-  void              AddObject(Object * object, const glm::vec3 & position = { 0, 0, 0 });
-  void              RemoveObject(Object * object);
+  ObjectInvader *    AddInvader(unsigned int type, const glm::vec3 & position);
+  ObjectProjectile * AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime);
+  void               AddExplosion(const glm::vec3 & position, const glm::vec3 & velocity);
+  void               AddCollectible(ObjectCollectible * collectible, const glm::vec3 & position);
+  void               AddObject(Object * object, const glm::vec3 & position = { 0, 0, 0 });
+  void               RemoveObject(Object * object);
 
   void StartWarpEngine();
   void StopWarpEngine();

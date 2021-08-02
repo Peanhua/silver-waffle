@@ -36,9 +36,10 @@ public:
   uint64_t GetCollidesWithChannels() const override;
   double GetGlow() const override;
   
+  Weapon *     GetWeapon(unsigned int weapon_id) const;
   void         RemoveWeapons();
   void         AddWeapon();
-  void         AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
+  void         AddWeapon(const glm::vec3 & location, const glm::vec3 & projectile_direction);
   unsigned int GetWeaponCount() const;
   double       GetWeaponHeat(unsigned int weapon_id) const;
   void         FireWeapon(unsigned int weapon_id);

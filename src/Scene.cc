@@ -127,7 +127,7 @@ ObjectSpaceship * Scene::GetPlayer() const
 }
 
 
-void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime)
+ObjectProjectile * Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm::vec3 & velocity, double damage, double lifetime)
 {
   auto ind = _projectiles.GetNextFreeIndex();
   if(ind >= _projectiles.size())
@@ -148,7 +148,11 @@ void Scene::AddProjectile(Object * owner, const glm::vec3 & position, const glm:
     }
   assert(ind < _projectiles.size());
   if(ind < _projectiles.size())
-    _projectiles[ind]->Activate(owner, position, velocity, damage, lifetime);
+    {
+      _projectiles[ind]->Activate(owner, position, velocity, damage, lifetime);
+      return _projectiles[ind];
+    }
+  return nullptr;
 }
 
 
@@ -559,4 +563,14 @@ void Scene::DumpStats() const
             << " planets.size=" << _planets.size()
             << " time=" << _time
             << std::endl;
+#if 0
+  auto all = _quadtree->GetAll();
+  auto o = all.Next();
+  while(o)
+    {
+      o->GetMesh()->Dump();
+      o = all.Next();
+    }
+  std::cout << std::flush;
+#endif
 }

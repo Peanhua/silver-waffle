@@ -36,6 +36,7 @@ Object::Object(Scene * scene, unsigned int random_seed)
     _exceed_actions{ExceedAction::DESTROY, ExceedAction::DESTROY, ExceedAction::DESTROY},
     _mesh(nullptr),
     _color(1, 1, 1),
+    _glow(0),
     _sleeping(false),
     _destroyed(false),
     _use_health(true),
@@ -67,6 +68,7 @@ Object::Object(const Object & source)
     _exceed_actions{source._exceed_actions[0], source._exceed_actions[1], source._exceed_actions[2]},
     _mesh(source._mesh),
     _color(source._color),
+    _glow(source._glow),
     _sleeping(source._sleeping),
     _destroyed(source._destroyed),
     _use_health(source._use_health),
@@ -134,7 +136,13 @@ void Object::Draw(const glm::mat4 & vp) const
 
 double Object::GetGlow() const
 {
-  return 0;
+  return _glow;
+}
+
+
+void Object::SetGlow(double glow)
+{
+  _glow = glow;
 }
 
 

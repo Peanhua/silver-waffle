@@ -60,6 +60,7 @@ public:
   void   SetMesh(Mesh * mesh);
   void   SetColor(const glm::vec3 & color);
   virtual double GetGlow() const;
+  void           SetGlow(double glow);
   virtual double GetVisualBoundingSphereRadius() const;
 
   CollisionShape * GetCollisionShape() const;
@@ -143,6 +144,7 @@ private:
   ExceedAction _exceed_actions[3];
   Mesh *    _mesh;
   glm::vec3 _color;
+  double    _glow;
   bool      _sleeping;
   bool      _destroyed;
   bool      _use_health;

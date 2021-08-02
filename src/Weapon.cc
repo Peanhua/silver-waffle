@@ -1,20 +1,21 @@
 #include "Weapon.hh"
+#include "Mesh.hh"
+#include "ObjectProjectile.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
+#include "SubsystemAssetLoader.hh"
 
 
-Weapon::Weapon(Object * owner, const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
+Weapon::Weapon(Object * owner, const glm::vec3 & location, const glm::vec3 & projectile_direction)
   : _owner(owner),
     _location(location),
     _autofire(false),
     _heat(0),
     _last_fire_timer(0),
-    _minimum_firing_interval(0.02),
-    _projectile(projectile),
-    _projectile_direction(projectile_direction),
-    _projectile_initial_velocity(projectile_initial_velocity),
-    _projectile_damage(projectile_damage)
+    _projectile_mesh(nullptr),
+    _projectile_direction(projectile_direction)
 {
+  SetAmmo(AmmoType::KINETIC);
 }
 
 
@@ -51,12 +52,17 @@ void Weapon::Fire()
   auto orientation = glm::toMat4(glm::inverse(spaceship->GetOrientation()));
   auto location = glm::vec4(_location, 1) * orientation;
   auto direction = glm::vec4(_projectile_direction, 1) * orientation;
-  spaceship->GetScene()->AddProjectile(spaceship,
-                                       spaceship->GetPosition() + location.xyz(),
-                                       spaceship->GetVelocity() * 0.5f + direction.xyz() * static_cast<float>(_projectile_initial_velocity),
-                                       damage,
-                                       5.0);
-  _heat += 0.03;
+  auto projectile = spaceship->GetScene()->AddProjectile(spaceship,
+                                                         spaceship->GetPosition() + location.xyz(),
+                                                         spaceship->GetVelocity() * 0.5f + direction.xyz() * static_cast<float>(_projectile_initial_velocity),
+                                                         damage,
+                                                         5.0);
+  assert(_projectile_mesh);
+  projectile->SetMesh(_projectile_mesh);
+  projectile->SetIsAffectedByGravity(_projectile_use_gravity);
+  projectile->SetGlow(_projectile_glow);
+  
+  _heat += _firing_heat;
   _last_fire_timer = _minimum_firing_interval;
 }
 
@@ -86,3 +92,51 @@ double Weapon::GetHeat() const
 {
   return _heat;
 }
+
+
+void Weapon::SetOwner(Object * owner)
+{
+  _owner = owner;
+}
+
+
+void Weapon::SetAmmo(AmmoType type)
+{
+  _ammotype = type;
+  switch(type)
+    {
+    case AmmoType::KINETIC:
+      {
+        _projectile_initial_velocity = 10;
+        _projectile_damage = 34;
+        _projectile_mesh = AssetLoader->LoadMesh("Projectile");
+        _projectile_glow = 0;
+        _minimum_firing_interval = 0.02;
+        _firing_heat = 0.03;
+        _projectile_use_gravity = true;
+      }
+      break;
+    case AmmoType::PLASMA:
+      {
+        auto mesh = new Mesh(*AssetLoader->LoadMesh("Planet"));
+        mesh->SetTexture(0, AssetLoader->LoadImage("8k_sun"), true);
+        mesh->ApplyTransform(glm::scale(glm::vec3(0.3f, 0.3f, 0.3f)));
+        mesh->UpdateGPU();
+        _projectile_initial_velocity = 20;
+        _projectile_damage = 100;
+        _projectile_mesh = mesh;
+        _projectile_glow = 1;
+        _minimum_firing_interval = 0.09;
+        _firing_heat = 0.1;
+        _projectile_use_gravity = false;
+      }
+      break;
+    }
+}
+
+
+Weapon::AmmoType Weapon::GetAmmo() const
+{
+  return _ammotype;
+}
+

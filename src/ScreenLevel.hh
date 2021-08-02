@@ -100,6 +100,7 @@ private:
   Widget *              _levelinfo_widget;
   WidgetTeletyper *     _teletyper;
   std::vector<Widget *> _human_widgets;
+  Widget *              _weapon_type_widget;
   
   bool _demo_lander_activated;
   bool _demo_ending_activated;
