@@ -21,6 +21,7 @@ class ObjectCollectible;
 class ObjectPlanet;
 class GameStats;
 class SpaceshipControlProgram;
+class Weapon;
 
 
 class ObjectSpaceship : public ObjectMovable
@@ -40,7 +41,7 @@ public:
   void         AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
   unsigned int GetWeaponCount() const;
   double       GetWeaponHeat(unsigned int weapon_id) const;
-  bool         FireWeapon(unsigned int weapon_id);
+  void         FireWeapon(unsigned int weapon_id);
   void         SetWeaponAutofire(unsigned int weapon_id, bool enabled);
   void         EnableWeapons(bool enabled);
   
@@ -91,23 +92,6 @@ private:
     double    _throttle;
     bool      _enabled;
     float     _speed_limit;
-  private:
-  };
-
-  class Weapon
-  {
-  public:
-    Weapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage);
-    
-    glm::vec3 _location;
-    bool      _autofire;
-    double    _heat;
-    double    _last_fire_timer;
-    double    _minimum_firing_interval;
-    Mesh *    _projectile;
-    glm::vec3 _projectile_direction;
-    double    _projectile_initial_velocity;
-    double    _projectile_damage;
   private:
   };
 

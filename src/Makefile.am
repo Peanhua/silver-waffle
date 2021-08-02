@@ -156,6 +156,8 @@ silverwaffle_SOURCES =				\
 	TextureRenderer.hh			\
 	UpgradeMaterial.cc			\
 	UpgradeMaterial.hh			\
+	Weapon.cc				\
+	Weapon.hh				\
 	Widget.cc				\
 	Widget.hh				\
 	WidgetButton.cc				\

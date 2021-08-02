@@ -21,6 +21,7 @@
 #include "SpaceshipControlProgram.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemScreen.hh"
+#include "Weapon.hh"
 #include <iostream>
 
 
@@ -114,22 +115,19 @@ void ObjectSpaceship::Tick(double deltatime)
         AddImpulse(imp);
     }
 
-  int weaponcoolercount = GetUpgrade(SpaceshipUpgrade::Type::WEAPON_COOLER)->GetInstallCount();
+  auto weaponcoolercount = static_cast<unsigned int>(GetUpgrade(SpaceshipUpgrade::Type::WEAPON_COOLER)->GetInstallCount());
   for(unsigned int i = 0; i < _weapons.size(); i++)
     {
       auto weapon = _weapons[i];
       
-      if(weapon->_autofire)
+      if(weapon->IsAutofireOn())
         FireWeapon(i);
 
-      double cooling = 0.1;
-      if(static_cast<int>(i) < weaponcoolercount)
-        cooling += 0.05;
-      
-      weapon->_heat = std::max(0.0, weapon->_heat - cooling * deltatime);
+      double cooling = 1;
+      if(i < weaponcoolercount)
+        cooling += 0.5;
 
-      if(weapon->_last_fire_timer > 0.0)
-        weapon->_last_fire_timer -= deltatime;
+      weapon->Tick(deltatime, cooling);
     }
 
   for(auto u : _upgrades)
@@ -188,7 +186,7 @@ void ObjectSpaceship::AddWeapon()
 
 void ObjectSpaceship::AddWeapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
 {
-  auto weapon = new Weapon(location, projectile, projectile_direction, projectile_initial_velocity, projectile_damage);
+  auto weapon = new Weapon(this, location, projectile, projectile_direction, projectile_initial_velocity, projectile_damage);
   _weapons.push_back(weapon);
 }
 
@@ -209,38 +207,14 @@ unsigned int ObjectSpaceship::GetWeaponCount() const
 }
 
 
-bool ObjectSpaceship::FireWeapon(unsigned int weapon_id)
+void ObjectSpaceship::FireWeapon(unsigned int weapon_id)
 {
   assert(weapon_id < _weapons.size());
   auto weapon = _weapons[weapon_id];
-
-  if(weapon->_last_fire_timer > 0.0)
-    return false;
+  if(!weapon->CanFire())
+    return;
   
-  if(weapon->_heat > 1.0)
-    return false;
-
-  auto em = GetScene()->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
-  if(em->IsActive())
-    return false;
-  
-  auto damage = weapon->_projectile_damage;
-  auto bonus = GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE);
-  if(bonus->IsActive())
-    damage *= bonus->GetValue();
-
-  auto orientation = glm::toMat4(glm::inverse(GetOrientation()));
-  auto location = glm::vec4(weapon->_location, 1) * orientation;
-  auto direction = glm::vec4(weapon->_projectile_direction, 1) * orientation;
-  GetScene()->AddProjectile(this,
-                            GetPosition() + location.xyz(),
-                            GetVelocity() * 0.5f + direction.xyz() * static_cast<float>(weapon->_projectile_initial_velocity),
-                            damage,
-                            5.0);
-  weapon->_heat += 0.03;
-  weapon->_last_fire_timer = weapon->_minimum_firing_interval;
-  
-  return true;
+  weapon->Fire();
 }
 
 
@@ -248,7 +222,7 @@ void ObjectSpaceship::SetWeaponAutofire(unsigned int weapon_id, bool enabled)
 {
   assert(weapon_id < _weapons.size());
   auto weapon = _weapons[weapon_id];
-  weapon->_autofire = enabled;
+  weapon->SetAutofire(enabled);
 }
 
 
@@ -256,7 +230,7 @@ double ObjectSpaceship::GetWeaponHeat(unsigned int weapon_id) const
 {
   assert(weapon_id < _weapons.size());
   auto weapon = _weapons[weapon_id];
-  return weapon->_heat;
+  return weapon->GetHeat();
 }
 
 
@@ -333,18 +307,6 @@ void ObjectSpaceship::UpgradeFromCollectible(ObjectCollectible * collectible)
 }
 
 
-ObjectSpaceship::Weapon::Weapon(const glm::vec3 & location, Mesh * projectile, const glm::vec3 & projectile_direction, double projectile_initial_velocity, double projectile_damage)
-  : _location(location),
-    _autofire(false),
-    _heat(0),
-    _last_fire_timer(0),
-    _minimum_firing_interval(0.02),
-    _projectile(projectile),
-    _projectile_direction(projectile_direction),
-    _projectile_initial_velocity(projectile_initial_velocity),
-    _projectile_damage(projectile_damage)
-{
-}
 
 
 void ObjectSpaceship::SetOwnerGameStats(GameStats * gamestats)
