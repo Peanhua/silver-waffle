@@ -82,7 +82,9 @@ void Level::Start()
       const float emptytop = _scene->GetPlayAreaSize().z * 0.5f;
       blocksize.z = (_scene->GetPlayAreaSize().z - emptytop)  / static_cast<float>(img->GetHeight());
 
-      Mesh * mesh = nullptr;
+      std::array<Mesh *, 6> meshes;
+      meshes.fill(nullptr);
+      
       for(unsigned int y = 0; y < img->GetHeight(); y++)
         for(unsigned int x = 0; x < img->GetWidth(); x++)
           {
@@ -133,15 +135,44 @@ void Level::Start()
                   { // Terrain block.
                     auto block = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 0);
                     _scene->AddObject(block, pos);
-                    if(!mesh)
+                    
+                    if(!meshes[0])
                       {
-                        mesh = new Mesh(*block->GetMesh());
-                        mesh->UpdateGPU();
-                        mesh->SetBoundingBoxHalfSize(blocksize * 0.5f);
-                        mesh->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
-                        mesh->ApplyTransform(glm::scale(blocksize));
+                        for(int i = 0; i < 6; i++)
+                          {
+                            auto mesh = new Mesh(*block->GetMesh());
+                            mesh->UpdateGPU();
+                            mesh->SetBoundingBoxHalfSize(blocksize * 0.5f);
+                            mesh->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
+                            meshes[i] = mesh;
+                          }
+
+                        auto scale = glm::scale(blocksize);
+
+                        meshes[0]->ApplyTransform(scale);
+                        
+                        for(int j = 0; j < 3; j++)
+                          {
+                            glm::mat4 t(1);
+                            t = glm::rotate(t, glm::radians(j * 90.0f), glm::vec3(0, 0, 1));
+                            meshes[j + 1]->ApplyTransform(scale * t);
+                          }
+                        {
+                          glm::mat4 t(1);
+                          t = glm::rotate(t, glm::radians(-90.0f), glm::vec3(1, 0, 0));
+                          meshes[4]->ApplyTransform(scale * t);
+                        }
+                        {
+                          glm::mat4 t(1);
+                          t = glm::rotate(t, glm::radians(90.0f), glm::vec3(1, 0, 0));
+                          meshes[5]->ApplyTransform(scale * t);
+                        }
                       }
-                    block->SetMesh(mesh);
+
+                    int mi = static_cast<int>(GetRand() * static_cast<float>(meshes.size()));
+                    mi = std::clamp(mi, 0, static_cast<int>(meshes.size() - 1));
+                    block->SetMesh(meshes[mi]);
+                    
                     block->SetColor(rgba.rgb());
                     block->SetMaxHealth(block->GetMaxHealth() * static_cast<double>(0.25f + 0.75f * rgba.a));
                     block->SetHealth(block->GetMaxHealth());
