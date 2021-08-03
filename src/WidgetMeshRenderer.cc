@@ -42,11 +42,11 @@ void WidgetMeshRenderer::Render()
   {
     glm::mat4 proj = glm::perspective(glm::radians(60.0), 512.0 / 512.0, 0.001, 100.0);
 
-    ShaderProgram::SetUBOVec3("Data",   "in_glow",        glm::vec3(0, 0, 0));
-    ShaderProgram::SetUBOVec3("Data",   "in_colormod",    glm::vec3(1, 1, 1));
+    ShaderProgram::SetUBOVec("Data",    "in_glow",        glm::vec3(0, 0, 0));
+    ShaderProgram::SetUBOVec("Data",    "in_colormod",    glm::vec4(1, 1, 1, 1));
     ShaderProgram::SetUBOMatrix("Data", "in_view",        _view);
     ShaderProgram::SetUBOMatrix("Data", "in_projection",  proj);
-    ShaderProgram::SetUBOVec3("Data",   "in_light_color", glm::vec3(1, 1, 1));
+    ShaderProgram::SetUBOVec("Data",    "in_light_color", glm::vec3(1, 1, 1));
 
     _mesh->Draw(_model, proj * _view * _model);
   }

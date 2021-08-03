@@ -56,7 +56,7 @@ void Scene::Draw(const Camera & camera) const
   ShaderProgram::SetUBOMatrix("Data", "in_view",        camera.GetView());
   ShaderProgram::SetUBOMatrix("Data", "in_projection",  camera.GetProjection());
   ShaderProgram::SetUBOFloat("Data",  "in_time",        static_cast<float>(_time));
-  ShaderProgram::SetUBOVec3("Data",   "in_light_color", glm::vec3(1, 1, 1));
+  ShaderProgram::SetUBOVec("Data",    "in_light_color", glm::vec3(1, 1, 1));
       
   glEnable(GL_DEPTH_TEST);
 

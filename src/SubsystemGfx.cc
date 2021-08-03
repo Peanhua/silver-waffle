@@ -62,8 +62,7 @@ bool SubsystemGfx::Start()
                   rv = true;
                   
                   ShaderProgram::current_program = 0;
-                  ShaderProgram::SetUBOMatrix("Data", "in_view", glm::mat4(1)); // Just for initialization. todo: Add separate method to initialize uniform buffer objects.
-                  ShaderProgram::SetUBOVec2("Data", "in_resolution", glm::vec2(screen_width, screen_height));
+                  ShaderProgram::SetUBOVec("Data", "in_resolution", glm::vec2(screen_width, screen_height));
 #ifndef NDEBUG
                   if(GLEW_VERSION_4_3)
                     {

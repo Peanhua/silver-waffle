@@ -12,7 +12,7 @@
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "Mesh.hh"
-#include "ObjectBonusLevelEntrance.hh"
+#include "ObjectLevelEntrance.hh"
 #include "ObjectBuilding.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectPlanet.hh"
@@ -658,14 +658,14 @@ void ObjectSpaceship::LaunchFromSpaceport()
 }
 
 
-void ObjectSpaceship::DescendToPlanet(ObjectPlanet * planet)
+void ObjectSpaceship::DescendToPlanet(SolarSystemObject * planet)
 {
   auto current = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
   assert(current);
 
-  auto ns = new ScreenLevelPlanet(current, planet->GetSolarSystemObject());
+  auto ns = new ScreenLevelPlanet(current, planet);
   ns->SetupLevels();
-  current->TransitionToScreen(ns, "Descending to " + planet->GetSolarSystemObject()->GetName() + "\n");
+  current->TransitionToScreen(ns, "Descending to " + planet->GetName() + "\n");
 }
 
 

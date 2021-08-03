@@ -1,5 +1,5 @@
-#ifndef OBJECT_BONUS_LEVEL_ENTRANCE_HH_
-#define OBJECT_BONUS_LEVEL_ENTRANCE_HH_
+#ifndef OBJECT_LEVEL_ENTRANCE_HH_
+#define OBJECT_LEVEL_ENTRANCE_HH_
 /*
   Silver Waffle
   Copyright (C) 2021  Steve Joni Yrjänä <joniyrjana@gmail.com>
@@ -13,22 +13,20 @@
 */
 
 #include "ObjectMovable.hh"
-#include <map>
+
+class SolarSystemObject;
 
 
-class ObjectBonusLevelEntrance : public ObjectMovable
+class ObjectLevelEntrance : public ObjectMovable
 {
 public:
-  ObjectBonusLevelEntrance(Scene * scene, double enemy_difficulty, double warp_fuel_bonus);
+  ObjectLevelEntrance(Scene * scene, SolarSystemObject * planet);
 
-  void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
   void OnCollision(Object & other, const glm::vec3 & hit_direction) override;
   
 private:
-  double _enemy_difficulty;
-  double _warp_fuel_bonus;
-  double _drag_timer;
-  bool   _used;
+  SolarSystemObject * _planet;
+  bool                _used;
 };
 
 #endif

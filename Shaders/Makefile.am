@@ -30,10 +30,10 @@ SceneObject-Texture.vert : SceneObject.vert Include/Input.vert Include/Output.ve
 SceneObject-Texture.frag : SceneObject.frag Include/Data.glsl Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
 	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_TEXTURE'
 
-BonusLevelEntrance.vert : SceneObject.vert  Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
+LevelEntrance.vert : SceneObject.vert  Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
 	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
 
-BonusLevelEntrance.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
+LevelEntrance.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
 	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
 
 SpaceJunk.vert : Star.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
@@ -57,15 +57,15 @@ SpaceJunkLines.geom : StarLines.geom Include/Input.geom Include/Output.geom Incl
 Cloud.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
 	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
 
-Cloud.frag : src/Cloud.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
+Cloud.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
+	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_DISCARD_3OF4_PIXELS'
 
 
 shaders_DATA = \
 	AdditiveBlending.frag		\
 	AdditiveBlending.vert		\
-	BonusLevelEntrance.frag		\
-	BonusLevelEntrance.vert		\
+	LevelEntrance.frag		\
+	LevelEntrance.vert		\
 	Cloud.frag			\
 	Cloud.vert			\
 	Explosion.frag			\
@@ -99,8 +99,8 @@ shaders_DATA = \
 	SpaceJunkLines.vert		
 
 CLEANFILES = \
-	BonusLevelEntrance.frag		\
-	BonusLevelEntrance.vert		\
+	LevelEntrance.frag		\
+	LevelEntrance.vert		\
 	Cloud.frag			\
 	Cloud.vert			\
 	GaussianBlur-Horizontal.frag	\

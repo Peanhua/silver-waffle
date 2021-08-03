@@ -217,6 +217,10 @@ unsigned int ShaderProgram::GetUBOPosition(GLuint ubo, const std::string & name)
     return pos;
   pos += sizeof(glm::mat4);
 
+  if(name == "in_colormod")
+    return pos;
+  pos += 4 * sizeof(float);
+  
   if(name == "in_light_color")
     return pos;
   pos += 4 * sizeof(float);
@@ -225,10 +229,6 @@ unsigned int ShaderProgram::GetUBOPosition(GLuint ubo, const std::string & name)
     return pos;
   pos += 4 * sizeof(float);
 
-  if(name == "in_colormod")
-    return pos;
-  pos += 4 * sizeof(float);
-  
   if(name == "in_resolution")
     return pos;
   pos += 2 * sizeof(float);
@@ -259,7 +259,7 @@ void ShaderProgram::SetUBOFloat(const std::string & ubo_name, const std::string 
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void ShaderProgram::SetUBOVec3(const std::string & ubo_name, const std::string & name, const glm::vec3 & value)
+void ShaderProgram::SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec4 & value)
 {
   auto ubo = GetUBO(ubo_name);
   auto pos = GetUBOPosition(ubo, name);
@@ -268,7 +268,16 @@ void ShaderProgram::SetUBOVec3(const std::string & ubo_name, const std::string &
   glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
-void ShaderProgram::SetUBOVec2(const std::string & ubo_name, const std::string & name, const glm::vec2 & value)
+void ShaderProgram::SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec3 & value)
+{
+  auto ubo = GetUBO(ubo_name);
+  auto pos = GetUBOPosition(ubo, name);
+  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
+  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof value, glm::value_ptr(value));
+  glBindBuffer(GL_UNIFORM_BUFFER, 0);
+}
+
+void ShaderProgram::SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec2 & value)
 {
   auto ubo = GetUBO(ubo_name);
   auto pos = GetUBOPosition(ubo, name);

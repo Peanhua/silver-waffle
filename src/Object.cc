@@ -35,7 +35,7 @@ Object::Object(Scene * scene, unsigned int random_seed)
     _orientation(1, 0, 0, 0),
     _exceed_actions{ExceedAction::DESTROY, ExceedAction::DESTROY, ExceedAction::DESTROY},
     _mesh(nullptr),
-    _color(1, 1, 1),
+    _color(1, 1, 1, 1),
     _glow(0),
     _sleeping(false),
     _destroyed(false),
@@ -124,8 +124,8 @@ void Object::Draw(const glm::mat4 & vp) const
 {
   if(_mesh)
     {
-      ShaderProgram::SetUBOVec3("Data", "in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
-      ShaderProgram::SetUBOVec3("Data", "in_colormod", _color);
+      ShaderProgram::SetUBOVec("Data", "in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
+      ShaderProgram::SetUBOVec("Data", "in_colormod", _color);
 
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);
@@ -683,6 +683,12 @@ void Object::CreateCollisionShape(CollisionShape::Type type)
 
 
 void Object::SetColor(const glm::vec3 & color)
+{
+  _color = glm::vec4(color, 1);
+}
+
+
+void Object::SetColor(const glm::vec4 & color)
 {
   _color = color;
 }

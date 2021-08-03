@@ -43,14 +43,23 @@ void main()
 #endif
 
   vec4 glow = vec4(in_glow, alpha);
-  vec3 colormod = in_colormod;
+  vec4 colormod = in_colormod;
 
 #ifdef USE_EMISSION
   float e = fin.emission;
   color = mix(color, basecolor, e);
   glow = mix(glow, vec4(basecolor, 1), e);
 #endif
-  
-  out_color = vec4(color * colormod, alpha);
+
+#ifdef USE_DISCARD_3OF4_PIXELS
+  vec2 uv = gl_FragCoord.xy;
+  if((int(uv.x) % 2) == 0 || (int(uv.y) % 2) == 0)
+    {
+      discard;
+      return;
+    }
+#endif
+
+  out_color = vec4(color, alpha) * colormod;
   out_glow = glow;
 }

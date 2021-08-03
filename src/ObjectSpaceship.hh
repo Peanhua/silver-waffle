@@ -16,10 +16,10 @@
 #include "SpaceshipUpgrade.hh"
 #include <vector>
 
+class GameStats;
 class ObjectBuilding;
 class ObjectCollectible;
-class ObjectPlanet;
-class GameStats;
+class SolarSystemObject;
 class SpaceshipControlProgram;
 class Weapon;
 
@@ -79,7 +79,7 @@ public:
 
   void LandOnSpaceport(ObjectBuilding * spaceport);
   void LaunchFromSpaceport();
-  void DescendToPlanet(ObjectPlanet * planet);
+  void DescendToPlanet(SolarSystemObject * planet);
   void LaunchToSpace();
 
   bool IsLanded() const;

@@ -59,6 +59,7 @@ public:
   Mesh * GetMesh() const;
   void   SetMesh(Mesh * mesh);
   void   SetColor(const glm::vec3 & color);
+  void   SetColor(const glm::vec4 & color);
   virtual double GetGlow() const;
   void           SetGlow(double glow);
   virtual double GetVisualBoundingSphereRadius() const;
@@ -143,7 +144,7 @@ private:
   glm::quat    _orientation;
   ExceedAction _exceed_actions[3];
   Mesh *    _mesh;
-  glm::vec3 _color;
+  glm::vec4 _color;
   double    _glow;
   bool      _sleeping;
   bool      _destroyed;

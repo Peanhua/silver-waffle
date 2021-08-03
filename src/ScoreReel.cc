@@ -97,9 +97,9 @@ bool ScoreReel::Tick(double deltatime)
 
 void ScoreReel::Draw() const
 {
-  ShaderProgram::SetUBOVec3("Data",   "in_glow",        glm::vec3(0.0, 0.0, 0.0));
-  ShaderProgram::SetUBOVec3("Data",   "in_colormod",    glm::vec3(1, 1, 1));
-  ShaderProgram::SetUBOVec3("Data",   "in_light_color", glm::vec3(1.00, 0.59, 0.19));
+  ShaderProgram::SetUBOVec("Data",    "in_glow",        glm::vec3(0, 0, 0));
+  ShaderProgram::SetUBOVec("Data",    "in_colormod",    glm::vec4(1, 1, 1, 1));
+  ShaderProgram::SetUBOVec("Data",    "in_light_color", glm::vec3(1.00, 0.59, 0.19));
   ShaderProgram::SetUBOMatrix("Data", "in_view",        _view);
   ShaderProgram::SetUBOMatrix("Data", "in_projection",  _projection);
 

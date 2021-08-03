@@ -13,11 +13,9 @@
 #include "Mesh.hh"
 #include "ObjectBuilding.hh"
 #include "ObjectCollectible.hh"
-#include "ObjectPlanet.hh"
 #include "ObjectSpaceship.hh"
 #include "QuadTree.hh"
 #include "Scene.hh"
-#include "SolarSystemObject.hh"
 #include "SpaceshipControlProgram.hh"
 #include "SubsystemSettings.hh"
 #include <algorithm>
@@ -375,45 +373,30 @@ void SpaceshipUpgrade::Activate(double value, double time)
     }
 
   if(_type == Type::PLANET_LANDER)
-    { // Launch from spaceport, Land on spaceport, or Descend to planet.
+    { // Launch from spaceport, or Land on spaceport.
       Deactivate();
 
       auto playerpos = _spaceship->GetPosition();
       auto scene = _spaceship->GetScene();
-      bool done = false;
 
       if(_spaceship->IsLanded())
         {
-          done = true;
           _spaceship->LaunchFromSpaceport();
         }
       else
         {
+          bool found = false;
           auto spaceport = scene->GetClosestSpaceport(playerpos);
           if(spaceport)
             if(glm::distance(playerpos, spaceport->GetPosition()) < 5)
               {
-                done = true;
+                found = true;
                 _spaceship->LandOnSpaceport(spaceport);
               }
-        }
-            
-      if(!done)
-        {
-          auto planet = dynamic_cast<ObjectPlanet *>(scene->GetClosestPlanet(playerpos));
-          if(planet)
-            {
-              done = true;
-              auto distance = std::abs(playerpos.y - planet->GetPosition().y);
-              if(distance < 30 || Settings->GetBool("cheat_planet_lander_disable_distance_check"))
-                _spaceship->DescendToPlanet(planet);
-              else
-                _spaceship->SystemlogAppend(_name + ": Error, planet too far.\n");
-            }
-        }
 
-      if(!done)
-        _spaceship->SystemlogAppend(_name + ": Error, no planet or spaceport nearby.\n");
+          if(!found)
+            _spaceship->SystemlogAppend(_name + ": Error, no spaceport nearby.\n");
+        }
     }
 }
 

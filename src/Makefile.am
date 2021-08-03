@@ -56,8 +56,6 @@ silverwaffle_SOURCES =				\
 	Image_Save.cc				\
 	Level.cc				\
 	Level.hh				\
-	LevelBonus.cc				\
-	LevelBonus.hh				\
 	LevelPlanet.cc				\
 	LevelPlanet.hh				\
 	LevelSpace.cc				\
@@ -75,8 +73,8 @@ silverwaffle_SOURCES =				\
 	Milkyway.hh				\
 	Object.cc				\
 	Object.hh				\
-	ObjectBonusLevelEntrance.cc		\
-	ObjectBonusLevelEntrance.hh		\
+	ObjectLevelEntrance.cc			\
+	ObjectLevelEntrance.hh			\
 	ObjectBuilding.cc			\
 	ObjectBuilding.hh			\
 	ObjectCloud.cc				\
@@ -116,8 +114,6 @@ silverwaffle_SOURCES =				\
 	Screen.hh				\
 	ScreenLevel.cc				\
 	ScreenLevel.hh				\
-	ScreenLevelBonus.cc			\
-	ScreenLevelBonus.hh			\
 	ScreenLevelPlanet.cc			\
 	ScreenLevelPlanet.hh			\
 	ScreenLevelSpace.cc			\

@@ -27,7 +27,7 @@ ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & 
       glm::vec3(-1, 0, -1),
       glm::vec3(-1, 0,  1),
     };
-    std::vector<int> colinds {
+    std::vector<unsigned int> colinds {
       1,
       0,
       0,
