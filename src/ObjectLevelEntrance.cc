@@ -44,7 +44,7 @@ void ObjectLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit_dire
   if(!player)
     return;
 
-  if(player->GetUpgrade(SpaceshipUpgrade::PLANET_LANDER)->GetInstallCount() == 0)
+  if(player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->GetInstallCount() == 0)
     return;
   
   assert(player->GetOwnerGameStats());
