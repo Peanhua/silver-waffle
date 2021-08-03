@@ -64,6 +64,11 @@ void ObjectSpaceship::Tick(double deltatime)
   for(unsigned int i = 0; i < _control_programs.size(); i++)
     if(_control_programs[i])
       _control_programs[i] = _control_programs[i]->Tick(deltatime);
+
+  bool firing = false;
+  for(unsigned int i = 0; !firing && i < _weapons.size(); i++)
+    if(_weapons[i]->IsAutofireOn())
+      firing = true;
   
   bool engines_on = false;
   for(auto engine : _engines)
@@ -77,6 +82,8 @@ void ObjectSpaceship::Tick(double deltatime)
           if(glm::dot(GetVelocity(), glm::normalize(direction)) < engine->_speed_limit)
             {
               auto power = static_cast<float>(engine->_power * engine->_throttle * deltatime);
+              if(firing)
+                power *= 0.5f;
               AddImpulse(direction * power);
             }
         }
@@ -86,6 +93,8 @@ void ObjectSpaceship::Tick(double deltatime)
     { // todo: separate controls and use the engines to slow down
       auto engineup = GetUpgrade(SpaceshipUpgrade::Type::ENGINE_UPGRADE);
       double engine_strength = 0.5 + 1.5 * static_cast<double>(engineup->GetInstallCount()) / static_cast<double>(engineup->GetMaxInstalls());
+      if(firing)
+        engine_strength *= 0.5;
 
       bool setvel = false;
       auto vel = GetVelocity();
