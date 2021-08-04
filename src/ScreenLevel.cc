@@ -123,7 +123,7 @@ void ScreenLevel::Initialize()
     glm::mat4 model(1);
     model = glm::rotate(model, glm::radians(90.0f), glm::vec3(0, 0, 1));
     model = glm::rotate(model, glm::radians(-60.0f), glm::vec3(0, 1, 0));
-    model = glm::translate(model, glm::vec3(0.1, -0.4, 0));
+    model = glm::translate(model, glm::vec3(0.1, 0, 0));
     
     for(int i = 0; i < 5; i++)
       {
