@@ -16,9 +16,11 @@
 #include "SubsystemAssetLoader.hh"
 
 
-SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned long random_seed)
+SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned long random_seed, float startpos, float endpos)
   : _radius_min(radius_min),
     _radius_max(radius_max),
+    _startpos(startpos),
+    _endpos(endpos),
     _time(0),
     _add_star_timer(0),
     _particle_length(0),
@@ -34,7 +36,7 @@ SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned lo
   const double max_speed = 30.0;
   for(unsigned int i = 0; i < _star_count; i++)
     {
-      _mesh->AddVertex(glm::vec4(0, -100, 0, 0));
+      _mesh->AddVertex(glm::vec4(0, _endpos, 0, 0));
       _mesh->AddColor(glm::vec4(GetRandom(0.65), GetRandom(0.65), GetRandom(0.65), 1.0));
 
       double speed = min_speed + GetRandom() * (max_speed - min_speed);
@@ -69,7 +71,7 @@ void SpaceParticles::Tick(double deltatime)
         {
           const auto v = _mesh->GetVertex4(_next_index);
           const auto g = _mesh->GetGenericVec2(_next_index);
-          if(v.y - g.x * (static_cast<float>(_time) - v.w) < 40.0f - 53.0f - 2.0f)
+          if(v.y - g.x * (static_cast<float>(_time) - v.w) < _endpos)
             {
               ResetStar(_next_index);
               _add_star_timer += 0.05;
@@ -101,7 +103,7 @@ void SpaceParticles::ResetStar(unsigned int index)
 {
   double angle = GetRandom() * glm::radians(360.0);
   auto pos = glm::vec3(_radius_min + GetRandom() * (_radius_max - _radius_min),
-                       150.0,
+                       _startpos,
                        0);
   auto rot = glm::rotate(glm::mat4(1), static_cast<float>(angle), glm::vec3(0, 1, 0));
   pos = rot * glm::vec4(pos, 1);

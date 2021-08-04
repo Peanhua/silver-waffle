@@ -27,7 +27,7 @@ SceneSpace::SceneSpace()
   _can_use_warp_engine = true;
   _quadtree = new QuadTreeXY(GetPlayAreaSize(), 10.0f);
   _milkyway = new Milkyway();
-  _particles = new SpaceParticles(5.0, 50.0, 0);
+  _particles = new SpaceParticles(5.0, 50.0, 0, 150, -20);
   _wall = new WormholeWall(100, 4);
   CreatePlayer();
   SetupPlayer();
@@ -67,7 +67,7 @@ void SceneSpace::SetupPlayer()
   auto player = GetPlayer();
   assert(player);
   player->EnableVelocity(true, false, false);
-  player->SetPosition(glm::vec3(0, 40 - 53, 0));
+  player->SetPosition(glm::vec3(0, 40 - 53 + 0.5, 0));
   for(unsigned int i = 0; i < 4; i++)
     {
       player->EnableEngine(i,     true);

@@ -33,14 +33,14 @@ ScreenTitle::ScreenTitle()
 {
   _milkyway = new Milkyway();
 
-  _particles = new SpaceParticles(15.0, 90.0, 0);
-
   _camera = new Camera();
   _camera->SetFOV(90.0);
   _camera->SetClippingPlanes(0.001, 1300.0);
   _camera->SetPosition(glm::vec3(0.0f, -20.0f, 0.0f));
   _camera->Update();
 
+  _particles = new SpaceParticles(15.0, 90.0, 0, 150, _camera->GetPosition().y);
+  
 
   auto startdist = 70.0;
   auto z = -11.0f;

@@ -49,6 +49,7 @@ public:
   void         AddEngine(const glm::vec3 & thrust_direction, double power);
   unsigned int GetEngineCount() const;
   void         SetEngineThrottle(unsigned int engine_id, double throttle);
+  double       GetEngineThrottle(unsigned int engine_id);
   void         UpgradeEngines(double power_multiplier);
   void         EnableEngine(unsigned int engine_id, bool enabled);
   void         EnableEngines(bool enabled);

@@ -13,6 +13,7 @@
 #include "Camera.hh"
 #include "CollisionShapeOBB.hh"
 #include "CollisionShapeSphere.hh"
+#include "Component.hh"
 #include "Controller.hh"
 #include "GameStats.hh"
 #include "Loot.hh"
@@ -130,7 +131,17 @@ void Object::Draw(const glm::mat4 & vp) const
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);
       _mesh->Draw(model, mvp);
+
+      for(auto c : _components)
+        c->Draw(model, vp);
     }
+}
+
+
+void Object::AddComponent(Component * component)
+{
+  assert(_components.size() == 0);
+  _components.push_back(component);
 }
 
 
@@ -173,7 +184,6 @@ bool Object::ShouldTick() const
 void Object::Tick(double deltatime)
 {
   assert(IsAlive());
-  assert(deltatime == deltatime);
 
   for(int i = 0; i < 3; i++)
     if(_destroybox_low[i] < _destroybox_high[i] && (_position[i] < _destroybox_low[i] || _position[i] > _destroybox_high[i]))
@@ -238,6 +248,9 @@ void Object::Tick(double deltatime)
           Destroy(nullptr);
           break;
         }
+
+  for(auto c : _components)
+    c->Tick(deltatime);
 }
 
 

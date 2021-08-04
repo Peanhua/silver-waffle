@@ -261,6 +261,13 @@ void ObjectSpaceship::SetEngineThrottle(unsigned int engine_id, double throttle)
 }
 
 
+double ObjectSpaceship::GetEngineThrottle(unsigned int engine_id)
+{
+  assert(engine_id < _engines.size());
+  return _engines[engine_id]->_throttle;
+}
+
+
 void ObjectSpaceship::UpgradeEngines(double power_multiplier)
 {
   for(auto e : _engines)

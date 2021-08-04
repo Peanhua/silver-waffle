@@ -13,6 +13,7 @@
 #include "Camera.hh"
 #include "CollisionShapeOBB.hh"
 #include "CollisionShapeSphere.hh"
+#include "Component.hh"
 #include "Explosion.hh"
 #include "Mesh.hh"
 #include "ObjectBuilding.hh"
@@ -115,6 +116,9 @@ void Scene::CreatePlayer()
   _player->AddEngine(glm::vec3(0,  0, -1), 20.0);
   _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
   _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
+
+  auto ee = new ComponentEngineExhaustFX(_player, 4 + 2);
+  _player->AddComponent(ee);
   
   _player->SystemlogEnable();
   _player->SystemlogAppend("Spaceship computer online.\n");

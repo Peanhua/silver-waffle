@@ -27,6 +27,8 @@ silverwaffle_SOURCES =				\
 	AdditiveBlending.hh			\
 	Camera.cc				\
 	Camera.hh				\
+	Component.cc				\
+	Component.hh				\
 	Controller.cc				\
 	Controller.hh				\
 	CollisionShape.cc			\

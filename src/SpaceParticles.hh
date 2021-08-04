@@ -22,7 +22,7 @@ class Mesh;
 class SpaceParticles
 {
 public:
-  SpaceParticles(double radius_min, double radius_max, unsigned long random_seed);
+  SpaceParticles(double radius_min, double radius_max, unsigned long random_seed, float startpos, float endpos);
   ~SpaceParticles();
   
   void Tick(double deltatime);
@@ -32,6 +32,8 @@ public:
 private:
   double _radius_min;
   double _radius_max;
+  float  _startpos;
+  float  _endpos;
   Mesh * _mesh;
   double _time;
   double _add_star_timer;

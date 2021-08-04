@@ -18,6 +18,7 @@
 #include <random>
 
 class Camera;
+class Component;
 class Controller;
 class Loot;
 class Mesh;
@@ -63,6 +64,8 @@ public:
   virtual double GetGlow() const;
   void           SetGlow(double glow);
   virtual double GetVisualBoundingSphereRadius() const;
+
+  void AddComponent(Component * component);
 
   CollisionShape * GetCollisionShape() const;
   void             SetCollisionShape(CollisionShape * collision_shape);
@@ -159,6 +162,7 @@ private:
   bool      _ticking_requires_player_alive;
   bool      _ticking_requires_player_visibility;
   bool      _use_garbagecollection;
+  std::vector<Component *> _components;
   
   //  std::vector<on_collision_t> _on_collision;
   std::vector<on_destroyed_t> _on_destroyed;
