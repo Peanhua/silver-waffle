@@ -21,6 +21,24 @@
                            "Boss1",
                            "WarpFuel"
                          ]
+    },
+    {
+      "mesh":            "Container",
+      "collision_shape": "obb",
+      "weapons":         0,
+      "health":          50,
+      "shield_chance":   0.1,
+      "hit_impulse":     true,
+      "random_rotation": true,
+      "loot":            [ "Container",
+                           "ContainerExtra",
+                           "ContainerExtra",
+                           "ContainerExtra",
+                           "ContainerExtra",
+                           "ContainerExtra",
+                           "ContainerExtra",
+                           "ContainerExtra"
+                         ]
     }
   ]
 }

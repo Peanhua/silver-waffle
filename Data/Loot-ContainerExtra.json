@@ -1,0 +1,23 @@
+{
+  "definitions":
+  [
+    {
+      "type":          "UPGRADEMATERIAL_ATTACK",
+      "random_chance": 0.25,
+      "bonus_min":     1.0,
+      "bonus_max":     1.0
+    },
+    {
+      "type":          "UPGRADEMATERIAL_DEFENSE",
+      "random_chance": 0.25,
+      "bonus_min":     1.0,
+      "bonus_max":     1.0
+    },
+    {
+      "type":          "UPGRADEMATERIAL_PHYSICAL",
+      "random_chance": 0.25,
+      "bonus_min":     1.0,
+      "bonus_max":     1.0
+    }
+  ]
+}

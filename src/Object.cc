@@ -621,7 +621,7 @@ void Object::SpawnLoot()
           assert(c);
           auto coll = new ObjectCollectible(*c);
           coll->SetBonus(item->_type, item->_bonus);
-          GetScene()->AddCollectible(coll, GetPosition() + 0.5f * glm::vec3(GetRand() - 0.5f, GetRand() - 0.5f, 0.0));
+          GetScene()->AddCollectible(coll, GetPosition() + glm::vec3(GetRand() - 0.5f, GetRand() - 0.5f, 0.0));
 
           switch(item->_type)
             {

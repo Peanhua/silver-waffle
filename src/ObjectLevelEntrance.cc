@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "ObjectSpaceship.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSettings.hh"
 
 
 ObjectLevelEntrance::ObjectLevelEntrance(Scene * scene, SolarSystemObject * planet)
@@ -44,8 +45,9 @@ void ObjectLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit_dire
   if(!player)
     return;
 
-  if(player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->GetInstallCount() == 0)
-    return;
+  if(!Settings->GetBool("cheat_disable_planet_lander_check"))
+    if(player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->GetInstallCount() == 0)
+      return;
   
   assert(player->GetOwnerGameStats());
   

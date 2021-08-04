@@ -75,4 +75,12 @@ ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed, unsigned i
     }
   
   SetHealth(GetMaxHealth());
+
+  if(d["random_rotation"].is_bool() && d["random_rotation"].bool_value())
+    {
+      auto rotangle = glm::normalize(glm::vec3(GetRand() * 2.0f - 1.0f,
+                                               GetRand() * 2.0f - 1.0f,
+                                               GetRand() * 2.0f - 1.0f));
+      SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1f + GetRand() * 10.0f);
+    }
 }

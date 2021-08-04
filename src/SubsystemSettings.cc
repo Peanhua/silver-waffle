@@ -39,7 +39,7 @@ bool SubsystemSettings::Start()
   
   _bool_values["cheat_no_enemies"] = false;
   _bool_values["cheat_cheap_upgrades"] = false;
-  _bool_values["cheat_planet_lander_disable_distance_check"] = false;
+  _bool_values["cheat_disable_planet_lander_check"] = true;
   _bool_values["cheat_disable_planet_entering_impulse"] = false;
   
   _string_values["font"] = "Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf";

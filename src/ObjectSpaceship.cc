@@ -557,6 +557,14 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
       pp = new SCP_ChanceToFire(this, 0.10, 1);
       p->SetNext(pp);
     }
+  else if(name == "negative-y")
+    {
+      auto p = new SCP_Infinitely(this);
+      AddControlProgram(p);
+      
+      auto pp = new SCP_MoveTowards(this, {0, -1, 0}, 999);
+      p->SetNext(pp);
+    }
   else
     assert(false);
 }

@@ -35,6 +35,9 @@
     {
       "type":            1,
       "control_program": "face-player-shoot"
+    },
+    {
+      "type":            2
     }
   ]
 }

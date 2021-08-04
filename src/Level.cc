@@ -117,7 +117,8 @@ void Level::Start()
                     auto conf = _enemy_config[confind];
                     auto enemy = _scene->AddInvader(static_cast<unsigned int>(conf["type"].int_value()), pos);
                     assert(enemy);
-                    enemy->AddNamedControlProgram(conf["control_program"].string_value());
+                    if(conf["control_program"].is_string())
+                      enemy->AddNamedControlProgram(conf["control_program"].string_value());
                   }
                 else if(rgba.r <= 0 && rgba.g >= 1 && rgba.b <= 0)
                   { // Full green pixel is a human survivor.
@@ -138,7 +139,7 @@ void Level::Start()
                     
                     if(!meshes[0])
                       {
-                        for(int i = 0; i < 6; i++)
+                        for(unsigned int i = 0; i < 6; i++)
                           {
                             auto mesh = new Mesh(*block->GetMesh());
                             mesh->UpdateGPU();
@@ -151,7 +152,7 @@ void Level::Start()
 
                         meshes[0]->ApplyTransform(scale);
                         
-                        for(int j = 0; j < 3; j++)
+                        for(unsigned int j = 0; j < 3; j++)
                           {
                             glm::mat4 t(1);
                             t = glm::rotate(t, glm::radians(j * 90.0f), glm::vec3(0, 0, 1));

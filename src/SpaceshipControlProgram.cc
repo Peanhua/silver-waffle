@@ -146,7 +146,7 @@ SCP_MoveTowards::SCP_MoveTowards(ObjectSpaceship * spaceship, const glm::vec3 & 
 
 void SCP_MoveTowards::PTick(double deltatime)
 {
-  _spaceship->SetPosition(_spaceship->GetPosition() + _direction * static_cast<float>(deltatime));
+  _spaceship->Translate(_direction * static_cast<float>(deltatime));
 }
 
 
