@@ -193,6 +193,8 @@ void ObjectSpaceship::AddWeapon()
 void ObjectSpaceship::AddWeapon(const glm::vec3 & location, const glm::vec3 & projectile_direction)
 {
   auto weapon = new Weapon(this, location, projectile_direction);
+  if(_weapons.size() > 0)
+    weapon->SetAmmo(_weapons[0]->GetAmmo());
   _weapons.push_back(weapon);
 }
 

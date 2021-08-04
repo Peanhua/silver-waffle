@@ -84,6 +84,7 @@ void ScreenLevel::Initialize()
   if(_parent)
     {
       CopyPlayerData(_parent);
+      SetAmmoType(_parent->_weapon_ammo_type);
       _gamestats = _parent->GetGameStats();
       _scene->EnableTutorialMessages(false);
     }
@@ -183,7 +184,6 @@ void ScreenLevel::Initialize()
     y += size.y + 20;
 
     _weapon_type_widget = new Widget(root, {wtw_x, y}, {size.x, size.x});
-    _weapon_type_widget->SetImage("Projectile");
   }
   
   {
@@ -221,6 +221,8 @@ void ScreenLevel::Initialize()
   
   if(Settings->GetBool("demo"))
     _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Install();
+
+  SetAmmoType(_weapon_ammo_type);
 }
 
 
@@ -522,22 +524,12 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 
     case SDLK_1:
       if(!disablecontrols && pressed)
-        {
-          auto count = player->GetWeaponCount();
-          for(unsigned int i = 0; i < count; i++)
-            player->GetWeapon(i)->SetAmmo(Weapon::AmmoType::KINETIC);
-          _weapon_type_widget->SetImage("Projectile");
-        }
+        SetAmmoType(Weapon::AmmoType::KINETIC);
       break;
 
     case SDLK_2:
       if(!disablecontrols && pressed)
-        {
-          auto count = player->GetWeaponCount();
-          for(unsigned int i = 0; i < count; i++)
-            player->GetWeapon(i)->SetAmmo(Weapon::AmmoType::PLASMA);
-          _weapon_type_widget->SetImage("Plasma");
-        }
+        SetAmmoType(Weapon::AmmoType::PLASMA);
       break;
       
     case SDLK_l:
@@ -643,6 +635,8 @@ void ScreenLevel::NextLifeOrQuit()
         OnHumanCountUpdated();
       });
       OnHumanCountUpdated();
+
+      SetAmmoType(_weapon_ammo_type);
 
       delete _current_quicktimeevent;
       _current_quicktimeevent = nullptr;
@@ -971,4 +965,27 @@ void ScreenLevel::CopyPlayerData(ScreenLevel * src)
 Camera * ScreenLevel::GetCamera() const
 {
   return _camera;
+}
+
+
+void ScreenLevel::SetAmmoType(Weapon::AmmoType type)
+{
+  _weapon_ammo_type = type;
+
+  auto player = _scene->GetPlayer();
+  
+  auto count = player->GetWeaponCount();
+  for(unsigned int i = 0; i < count; i++)
+    player->GetWeapon(i)->SetAmmo(type);
+  
+  if(_weapon_type_widget)
+    switch(_weapon_ammo_type)
+      {
+      case Weapon::AmmoType::KINETIC:
+        _weapon_type_widget->SetImage("Projectile");
+        break;
+      case Weapon::AmmoType::PLASMA:
+        _weapon_type_widget->SetImage("Plasma");
+        break;
+      }
 }

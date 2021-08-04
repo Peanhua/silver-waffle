@@ -14,6 +14,7 @@
 
 #include "Screen.hh"
 #include "GameStats.hh"
+#include "Weapon.hh"
 #include <vector>
 #include <random>
 
@@ -115,6 +116,9 @@ private:
   void GameOver(bool game_was_completed);
 
   void CopyPlayerData(ScreenLevel * src);
+  void SetAmmoType(Weapon::AmmoType type);
+
+  Weapon::AmmoType _weapon_ammo_type;
 };
 
 #endif
