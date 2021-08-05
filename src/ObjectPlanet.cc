@@ -21,6 +21,8 @@ ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_objec
     _planet_radius(planet_radius),
     _ring_max(1)
 {
+  SetCollisionChannels(0);
+  SetCollidesWithChannels(0);
   SetIsAffectedByGravity(false);
   auto planet = new Mesh(*AssetLoader->LoadMesh("Planet", "Generic"));
   assert(planet);
