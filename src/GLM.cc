@@ -9,7 +9,7 @@
 
   Complete license can be found in the LICENSE file.
 */
-#include "glm.hh"
+#include "GLM.hh"
 
 
 std::ostream & operator<<(std::ostream & out, const glm::ivec2 & v)

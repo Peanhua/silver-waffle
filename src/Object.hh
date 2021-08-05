@@ -13,7 +13,7 @@
 */
 
 #include "CollisionShape.hh"
-#include "glm.hh"
+#include "GLM.hh"
 #include <algorithm>
 #include <random>
 

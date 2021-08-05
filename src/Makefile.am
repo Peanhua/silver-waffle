@@ -182,6 +182,6 @@ silverwaffle_SOURCES =				\
 	WidgetWeaponStatus.hh			\
 	WormholeWall.cc				\
 	WormholeWall.hh				\
-	glm.cc					\
-	glm.hh					\
+	GLM.cc					\
+	GLM.hh					\
 	main.cc

@@ -12,7 +12,7 @@
   Complete license can be found in the LICENSE file.
 */
 
-#include "glm.hh"
+#include "GLM.hh"
 #include "RingBuffer.hh"
 #include <array>
 #include <functional>

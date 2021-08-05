@@ -155,7 +155,7 @@ void Level::Start()
                         for(unsigned int j = 0; j < 3; j++)
                           {
                             glm::mat4 t(1);
-                            t = glm::rotate(t, glm::radians(j * 90.0f), glm::vec3(0, 0, 1));
+                            t = glm::rotate(t, glm::radians(static_cast<float>(j) * 90.0f), glm::vec3(0, 0, 1));
                             meshes[j + 1]->ApplyTransform(scale * t);
                           }
                         {
@@ -172,7 +172,7 @@ void Level::Start()
 
                     int mi = static_cast<int>(GetRand() * static_cast<float>(meshes.size()));
                     mi = std::clamp(mi, 0, static_cast<int>(meshes.size() - 1));
-                    block->SetMesh(meshes[mi]);
+                    block->SetMesh(meshes[static_cast<unsigned int>(mi)]);
                     
                     block->SetColor(rgba.rgb());
                     block->SetMaxHealth(block->GetMaxHealth() * static_cast<double>(0.25f + 0.75f * rgba.a));

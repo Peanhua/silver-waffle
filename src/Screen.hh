@@ -12,7 +12,7 @@
   Complete license can be found in the LICENSE file.
 */
 
-#include "glm.hh"
+#include "GLM.hh"
 #include <SDL_keyboard.h>
 
 class Widget;

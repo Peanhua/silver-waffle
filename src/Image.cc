@@ -10,7 +10,6 @@
   Complete license can be found in the LICENSE file.
 */
 #include "Image.hh"
-#include "glm.hh"
 #include <cassert>
 #include <cstring>
 #include <iostream>
