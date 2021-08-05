@@ -235,7 +235,7 @@ ScreenLevel::~ScreenLevel()
 }
 
 
-void ScreenLevel::Tick(gametime_t deltatime)
+void ScreenLevel::Tick(double deltatime)
 {
   if(Settings->GetBool("demo"))
     {
