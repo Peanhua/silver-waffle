@@ -25,6 +25,7 @@
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
+#include "UniformBufferObject.hh"
 
 
 Object::Object(Scene * scene, unsigned int random_seed)
@@ -125,8 +126,8 @@ void Object::Draw(const glm::mat4 & vp) const
 {
   if(_mesh)
     {
-      ShaderProgram::SetUBOVec("Data", "in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
-      ShaderProgram::SetUBOVec("Data", "in_colormod", _color);
+      UniformBufferObject::GetUniformBufferObject()->SetVec("in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
+      UniformBufferObject::GetUniformBufferObject()->SetVec("in_colormod", _color);
 
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);

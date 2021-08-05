@@ -16,9 +16,6 @@
 #include <iostream>
 
 
-std::map<std::string, GLuint> ShaderProgram::_ubos; // todo: Move ubos and related methods to separate class.
-
-
 ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::string & fragment_shader, const std::string & geometry_shader)
 {
   _program = glCreateProgram();
@@ -172,118 +169,6 @@ void ShaderProgram::Use() const
 
   current_program = _program;
   glUseProgram(_program);
-}
-
-
-GLuint ShaderProgram::GetUBO(const std::string & name)
-{
-  assert(name == "Data"); // For GetUBOPosition() assumption of there being only one ubo.
-  auto it = _ubos.find(name);
-  if(it != _ubos.end())
-    {
-      auto ubo = (*it).second;
-      assert(ubo != GL_INVALID_INDEX);
-      return ubo;
-    }
-  else
-    {
-      GLuint ubo;
-      glGenBuffers(1, &ubo);
-      _ubos[name] = ubo;
-      
-      GLsizeiptr size = 2 * sizeof(glm::mat4) + 3 * 4 * sizeof(float) + 2 * 2 * sizeof(float);
-      glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-      glBufferData(GL_UNIFORM_BUFFER, size, nullptr, GL_DYNAMIC_DRAW);
-      glBindBuffer(GL_UNIFORM_BUFFER, 0);
-      glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, 0, size);
-      
-      assert(ubo != GL_INVALID_INDEX);
-      return ubo;
-    }
-}
-
-
-unsigned int ShaderProgram::GetUBOPosition(GLuint ubo, const std::string & name)
-{
-  assert(ubo == ubo); // todo: for now we assume there is only one ubo
-  unsigned int pos = 0;
-
-  // todo: Determine the positions from the GLSL code.
-  if(name == "in_view")
-    return pos;
-  pos += sizeof(glm::mat4);
-  
-  if(name == "in_projection")
-    return pos;
-  pos += sizeof(glm::mat4);
-
-  if(name == "in_colormod")
-    return pos;
-  pos += 4 * sizeof(float);
-  
-  if(name == "in_light_color")
-    return pos;
-  pos += 4 * sizeof(float);
-
-  if(name == "in_glow")
-    return pos;
-  pos += 4 * sizeof(float);
-
-  if(name == "in_resolution")
-    return pos;
-  pos += 2 * sizeof(float);
-
-  if(name == "in_time")
-    return pos;
-  pos += 2 * sizeof(float);
-
-  return 9999;
-}
-
-
-void ShaderProgram::SetUBOMatrix(const std::string & ubo_name, const std::string & name, const glm::mat4 & matrix)
-{
-  auto ubo = GetUBO(ubo_name);
-  auto pos = GetUBOPosition(ubo, name);
-  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof(glm::mat4), glm::value_ptr(matrix));
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
-void ShaderProgram::SetUBOFloat(const std::string & ubo_name, const std::string & name, const float value)
-{
-  auto ubo = GetUBO(ubo_name);
-  auto pos = GetUBOPosition(ubo, name);
-  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof value, &value);
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
-void ShaderProgram::SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec4 & value)
-{
-  auto ubo = GetUBO(ubo_name);
-  auto pos = GetUBOPosition(ubo, name);
-  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof value, glm::value_ptr(value));
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
-void ShaderProgram::SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec3 & value)
-{
-  auto ubo = GetUBO(ubo_name);
-  auto pos = GetUBOPosition(ubo, name);
-  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof value, glm::value_ptr(value));
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
-}
-
-void ShaderProgram::SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec2 & value)
-{
-  auto ubo = GetUBO(ubo_name);
-  auto pos = GetUBOPosition(ubo, name);
-  glBindBuffer(GL_UNIFORM_BUFFER, ubo);
-  glBufferSubData(GL_UNIFORM_BUFFER, pos, sizeof value, glm::value_ptr(value));
-  glBindBuffer(GL_UNIFORM_BUFFER, 0);
 }
 
 

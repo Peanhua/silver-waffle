@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "UniformBufferObject.hh"
 
 
 SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned long random_seed, float startpos, float endpos)
@@ -121,9 +122,9 @@ void SpaceParticles::Draw(const Camera & camera) const
     
   _mesh->GetShaderProgram()->Use();
   _mesh->GetShaderProgram()->SetFloat("in_particle_length", _particle_length);
-  ShaderProgram::SetUBOMatrix("Data", "in_view",       view);
-  ShaderProgram::SetUBOMatrix("Data", "in_projection", projection);
-  ShaderProgram::SetUBOFloat("Data",  "in_time",       static_cast<float>(_time));
+  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_view",       view);
+  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_projection", projection);
+  UniformBufferObject::GetUniformBufferObject()->SetFloat( "in_time",       static_cast<float>(_time));
     
   _mesh->DrawSameShader(glm::mat4(1), mvp);
 }

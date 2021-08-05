@@ -27,6 +27,7 @@
 #include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
+#include "UniformBufferObject.hh"
 #include "Widget.hh"
 #include <iostream>
 
@@ -54,10 +55,10 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
 
 void Scene::Draw(const Camera & camera) const
 {
-  ShaderProgram::SetUBOMatrix("Data", "in_view",        camera.GetView());
-  ShaderProgram::SetUBOMatrix("Data", "in_projection",  camera.GetProjection());
-  ShaderProgram::SetUBOFloat("Data",  "in_time",        static_cast<float>(_time));
-  ShaderProgram::SetUBOVec("Data",    "in_light_color", glm::vec3(1, 1, 1));
+  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_view",        camera.GetView());
+  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_projection",  camera.GetProjection());
+  UniformBufferObject::GetUniformBufferObject()->SetFloat( "in_time",        static_cast<float>(_time));
+  UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_light_color", glm::vec3(1, 1, 1));
       
   glEnable(GL_DEPTH_TEST);
 

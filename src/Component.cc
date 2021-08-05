@@ -15,6 +15,7 @@
 #include "ObjectSpaceship.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "UniformBufferObject.hh"
 
 
 Component::Component()
@@ -33,8 +34,8 @@ void Component::Draw(const glm::mat4 & transform, const glm::mat4 & view_project
   if(!_visible)
     return;
   
-  ShaderProgram::SetUBOVec("Data", "in_glow", _glow);
-  ShaderProgram::SetUBOVec("Data", "in_colormod", _color);
+  UniformBufferObject::GetUniformBufferObject()->SetVec("in_glow", _glow);
+  UniformBufferObject::GetUniformBufferObject()->SetVec("in_colormod", _color);
   auto model = glm::translate(transform, _position);
   _mesh->Draw(model, view_projection * model);
 }

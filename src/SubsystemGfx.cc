@@ -12,6 +12,7 @@
 #include "SubsystemGfx.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemSettings.hh"
+#include "UniformBufferObject.hh"
 #include <GL/glew.h>
 #include <SDL.h>
 #include <iostream>
@@ -62,7 +63,7 @@ bool SubsystemGfx::Start()
                   rv = true;
                   
                   ShaderProgram::current_program = 0;
-                  ShaderProgram::SetUBOVec("Data", "in_resolution", glm::vec2(screen_width, screen_height));
+                  UniformBufferObject::GetUniformBufferObject()->SetVec("in_resolution", glm::vec2(screen_width, screen_height));
 #ifndef NDEBUG
                   if(GLEW_VERSION_4_3)
                     {

@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "UniformBufferObject.hh"
 
 
 Milkyway::Milkyway()
@@ -69,8 +70,8 @@ void Milkyway::Draw(const Camera & camera) const
 
   glm::mat4 view = glm::lookAt(glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
   
-  ShaderProgram::SetUBOMatrix("Data", "in_view",       view);
-  ShaderProgram::SetUBOMatrix("Data", "in_projection", proj);
+  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_view",       view);
+  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_projection", proj);
   _mesh->Draw(model, proj * view * model);
 
   glEnable(GL_DEPTH_TEST);

@@ -14,9 +14,9 @@
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
+#include "UniformBufferObject.hh"
 #include <cassert>
 
-//#define LARGE
 
 
 ScoreReel::ScoreReel(unsigned int drum_count)
@@ -39,29 +39,21 @@ ScoreReel::ScoreReel(unsigned int drum_count)
     glm::vec3(_drum_count * _drum_width,  0, -1.2), // 1
     glm::vec3(0.5 - _drum_width,          0, -1.2), // 2
     glm::vec3(0.5 - _drum_width,          0,  1.2), // 3
-#ifndef LARGE
     glm::vec3(0.5 - _drum_width,          0,  0.0), // 4
     glm::vec3(_drum_count * _drum_width,  0,  0.0), // 5
     glm::vec3(0.5 - _drum_width,         -5,  1.5), // 6
     glm::vec3(_drum_count * _drum_width, -5,  1.5), // 7
     glm::vec3(0.5 - _drum_width,         -5, -1.5), // 8
     glm::vec3(_drum_count * _drum_width, -5, -1.5), // 9
-#endif
   };
   
   std::vector<unsigned int> indices {
-#ifdef LARGE
-    // Center:
-    0, 3, 1,
-    1, 3, 2,
-#else
     // Top:
     5, 6, 4,
     6, 5, 7,
     // Bottom:
     5, 4, 8,
     8, 9, 5,
-#endif
   };
   
   for(auto v : vertices)
@@ -97,11 +89,11 @@ bool ScoreReel::Tick(double deltatime)
 
 void ScoreReel::Draw() const
 {
-  ShaderProgram::SetUBOVec("Data",    "in_glow",        glm::vec3(0, 0, 0));
-  ShaderProgram::SetUBOVec("Data",    "in_colormod",    glm::vec4(1, 1, 1, 1));
-  ShaderProgram::SetUBOVec("Data",    "in_light_color", glm::vec3(1.00, 0.59, 0.19));
-  ShaderProgram::SetUBOMatrix("Data", "in_view",        _view);
-  ShaderProgram::SetUBOMatrix("Data", "in_projection",  _projection);
+  UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_glow",        glm::vec3(0, 0, 0));
+  UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_colormod",    glm::vec4(1, 1, 1, 1));
+  UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_light_color", glm::vec3(1.00, 0.59, 0.19));
+  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_view",        _view);
+  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_projection",  _projection);
 
   _background->Draw(_model, _viewprojection * _model);
   

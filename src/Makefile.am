@@ -152,6 +152,8 @@ silverwaffle_SOURCES =				\
 	SubsystemSettings.hh			\
 	TextureRenderer.cc			\
 	TextureRenderer.hh			\
+	UniformBufferObject.cc			\
+	UniformBufferObject.hh			\
 	UpgradeMaterial.cc			\
 	UpgradeMaterial.hh			\
 	Weapon.cc				\

@@ -38,21 +38,11 @@ public:
   void SetFloat(const std::string & name, float value);
   void SetInt(const std::string & name, int value);
 
-  static void SetUBOMatrix(const std::string & ubo_name, const std::string & name, const glm::mat4 & matrix);
-  static void SetUBOFloat(const std::string & ubo_name, const std::string & name, const float value);
-  static void SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec2 & value);
-  static void SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec3 & value);
-  static void SetUBOVec(const std::string & ubo_name, const std::string & name, const glm::vec4 & value);
-
   static GLuint current_program;
   
 private:
   GLuint                _program;
   std::vector<Shader *> _shaders;
-  static std::map<std::string, GLuint> _ubos;
-
-  static GLuint       GetUBO(const std::string & name);
-  static unsigned int GetUBOPosition(GLuint ubo, const std::string & name);
 
 #ifndef NDEBUG
 public:
