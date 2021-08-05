@@ -89,11 +89,13 @@ bool ScoreReel::Tick(double deltatime)
 
 void ScoreReel::Draw() const
 {
-  UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_glow",        glm::vec3(0, 0, 0));
-  UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_colormod",    glm::vec4(1, 1, 1, 1));
-  UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_light_color", glm::vec3(1.00, 0.59, 0.19));
-  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_view",        _view);
-  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_projection",  _projection);
+  auto ubo = UniformBufferObject::GetUniformBufferObject();
+  ubo->SetVec(   "in_glow",        glm::vec3(0, 0, 0));
+  ubo->SetVec(   "in_colormod",    glm::vec4(1, 1, 1, 1));
+  ubo->SetVec(   "in_light_color", glm::vec3(1.00, 0.59, 0.19));
+  ubo->SetMatrix("in_view",        _view);
+  ubo->SetMatrix("in_projection",  _projection);
+  ubo->Flush();
 
   _background->Draw(_model, _viewprojection * _model);
   

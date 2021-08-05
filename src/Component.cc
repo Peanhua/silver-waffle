@@ -33,9 +33,12 @@ void Component::Draw(const glm::mat4 & transform, const glm::mat4 & view_project
 {
   if(!_visible)
     return;
+
+  auto ubo = UniformBufferObject::GetUniformBufferObject();
+  ubo->SetVec("in_glow", _glow);
+  ubo->SetVec("in_colormod", _color);
+  ubo->Flush();
   
-  UniformBufferObject::GetUniformBufferObject()->SetVec("in_glow", _glow);
-  UniformBufferObject::GetUniformBufferObject()->SetVec("in_colormod", _color);
   auto model = glm::translate(transform, _position);
   _mesh->Draw(model, view_projection * model);
 }

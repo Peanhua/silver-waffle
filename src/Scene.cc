@@ -55,10 +55,12 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
 
 void Scene::Draw(const Camera & camera) const
 {
-  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_view",        camera.GetView());
-  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_projection",  camera.GetProjection());
-  UniformBufferObject::GetUniformBufferObject()->SetFloat( "in_time",        static_cast<float>(_time));
-  UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_light_color", glm::vec3(1, 1, 1));
+  auto ubo = UniformBufferObject::GetUniformBufferObject();
+  ubo->SetMatrix("in_view",        camera.GetView());
+  ubo->SetMatrix("in_projection",  camera.GetProjection());
+  ubo->SetFloat( "in_time",        static_cast<float>(_time));
+  ubo->SetVec(   "in_light_color", glm::vec3(1, 1, 1));
+  ubo->Flush();
       
   glEnable(GL_DEPTH_TEST);
 

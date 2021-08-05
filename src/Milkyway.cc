@@ -70,8 +70,10 @@ void Milkyway::Draw(const Camera & camera) const
 
   glm::mat4 view = glm::lookAt(glm::vec3(0, -2, 0), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
   
-  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_view",       view);
-  UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_projection", proj);
+  auto ubo = UniformBufferObject::GetUniformBufferObject();
+  ubo->SetMatrix("in_view",       view);
+  ubo->SetMatrix("in_projection", proj);
+  ubo->Flush();
   _mesh->Draw(model, proj * view * model);
 
   glEnable(GL_DEPTH_TEST);

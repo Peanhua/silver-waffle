@@ -126,8 +126,10 @@ void Object::Draw(const glm::mat4 & vp) const
 {
   if(_mesh)
     {
-      UniformBufferObject::GetUniformBufferObject()->SetVec("in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
-      UniformBufferObject::GetUniformBufferObject()->SetVec("in_colormod", _color);
+      auto ubo = UniformBufferObject::GetUniformBufferObject();
+      ubo->SetVec("in_glow", glm::vec3(0.5, 0.5, 1.0) * static_cast<float>(GetGlow()));
+      ubo->SetVec("in_colormod", _color);
+      ubo->Flush();
 
       const glm::mat4 model(glm::translate(glm::mat4(1), _position) * glm::toMat4(_orientation));
       const glm::mat4 mvp(vp * model);

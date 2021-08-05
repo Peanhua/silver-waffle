@@ -43,11 +43,12 @@ void WidgetMeshRenderer::Render()
   {
     glm::mat4 proj = glm::perspective(glm::radians(60.0), 512.0 / 512.0, 0.001, 100.0);
 
-    UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_glow",        glm::vec3(0, 0, 0));
-    UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_colormod",    glm::vec4(1, 1, 1, 1));
-    UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_view",        _view);
-    UniformBufferObject::GetUniformBufferObject()->SetMatrix("in_projection",  proj);
-    UniformBufferObject::GetUniformBufferObject()->SetVec(   "in_light_color", glm::vec3(1, 1, 1));
+    auto ubo = UniformBufferObject::GetUniformBufferObject();
+    ubo->SetVec(   "in_glow",        glm::vec3(0, 0, 0));
+    ubo->SetVec(   "in_colormod",    glm::vec4(1, 1, 1, 1));
+    ubo->SetMatrix("in_view",        _view);
+    ubo->SetMatrix("in_projection",  proj);
+    ubo->SetVec(   "in_light_color", glm::vec3(1, 1, 1));
 
     _mesh->Draw(_model, proj * _view * _model);
   }
