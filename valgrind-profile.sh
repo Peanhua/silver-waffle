@@ -9,7 +9,7 @@ case ${TOOL} in
     
     callgrind)
         OPTIONS="--time-stamp=yes --dump-instr=yes --collect-jumps=yes --collect-systime=nsec"
-        OPTIONS+=" --track-fds=yes --collect-bus=yes --branch-sim=yes --cache-sim=yes"
+        #OPTIONS+=" --track-fds=yes --collect-bus=yes --branch-sim=yes --cache-sim=yes"
         ;;
 
     *)
@@ -19,4 +19,4 @@ case ${TOOL} in
 esac
 
 make || exit 1
-/usr/bin/time valgrind --tool=${TOOL} ${OPTIONS} ./src/silverwaffle --demo || exit 1
+/usr/bin/time valgrind --tool=${TOOL} ${OPTIONS} ./src/silverwaffle --demo | grep -E '^(CALLGRIND|frames|scene)' || exit 1

@@ -93,6 +93,22 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
   auto ubi = glGetUniformBlockIndex(_program, "Data");
   if(ubi != GL_INVALID_INDEX)
     glUniformBlockBinding(_program, ubi, 0);
+
+  std::vector<std::string> uniforms {
+    "in_time",
+    "in_velocity",
+    "texture0",
+    "texture1",
+    "in_model",
+    "in_mvp",
+    "in_color",
+    "in_particle_length",
+    "in_font_color",
+    "in_font_weight"
+  };
+  _uniform_locations.push_back(-1);
+  for(auto u : uniforms)
+    _uniform_locations.push_back(glGetUniformLocation(_program, u.c_str()));
 }
 
 
@@ -113,49 +129,41 @@ GLuint ShaderProgram::GetProgram() const
 }
 
 
-void ShaderProgram::SetMatrix(const std::string & name, const glm::mat4 & matrix)
+void ShaderProgram::SetMatrix(GLint position, const glm::mat4 & matrix)
 {
-  auto loc = glGetUniformLocation(_program, name.c_str());
-  //assert(loc >= 0);
-  if(loc >= 0)
-    glUniformMatrix4fv(loc, 1, GL_FALSE, glm::value_ptr(matrix));
+  if(position >= 0)
+    glUniformMatrix4fv(position, 1, GL_FALSE, glm::value_ptr(matrix));
 }
 
 
-void ShaderProgram::SetVec(const std::string & name, const glm::vec3 & value)
+void ShaderProgram::SetVec(GLint position, const glm::vec3 & value)
 {
-  auto loc = glGetUniformLocation(_program, name.c_str());
-  //assert(loc >= 0);
-  if(loc >= 0)
-    glUniform3fv(loc, 1, glm::value_ptr(value));
+  if(position >= 0)
+    glUniform3fv(position, 1, glm::value_ptr(value));
 }
 
 
-void ShaderProgram::SetVec(const std::string & name, const glm::vec4 & value)
+void ShaderProgram::SetVec(GLint position, const glm::vec4 & value)
 {
-  auto loc = glGetUniformLocation(_program, name.c_str());
-  //assert(loc >= 0);
-  if(loc >= 0)
-    glUniform4fv(loc, 1, glm::value_ptr(value));
+  if(position >= 0)
+    glUniform4fv(position, 1, glm::value_ptr(value));
 }
 
 
-void ShaderProgram::SetFloat(const std::string & name, float value)
+void ShaderProgram::SetFloat(GLint position, float value)
 {
-  auto loc = glGetUniformLocation(_program, name.c_str());
-  //assert(loc >= 0);
-  if(loc >= 0)
-    glUniform1f(loc, value);
+  if(position >= 0)
+    glUniform1f(position, value);
 }
 
 
-void ShaderProgram::SetInt(const std::string & name, int value)
+void ShaderProgram::SetInt(GLint position, int value)
 {
-  auto loc = glGetUniformLocation(_program, name.c_str());
-  //assert(loc >= 0);
-  if(loc >= 0)
-    glUniform1i(loc, value);
+  if(position >= 0)
+    glUniform1i(position, value);
 }
+
+
 
 
 GLuint ShaderProgram::current_program = 0;

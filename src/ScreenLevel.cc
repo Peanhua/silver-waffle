@@ -67,7 +67,8 @@ ScreenLevel::ScreenLevel(ScreenLevel * parent)
     _pausebutton(nullptr),
     _weapon_type_widget(nullptr),
     _demo_lander_activated(false),
-    _demo_ending_activated(false)
+    _demo_ending_activated(false),
+    _weapon_ammo_type(Weapon::AmmoType::KINETIC)
 {
 }
 

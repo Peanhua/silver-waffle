@@ -16,6 +16,7 @@
 #include <GL/glew.h>
 #include <map>
 #include <string>
+#include <string_view>
 #include <vector>
 
 class Shader;
@@ -32,18 +33,41 @@ public:
   void Use() const;
   GLuint GetProgram() const;
 
-  void SetMatrix(const std::string & name, const glm::mat4 & matrix);
-  void SetVec(const std::string & name, const glm::vec3 & value);
-  void SetVec(const std::string & name, const glm::vec4 & value);
-  void SetFloat(const std::string & name, float value);
-  void SetInt(const std::string & name, int value);
-
+  inline void SetMatrix(const std::string_view & name, const glm::mat4 & matrix) { SetMatrix(_uniform_locations[GetUniformIndex(name)], matrix); }
+  inline void SetVec(const std::string_view & name, const glm::vec3 & value)     { SetVec(   _uniform_locations[GetUniformIndex(name)], value);  }
+  inline void SetVec(const std::string_view & name, const glm::vec4 & value)     { SetVec(   _uniform_locations[GetUniformIndex(name)], value);  }
+  inline void SetFloat(const std::string_view & name, float value)               { SetFloat( _uniform_locations[GetUniformIndex(name)], value);  }
+  inline void SetInt(const std::string_view & name, int value)                   { SetInt(   _uniform_locations[GetUniformIndex(name)], value);  }
+  
   static GLuint current_program;
   
 private:
   GLuint                _program;
   std::vector<Shader *> _shaders;
+  std::vector<GLint>    _uniform_locations;
 
+  constexpr unsigned int GetUniformIndex(const std::string_view & name) const
+  { // This list needs to be kept in sync with the one in ShaderProgram::ShaderProgram().
+    if(name == "in_time")                 return 1;
+    else if(name == "in_velocity")        return 2;
+    else if(name == "texture0")           return 3;
+    else if(name == "texture1")           return 4;
+    else if(name == "in_model")           return 5;
+    else if(name == "in_mvp")             return 6;
+    else if(name == "in_color")           return 7;
+    else if(name == "in_particle_length") return 8;
+    else if(name == "in_font_color")      return 9;
+    else if(name == "in_font_weight")     return 10;
+    return 0;
+  }
+
+  void SetMatrix(GLint position, const glm::mat4 & matrix);
+  void SetVec(GLint position, const glm::vec3 & value);
+  void SetVec(GLint position, const glm::vec4 & value);
+  void SetFloat(GLint position, float value);
+  void SetInt(GLint position, int value);
+
+  
 #ifndef NDEBUG
 public:
   void SetName(const std::string & name);

@@ -117,12 +117,19 @@ void Mesh::DrawSameShaderIgnoreTransform(const glm::mat4 & model, const glm::mat
       if(_options & OPTION_TEXTURE)
         {
           assert(_textures.size() > 0);
-          for(unsigned int i = 0; i < _textures.size(); i++)
+          if(_textures.size() >= 1)
             {
-              glActiveTexture(GL_TEXTURE0 + i);
-              glBindTexture(GL_TEXTURE_2D, _textures[i]->GetTextureId());
-              shader->SetInt("texture" + std::to_string(i), static_cast<int>(i));
+              glActiveTexture(GL_TEXTURE0);
+              glBindTexture(GL_TEXTURE_2D, _textures[0]->GetTextureId());
+              shader->SetInt("texture0", 0);
             }
+          if(_textures.size() >= 2)
+            {
+              glActiveTexture(GL_TEXTURE1);
+              glBindTexture(GL_TEXTURE_2D, _textures[1]->GetTextureId());
+              shader->SetInt("texture1", 1);
+            }
+          assert(_textures.size() < 3);
           glActiveTexture(GL_TEXTURE0);
         }
 

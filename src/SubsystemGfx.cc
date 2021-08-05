@@ -68,6 +68,7 @@ bool SubsystemGfx::Start()
                   if(GLEW_VERSION_4_3)
                     {
                       glEnable(GL_DEBUG_OUTPUT);
+                      glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
                       glDebugMessageCallback(MessageCallback, 0);
                     }
 #endif

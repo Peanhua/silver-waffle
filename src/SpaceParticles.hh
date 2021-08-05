@@ -13,6 +13,7 @@
 */
 
 #include "GLM.hh"
+#include <GL/glew.h>
 #include <random>
 
 class Camera;
