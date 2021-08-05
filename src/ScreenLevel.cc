@@ -22,6 +22,7 @@
 #include "Image.hh"
 #include "Level.hh"
 #include "MeshOverlay.hh"
+#include "ObjectPlanet.hh"
 #include "ObjectSpaceship.hh"
 #include "QuickTimeEventLaunchToSpace.hh"
 #include "Scene.hh"
@@ -64,6 +65,7 @@ ScreenLevel::ScreenLevel(ScreenLevel * parent)
     _current_level(0),
     _gamestats(nullptr),
     _pausebutton(nullptr),
+    _weapon_type_widget(nullptr),
     _demo_lander_activated(false),
     _demo_ending_activated(false)
 {
@@ -233,22 +235,40 @@ ScreenLevel::~ScreenLevel()
 }
 
 
-void ScreenLevel::Tick(double deltatime)
+void ScreenLevel::Tick(gametime_t deltatime)
 {
   if(Settings->GetBool("demo"))
     {
+      auto player = _scene->GetPlayer();
       if(!_demo_lander_activated)
         if(!_parent && GetGameStats()->GetTime() > 9.4)
-          { // Activates only if "cheat_planet_lander_disable_distance_check" settings is true.
-            _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Activate();
+          {
+            auto planet = dynamic_cast<ObjectPlanet *>(_scene->GetClosestPlanet(player->GetPosition()));
+            assert(planet);
+            player->DescendToPlanet(planet->GetSolarSystemObject());
             _demo_lander_activated = true;
           }
-      if(!_demo_ending_activated && _parent && GetGameStats()->GetTime() > 12.0)
+      if(_parent)
         {
-          _demo_ending_activated = true;
-          _scene->GetPlayer()->GetController()->SteerBackward(true);
+          auto t = GetGameStats()->GetTime();
+          if(t > 12 && t < 13)
+            {
+              player->GetController()->SteerBackward(true);
+              player->GetController()->SteerLeft(true);
+            }
+          else if(t > 16 && t < 17)
+            {
+              player->GetController()->SteerBackward(false);
+              player->GetController()->SteerLeft(false);
+            }
+          else if(t > 20 && t < 21)
+            player->GetController()->SteerBackward(true);
+          else if(t > 22 && t < 23)
+            player->GetController()->SteerBackward(false);
+          else if(t > 24 && t < 25)
+            player->SetUseHealth(false);
         }
-      if(GetGameStats()->GetTime() > 20.0)
+      if(GetGameStats()->GetTime() > 40.0)
         {
           SDL_Event e;
           e.quit.type = SDL_QUIT;
