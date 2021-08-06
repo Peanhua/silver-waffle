@@ -691,7 +691,7 @@ void ObjectSpaceship::DescendToPlanet(SolarSystemObject * planet)
 
   auto ns = new ScreenLevelPlanet(current, planet);
   ns->SetupLevels();
-  current->TransitionToScreen(ns, "Descending to " + planet->GetName() + "\n");
+  current->TransitionToScreen(ns, "Entering " + planet->GetName() + "\n");
 }
 
 

@@ -2,8 +2,82 @@
   "spawns": [
     {
       "start":  0.0,
-      "stop":  60.0,
-      "interval": 1.5,
+      "stop":  30.0,
+      "interval": 0.5,
+      "invader_type": 0,
+      "control_program": "waithoriz5-shoot",
+      "next":
+      {
+        "start": 60.0,
+        "stop":  80.0,
+        "interval": 0.6,
+        "invader_type": 0,
+        "control_program": "snake-forward",
+        "next":
+        {
+          "start": 30.0,
+          "stop":  60.0,
+          "interval": 0.7,
+          "invader_type": 0,
+          "control_program": "stepping-forward",
+          "next":
+          {
+            "start": 40.0,
+            "stop":  60.0,
+            "interval": 0.5,
+            "invader_type": 0,
+            "control_program": "snake-stepping-forward",
+            "next":
+            {
+              "start": 0.0,
+              "stop":  60.0
+            }
+          }
+        }
+      }
+    },
+    {
+      "start": 40,
+      "stop":  50,
+      "interval": 0.5,
+      "invader_type": 2,
+      "control_program": "negative-y",
+      "next":
+      {
+        "start": 40,
+        "stop":  45,
+        "interval": 0.5,
+        "invader_type": 2,
+        "control_program": "negative-y",
+        "next":
+        {
+          "start": 40,
+          "stop":  45,
+          "interval": 0.5,
+          "invader_type": 2,
+          "control_program": "negative-y",
+          "next":
+          {
+            "start": 60,
+            "stop":  65,
+            "interval": 0.5,
+            "invader_type": 2,
+            "control_program": "negative-y"
+          }
+        }
+      }
+    },
+    {
+      "start":  150.0,
+      "stop":  250.0,
+      "interval": 1,
+      "invader_type": 0,
+      "control_program": "erratic-forward"
+    },
+    {
+      "start":  200.0,
+      "stop":  250.0,
+      "interval": 1,
       "invader_type": 0,
       "control_program": "snake-forward"
     }

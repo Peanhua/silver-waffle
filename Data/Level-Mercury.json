@@ -3,28 +3,28 @@
     {
       "start":  0.0,
       "stop":  30.0,
-      "interval": 0.5,
+      "interval": 1,
       "invader_type": 0,
       "control_program": "waithoriz5-shoot",
       "next":
       {
         "start": 60.0,
         "stop":  80.0,
-        "interval": 0.6,
+        "interval": 1.2,
         "invader_type": 0,
         "control_program": "snake-forward",
         "next":
         {
           "start": 30.0,
           "stop":  60.0,
-          "interval": 0.7,
+          "interval": 1.4,
           "invader_type": 0,
           "control_program": "stepping-forward",
           "next":
           {
             "start": 40.0,
             "stop":  60.0,
-            "interval": 0.5,
+            "interval": 1,
             "invader_type": 0,
             "control_program": "snake-stepping-forward",
             "next":
@@ -70,14 +70,14 @@
     {
       "start":  150.0,
       "stop":  250.0,
-      "interval": 1,
+      "interval": 2,
       "invader_type": 0,
       "control_program": "erratic-forward"
     },
     {
       "start":  200.0,
       "stop":  250.0,
-      "interval": 1,
+      "interval": 2,
       "invader_type": 0,
       "control_program": "snake-forward"
     }
