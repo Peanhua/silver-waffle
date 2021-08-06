@@ -354,6 +354,12 @@ void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
   if(!IsAlive())
     return;
 
+  OnHit(perpetrator, damage, impulse);
+}
+
+
+void Object::OnHit(Object * perpetrator, double damage, const glm::vec3 & impulse)
+{
   if(_scene)
     _scene->AddExplosion(GetPosition(), impulse * 0.5f);
 

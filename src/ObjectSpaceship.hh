@@ -32,7 +32,7 @@ public:
   ObjectSpaceship(Scene * scene, unsigned int random_seed);
 
   void Tick(double deltatime) override;
-  void Hit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
+  void OnHit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
   uint64_t GetCollidesWithChannels() const override;
   double GetGlow() const override;
   

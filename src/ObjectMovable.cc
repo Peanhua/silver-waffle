@@ -56,9 +56,9 @@ void ObjectMovable::Tick(double deltatime)
 }
 
 
-void ObjectMovable::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
+void ObjectMovable::OnHit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
-  Object::Hit(perpetrator, damage, impulse);
+  Object::OnHit(perpetrator, damage, impulse);
   if(_hit_impulse_enabled)
     AddImpulse(impulse);
 }

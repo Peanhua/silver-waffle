@@ -277,7 +277,7 @@ void ObjectSpaceship::UpgradeEngines(double power_multiplier)
 }
 
 
-void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
+void ObjectSpaceship::OnHit(Object * perpetrator, double damage, const glm::vec3 & impulse)
 {
   if(GetUseHealth())
     {
@@ -298,7 +298,7 @@ void ObjectSpaceship::Hit(Object * perpetrator, double damage, const glm::vec3 &
         }
       SystemlogAppend(syslog + " Hull damage: " + std::to_string(std::lround(damage)) + "\n");
     }
-  ObjectMovable::Hit(perpetrator, damage, impulse);
+  ObjectMovable::OnHit(perpetrator, damage, impulse);
 }
 
 
