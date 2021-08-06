@@ -5,6 +5,7 @@ MYHISTFILE=$(pwd)/.bash_history
 if [ "${HISTFILE}" != ${MYHISTFILE} ]; then
     export HISTFILE=${MYHISTFILE}
     history -r
+    alias blender='MESA_LOADER_DRIVER_OVERRIDE=i965 /usr/bin/blender'
 fi
     
 
@@ -18,16 +19,16 @@ echo "Using profile: ${PROFILE}"
 export MAKEFLAGS="-s -j7"
 case ${PROFILE} in
     dev)
-        export CXXFLAGS="-W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always -g"
+        export CXXFLAGS="-Wfatal-errors -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always -g"
         export LDFLAGS="-g -fdiagnostics-color=always -Og -rdynamic"
         ;;
     optimized)
-        export CXXFLAGS="-O3 -DNDEBUG -flto -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always"
+        export CXXFLAGS="-Wfatal-errors -O3 -DNDEBUG -flto -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always"
         export LDFLAGS="-O3 -DNDEBUG -flto"
         ;;
     valgrind)
-        export CXXFLAGS="-O2 -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always -g -DNDEBUG"
-        export LDFLAGS="-g -fdiagnostics-color=always -O2 -rdynamic -DNDEBUG"
+        export CXXFLAGS="-Wfatal-errors -O3 -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always -g -DNDEBUG -Wno-unused"
+        export LDFLAGS="-g -fdiagnostics-color=always -O3 -rdynamic -DNDEBUG"
         ;;
     *)
         echo "Error, unknown profile '${PROFILE}'."
