@@ -26,10 +26,12 @@ public:
   void SetCharactersPerSecond(double characters_per_second);
   void SetPurgingTime(double time_to_purge_line0);
   double GetTime() const; // negative when still typing, positive after typing has finished
+  void SetPaused(bool paused);
 
 private:
   std::string  _teletypertext;
   double       _characters_per_second;
+  bool         _paused;
   unsigned int _cursor_position;
   double       _timer;
   double       _time_finished;

@@ -403,7 +403,7 @@ void ScreenLevel::Tick(double deltatime)
           _current_quicktimeevent = nullptr;
         }
     }
-  
+
   _texture_renderer->BeginRender();
   _camera->Update();
   _camera->stats.elapsed_frames++;
@@ -727,6 +727,7 @@ void ScreenLevel::ChangeState(State new_state)
           _pausebutton->Destroy();
           _pausebutton = nullptr;
         }
+      _teletyper->SetPaused(false);
       break;
       
     case State::DEATH_PAUSE:
@@ -836,6 +837,8 @@ void ScreenLevel::OpenSpaceshipMaintenanceUI()
   
   assert(!_pausebutton);
   _pausebutton = panelbackground;
+  _teletyper->SetPaused(true);
+
   SetModalWidget(_pausebutton);
 }
 

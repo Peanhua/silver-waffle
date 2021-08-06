@@ -15,6 +15,7 @@
 WidgetTeletyper::WidgetTeletyper(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size)
   : Widget(parent, position, size),
     _characters_per_second(3),
+    _paused(false),
     _cursor_position(0),
     _timer(0),
     _time_to_purge_line0(-1),
@@ -41,6 +42,9 @@ void WidgetTeletyper::AppendText(const std::string & text)
 
 void WidgetTeletyper::Tick(double deltatime)
 {
+  if(_paused)
+    return;
+  
   bool update_text = false;
 
   if(_teletypertext.length() > 0 && _time_to_purge_line0 > 0.0)
@@ -132,3 +136,8 @@ double WidgetTeletyper::GetTime() const
     return - (_timer + static_cast<double>(_teletypertext.length() - _cursor_position) / _characters_per_second);
 }
 
+
+void WidgetTeletyper::SetPaused(bool paused)
+{
+  _paused = paused;
+}
