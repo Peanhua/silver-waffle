@@ -225,7 +225,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
 
       if((*config)["shader"].is_string())
         {
-          auto sp = LoadShaderProgram(std::string(DATADIR) + "/" + (*config)["shader"].string_value());
+          auto sp = LoadShaderProgram((*config)["shader"].string_value());
           assert(sp);
           mesh->SetShaderProgram(sp, true);
         }

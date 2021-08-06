@@ -249,7 +249,7 @@ unsigned int Font::GetHeight() const
 bool Font::Load()
 {
   std::string filename("Font-" + std::to_string(_font_size));
-  auto config = AssetLoader->LoadJson("Data/" + filename);
+  auto config = AssetLoader->LoadJson(std::string(DATADIR) + "/Data/" + filename);
   if(!config || !config->is_object())
     return false;
 
