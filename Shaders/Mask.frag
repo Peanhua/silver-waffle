@@ -1,5 +1,3 @@
-#version 150
-
 out vec4 final_colour;
 
 void main()

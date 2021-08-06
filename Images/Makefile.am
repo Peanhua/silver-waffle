@@ -99,4 +99,21 @@ EXTRA_DIST = \
 	8k_saturn.jpg			\
 	8k_saturn_ring_alpha.png	\
 	8k_stars_milky_way.jpg		\
-	8k_sun.jpg
+	8k_sun.jpg			\
+	BonusIcon-2xDamage.png		\
+	BonusIcon-2xScore.png		\
+	BonusIcon-Shield.png		\
+	Checkmark-Green.png		\
+	Level-Planet-Earth.png		\
+	Level-Planet-Jupiter.png	\
+	Level-Planet-Mars.png		\
+	Level-Planet-Mercury.png	\
+	Level-Planet-Neptune.png	\
+	Level-Planet-Saturn.png		\
+	Level-Planet-Uranus.png		\
+	Level-Planet-Venus.png		\
+	PanelBorders.png		\
+	Plasma.png			\
+	Projectile.png			\
+	UpgradeMaterial.png		\
+	White.png			

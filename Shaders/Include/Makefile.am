@@ -10,3 +10,14 @@ shaderinclude_DATA = \
 	Output.geom		\
 	Output.vert		\
 	Uniforms.glsl		
+
+EXTRA_DIST = \
+	Data.glsl		\
+	DirectionalLight.frag	\
+	Input.frag		\
+	Input.geom		\
+	Input.vert		\
+	Output.frag		\
+	Output.geom		\
+	Output.vert		\
+	Uniforms.glsl		

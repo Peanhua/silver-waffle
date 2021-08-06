@@ -1,5 +1,3 @@
-#version 330 core
-
 uniform sampler2D texture0;
 uniform sampler2D texture1;
 uniform mat4 in_mvp;

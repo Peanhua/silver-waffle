@@ -1,5 +1,3 @@
-#version 150
-
 uniform sampler2D texture0;
 
 in vec2 texcoord;

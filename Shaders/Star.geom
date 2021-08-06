@@ -1,5 +1,3 @@
-#version 330 core
-
 #define GEOM_IN points
 #define GEOM_OUT points
 #define GEOM_MAX_OUT_VERTICES 3

@@ -1,5 +1,3 @@
-#version 330 core
-
 #include "Include/Input.frag"
 #include "Include/Output.frag"
 #include "Include/Uniforms.glsl"

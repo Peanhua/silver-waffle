@@ -1,5 +1,3 @@
-#version 150
-
 const float PI = radians(180.0f);
 const float maxtime = 2.0f;
 

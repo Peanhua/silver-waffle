@@ -144,9 +144,9 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   if(it != _shader_programs.end())
     return (*it).second;
 
-  auto vs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".vert");
-  auto fs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".frag");
-  auto gs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".geom", true);
+  auto vs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".vert", false);
+  auto fs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".frag", false);
+  auto gs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".geom", false, true);
   auto sp = new ShaderProgram(vs, fs, gs);
   assert(sp);
 #ifndef NDEBUG
@@ -390,8 +390,13 @@ Font * SubsystemAssetLoader::LoadFont(float size)
 }
 
 
-std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool ignore_not_found_error)
+std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool is_include, bool ignore_not_found_error)
 {
+  std::string version;
+
+  if(!is_include)
+    version = "#version 330 core\n";
+  
   std::string input = LoadText(filename, ignore_not_found_error);
   if(input.empty())
     return input;
@@ -402,9 +407,9 @@ std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool ig
   std::sregex_iterator end;
 
   if(it == end)
-    return input;
+    return version + input;
   
-  std::string output;
+  std::string output(version);
   std::string remaining;
   while(it != end)
     {
@@ -412,7 +417,7 @@ std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool ig
       output += "\n";
       output += "/*****************************************************/\n";
       output += "/* BEGIN " + it->str(2) + " */\n";
-      output += LoadGLSL(std::string(DATADIR) + "/Shaders/" + it->str(2), false);
+      output += LoadGLSL(std::string(DATADIR) + "/Shaders/" + it->str(2), true, false);
       output += "/* END " + it->str(2) + " */\n";
       output += "/*****************************************************/\n";
       remaining = it->suffix();

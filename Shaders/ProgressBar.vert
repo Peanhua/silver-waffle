@@ -1,5 +1,3 @@
-#version 330 core
-
 uniform mat4 in_mvp;
 uniform vec4 in_color;
 

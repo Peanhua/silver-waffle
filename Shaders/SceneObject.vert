@@ -1,5 +1,3 @@
-#version 330
-
 #include "Include/Input.vert"
 #include "Include/Output.vert"
 #include "Include/Uniforms.glsl"

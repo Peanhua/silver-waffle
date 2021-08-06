@@ -9,22 +9,12 @@ if [ ! -f ${INPUTFILENAME} ]; then
     exit 1
 fi
 
-VERSION=$(grep -E '^#version ' ${INPUTFILENAME})
-if [ -z "${VERSION}" ]; then
-    echo "${0}: Missing '#version ..' from the input file '${INPUTFILENAME}'."
-    exit 1
-fi
-
 TMPFILENAME="${OUTPUTFILENAME}.tmp"
-echo "${VERSION}" >${TMPFILENAME} || exit 1
-echo "" >>${TMPFILENAME}
-echo "// Generated with: ${0} ${*}" >>${TMPFILENAME}
-echo "" >>${TMPFILENAME}
+echo "// Generated with: ${0} ${*}" >${TMPFILENAME} || exit 1
+echo "" >>${TMPFILENAME}                            || exit 1
 for option in ${OPTIONS} ; do
-    echo "#define ${option}" >>${TMPFILENAME} || exit 1
+    echo "#define ${option}" >>${TMPFILENAME}       || exit 1
 done
-grep -vE '^#version ' ${INPUTFILENAME} >>${TMPFILENAME} || exit 1
+cat ${INPUTFILENAME} >>${TMPFILENAME}               || exit 1
 
-mv ${TMPFILENAME} ${OUTPUTFILENAME} || exit 1
-
-exit 0
+mv ${TMPFILENAME} ${OUTPUTFILENAME}

@@ -1,5 +1,3 @@
-#version 150
-
 uniform mat4 in_mvp;
 
 in vec3 in_vertex;
