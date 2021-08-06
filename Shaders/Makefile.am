@@ -153,6 +153,4 @@ EXTRA_DIST = \
 	Star.frag			\
 	Star.geom			\
 	Star.vert			\
-	StarLines.geom			\
-	includes.awk			
-
+	StarLines.geom			

@@ -20,8 +20,9 @@
 #include "SolarSystemObject.hh"
 #include "SubsystemSettings.hh"
 #include <cassert>
-#include <iostream>
 #include <fstream>
+#include <iostream>
+#include <regex>
 
 
 SubsystemAssetLoader * AssetLoader = nullptr;
@@ -143,9 +144,9 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   if(it != _shader_programs.end())
     return (*it).second;
 
-  auto vs = LoadText("Shaders/" + name + ".vert");
-  auto fs = LoadText("Shaders/" + name + ".frag");
-  auto gs = LoadText("Shaders/" + name + ".geom", true);
+  auto vs = LoadGLSL("Shaders/" + name + ".vert");
+  auto fs = LoadGLSL("Shaders/" + name + ".frag");
+  auto gs = LoadGLSL("Shaders/" + name + ".geom", true);
   auto sp = new ShaderProgram(vs, fs, gs);
   assert(sp);
 #ifndef NDEBUG
@@ -388,3 +389,34 @@ Font * SubsystemAssetLoader::LoadFont(float size)
   return font;
 }
 
+
+std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool ignore_not_found_error)
+{
+  std::string input = LoadText(filename, ignore_not_found_error);
+  if(input.empty())
+    return input;
+
+  std::string pattern("(^|\n) *#include *\"([-A-Za-z0-9_/.]+)\"");
+  std::regex r(pattern, std::regex::extended);
+  std::sregex_iterator it(input.cbegin(), input.cend(), r);
+  std::sregex_iterator end;
+
+  if(it == end)
+    return input;
+  
+  std::string output;
+  std::string remaining;
+  while(it != end)
+    {
+      output += it->prefix();
+      output += "\n";
+      output += "/*****************************************************/\n";
+      output += "/* BEGIN " + it->str(2) + " */\n";
+      output += LoadGLSL("Shaders/" + it->str(2), false);
+      output += "/* END " + it->str(2) + " */\n";
+      output += "/*****************************************************/\n";
+      remaining = it->suffix();
+      it++;
+    }
+  return output + remaining;
+}

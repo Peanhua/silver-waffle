@@ -41,6 +41,7 @@ public:
   const std::string & LoadText(const std::string & filename, bool ignore_not_found_error = false);
   json11::Json *      LoadJson(const std::string & filename);
   ShaderProgram *     LoadShaderProgram(const std::string & name);
+  std::string         LoadGLSL(const std::string & filename, bool ignore_not_found_error = false);
   Mesh *              LoadMesh(const std::string & name, const std::string & shader_prefix = "SceneObject");
   Image *             LoadImage(const std::string & name);
   SolarSystemObject * LoadSolarSystemObject(SolarSystemObject::Type type, unsigned int index);

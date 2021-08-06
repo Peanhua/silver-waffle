@@ -30,11 +30,6 @@ for option in ${OPTIONS} ; do
 done
 grep -vE '^#version ' ${INPUTFILENAME} >>${TMPFILENAME} || exit 1
 
-awk -vROOT="$(dirname ${0})" -f ${INCLUDES_AWK} <${TMPFILENAME} >${OUTPUTFILENAME}
-if [ ${?} -ne 0 ]; then
-    rm ${OUTPUTFILENAME}
-    exit 1
-fi
+mv ${TMPFILENAME} ${OUTPUTFILENAME} || exit 1
 
-rm ${TMPFILENAME}
 exit 0
