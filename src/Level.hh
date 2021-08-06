@@ -38,6 +38,8 @@ public:
   bool                IsFinished() const;
   const std::string & GetName()    const;
   double              GetTime()    const;
+
+  bool AreBossBuildingsAlive() const;
   
 protected:
   class ProgramEntry
@@ -79,6 +81,7 @@ protected:
   json11::Json                _buildings_config;
   json11::Json                _enemy_config;
   Image *                     _destructible_terrain_config;
+  unsigned int                _boss_buildings_alive;
 
   void LoadConfig(const std::string & filename);
 };

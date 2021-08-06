@@ -8,7 +8,7 @@
     {
       "mesh":            "AlienStructureTower",
       "collision_shape": "obb",
-      "health":          2000
+      "health":          10000
     },
     {
       "mesh":            "AlienStructureSpawnerVertical",
@@ -26,6 +26,11 @@
       "collision_shape": "obb",
       "health":          10000,
       "spaceport":       true
+    },
+    {
+      "mesh":            "AlienStructureDevice",
+      "collision_shape": "obb",
+      "health":          5000
     }
   ]
 }

@@ -67,6 +67,7 @@ void Level::Start()
 {
   _running = true;
   _time = 0;
+  _boss_buildings_alive = 0;
 
   auto GetRand = [this]()
   {
@@ -101,6 +102,19 @@ void Level::Start()
                   { // Full white pixel is a random building.
                     auto type = static_cast<unsigned int>(GetRand() * 3.0f);
                     auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 1 + type);
+                    pos.z -= blocksize.z * 0.5f;
+                    pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
+                    _scene->AddObject(building, pos);
+                  }
+                else if(rgba.r >= 1 && rgba.g <= 0 && rgba.b >= 1)
+                  { // Pink pixel is boss building.
+                    auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 4);
+                    _boss_buildings_alive++;
+                    building->SetOnDestroyed([this](Object * destroyer)
+                    {
+                      assert(destroyer == destroyer);
+                      _boss_buildings_alive--;
+                    });
                     pos.z -= blocksize.z * 0.5f;
                     pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
                     _scene->AddObject(building, pos);
@@ -289,6 +303,9 @@ bool Level::IsFinished() const
   if(!_running)
     return true;
 
+  if(_boss_buildings_alive > 0)
+    return false;
+  
   if(_halt_without_program)
     {
       for(auto p : _program)
@@ -377,4 +394,10 @@ void Level::LoadConfig(const std::string & filename)
 
       _enemy_config = (*levelconfig)["enemies"];
     }
+}
+
+
+bool Level::AreBossBuildingsAlive() const
+{
+  return _boss_buildings_alive > 0;
 }

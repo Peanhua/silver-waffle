@@ -45,6 +45,12 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
     _warp_engine_starting(false),
     _tutorialmessages_enabled(true)
 {
+  auto ratioy = _play_area_size.y / _play_area_size.x;
+  auto ratioz = _play_area_size.z / _play_area_size.x;
+  _play_area_size.x = std::min(_play_area_size.x, 4000.0f);
+  _play_area_size.y = _play_area_size.x * ratioy;
+  _play_area_size.z = _play_area_size.x * ratioz;
+  
   std::minstd_rand random(_random_generator());
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));

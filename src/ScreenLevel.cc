@@ -557,7 +557,13 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
     case SDLK_l:
       if(!disablecontrols && pressed)
         if(player->IsLanded())
-          _current_quicktimeevent = new QuickTimeEventLaunchToSpace(player, GetRootWidget(), 3);
+          {
+            auto level = _levels[_current_level];
+            if(!level->AreBossBuildingsAlive())
+              _current_quicktimeevent = new QuickTimeEventLaunchToSpace(player, GetRootWidget(), 3);
+            else
+              player->SystemlogAppend("A disturbance in time-space continuity is preventing the launch!\n");
+          }
       break;
 
     case SDLK_F1:
