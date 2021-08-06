@@ -144,9 +144,9 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   if(it != _shader_programs.end())
     return (*it).second;
 
-  auto vs = LoadGLSL("Shaders/" + name + ".vert");
-  auto fs = LoadGLSL("Shaders/" + name + ".frag");
-  auto gs = LoadGLSL("Shaders/" + name + ".geom", true);
+  auto vs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".vert");
+  auto fs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".frag");
+  auto gs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".geom", true);
   auto sp = new ShaderProgram(vs, fs, gs);
   assert(sp);
 #ifndef NDEBUG
@@ -192,7 +192,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
   if(it != _meshes.end())
     return (*it).second;
 
-  auto config = LoadJson("3d-models/" + name);
+  auto config = LoadJson(std::string(DATADIR) + "/3d-models/" + name);
 
   unsigned int mesh_options = Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL;
   if(config && (*config)["blending"].is_bool() && (*config)["blending"].bool_value())
@@ -201,7 +201,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
   auto mesh = new Mesh(mesh_options);
   assert(mesh);
 
-  if(mesh->LoadFromFile("3d-models/" + name + ".dae", shader_prefix))
+  if(mesh->LoadFromFile(std::string(DATADIR) + "/3d-models/" + name + ".dae", shader_prefix))
     {
       std::cout << "Loaded mesh '" << name << "'.\n";
       mesh->UpdateGPU();
@@ -225,7 +225,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
 
       if((*config)["shader"].is_string())
         {
-          auto sp = LoadShaderProgram((*config)["shader"].string_value());
+          auto sp = LoadShaderProgram(std::string(DATADIR) + "/" + (*config)["shader"].string_value());
           assert(sp);
           mesh->SetShaderProgram(sp, true);
         }
@@ -259,11 +259,11 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
   std::string quality = "";
   if(true)
     quality = "-low";
-
-  if(rv->Load(std::string("Images/") + stripped_name + quality + ".png") ||
-     rv->Load(std::string("Images/") + stripped_name + quality + ".jpg") ||
-     rv->Load(std::string("Images/") + stripped_name +           ".png") ||
-     rv->Load(std::string("Images/") + stripped_name +           ".jpg"))
+  std::cout << std::string(DATADIR) + "/Images/" + stripped_name + quality + ".png\n";
+  if(rv->Load(std::string(DATADIR) + "/Images/" + stripped_name + quality + ".png") ||
+     rv->Load(std::string(DATADIR) + "/Images/" + stripped_name + quality + ".jpg") ||
+     rv->Load(std::string(DATADIR) + "/Images/" + stripped_name +           ".png") ||
+     rv->Load(std::string(DATADIR) + "/Images/" + stripped_name +           ".jpg"))
     {
       std::cout << "Loaded image '" << name << "'.\n";
       rv->UpdateGPU(true, true);
@@ -286,7 +286,7 @@ SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(SolarSystemObjec
   auto it = _solar_system_objects.find(type);
   if(it == _solar_system_objects.end())
     {
-      auto config = LoadJson("Data/SolarSystemObjects");
+      auto config = LoadJson(std::string(DATADIR) + "/Data/SolarSystemObjects");
       assert(config);
 
       std::string arrname = "unknown";
@@ -370,7 +370,7 @@ Font * SubsystemAssetLoader::LoadFont(float size)
     return (*it).second;
 
   std::string name(Settings->GetString("font"));
-  auto font = new Font(name, static_cast<unsigned int>(size * 1.15f));
+  auto font = new Font(std::string(DATADIR) + "/" + name, static_cast<unsigned int>(size * 1.15f));
   assert(font);
   
   if(font->Load())
@@ -412,7 +412,7 @@ std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool ig
       output += "\n";
       output += "/*****************************************************/\n";
       output += "/* BEGIN " + it->str(2) + " */\n";
-      output += LoadGLSL("Shaders/" + it->str(2), false);
+      output += LoadGLSL(std::string(DATADIR) + "/Shaders/" + it->str(2), false);
       output += "/* END " + it->str(2) + " */\n";
       output += "/*****************************************************/\n";
       remaining = it->suffix();

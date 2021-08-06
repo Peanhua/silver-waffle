@@ -78,7 +78,8 @@ shaders_DATA = \
 	GaussianBlur-Vertical.vert	\
 	Generic-Color.frag		\
 	Generic-Color.vert		\
-	Generic-Texture.frag		\
+	Generic-ColorTexture.frag	\
+	Generic-ColorTexture.vert	\
 	Generic-Texture.frag		\
 	Generic-Texture.vert		\
 	Mask.frag			\
@@ -132,17 +133,7 @@ EXTRA_DIST = \
 	Generic-Color.frag		\
 	Generic-Color.vert		\
 	Generic-Texture.frag		\
-	Generic-Texture.frag		\
 	Generic-Texture.vert		\
-	Include/Data.glsl		\
-	Include/DirectionalLight.frag	\
-	Include/Input.frag		\
-	Include/Input.geom		\
-	Include/Input.vert		\
-	Include/Output.frag		\
-	Include/Output.geom		\
-	Include/Output.vert		\
-	Include/Uniforms.glsl		\
 	Mask.frag			\
 	Mask.vert			\
 	ProgressBar.frag		\

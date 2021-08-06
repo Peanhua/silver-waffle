@@ -1,4 +1,5 @@
 AM_CXXFLAGS =                \
+	-DDATADIR='"$(datadir)/silver-waffle"' \
 	$(ASSIMP_CFLAGS)     \
 	$(FREETYPE2_CFLAGS)  \
         $(GL_CFLAGS)         \

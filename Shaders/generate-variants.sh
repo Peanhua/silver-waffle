@@ -4,11 +4,6 @@ INPUTFILENAME=${1}
 OUTPUTFILENAME=${2}
 OPTIONS="${3}"
 
-INCLUDES_AWK=$(dirname ${0})/includes.awk
-if [ ! -f ${INCLUDES_AWK} ]; then
-    echo "${0}: Error, file includes.awk not found from '${INCLUDES.AWK}', pwd='$(pwd)'"
-    exit 1
-fi
 if [ ! -f ${INPUTFILENAME} ]; then
     echo "${0}: File '${INPUTFILENAME}' not found error."
     exit 1
