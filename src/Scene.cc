@@ -581,3 +581,17 @@ void Scene::DumpStats() const
   std::cout << std::flush;
 #endif
 }
+
+
+void Scene::DestroyAllEnemies()
+{
+  auto objs = _quadtree->GetNearby2(_player->GetPosition());
+  while(auto o = objs.Next())
+    if(o->IsAlive())
+      {
+        if(dynamic_cast<ObjectInvader *>(o))
+          o->Destroy(nullptr);
+        else if(dynamic_cast<ObjectProjectile *>(o))
+          o->Destroy(nullptr);
+      }
+}

@@ -102,6 +102,8 @@ public:
 
   QuadTree * GetQuadTree() const;
 
+  void DestroyAllEnemies();
+
   void DumpStats() const;
 
 protected:

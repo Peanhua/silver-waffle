@@ -346,6 +346,7 @@ void ScreenLevel::Tick(double deltatime)
         }
       else
         { // Resumed from the new screen.
+          _scene->DestroyAllEnemies();
           if(GetGameStats()->GetLives() == 0)
             GameOver(false);
           else
