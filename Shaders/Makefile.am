@@ -30,6 +30,8 @@ EXTRA_DIST = \
 	GaussianBlur.vert		\
 	Generic-Color.frag		\
 	Generic-Color.vert		\
+	Generic-ColorTexture.frag	\
+	Generic-ColorTexture.vert	\
 	Generic-Texture.frag		\
 	Generic-Texture.vert		\
 	Mask.frag			\

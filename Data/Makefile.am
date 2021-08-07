@@ -32,3 +32,5 @@ datafiles_DATA = 				\
 	Plot-Title-5.txt			\
 	Plot-Title-6.txt			\
 	SolarSystemObjects.json			
+
+EXTRA_DIST = $(datafiles_DATA)
