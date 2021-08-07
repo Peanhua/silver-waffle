@@ -1,81 +1,13 @@
 shadersdir = $(pkgdatadir)/Shaders
 
-GaussianBlur-Horizontal.vert : GaussianBlur.vert
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'HORIZONTAL'
-
-GaussianBlur-Horizontal.frag : GaussianBlur.frag
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'HORIZONTAL'
-
-GaussianBlur-Vertical.vert : GaussianBlur.vert
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'VERTICAL'
-
-GaussianBlur-Vertical.frag : GaussianBlur.frag
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'VERTICAL'
-
-SceneObject-Color.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ ''
-
-SceneObject-Color.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ ''
-
-SceneObject-Color-Emission.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_EMISSION'
-
-SceneObject-Color-Emission.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_EMISSION'
-
-SceneObject-Texture.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl 
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_TEXTURE'
-
-SceneObject-Texture.frag : SceneObject.frag Include/Data.glsl Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_TEXTURE'
-
-LevelEntrance.vert : SceneObject.vert  Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
-
-LevelEntrance.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_ALPHA_DISTANCE20_FADE USE_BLEND'
-
-SpaceJunk.vert : Star.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_GENERIC_VEC2 USE_VEC4_IN_VERTEX'
-
-SpaceJunk.frag : Star.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
-
-SpaceJunk.geom : Star.geom Include/Input.geom Include/Output.geom Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
-
-SpaceJunkLines.vert : Star.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_GENERIC_VEC2 USE_VEC4_IN_VERTEX'
-
-SpaceJunkLines.frag : Star.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
-
-SpaceJunkLines.geom : StarLines.geom Include/Input.geom Include/Output.geom Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
-
-Cloud.vert : SceneObject.vert Include/Input.vert Include/Output.vert Include/Data.glsl Include/Uniforms.glsl
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@
-
-Cloud.frag : SceneObject.frag Include/Input.frag Include/Output.frag Include/Data.glsl Include/Uniforms.glsl Include/DirectionalLight.frag
-	$(AM_V_GEN) $(srcdir)/generate-variants.sh $< $@ 'USE_DISCARD_3OF4_PIXELS'
-
 
 shaders_DATA = \
 	AdditiveBlending.frag		\
 	AdditiveBlending.vert		\
-	LevelEntrance.frag		\
-	LevelEntrance.vert		\
-	Cloud.frag			\
-	Cloud.vert			\
 	Explosion.frag			\
 	Explosion.vert			\
 	Font.frag			\
 	Font.vert			\
-	GaussianBlur-Horizontal.frag	\
-	GaussianBlur-Horizontal.vert	\
-	GaussianBlur-Vertical.frag	\
-	GaussianBlur-Vertical.vert	\
 	Generic-Color.frag		\
 	Generic-Color.vert		\
 	Generic-ColorTexture.frag	\
@@ -85,41 +17,7 @@ shaders_DATA = \
 	Mask.frag			\
 	Mask.vert			\
 	ProgressBar.frag		\
-	ProgressBar.vert		\
-	SceneObject-Color.frag		\
-	SceneObject-Color.vert		\
-	SceneObject-Color-Emission.frag	\
-	SceneObject-Color-Emission.vert	\
-	SceneObject-Texture.frag	\
-	SceneObject-Texture.vert	\
-	SpaceJunk.frag			\
-	SpaceJunk.geom			\
-	SpaceJunk.vert			\
-	SpaceJunkLines.frag		\
-	SpaceJunkLines.geom		\
-	SpaceJunkLines.vert		
-
-CLEANFILES = \
-	LevelEntrance.frag		\
-	LevelEntrance.vert		\
-	Cloud.frag			\
-	Cloud.vert			\
-	GaussianBlur-Horizontal.frag	\
-	GaussianBlur-Horizontal.vert	\
-	GaussianBlur-Vertical.frag	\
-	GaussianBlur-Vertical.vert	\
-	SceneObject-Color.frag		\
-	SceneObject-Color.vert		\
-	SceneObject-Color-Emission.frag	\
-	SceneObject-Color-Emission.vert	\
-	SceneObject-Texture.frag	\
-	SceneObject-Texture.vert	\
-	SpaceJunk.frag			\
-	SpaceJunk.geom			\
-	SpaceJunk.vert			\
-	SpaceJunkLines.frag		\
-	SpaceJunkLines.geom		\
-	SpaceJunkLines.vert		
+	ProgressBar.vert		
 
 EXTRA_DIST = \
 	AdditiveBlending.frag		\

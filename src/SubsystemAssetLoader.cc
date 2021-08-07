@@ -144,9 +144,9 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   if(it != _shader_programs.end())
     return (*it).second;
 
-  auto vs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".vert", false);
-  auto fs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".frag", false);
-  auto gs = LoadGLSL(std::string(DATADIR) + "/Shaders/" + name + ".geom", false, true);
+  auto vs = LoadGLSL(name + ".vert", false);
+  auto fs = LoadGLSL(name + ".frag", false);
+  auto gs = LoadGLSL(name + ".geom", false, true);
   auto sp = new ShaderProgram(vs, fs, gs);
   assert(sp);
 #ifndef NDEBUG
@@ -259,7 +259,7 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
   std::string quality = "";
   if(true)
     quality = "-low";
-  std::cout << std::string(DATADIR) + "/Images/" + stripped_name + quality + ".png\n";
+
   if(rv->Load(std::string(DATADIR) + "/Images/" + stripped_name + quality + ".png") ||
      rv->Load(std::string(DATADIR) + "/Images/" + stripped_name + quality + ".jpg") ||
      rv->Load(std::string(DATADIR) + "/Images/" + stripped_name +           ".png") ||
@@ -392,15 +392,34 @@ Font * SubsystemAssetLoader::LoadFont(float size)
 
 std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool is_include, bool ignore_not_found_error)
 {
-  std::string version;
+  std::string input;
 
-  if(!is_include)
-    version = "#version 330 core\n";
+  auto configarr = LoadJson(std::string(DATADIR) + "/Data/Shaders");
+  assert(configarr);
+  assert((*configarr)["shaders"].is_array());
+
+  auto items = (*configarr)["shaders"].array_items();
+  bool found = false;
+  for(auto i : items)
+    if(i["name"].string_value() == filename)
+      {
+        for(auto f : i["flags"].array_items())
+          input += "#define " + f.string_value() + "\n";
+        input += LoadGLSL(i["src"].string_value(), true, false);
+        found = true;
+        break;
+      }
+
+  if(!found)
+    input = LoadText(std::string(DATADIR) + "/Shaders/" + filename, ignore_not_found_error);
   
-  std::string input = LoadText(filename, ignore_not_found_error);
   if(input.empty())
     return input;
 
+  std::string version;
+  if(!is_include)
+    version = "#version 330 core\n";
+  
   std::string pattern("(^|\n) *#include *\"([-A-Za-z0-9_/.]+)\"");
   std::regex r(pattern, std::regex::extended);
   std::sregex_iterator it(input.cbegin(), input.cend(), r);
@@ -417,7 +436,7 @@ std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool is
       output += "\n";
       output += "/*****************************************************/\n";
       output += "/* BEGIN " + it->str(2) + " */\n";
-      output += LoadGLSL(std::string(DATADIR) + "/Shaders/" + it->str(2), true, false);
+      output += LoadGLSL(it->str(2), true, false);
       output += "/* END " + it->str(2) + " */\n";
       output += "/*****************************************************/\n";
       remaining = it->suffix();
