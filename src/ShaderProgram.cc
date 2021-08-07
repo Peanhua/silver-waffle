@@ -104,7 +104,8 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
     "in_color",
     "in_particle_length",
     "in_font_color",
-    "in_font_weight"
+    "in_font_weight",
+    "in_junktime"
   };
   _uniform_locations.push_back(-1);
   for(auto u : uniforms)

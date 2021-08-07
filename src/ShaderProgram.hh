@@ -58,6 +58,7 @@ private:
     else if(name == "in_particle_length") return 8;
     else if(name == "in_font_color")      return 9;
     else if(name == "in_font_weight")     return 10;
+    else if(name == "in_junktime")        return 11;
     return 0;
   }
 

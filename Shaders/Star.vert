@@ -1,6 +1,7 @@
 #include "Include/Input.vert"
 #include "Include/Output.vert"
 #include "Include/Uniforms.glsl"
+uniform float in_junktime;
 
 const float PI = radians(180.0f);
 
@@ -18,7 +19,7 @@ void main()
   vout.color = vec4(in_color.rgb, a);
 
   gl_Position = in_mvp * vec4(in_vertex.x,
-                              in_vertex.y - movement_speed * (in_time - start_time),
+                              in_vertex.y - movement_speed * (in_junktime - start_time),
                               in_vertex.z,
                               1);
 }

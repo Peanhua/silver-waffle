@@ -119,14 +119,10 @@ void SpaceParticles::Draw(const Camera & camera) const
   const glm::mat4 & view       = camera.GetView();
   const glm::mat4 & projection = camera.GetProjection();
   const glm::mat4 & mvp        = camera.GetViewProjection();
-    
-  _mesh->GetShaderProgram()->Use();
-  _mesh->GetShaderProgram()->SetFloat("in_particle_length", _particle_length);
-  auto ubo = UniformBufferObject::GetUniformBufferObject();
-  ubo->SetMatrix("in_view",       view);
-  ubo->SetMatrix("in_projection", projection);
-  ubo->SetFloat( "in_time",       static_cast<float>(_time));
-  ubo->Flush();
-    
+
+  auto shader = _mesh->GetShaderProgram();
+  shader->Use();
+  shader->SetFloat("in_particle_length", _particle_length);
+  shader->SetFloat("in_junktime", static_cast<float>(_time));
   _mesh->DrawSameShader(glm::mat4(1), mvp);
 }
