@@ -8,30 +8,12 @@ shaders_DATA = \
 	Explosion.vert			\
 	Font.frag			\
 	Font.vert			\
-	Generic-Color.frag		\
-	Generic-Color.vert		\
-	Generic-ColorTexture.frag	\
-	Generic-ColorTexture.vert	\
-	Generic-Texture.frag		\
-	Generic-Texture.vert		\
-	Mask.frag			\
-	Mask.vert			\
-	ProgressBar.frag		\
-	ProgressBar.vert		
-
-EXTRA_DIST = \
-	AdditiveBlending.frag		\
-	AdditiveBlending.vert		\
-	Explosion.frag			\
-	Explosion.vert			\
-	Font.frag			\
-	Font.vert			\
 	GaussianBlur.frag		\
 	GaussianBlur.vert		\
 	Generic-Color.frag		\
-	Generic-Color.vert		\
 	Generic-ColorTexture.frag	\
 	Generic-ColorTexture.vert	\
+	Generic-Color.vert		\
 	Generic-Texture.frag		\
 	Generic-Texture.vert		\
 	Mask.frag			\
@@ -43,5 +25,8 @@ EXTRA_DIST = \
 	SceneObject.vert		\
 	Star.frag			\
 	Star.geom			\
-	Star.vert			\
-	StarLines.geom			
+	StarLines.geom			\
+	Star.vert			
+
+
+EXTRA_DIST = $(shaders_DATA)

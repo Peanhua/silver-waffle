@@ -116,9 +116,7 @@ void SpaceParticles::ResetStar(unsigned int index)
 
 void SpaceParticles::Draw(const Camera & camera) const
 {
-  const glm::mat4 & view       = camera.GetView();
-  const glm::mat4 & projection = camera.GetProjection();
-  const glm::mat4 & mvp        = camera.GetViewProjection();
+  const glm::mat4 & mvp = camera.GetViewProjection();
 
   auto shader = _mesh->GetShaderProgram();
   shader->Use();

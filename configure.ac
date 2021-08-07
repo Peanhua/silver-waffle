@@ -47,5 +47,5 @@ DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN([SilverWaffle])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile Data/Makefile Images/Makefile Shaders/Makefile Shaders/Include/Makefile Doxyfile])
+AC_CONFIG_FILES([Makefile src/Makefile Data/Makefile Fonts/bitstream-vera-sans-mono-fonts/Makefile Images/Makefile Shaders/Makefile Shaders/Include/Makefile Doxyfile])
 AC_OUTPUT

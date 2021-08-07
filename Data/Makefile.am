@@ -31,6 +31,7 @@ datafiles_DATA = 				\
 	Plot-Title-4.txt			\
 	Plot-Title-5.txt			\
 	Plot-Title-6.txt			\
+	Shaders.json				\
 	SolarSystemObjects.json			
 
 EXTRA_DIST = $(datafiles_DATA)
