@@ -24,6 +24,7 @@ Weapon::Weapon(Object * owner, const glm::vec3 & location, const glm::vec3 & pro
     _heat(0),
     _last_fire_timer(0),
     _projectile_mesh(nullptr),
+    _projectile_glow(0),
     _projectile_direction(projectile_direction)
 {
   SetAmmo(AmmoType::KINETIC);
@@ -121,7 +122,6 @@ void Weapon::SetAmmo(AmmoType type)
         _projectile_initial_velocity = 10;
         _projectile_damage = 34;
         _projectile_mesh = AssetLoader->LoadMesh("Projectile");
-        _projectile_glow = 0;
         _minimum_firing_interval = 0.02;
         _firing_heat = 0.03;
         _projectile_use_gravity = true;
@@ -129,14 +129,9 @@ void Weapon::SetAmmo(AmmoType type)
       break;
     case AmmoType::PLASMA:
       {
-        auto mesh = new Mesh(*AssetLoader->LoadMesh("Planet"));
-        mesh->SetTexture(0, AssetLoader->LoadImage("8k_sun"), true);
-        mesh->ApplyTransform(glm::scale(glm::vec3(0.3f, 0.3f, 0.3f)));
-        mesh->UpdateGPU();
         _projectile_initial_velocity = 20;
         _projectile_damage = 100;
-        _projectile_mesh = mesh;
-        _projectile_glow = 1;
+        _projectile_mesh = AssetLoader->LoadMesh("ProjectilePlasma");
         _minimum_firing_interval = 0.09;
         _firing_heat = 0.1;
         _projectile_use_gravity = false;
