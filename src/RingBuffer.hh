@@ -47,6 +47,22 @@ public:
     return static_cast<unsigned int>(std::vector<T>::size());
   }
 
+  unsigned int GetNextFreeIndexQuick()
+  {
+    auto max = std::vector<T>::size() / 8;
+    for(std::vector<void *>::size_type i = 0; i < max; i++)
+      {
+        _pos++;
+        if(_pos >= std::vector<T>::size())
+          _pos = 0;
+        
+        auto obj = std::vector<T>::at(_pos);
+        if(!obj || !obj->IsAlive())
+          return _pos;
+      }
+    return static_cast<unsigned int>(std::vector<T>::size());
+  }
+  
   unsigned int GetNextNullIndex()
   {
     for(std::vector<void *>::size_type i = 0; i < std::vector<T>::size(); i++)
@@ -68,7 +84,7 @@ public:
     for(std::vector<void *>::size_type i = 0; i < std::vector<T>::size(); i++)
       assert(std::vector<T>::at(i) != object);
 #endif
-    auto ind = GetNextFreeIndex();
+    auto ind = GetNextFreeIndexQuick();
     if(ind < std::vector<T>::size())
       (*this)[ind] = object;
     else
