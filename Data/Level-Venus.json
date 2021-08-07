@@ -26,12 +26,7 @@
             "stop":  60.0,
             "interval": 0.5,
             "invader_type": 0,
-            "control_program": "snake-stepping-forward",
-            "next":
-            {
-              "start": 0.0,
-              "stop":  60.0
-            }
+            "control_program": "snake-stepping-forward"
           }
         }
       }
@@ -69,17 +64,22 @@
     },
     {
       "start":  150.0,
-      "stop":  250.0,
+      "stop":  600.0,
       "interval": 1,
       "invader_type": 0,
       "control_program": "erratic-forward"
     },
     {
       "start":  200.0,
-      "stop":  250.0,
+      "stop":  600.0,
       "interval": 1,
       "invader_type": 0,
-      "control_program": "snake-forward"
+      "control_program": "snake-forward",
+      "next":
+      {
+        "start": 0.0,
+        "stop":  60.0
+      }
     }
   ]
 }
