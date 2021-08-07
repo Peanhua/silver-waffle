@@ -265,12 +265,7 @@ void Scene::Tick(double deltatime)
       }
 
   if(_particles)
-    {
-      if(_warp_engine_starting)
-        _particles->Tick(deltatime * (1.0 + static_cast<double>(5.0f * _warp_throttle)));
-      else
-        _particles->Tick(deltatime);
-    }
+    _particles->Tick(deltatime * (1.0 + 5.0 * static_cast<double>(_warp_throttle)));
 }
 
 
