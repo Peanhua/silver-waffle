@@ -43,6 +43,7 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
     _player(nullptr),
     _time(0),
     _warp_engine_starting(false),
+    _warp_throttle(0),
     _tutorialmessages_enabled(true)
 {
   auto ratioy = _play_area_size.y / _play_area_size.x;

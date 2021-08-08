@@ -73,7 +73,8 @@ void SpaceParticles::Tick(double deltatime)
         {
           const auto v = _mesh->GetVertex4(_next_index);
           const auto g = _mesh->GetGenericVec2(_next_index);
-          if(v.y - g.x * (static_cast<float>(_time) - v.w) < _endpos)
+          auto pos = v.y - g.x * (static_cast<float>(_time) - v.w);
+          if(pos < _endpos)
             {
               ResetStar(_next_index);
               _add_star_timer += 0.05;
