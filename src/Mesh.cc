@@ -138,7 +138,8 @@ void Mesh::DrawSameShaderIgnoreTransform(const glm::mat4 & model, const glm::mat
       shader->SetMatrix("in_model", model);
       shader->SetMatrix("in_mvp",   mvp);
       PreDrawSetupShader(shader);
-      
+
+      assert(_vao);
       glBindVertexArray(_vao);
       if(_options & OPTION_ELEMENT)
         glDrawElements(_primitive_type, static_cast<GLsizei>(_indices.size()), GL_UNSIGNED_INT, nullptr);

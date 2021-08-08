@@ -11,6 +11,7 @@
 */
 #include "SubsystemGfx.hh"
 #include "Image.hh"
+#include "Mesh.hh"
 #include "Screen.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemScreen.hh"
@@ -21,6 +22,8 @@
 #include <SDL.h>
 #include <iostream>
 
+
+//#define SIMULATE_GPU_THREAD
 
 
 SubsystemGfx * Graphics = nullptr;
@@ -55,8 +58,8 @@ bool SubsystemGfx::Start()
           SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
           SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
           
-          auto context = SDL_GL_CreateContext(_window);
-          assert(context);
+          _opengl_context = SDL_GL_CreateContext(_window);
+          assert(_opengl_context);
           
           if(glewInit() == GLEW_OK)
             {
@@ -80,6 +83,10 @@ bool SubsystemGfx::Start()
                       glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
                       glDebugMessageCallback(MessageCallback, 0);
                     }
+#endif
+
+#ifdef SIMULATE_GPU_THREAD
+                  SDL_GL_MakeCurrent(_window, nullptr);
 #endif
                 }
               else
@@ -108,7 +115,13 @@ void SubsystemGfx::Stop()
 
 void SubsystemGfx::PreTick()
 {
+#ifdef SIMULATE_GPU_THREAD
+  SDL_GL_MakeCurrent(_window, _opengl_context);
+#endif
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+#ifdef SIMULATE_GPU_THREAD
+  SDL_GL_MakeCurrent(_window, nullptr);
+#endif
 }
 
 
@@ -116,27 +129,48 @@ void SubsystemGfx::Tick(double deltatime)
 {
   assert(deltatime == deltatime);
   
+#ifdef SIMULATE_GPU_THREAD
+  SDL_GL_MakeCurrent(_window, _opengl_context);
+#endif
+
   for(auto shader : _shader_program_queue)
     shader->UpdateGPU();
   _shader_program_queue.clear();
-
-  for(auto w : _widget_queue)
-    w->Render();
-  _widget_queue.clear();
 
   for(auto i : _image_queue)
     i->UpdateGPU();
   _image_queue.clear();
 
+  for(auto m : _mesh_queue)
+    m->UpdateGPU();
+  _mesh_queue.clear();
+
+  for(auto p : _mesh_vertex_queue)
+    p.first->UpdateGPU(Mesh::OPTION_VERTEX, p.second, 1);
+  
+  for(auto w : _widget_queue)
+    w->Render();
+  _widget_queue.clear();
+
   auto screen = ScreenManager->GetScreen();
   if(screen)
     screen->Draw();
+
+#ifdef SIMULATE_GPU_THREAD
+  SDL_GL_MakeCurrent(_window, nullptr);
+#endif
 }  
 
 
 void SubsystemGfx::PostTick()
 {
+#ifdef SIMULATE_GPU_THREAD
+  SDL_GL_MakeCurrent(_window, _opengl_context);
+#endif
   SDL_GL_SwapWindow(_window);
+#ifdef SIMULATE_GPU_THREAD
+  SDL_GL_MakeCurrent(_window, nullptr);
+#endif
 }
 
 
@@ -175,4 +209,16 @@ void SubsystemGfx::QueueUpdateGPU(Widget * widget)
 void SubsystemGfx::QueueUpdateGPU(Image * image)
 {
   _image_queue.push_back(image);
+}
+
+
+void SubsystemGfx::QueueUpdateGPU(Mesh * mesh)
+{
+  _mesh_queue.push_back(mesh);
+}
+
+
+void SubsystemGfx::QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index)
+{
+  _mesh_vertex_queue.push_back({mesh, vertex_index});
 }

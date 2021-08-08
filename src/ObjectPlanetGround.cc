@@ -13,6 +13,7 @@
 #include "CollisionShapeOBB.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 
 
 ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Image * texture_map)
@@ -53,7 +54,7 @@ ObjectPlanetGround::ObjectPlanetGround(Scene * scene, const glm::vec2 & size, Im
     for(auto i : indices)
       mesh->AddElement(i);
     
-    mesh->UpdateGPU();
+    Graphics->QueueUpdateGPU(mesh);
     mesh->CalculateBoundingVolumes();
     SetMesh(mesh);
   }

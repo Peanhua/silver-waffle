@@ -17,6 +17,7 @@
 #include <vector>
 
 class Image;
+class Mesh;
 class ShaderProgram;
 class Widget;
 
@@ -35,12 +36,18 @@ public:
   void QueueUpdateGPU(ShaderProgram * shader_program);
   void QueueUpdateGPU(Widget * widget);
   void QueueUpdateGPU(Image * image);
+  void QueueUpdateGPU(Mesh * mesh);
+  void QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index);
 
 private:
-  SDL_Window * _window;
+  SDL_Window *  _window;
+  SDL_GLContext _opengl_context;
+  
   std::vector<ShaderProgram *> _shader_program_queue;
   std::vector<Widget *>        _widget_queue;
   std::vector<Image *>         _image_queue;
+  std::vector<Mesh *>          _mesh_queue;
+  std::vector<std::pair<Mesh *, unsigned int>> _mesh_vertex_queue;
 };
 
 

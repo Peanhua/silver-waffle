@@ -13,6 +13,7 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include "SubsystemSettings.hh"
 #include "UniformBufferObject.hh"
 #include <cassert>
@@ -61,8 +62,8 @@ ScoreReel::ScoreReel(unsigned int drum_count)
   
   for(auto ii : indices)
     _background->AddElement(ii);
-  
-  _background->UpdateGPU();
+
+  Graphics->QueueUpdateGPU(_background);
 
   _projection = glm::perspective(glm::radians(30.0), 512.0 / 128.0, 0.001, 100.0);
   _view = glm::lookAt(glm::vec3(0.0f, -3.5, 0.0f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));

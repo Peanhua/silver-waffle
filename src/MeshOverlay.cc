@@ -11,6 +11,8 @@
 */
 #include "MeshOverlay.hh"
 #include "Image.hh"
+#include "SubsystemGfx.hh"
+
 
 MeshOverlay::MeshOverlay()
   : Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE)
@@ -40,6 +42,6 @@ MeshOverlay::MeshOverlay()
     AddTexCoord(tc);
   for(auto i : indices)
     AddElement(i);
-    
-  UpdateGPU();
+
+  Graphics->QueueUpdateGPU(this);
 }

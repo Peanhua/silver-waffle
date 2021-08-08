@@ -12,6 +12,7 @@
 #include "WormholeWall.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include <cassert>
 
 
@@ -44,8 +45,8 @@ WormholeWall::WormholeWall(double length, double height)
     _mesh->AddColor(c);
   for(auto i : indices)
     _mesh->AddElement(i);
-  
-  _mesh->UpdateGPU();
+
+  Graphics->QueueUpdateGPU(_mesh);
 }
 
 

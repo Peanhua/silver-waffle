@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "Object.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 
 
 CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size, const glm::vec3 & debugcolor)
@@ -38,7 +39,7 @@ CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size, con
   _debugmesh = new Mesh(*AssetLoader->LoadMesh("Cube", "Generic"));
   _debugmesh->ApplyTransform(glm::scale(size * 2.0f));
   _debugmesh->SetAllColor(debugcolor, true);
-  _debugmesh->UpdateGPU();
+  Graphics->QueueUpdateGPU(_debugmesh);
 #endif
 }
 

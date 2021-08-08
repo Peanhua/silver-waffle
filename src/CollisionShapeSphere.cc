@@ -13,6 +13,7 @@
 #include "Mesh.hh"
 #include "Object.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 
 
 CollisionShapeSphere::CollisionShapeSphere(Object * owner, double radius)
@@ -23,7 +24,7 @@ CollisionShapeSphere::CollisionShapeSphere(Object * owner, double radius)
   _debugmesh = new Mesh(*AssetLoader->LoadMesh("Sphere", "Generic"));
   _debugmesh->ApplyTransform(glm::scale(glm::vec3(radius, radius, radius) * 2.0f));
   _debugmesh->SetAllColor({1, 0.5, 0.5}, true);
-  _debugmesh->UpdateGPU();
+  Graphics->QueueUpdateGPU(_debugmesh);
 #endif
 }
 

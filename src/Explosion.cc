@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include <iostream>
 
 
@@ -44,7 +45,7 @@ void Explosion::Activate(const glm::vec3 & position, const glm::vec3 & velocity)
   _mesh->ClearVertices();
   for(int i = 0; i < _fragment_count; i++)
     _mesh->AddVertex({0, 0, 0});
-  _mesh->UpdateGPU();
+  Graphics->QueueUpdateGPU(_mesh);
 
   _position = position;
   _velocity = velocity;

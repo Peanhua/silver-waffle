@@ -12,6 +12,7 @@
 #include "WidgetButton.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 
 
 WidgetButton::WidgetButton(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size)
@@ -83,7 +84,7 @@ WidgetButton::WidgetButton(Widget * parent, const glm::ivec2 & position, const g
   for(auto i : indices)
     _mesh_up->AddElement(i);
 
-  _mesh_up->UpdateGPU();
+  Graphics->QueueUpdateGPU(_mesh_up);
 }
 
 

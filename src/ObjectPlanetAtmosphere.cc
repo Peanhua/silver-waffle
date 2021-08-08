@@ -12,6 +12,7 @@
 #include "ObjectPlanetAtmosphere.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 
 
 ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & size, const std::vector<glm::vec3> & colors)
@@ -51,7 +52,7 @@ ObjectPlanetAtmosphere::ObjectPlanetAtmosphere(Scene * scene, const glm::vec2 & 
           mesh->AddElement(i * 4 + ind);
         z += zsize;
       }
-    mesh->UpdateGPU();
+    Graphics->QueueUpdateGPU(mesh);
     mesh->CalculateBoundingVolumes();
     SetMesh(mesh);
   }

@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include "UniformBufferObject.hh"
 
 
@@ -46,8 +47,8 @@ Milkyway::Milkyway()
     _mesh->AddTexCoord(tc);
   for(auto i : indices)
     _mesh->AddElement(i);
-    
-  _mesh->UpdateGPU();    
+
+  Graphics->QueueUpdateGPU(_mesh);
 }
 
 

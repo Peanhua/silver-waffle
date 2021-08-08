@@ -12,6 +12,7 @@
 #include "ObjectPlanet.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include <cassert>
 
 
@@ -28,7 +29,7 @@ ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_objec
   assert(planet);
   planet->ApplyTransform(glm::scale(glm::vec3(planet_radius, planet_radius, planet_radius)));
   planet->SetTexture(0, planet_texture, true);
-  planet->UpdateGPU();
+  Graphics->QueueUpdateGPU(planet);
   planet->SetBoundingSphereRadius(planet_radius);
   SetMesh(planet);
   SetTickingRequiresPlayerAlive(true);
@@ -83,7 +84,7 @@ void ObjectPlanet::AddPlanetRing(float start, float end)
         ring->AddElement(ind + i);
       ind += 4;
     }
-  ring->UpdateGPU();
+  Graphics->QueueUpdateGPU(ring);
 
   GetMesh()->AddChild(ring);
 }

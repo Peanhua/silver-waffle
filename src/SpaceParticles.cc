@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include "UniformBufferObject.hh"
 
 
@@ -43,7 +44,7 @@ SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned lo
       double speed = min_speed + GetRandom() * (max_speed - min_speed);
       _mesh->AddGenericVecInput(glm::vec2(speed, GetRandom()));
     }
-  _mesh->UpdateGPU();
+  Graphics->QueueUpdateGPU(_mesh);
 
   for(int i = 0; i < 60 * 30; i++)
     Tick(1.0 / 60.0);
@@ -110,7 +111,7 @@ void SpaceParticles::ResetStar(unsigned int index)
   pos = rot * glm::vec4(pos, 1);
 
   _mesh->SetVertex(index, glm::vec4(pos, _time));
-  _mesh->UpdateGPU(Mesh::OPTION_VERTEX, index, 1);
+  Graphics->QueueUpdateGPU(_mesh, index);
 }
 
 

@@ -85,21 +85,21 @@ void SubsystemAssetLoader::LoadCache()
     auto m = new Mesh(*LoadMesh("BonusCylinder"));
     m->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
     m->SetTexture(0, LoadImage("BonusIcon-2xDamage"), true);
-    m->UpdateGPU();
+    Graphics->QueueUpdateGPU(m);
     _collectibles_meshes[ObjectCollectible::Type::DAMAGE_MULTIPLIER] = m;
   }
   {
     auto m = new Mesh(*LoadMesh("BonusCylinder"));
     m->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
     m->SetTexture(0, LoadImage("BonusIcon-2xScore"), true);
-    m->UpdateGPU();
+    Graphics->QueueUpdateGPU(m);
     _collectibles_meshes[ObjectCollectible::Type::SCORE_MULTIPLIER] = m;
   }
   {
     auto m = new Mesh(*LoadMesh("BonusCylinder"));
     m->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
     m->SetTexture(0, LoadImage("BonusIcon-Shield"), true);
-    m->UpdateGPU();
+    Graphics->QueueUpdateGPU(m);
     _collectibles_meshes[ObjectCollectible::Type::SHIELD] = m;
   }
 }  
@@ -207,7 +207,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
   if(mesh->LoadFromFile(std::string(DATADIR) + "/3d-models/" + name + ".dae", shader_prefix))
     {
       std::cout << "Loaded mesh '" << name << "'.\n";
-      mesh->UpdateGPU();
+      Graphics->QueueUpdateGPU(mesh);
       mesh->CalculateBoundingVolumes();
       _meshes[key] = mesh;
     }

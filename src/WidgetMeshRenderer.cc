@@ -26,6 +26,7 @@ WidgetMeshRenderer::WidgetMeshRenderer(Widget * parent, const glm::ivec2 & posit
     _view(view)
 {
   _texture_renderer = new TextureRenderer(512, 512);
+  SetImage(new Image(true));
   Graphics->QueueUpdateGPU(this);
 }
 
@@ -38,9 +39,6 @@ WidgetMeshRenderer::~WidgetMeshRenderer()
 
 void WidgetMeshRenderer::Render()
 {
-  if(!GetImage())
-    SetImage(new Image(true));
-  
   glEnable(GL_DEPTH_TEST);
   _texture_renderer->BeginRender();
   {

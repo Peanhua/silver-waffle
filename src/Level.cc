@@ -17,6 +17,7 @@
 #include "ObjectInvader.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include <cassert>
 
 
@@ -156,7 +157,7 @@ void Level::Start()
                         for(unsigned int i = 0; i < 6; i++)
                           {
                             auto mesh = new Mesh(*block->GetMesh());
-                            mesh->UpdateGPU();
+                            Graphics->QueueUpdateGPU(mesh);
                             mesh->SetBoundingBoxHalfSize(blocksize * 0.5f);
                             mesh->SetBoundingSphereRadius(glm::length(blocksize * 0.5f));
                             meshes[i] = mesh;

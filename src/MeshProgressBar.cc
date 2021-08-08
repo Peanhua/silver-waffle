@@ -12,6 +12,8 @@
 #include "MeshProgressBar.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
+
 
 MeshProgressBar::MeshProgressBar(float width, float height, const glm::vec3 & color)
   : Mesh(OPTION_ELEMENT),
@@ -67,7 +69,7 @@ MeshProgressBar::MeshProgressBar(float width, float height, const glm::vec3 & co
   
     AddChild(borders);
   }
-  UpdateGPU();
+  Graphics->QueueUpdateGPU(this);
   
   SetValue(_value);
 }

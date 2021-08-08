@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include "SubsystemSettings.hh"
 #include <iostream>
 
@@ -269,7 +270,7 @@ void Widget::SetImageColor(const glm::vec4 & color)
       _imagemesh->ClearColors();
       for(int i = 0; i < 4; i++)
         _imagemesh->AddColor(_image_color);
-      _imagemesh->UpdateGPU();
+      Graphics->QueueUpdateGPU(_imagemesh);
     }
 }
 
@@ -313,7 +314,7 @@ void Widget::SetText(const std::string & text)
     }
   _textmesh->Clear();
   _font->Render(_text, *_textmesh, 1);
-  _textmesh->UpdateGPU();
+  Graphics->QueueUpdateGPU(_textmesh);
 }
 
 
@@ -403,7 +404,7 @@ void Widget::OnSizeUpdated()
       for(auto v : vertices)
         _imagemesh->AddVertex(glm::vec3(v.x * s.x, v.y * s.y, 0));
       
-      _imagemesh->UpdateGPU();
+      Graphics->QueueUpdateGPU(_imagemesh);
     }
 
   if(!_focused_borders_mesh)
@@ -444,7 +445,7 @@ void Widget::OnSizeUpdated()
   for(auto v : vertices)
     _focused_borders_mesh->AddVertex(glm::vec3(v.x * static_cast<float>(size.x), v.y * static_cast<float>(size.y), v.z));
   
-  _focused_borders_mesh->UpdateGPU();
+  Graphics->QueueUpdateGPU(_focused_borders_mesh);
 }
 
 
