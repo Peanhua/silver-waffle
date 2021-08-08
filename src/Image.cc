@@ -22,6 +22,8 @@ Image::Image(bool alpha, GLuint texture_id)
     _height(0),
     _bytes_per_pixel(0),
     _alpha(alpha),
+    _mipmapping(true),
+    _linear_filtering(true),
     _data(nullptr),
     _texture_id(texture_id)
 {
@@ -34,9 +36,10 @@ Image::Image(bool alpha)
 }
 
 
-Image::Image(unsigned int width, unsigned int height, unsigned int bytes_per_pixel, bool alpha)
+Image::Image(unsigned int width, unsigned int height, unsigned int bytes_per_pixel, bool alpha, bool mipmapping)
   : Image(alpha, 0)
 {
+  _mipmapping = mipmapping;
   Resize(width, height, bytes_per_pixel);
 }
 
@@ -152,7 +155,7 @@ bool Image::Load(SDL_Surface & source)
 
 
 
-void Image::UpdateGPU(bool mipmapping, bool linear_filtering)
+void Image::UpdateGPU()
 {
   if(_texture_id == 0)
     glGenTextures(1, &_texture_id);
@@ -184,14 +187,14 @@ void Image::UpdateGPU(bool mipmapping, bool linear_filtering)
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
   
-  if(linear_filtering)
+  if(_linear_filtering)
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
   else
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
-  if(mipmapping)
+  if(_mipmapping)
     {
-      if(linear_filtering)
+      if(_linear_filtering)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
       else
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_NEAREST);
@@ -201,7 +204,7 @@ void Image::UpdateGPU(bool mipmapping, bool linear_filtering)
     }
   else
     {
-      if(linear_filtering == true)
+      if(_linear_filtering == true)
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
       else
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

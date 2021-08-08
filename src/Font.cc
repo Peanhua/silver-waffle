@@ -13,6 +13,7 @@
 #include "Image.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include <cassert>
 #include <cerrno>
 #include <fstream>
@@ -49,7 +50,7 @@ bool Font::Generate()
           FT_Set_Pixel_Sizes(face, 0, _font_size);
 
           unsigned int x = 0;
-          _image = new Image(1, _height, 1, false);
+          _image = new Image(1, _height, 1, false, false);
           _image_allocated = true;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wold-style-cast"
@@ -69,7 +70,7 @@ bool Font::Generate()
                 // todo: take advantage of face->glyph->advance.x
                         
                 /* Copy the current glyph graphics. */
-                Image glyph(face->glyph->bitmap.width, face->glyph->bitmap.rows, 1, false);
+                Image glyph(face->glyph->bitmap.width, face->glyph->bitmap.rows, 1, false, false);
                 if(face->glyph->bitmap.pixel_mode == FT_PIXEL_MODE_GRAY)
                   glyph.CopyData(face->glyph->bitmap.buffer);
                 else if(face->glyph->bitmap.pixel_mode == FT_PIXEL_MODE_MONO)
@@ -97,7 +98,7 @@ bool Font::Generate()
                 const unsigned int padding = 2;
                 unsigned int padding_left = padding + static_cast<unsigned int>(face->glyph->bitmap_left);
                 unsigned int padding_top  = _font_size - static_cast<unsigned int>(face->glyph->bitmap_top);
-                Image padded_glyph(glyph.GetWidth() + padding_left + padding, glyph.GetHeight() + padding_top + padding, 1, false);
+                Image padded_glyph(glyph.GetWidth() + padding_left + padding, glyph.GetHeight() + padding_top + padding, 1, false, false);
                 padded_glyph.Clear();
                 padded_glyph.Blit(padding_left, padding_top, glyph);
 
@@ -155,7 +156,7 @@ bool Font::Generate()
       _image->Expand(_image->GetWidth() + 4 - padding, _image->GetHeight());
   }
       
-  _image->UpdateGPU(false, true);
+  Graphics->QueueUpdateGPU(_image);
 
   _height = _image->GetHeight();
 
@@ -285,7 +286,7 @@ bool Font::Load()
         }
     }
 
-  _image->UpdateGPU(false, true);
+  Graphics->QueueUpdateGPU(_image);
   _height = _image->GetHeight();
   
   return true;

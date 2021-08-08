@@ -24,13 +24,13 @@ class Image
 public:
   Image(bool alpha);
   Image(bool alpha, GLuint texture_id);
-  Image(unsigned int width, unsigned int height, unsigned int bytes_per_pixel, bool alpha);
+  Image(unsigned int width, unsigned int height, unsigned int bytes_per_pixel, bool alpha, bool mipmapping);
   ~Image();
 
   bool   Load(const std::string & filename);
   bool   Load(SDL_Surface & source);
   bool   Save(const std::string & filename);
-  void   UpdateGPU(bool mipmapping, bool linear_filtering);
+  void   UpdateGPU();
   GLuint GetTextureId() const;
   void   SetTextureId(GLuint texture_id);
   bool   Expand(unsigned int new_width, unsigned int new_height);
@@ -52,6 +52,8 @@ private:
   unsigned int         _height;
   unsigned int         _bytes_per_pixel;
   bool                 _alpha;
+  bool                 _mipmapping;
+  bool                 _linear_filtering;
   uint8_t *            _data;
   
   GLuint               _texture_id;

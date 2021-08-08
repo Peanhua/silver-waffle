@@ -10,6 +10,7 @@
   Complete license can be found in the LICENSE file.
 */
 #include "SubsystemGfx.hh"
+#include "Image.hh"
 #include "Screen.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemScreen.hh"
@@ -113,6 +114,8 @@ void SubsystemGfx::PreTick()
 
 void SubsystemGfx::Tick(double deltatime)
 {
+  assert(deltatime == deltatime);
+  
   for(auto shader : _shader_program_queue)
     shader->UpdateGPU();
   _shader_program_queue.clear();
@@ -120,6 +123,10 @@ void SubsystemGfx::Tick(double deltatime)
   for(auto w : _widget_queue)
     w->Render();
   _widget_queue.clear();
+
+  for(auto i : _image_queue)
+    i->UpdateGPU();
+  _image_queue.clear();
 
   auto screen = ScreenManager->GetScreen();
   if(screen)
@@ -162,4 +169,10 @@ void SubsystemGfx::QueueUpdateGPU(ShaderProgram * shader_program)
 void SubsystemGfx::QueueUpdateGPU(Widget * widget)
 {
   _widget_queue.push_back(widget);
+}
+
+
+void SubsystemGfx::QueueUpdateGPU(Image * image)
+{
+  _image_queue.push_back(image);
 }

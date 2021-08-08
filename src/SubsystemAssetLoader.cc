@@ -18,6 +18,7 @@
 #include "ObjectCollectible.hh"
 #include "ShaderProgram.hh"
 #include "SolarSystemObject.hh"
+#include "SubsystemGfx.hh"
 #include "SubsystemSettings.hh"
 #include <cassert>
 #include <fstream>
@@ -268,7 +269,7 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
      rv->Load(std::string(DATADIR) + "/Images/" + stripped_name +           ".jpg"))
     {
       std::cout << "Loaded image '" << name << "'.\n";
-      rv->UpdateGPU(true, true);
+      Graphics->QueueUpdateGPU(rv);
       _images[name] = rv;
     }
   else

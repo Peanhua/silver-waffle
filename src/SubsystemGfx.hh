@@ -16,6 +16,7 @@
 #include <SDL.h>
 #include <vector>
 
+class Image;
 class ShaderProgram;
 class Widget;
 
@@ -33,11 +34,13 @@ public:
 
   void QueueUpdateGPU(ShaderProgram * shader_program);
   void QueueUpdateGPU(Widget * widget);
+  void QueueUpdateGPU(Image * image);
 
 private:
   SDL_Window * _window;
   std::vector<ShaderProgram *> _shader_program_queue;
   std::vector<Widget *>        _widget_queue;
+  std::vector<Image *>         _image_queue;
 };
 
 
