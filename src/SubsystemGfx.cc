@@ -10,16 +10,21 @@
   Complete license can be found in the LICENSE file.
 */
 #include "SubsystemGfx.hh"
+#include "Screen.hh"
 #include "ShaderProgram.hh"
+#include "SubsystemScreen.hh"
 #include "SubsystemSettings.hh"
 #include "UniformBufferObject.hh"
+#include "Widget.hh"
 #include <GL/glew.h>
 #include <SDL.h>
 #include <iostream>
 
 
-static void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
+SubsystemGfx * Graphics = nullptr;
+
+static void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
 
 SubsystemGfx::SubsystemGfx()
@@ -32,6 +37,9 @@ SubsystemGfx::SubsystemGfx()
 bool SubsystemGfx::Start()
 {
   bool rv = false;
+
+  assert(!Graphics);
+  Graphics = this;
   
   if(SDL_InitSubSystem(SDL_INIT_VIDEO) == 0)
     {
@@ -92,6 +100,8 @@ bool SubsystemGfx::Start()
 void SubsystemGfx::Stop()
 {
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
+  if(Graphics == this)
+    Graphics = nullptr;
 }
 
 
@@ -99,6 +109,22 @@ void SubsystemGfx::PreTick()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
+
+
+void SubsystemGfx::Tick(double deltatime)
+{
+  for(auto shader : _shader_program_queue)
+    shader->UpdateGPU();
+  _shader_program_queue.clear();
+
+  for(auto w : _widget_queue)
+    w->Render();
+  _widget_queue.clear();
+
+  auto screen = ScreenManager->GetScreen();
+  if(screen)
+    screen->Draw();
+}  
 
 
 void SubsystemGfx::PostTick()
@@ -124,4 +150,16 @@ static void GLAPIENTRY MessageCallback(GLenum source,
   std::cerr << "OpenGL: " << ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ) << " type = " << type << ", severity = " << severity << ", message = " << message << std::endl;
   
   assert(type != GL_DEBUG_TYPE_ERROR);
+}
+
+
+void SubsystemGfx::QueueUpdateGPU(ShaderProgram * shader_program)
+{
+  _shader_program_queue.push_back(shader_program);
+}
+
+
+void SubsystemGfx::QueueUpdateGPU(Widget * widget)
+{
+  _widget_queue.push_back(widget);
 }

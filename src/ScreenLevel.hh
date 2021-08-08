@@ -44,6 +44,7 @@ public:
   virtual void SetupLevels();
 
   void Tick(double deltatime) override;
+  void Draw()           const override;
   void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod) override;
   void OnQuit() override;
 

@@ -14,6 +14,7 @@
 #include "Mesh.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include "TextureRenderer.hh"
 #include "UniformBufferObject.hh"
 
@@ -25,8 +26,7 @@ WidgetMeshRenderer::WidgetMeshRenderer(Widget * parent, const glm::ivec2 & posit
     _view(view)
 {
   _texture_renderer = new TextureRenderer(512, 512);
-  SetImage(new Image(true));
-  Render();
+  Graphics->QueueUpdateGPU(this);
 }
 
 
@@ -38,6 +38,9 @@ WidgetMeshRenderer::~WidgetMeshRenderer()
 
 void WidgetMeshRenderer::Render()
 {
+  if(!GetImage())
+    SetImage(new Image(true));
+  
   glEnable(GL_DEPTH_TEST);
   _texture_renderer->BeginRender();
   {

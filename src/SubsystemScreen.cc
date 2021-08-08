@@ -35,8 +35,8 @@ bool SubsystemScreen::Start()
 
 void SubsystemScreen::Stop()
 {
-  while(auto state = GetScreen())
-    state->Quit();
+  while(auto screen = GetScreen())
+    screen->Quit();
   
   if(ScreenManager == this)
     ScreenManager = nullptr;
@@ -48,28 +48,28 @@ void SubsystemScreen::Stop()
 
 void SubsystemScreen::Tick(double deltatime)
 {
-  auto state = GetScreen();
-  if(!state)
+  auto screen = GetScreen();
+  if(!screen)
     return;
 
-  auto child = state->GetChild();
+  auto child = screen->GetChild();
   if(child && !child->IsRunning())
     {
-      state->SetChild(nullptr);
+      screen->SetChild(nullptr);
       delete child;
     }
 
-  state->Tick(deltatime);
+  screen->Tick(deltatime);
 }
 
 
 bool SubsystemScreen::IsRunning() const
 {
-  auto state = GetScreen();
-  if(!state)
+  auto screen = GetScreen();
+  if(!screen)
     return false;
 
-  return state->IsRunning();
+  return screen->IsRunning();
 }
 
 

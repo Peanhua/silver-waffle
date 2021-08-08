@@ -29,6 +29,7 @@ public:
   ~ScreenTitle();
   
   void Tick(double deltatime) override;
+  void Draw()           const override;
   void TickPlot();
   
 private:

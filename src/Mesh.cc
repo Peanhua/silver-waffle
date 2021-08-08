@@ -130,7 +130,6 @@ void Mesh::DrawSameShaderIgnoreTransform(const glm::mat4 & model, const glm::mat
               shader->SetInt("texture1", 1);
             }
           assert(_textures.size() < 3);
-          glActiveTexture(GL_TEXTURE0);
         }
 
       if(_options & OPTION_BLEND)

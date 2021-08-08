@@ -14,6 +14,11 @@
 
 #include "Subsystem.hh"
 #include <SDL.h>
+#include <vector>
+
+class ShaderProgram;
+class Widget;
+
 
 class SubsystemGfx : public Subsystem
 {
@@ -23,10 +28,19 @@ public:
   bool Start()    override;
   void Stop()     override;
   void PreTick()  override;
+  void Tick(double deltatime) override;
   void PostTick() override;
+
+  void QueueUpdateGPU(ShaderProgram * shader_program);
+  void QueueUpdateGPU(Widget * widget);
 
 private:
   SDL_Window * _window;
+  std::vector<ShaderProgram *> _shader_program_queue;
+  std::vector<Widget *>        _widget_queue;
 };
+
+
+extern SubsystemGfx * Graphics;
 
 #endif

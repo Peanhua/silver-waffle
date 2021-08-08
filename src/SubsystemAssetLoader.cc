@@ -153,7 +153,9 @@ ShaderProgram * SubsystemAssetLoader::LoadShaderProgram(const std::string & name
   sp->SetName(name);
 #endif
   std::cout << "Loaded shader '" << name << "'.\n";
+
   _shader_programs[name] = sp;
+
   return sp;
 }
 

@@ -25,13 +25,13 @@ public:
   WidgetMeshRenderer(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, Mesh * mesh, const glm::mat4 & model, const glm::mat4 & view);
   ~WidgetMeshRenderer();
 
+  void Render() override;
+  
 private:
   Mesh *            _mesh;
   glm::mat4         _model;
   glm::mat4         _view;
   TextureRenderer * _texture_renderer;
-
-  void Render();
 };
 
 #endif

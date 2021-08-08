@@ -30,6 +30,7 @@ public:
                 const std::string & geometry_shader);
   ~ShaderProgram();
 
+  void UpdateGPU();
   void Use() const;
   GLuint GetProgram() const;
 
@@ -42,6 +43,9 @@ public:
   static GLuint current_program;
   
 private:
+  std::string           _vertex_shader;
+  std::string           _fragment_shader;
+  std::string           _geometry_shader;
   GLuint                _program;
   std::vector<Shader *> _shaders;
   std::vector<GLint>    _uniform_locations;

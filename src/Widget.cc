@@ -485,3 +485,7 @@ void Widget::DestroyChildren()
   _children.clear();
 }
 
+
+void Widget::Render()
+{
+}

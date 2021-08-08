@@ -30,6 +30,7 @@ public:
   Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
   virtual ~Widget();
 
+  virtual void Render();
   void Destroy();
   
   Widget *   GetWidgetAt(const glm::ivec2 & position);

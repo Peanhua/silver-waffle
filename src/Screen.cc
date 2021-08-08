@@ -64,9 +64,14 @@ void Screen::Quit()
 void Screen::Tick(double deltatime)
 {
   if(_root_widget)
+    _root_widget->Tick(deltatime);
+}
+
+
+void Screen::Draw() const
+{
+  if(_root_widget)
     {
-      _root_widget->Tick(deltatime);
-      
       glDisable(GL_DEPTH_TEST);
       _root_widget->Draw();
     }

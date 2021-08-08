@@ -167,7 +167,12 @@ void ScreenTitle::Tick(double deltatime)
   for(auto planet : _planets)
     planet->Tick(deltatime);
     
-  
+   Screen::Tick(deltatime);
+}
+
+
+void ScreenTitle::Draw() const
+{
   glDisable(GL_DEPTH_TEST);
   _milkyway->Draw(*_camera);
   
@@ -176,9 +181,9 @@ void ScreenTitle::Tick(double deltatime)
     planet->Draw(*_camera);
 
   _particles->Draw(*_camera);
-  
-  Screen::Tick(deltatime);
-}
+
+  Screen::Draw();
+}  
 
 
 void ScreenTitle::TickPlot()

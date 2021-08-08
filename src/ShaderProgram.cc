@@ -10,32 +10,45 @@
   Complete license can be found in the LICENSE file.
 */
 #include "ShaderProgram.hh"
-#include "Shader.hh"
 #include "Mesh.hh"
+#include "Shader.hh"
+#include "SubsystemGfx.hh"
 #include <cassert>
 #include <iostream>
 
 
 ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::string & fragment_shader, const std::string & geometry_shader)
+  : _vertex_shader(vertex_shader),
+    _fragment_shader(fragment_shader),
+    _geometry_shader(geometry_shader),
+    _program(0)
 {
+  Graphics->QueueUpdateGPU(this);
+}
+
+
+void ShaderProgram::UpdateGPU()
+{
+  assert(_program == 0);
+  
   _program = glCreateProgram();
   {
-    auto shader = new Shader(GL_VERTEX_SHADER, vertex_shader);
+    auto shader = new Shader(GL_VERTEX_SHADER, _vertex_shader);
     assert(shader != 0);
     glAttachShader(_program, shader->GetShader());
     _shaders.push_back(shader);
   }
 
   {
-    auto shader = new Shader(GL_FRAGMENT_SHADER, fragment_shader);
+    auto shader = new Shader(GL_FRAGMENT_SHADER, _fragment_shader);
     assert(shader != 0);
     glAttachShader(_program, shader->GetShader());
     _shaders.push_back(shader);
   }
 
-  if(geometry_shader.size() > 0)
+  if(_geometry_shader.length() > 0)
     {
-      auto shader = new Shader(GL_GEOMETRY_SHADER, geometry_shader);
+      auto shader = new Shader(GL_GEOMETRY_SHADER, _geometry_shader);
       assert(shader != 0);
       glAttachShader(_program, shader->GetShader());
       _shaders.push_back(shader);
@@ -65,7 +78,7 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
       std::cerr << delimiter;
       std::cerr << "# Dumping vertex shader:\n";
       std::cerr << delimiter;
-      std::cerr << vertex_shader << "\n";
+      std::cerr << _vertex_shader << "\n";
       std::cerr << delimiter;
       std::cerr << "# End of Vertex shader.\n";
       std::cerr << delimiter << "\n";
@@ -73,7 +86,7 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
       std::cerr << delimiter;
       std::cerr << "# Dumping Fragment shader:\n";
       std::cerr << delimiter;
-      std::cerr << fragment_shader << "\n";
+      std::cerr << _fragment_shader << "\n";
       std::cerr << delimiter;
       std::cerr << "# End of Fragment shader.\n";
       std::cerr << delimiter << "\n";
@@ -81,7 +94,7 @@ ShaderProgram::ShaderProgram(const std::string & vertex_shader, const std::strin
       std::cerr << delimiter;
       std::cerr << "# Dumping Geometry shader:\n";
       std::cerr << delimiter;
-      std::cerr << geometry_shader << "\n";
+      std::cerr << _geometry_shader << "\n";
       std::cerr << delimiter;
       std::cerr << "# End of Geometry shader.\n";
       std::cerr << delimiter;
@@ -126,6 +139,7 @@ ShaderProgram::~ShaderProgram()
 
 GLuint ShaderProgram::GetProgram() const
 {
+  assert(_program != 0);
   return _program;
 }
 
