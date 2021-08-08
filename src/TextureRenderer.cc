@@ -10,13 +10,21 @@
   Complete license can be found in the LICENSE file.
 */
 #include "TextureRenderer.hh"
+#include "SubsystemGfx.hh"
 #include "SubsystemSettings.hh"
 #include <cassert>
 
 
 TextureRenderer::TextureRenderer(unsigned int width, unsigned int height, unsigned int output_buffer_count)
   : _width(width),
-    _height(height)
+    _height(height),
+    _buffer_count(output_buffer_count)
+{
+  Graphics->QueueUpdateGPU(this);
+}
+
+
+void TextureRenderer::UpdateGPU()
 {
   glGenFramebuffers(1, &_framebuffer);
   assert(_framebuffer != 0);
@@ -25,16 +33,16 @@ TextureRenderer::TextureRenderer(unsigned int width, unsigned int height, unsign
   glGenRenderbuffers(1, &_depthbuffer);
   assert(_depthbuffer != 0);
   glBindRenderbuffer(GL_RENDERBUFFER, _depthbuffer);
-  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+  glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, static_cast<GLsizei>(_width), static_cast<GLsizei>(_height));
   glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, _depthbuffer);
 
-  for(unsigned int i = 0; i < output_buffer_count; i++)
+  for(unsigned int i = 0; i < _buffer_count; i++)
     {
       _texture_ids.push_back(0);
       glGenTextures(1, &_texture_ids[i]);
       assert(_texture_ids[i] != 0);
       glBindTexture(GL_TEXTURE_2D, _texture_ids[i]);
-      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+      glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, static_cast<GLsizei>(_width), static_cast<GLsizei>(_height), 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
       glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -42,9 +50,9 @@ TextureRenderer::TextureRenderer(unsigned int width, unsigned int height, unsign
     }
 
   std::vector<GLenum> buffers;
-  for(unsigned int i = 0; i < output_buffer_count; i++)
+  for(unsigned int i = 0; i < _buffer_count; i++)
     buffers.push_back(GL_COLOR_ATTACHMENT0 + i);
-  glDrawBuffers(static_cast<GLsizei>(output_buffer_count), buffers.data());
+  glDrawBuffers(static_cast<GLsizei>(_buffer_count), buffers.data());
 
   assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
 

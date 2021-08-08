@@ -14,16 +14,18 @@
 
 class Mesh;
 
+#include "GPUObject.hh"
 #include <vector>
 #include <GL/glew.h>
 
 
-class GaussianBlur
+class GaussianBlur : public GPUObject
 {
 public:
   GaussianBlur();
   ~GaussianBlur();
 
+  void UpdateGPU() override;
   GLuint Blur(unsigned int count, GLuint source_texture_id);
 
 private:

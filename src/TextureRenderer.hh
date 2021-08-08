@@ -12,16 +12,18 @@
   Complete license can be found in the LICENSE file.
 */
 
+#include "GPUObject.hh"
 #include <GL/glew.h>
 #include <vector>
 
 
-class TextureRenderer
+class TextureRenderer : public GPUObject
 {
 public:
   TextureRenderer(unsigned int width, unsigned int height, unsigned int output_buffer_count = 1);
   ~TextureRenderer();
 
+  void   UpdateGPU() override;
   void   BeginRender();
   void   EndRender();
   GLuint GetTextureId(unsigned int index = 0) const;
@@ -29,6 +31,7 @@ public:
 private:
   unsigned int _width;
   unsigned int _height;
+  unsigned int _buffer_count;
   std::vector<GLuint> _texture_ids;
   GLuint       _framebuffer;
   GLuint       _depthbuffer;

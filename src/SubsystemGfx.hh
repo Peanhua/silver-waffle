@@ -16,6 +16,7 @@
 #include <SDL.h>
 #include <vector>
 
+class GPUObject;
 class Image;
 class Mesh;
 class ShaderProgram;
@@ -33,16 +34,20 @@ public:
   void Tick(double deltatime) override;
   void PostTick() override;
 
+  void QueueUpdateGPU(GPUObject * object);
   void QueueUpdateGPU(ShaderProgram * shader_program);
   void QueueUpdateGPU(Widget * widget);
   void QueueUpdateGPU(Image * image);
   void QueueUpdateGPU(Mesh * mesh);
   void QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index);
 
+  void CancelUpdateGPU(Mesh * mesh);
+
 private:
   SDL_Window *  _window;
   SDL_GLContext _opengl_context;
-  
+
+  std::vector<GPUObject *>     _object_queue;
   std::vector<ShaderProgram *> _shader_program_queue;
   std::vector<Widget *>        _widget_queue;
   std::vector<Image *>         _image_queue;

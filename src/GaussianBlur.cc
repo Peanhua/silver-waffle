@@ -14,10 +14,28 @@
 #include "MeshOverlay.hh"
 #include "ShaderProgram.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemGfx.hh"
 #include "SubsystemSettings.hh"
 
 
 GaussianBlur::GaussianBlur()
+{
+  std::vector<std::string> names
+    {
+      "Horizontal",
+      "Vertical"
+    };
+  for(auto name : names)
+    {
+      auto mesh = new MeshOverlay();
+      mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("GaussianBlur-" + name));
+      _meshes.push_back(mesh);
+    }
+  Graphics->QueueUpdateGPU(this);
+}
+
+
+void GaussianBlur::UpdateGPU()
 {
   std::vector<std::string> names
     {
@@ -44,10 +62,6 @@ GaussianBlur::GaussianBlur()
       glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, texture_id, 0);
 
       assert(glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-
-      auto mesh = new MeshOverlay();
-      mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("GaussianBlur-" + name));
-      _meshes.push_back(mesh);
     }
 }
 

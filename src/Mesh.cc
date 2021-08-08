@@ -10,10 +10,12 @@
   Complete license can be found in the LICENSE file.
 */
 #include "Mesh.hh"
-#include "ShaderProgram.hh"
 #include "Image.hh"
+#include "ShaderProgram.hh"
+#include "SubsystemGfx.hh"
 #include <cassert>
 #include <iostream>
+
 
 Mesh::Mesh(unsigned int options)
   : _options(options | OPTION_VERTEX),
@@ -33,11 +35,19 @@ Mesh::Mesh(unsigned int options)
     _bounding_sphere_radius(0),
     _bounding_box_size(0, 0, 0)
 {
+#ifndef NDEBUG
+  _destroyed = false;
+#endif
 }
 
 
 Mesh::~Mesh()
 {
+  assert(!_destroyed);
+
+  if(Graphics)
+    Graphics->CancelUpdateGPU(this);
+  
   if(_vao != 0)
     glDeleteVertexArrays(1, &_vao);
 
@@ -57,6 +67,10 @@ Mesh::~Mesh()
 
   for(auto c : _children)
     delete c;
+
+#ifndef NDEBUG
+  _destroyed = true;
+#endif
 }
 
 
@@ -86,11 +100,15 @@ Mesh::Mesh(const Mesh & other)
     _bounding_sphere_radius(other._bounding_sphere_radius),
     _bounding_box_size(other._bounding_box_size)
 {
+  assert(!other._destroyed);
   for(auto c : other._children)
     {
       Mesh * child = new Mesh(*c);
       _children.push_back(child);
     }
+#ifndef NDEBUG
+  _destroyed = false;
+#endif
 }
 
 
@@ -398,6 +416,8 @@ void Mesh::SetPrimitiveType(const GLenum primitive_type)
 
 void Mesh::UpdateGPU()
 {
+  assert(!_destroyed);
+  
   {
     if(_vao == 0)
       glGenVertexArrays(1, &_vao);

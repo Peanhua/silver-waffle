@@ -122,6 +122,9 @@ public:
 private:
   std::string  _name;
   unsigned int _options;
+#ifndef NDEBUG
+  bool         _destroyed;
+#endif
 
   glm::mat4 _transform;
   bool      _transform_is_identity;

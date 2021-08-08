@@ -10,6 +10,7 @@
   Complete license can be found in the LICENSE file.
 */
 #include "SubsystemGfx.hh"
+#include "GPUObject.hh"
 #include "Image.hh"
 #include "Mesh.hh"
 #include "Screen.hh"
@@ -24,7 +25,7 @@
 
 
 //#define SIMULATE_GPU_THREAD
-
+#define DISABLE_QUEUES
 
 SubsystemGfx * Graphics = nullptr;
 
@@ -142,11 +143,16 @@ void SubsystemGfx::Tick(double deltatime)
   _image_queue.clear();
 
   for(auto m : _mesh_queue)
-    m->UpdateGPU();
+    if(m)
+      m->UpdateGPU();
   _mesh_queue.clear();
 
   for(auto p : _mesh_vertex_queue)
     p.first->UpdateGPU(Mesh::OPTION_VERTEX, p.second, 1);
+
+  for(auto o : _object_queue)
+    o->UpdateGPU();
+  _object_queue.clear();
   
   for(auto w : _widget_queue)
     w->Render();
@@ -196,29 +202,70 @@ static void GLAPIENTRY MessageCallback(GLenum source,
 
 void SubsystemGfx::QueueUpdateGPU(ShaderProgram * shader_program)
 {
+#ifdef DISABLE_QUEUES
+  shader_program->UpdateGPU();
+#else
   _shader_program_queue.push_back(shader_program);
+#endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Widget * widget)
 {
+#ifdef DISABLE_QUEUES
+  widget->Render();
+#else
   _widget_queue.push_back(widget);
+#endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Image * image)
 {
+#ifdef DISABLE_QUEUES
+  image->UpdateGPU();
+#else
   _image_queue.push_back(image);
+#endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Mesh * mesh)
 {
+#ifdef DISABLE_QUEUES
+  mesh->UpdateGPU();
+#else
   _mesh_queue.push_back(mesh);
+#endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index)
 {
+#ifdef DISABLE_QUEUES
+  mesh->UpdateGPU(Mesh::OPTION_VERTEX, vertex_index, 1);
+#else
   _mesh_vertex_queue.push_back({mesh, vertex_index});
+#endif
+}
+
+
+void SubsystemGfx::QueueUpdateGPU(GPUObject * object)
+{
+#ifdef DISABLE_QUEUES
+  object->UpdateGPU();
+#else
+  _object_queue.push_back(object);
+#endif
+}
+
+
+void SubsystemGfx::CancelUpdateGPU(Mesh * mesh)
+{
+#ifdef DISABLE_QUEUES
+#else
+  for(unsigned int i = 0; i < _mesh_queue.size(); i++)
+    if(_mesh_queue[i] == mesh)
+      _mesh_queue[i] = nullptr;
+#endif
 }
