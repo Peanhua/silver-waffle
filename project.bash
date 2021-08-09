@@ -15,6 +15,10 @@ if [ -n "${1}" ]; then
     PROFILE=${1}
 fi
 
+if [ -f Makefile ]; then
+    make distclean
+fi
+
 echo "Using profile: ${PROFILE}"
 export MAKEFLAGS="-s -j7"
 case ${PROFILE} in
@@ -40,3 +44,8 @@ if [ ${USE_SANITIZERS} -ne 0 ]; then
     CXXFLAGS+=" -fsanitize-address"
     LDFLAGS+=" -fsanitize-address"
 fi
+
+
+autoreconf -i
+./configure --prefix=$(pwd) --with-valgrind
+#--with-gpu-thread

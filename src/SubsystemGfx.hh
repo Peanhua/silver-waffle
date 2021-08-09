@@ -12,8 +12,14 @@
   Complete license can be found in the LICENSE file.
 */
 
+#ifdef HAVE_CONFIG_H
+# include "../config.h"
+#endif
 #include "Subsystem.hh"
 #include <SDL.h>
+#include <atomic>
+#include <mutex>
+#include <thread>
 #include <vector>
 
 class GPUObject;
@@ -30,9 +36,8 @@ public:
   
   bool Start()    override;
   void Stop()     override;
-  void PreTick()  override;
-  void Tick(double deltatime) override;
-  void PostTick() override;
+
+  void NextFrame();
 
   void QueueUpdateGPU(GPUObject * object);
   void QueueUpdateGPU(ShaderProgram * shader_program);
@@ -43,9 +48,16 @@ public:
 
   void CancelUpdateGPU(Mesh * mesh);
 
+  static thread_local unsigned int current_buffer;
+
 private:
   SDL_Window *  _window;
   SDL_GLContext _opengl_context;
+#ifdef WITH_GPU_THREAD
+  std::thread * _thread;
+  std::mutex    _gpu;
+  std::atomic<bool> _exit_thread;
+  std::atomic<bool> _draw_frame;
 
   std::vector<GPUObject *>     _object_queue;
   std::vector<ShaderProgram *> _shader_program_queue;
@@ -53,6 +65,14 @@ private:
   std::vector<Image *>         _image_queue;
   std::vector<Mesh *>          _mesh_queue;
   std::vector<std::pair<Mesh *, unsigned int>> _mesh_vertex_queue;
+#endif
+
+  void Draw();
+#ifdef WITH_GPU_THREAD
+  void FlushQueues();
+  
+  static void Main(SubsystemGfx * gfx);
+#endif
 };
 
 

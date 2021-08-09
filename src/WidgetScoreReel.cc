@@ -17,7 +17,8 @@
 
 WidgetScoreReel::WidgetScoreReel(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, ScoreReel * score_reel)
   : Widget(parent, position, size),
-    _score_reel(score_reel)
+    _score_reel(score_reel),
+    _should_redraw(true)
 {
   assert(_score_reel);
   _texture_renderer = new TextureRenderer(512, 128);
@@ -35,8 +36,13 @@ void WidgetScoreReel::Tick(double deltatime)
 {
   Widget::Tick(deltatime);
   
-  bool should_redraw = _score_reel->Tick(deltatime);
-  if(should_redraw)
+  _should_redraw = _score_reel->Tick(deltatime);
+}
+
+
+void WidgetScoreReel::Draw() const
+{
+  if(_should_redraw)
     {
       glEnable(GL_DEPTH_TEST);
       _texture_renderer->BeginRender();
@@ -44,4 +50,5 @@ void WidgetScoreReel::Tick(double deltatime)
       _texture_renderer->EndRender();
       GetImage()->SetTextureId(_texture_renderer->GetTextureId());
     }
+  Widget::Draw();
 }

@@ -80,6 +80,7 @@ int main(int argc, char *argv[])
                 ssh.PreTickAll();
                 ssh.TickAll(deltatime.count());
                 ssh.PostTickAll();
+                gfx.NextFrame();
                 auto frame_end = clock.now();
 
                 auto frame_time = std::chrono::duration<double>(frame_end - frame_start);

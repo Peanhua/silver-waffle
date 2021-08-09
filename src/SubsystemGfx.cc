@@ -22,12 +22,16 @@
 #include <GL/glew.h>
 #include <SDL.h>
 #include <iostream>
+#include <thread>
 
 
-//#define SIMULATE_GPU_THREAD
-#define DISABLE_QUEUES
 
 SubsystemGfx * Graphics = nullptr;
+
+#ifdef WITH_GPU_THREAD
+thread_local unsigned int SubsystemGfx::current_buffer;
+#endif
+
 
 static void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam);
 
@@ -35,6 +39,9 @@ static void GLAPIENTRY MessageCallback(GLenum source, GLenum type, GLuint id, GL
 SubsystemGfx::SubsystemGfx()
   : Subsystem("Gfx"),
     _window(nullptr)
+#ifdef WITH_GPU_THREAD
+  , _thread(nullptr)
+#endif
 {
 }
 
@@ -86,8 +93,13 @@ bool SubsystemGfx::Start()
                     }
 #endif
 
-#ifdef SIMULATE_GPU_THREAD
+#ifdef WITH_GPU_THREAD
                   SDL_GL_MakeCurrent(_window, nullptr);
+                  current_buffer = 0;
+                  _exit_thread = false;
+                  _draw_frame = false;
+                  _thread = new std::thread(Main, this);
+                  assert(_thread->joinable());
 #endif
                 }
               else
@@ -108,48 +120,83 @@ bool SubsystemGfx::Start()
 
 void SubsystemGfx::Stop()
 {
+#ifdef WITH_GPU_THREAD
+  if(_thread)
+    {
+      _exit_thread = true;
+      _thread->join();
+    }
+  delete _thread;
+  
+  SDL_GL_MakeCurrent(_window, _opengl_context);
+#endif
+
   SDL_QuitSubSystem(SDL_INIT_VIDEO);
   if(Graphics == this)
     Graphics = nullptr;
 }
 
 
-void SubsystemGfx::PreTick()
+void SubsystemGfx::NextFrame()
 {
-#ifdef SIMULATE_GPU_THREAD
-  SDL_GL_MakeCurrent(_window, _opengl_context);
-#endif
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-#ifdef SIMULATE_GPU_THREAD
-  SDL_GL_MakeCurrent(_window, nullptr);
+#ifdef WITH_GPU_THREAD
+  while(_draw_frame)
+    std::this_thread::sleep_for(std::chrono::milliseconds(1));
+
+  std::atomic_thread_fence(std::memory_order_release);
+
+  _draw_frame = true;
+  current_buffer ^= 1;
+#else
+  Draw();
 #endif
 }
 
 
-void SubsystemGfx::Tick(double deltatime)
+#ifdef WITH_GPU_THREAD
+void SubsystemGfx::Main(SubsystemGfx * gfx)
 {
-  assert(deltatime == deltatime);
-  
-#ifdef SIMULATE_GPU_THREAD
-  SDL_GL_MakeCurrent(_window, _opengl_context);
-#endif
+  SDL_GL_MakeCurrent(gfx->_window, gfx->_opengl_context);
+  current_buffer = 0;
+  while(true)
+    {
+      if(gfx->_exit_thread)
+        break;
 
+      if(gfx->_draw_frame)
+        {
+          std::lock_guard lock(gfx->_gpu);
+          std::atomic_thread_fence(std::memory_order_acquire);
+          gfx->Draw();
+          gfx->_draw_frame = false;
+          current_buffer ^= 1;
+        }
+
+      std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
+  
+  SDL_GL_MakeCurrent(gfx->_window, nullptr);
+}
+
+
+void SubsystemGfx::FlushQueues()
+{
   for(auto shader : _shader_program_queue)
     shader->UpdateGPU();
   _shader_program_queue.clear();
-
+  
   for(auto i : _image_queue)
     i->UpdateGPU();
   _image_queue.clear();
-
+  
   for(auto m : _mesh_queue)
     if(m)
       m->UpdateGPU();
   _mesh_queue.clear();
-
+  
   for(auto p : _mesh_vertex_queue)
     p.first->UpdateGPU(Mesh::OPTION_VERTEX, p.second, 1);
-
+  
   for(auto o : _object_queue)
     o->UpdateGPU();
   _object_queue.clear();
@@ -157,28 +204,24 @@ void SubsystemGfx::Tick(double deltatime)
   for(auto w : _widget_queue)
     w->Render();
   _widget_queue.clear();
+}
+#endif  
 
+
+void SubsystemGfx::Draw()
+{
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+#ifdef WITH_GPU_THREAD
+  FlushQueues();
+#endif
+  
   auto screen = ScreenManager->GetScreen();
   if(screen)
     screen->Draw();
 
-#ifdef SIMULATE_GPU_THREAD
-  SDL_GL_MakeCurrent(_window, nullptr);
-#endif
-}  
-
-
-void SubsystemGfx::PostTick()
-{
-#ifdef SIMULATE_GPU_THREAD
-  SDL_GL_MakeCurrent(_window, _opengl_context);
-#endif
   SDL_GL_SwapWindow(_window);
-#ifdef SIMULATE_GPU_THREAD
-  SDL_GL_MakeCurrent(_window, nullptr);
-#endif
-}
-
+}  
 
 
 static void GLAPIENTRY MessageCallback(GLenum source,
@@ -202,70 +245,76 @@ static void GLAPIENTRY MessageCallback(GLenum source,
 
 void SubsystemGfx::QueueUpdateGPU(ShaderProgram * shader_program)
 {
-#ifdef DISABLE_QUEUES
-  shader_program->UpdateGPU();
-#else
+#ifdef WITH_GPU_THREAD
+  std::lock_guard lock(_gpu);
   _shader_program_queue.push_back(shader_program);
+#else
+  shader_program->UpdateGPU();
 #endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Widget * widget)
 {
-#ifdef DISABLE_QUEUES
-  widget->Render();
-#else
+#ifdef WITH_GPU_THREAD
+  std::lock_guard lock(_gpu);
   _widget_queue.push_back(widget);
+#else
+  widget->Render();
 #endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Image * image)
 {
-#ifdef DISABLE_QUEUES
-  image->UpdateGPU();
-#else
+#ifdef WITH_GPU_THREAD
+  std::lock_guard lock(_gpu);
   _image_queue.push_back(image);
+#else
+  image->UpdateGPU();
 #endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Mesh * mesh)
 {
-#ifdef DISABLE_QUEUES
-  mesh->UpdateGPU();
-#else
+#ifdef WITH_GPU_THREAD
+  std::lock_guard lock(_gpu);
   _mesh_queue.push_back(mesh);
+#else
+  mesh->UpdateGPU();
 #endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index)
 {
-#ifdef DISABLE_QUEUES
-  mesh->UpdateGPU(Mesh::OPTION_VERTEX, vertex_index, 1);
-#else
+#ifdef WITH_GPU_THREAD
+  std::lock_guard lock(_gpu);
   _mesh_vertex_queue.push_back({mesh, vertex_index});
+#else
+  mesh->UpdateGPU(Mesh::OPTION_VERTEX, vertex_index, 1);
 #endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(GPUObject * object)
 {
-#ifdef DISABLE_QUEUES
-  object->UpdateGPU();
-#else
+#ifdef WITH_GPU_THREAD
+  std::lock_guard lock(_gpu);
   _object_queue.push_back(object);
+#else
+  object->UpdateGPU();
 #endif
 }
 
-
 void SubsystemGfx::CancelUpdateGPU(Mesh * mesh)
 {
-#ifdef DISABLE_QUEUES
-#else
+#ifdef WITH_GPU_THREAD
   for(unsigned int i = 0; i < _mesh_queue.size(); i++)
     if(_mesh_queue[i] == mesh)
       _mesh_queue[i] = nullptr;
+#else
+  assert(mesh == mesh);
 #endif
 }

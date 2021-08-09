@@ -6,6 +6,8 @@ m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_PROG_CXX
 AX_CXX_COMPILE_STDCXX([17], [noext], [mandatory])
 
+AX_PTHREAD
+
 PKG_CHECK_MODULES([SDL2], [sdl2 >= 2], [], [
   PKG_CHECK_MODULES([SDL2], [sdl >= 2])]
 )
@@ -32,6 +34,11 @@ AC_ARG_WITH([valgrind], AS_HELP_STRING([--with-valgrind], [Build with support fo
 AS_IF([test "x$with_valgrind" = "xyes"], [
   PKG_CHECK_MODULES([VALGRIND], [valgrind])
   AC_DEFINE([WITH_VALGRIND], [1], [Define to use Valgrind.])
+])
+
+AC_ARG_WITH([gpu-thread], AS_HELP_STRING([--with-gpu-thread], [Build with GPU thread.]))
+AS_IF([test "x$with_gpu_thread" = "xyes"], [
+  AC_DEFINE([WITH_GPU_THREAD], [1], [Define to use GPU thread.])
 ])
 
 AX_CHECK_GL

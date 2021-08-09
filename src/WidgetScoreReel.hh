@@ -25,10 +25,12 @@ public:
   ~WidgetScoreReel();
   
   void Tick(double deltatime) override;
+  void Draw()           const override;
   
 private:
   ScoreReel *       _score_reel;
   TextureRenderer * _texture_renderer;
+  bool              _should_redraw;
 };
 
 #endif

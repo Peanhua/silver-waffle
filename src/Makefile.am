@@ -7,6 +7,7 @@ AM_CXXFLAGS =                \
         $(GLM_CFLAGS)        \
 	$(JSON11_CFLAGS)     \
 	$(LIBPNG_CFLAGS)     \
+	$(PTHREAD_CFLAGS)    \
         $(SDL2_CFLAGS)       \
         $(SDL2_image_CFLAGS) \
 	$(VALGRIND_CFLAGS)
@@ -20,6 +21,7 @@ silverwaffle_LDADD =       \
         $(GLEW_LIBS)       \
 	$(JSON11_LIBS)     \
 	$(LIBPNG_LIBS)     \
+	$(PTHREAD_LIBS)    \
         $(SDL2_LIBS)       \
         $(SDL2_image_LIBS)
 
