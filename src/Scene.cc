@@ -29,6 +29,7 @@
 #include "SubsystemSettings.hh"
 #include "UniformBufferObject.hh"
 #include "Widget.hh"
+#include <future>
 #include <iostream>
 
 
@@ -56,7 +57,7 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
   for(int i = 0; i < 100; i++)
     _explosions.push_back(new Explosion(random));
 
-  _tick_work_objects.reserve(1024);
+  _tick_work_objects.reserve(4096);
 }
 
 
@@ -80,7 +81,7 @@ void Scene::Draw(const Camera & camera) const
     _particles->Draw(camera);
 
   {
-    auto objects = _quadtree->GetNearby2(camera.GetPosition());
+    auto & objects = _quadtree->GetNearby2(camera.GetPosition());
     auto o = objects.Next();
     while(o)
       {
@@ -98,9 +99,6 @@ void Scene::Draw(const Camera & camera) const
 
 Scene::~Scene()
 {
-  for(auto o : _garbage)
-    if(o->GetUseGarbageCollection())
-      delete o;
 }
 
 
@@ -207,26 +205,45 @@ void Scene::Tick(double deltatime)
     }
   
   _time += deltatime;
+  _collisioncheck_statistics.elapsed_time += deltatime;
+  _collisioncheck_statistics.elapsed_frames++;
 
-  auto & objects = _tick_work_objects;
-  objects.clear();
+
+  auto explos(_explosions); // Copy the list for the thread.
+
+  auto ProcessExplosivesAndParticles = [this, deltatime, warpspeed, warpspeedmove, &explos]()
+  {
+    for(auto e : explos)
+      if(e && e->IsAlive())
+        {
+          e->Tick(deltatime);
+          if(warpspeed)
+            e->Translate(warpspeedmove);
+        }
+    
+    if(_particles)
+      _particles->Tick(deltatime * (1.0 + 5.0 * static_cast<double>(_warp_throttle)));
+  };
+
+  auto fxjob = std::async(std::launch::async, ProcessExplosivesAndParticles);
+
+  
+  _tick_work_objects.clear();
   {
     auto all = _quadtree->GetAll();
     auto o = all.Next();
     while(o)
       {
-        objects.push_back(o);
+        _tick_work_objects.push_back(o);
         o = all.Next();
       }
   }
 
   for(auto p : _planets)
     if(p && p->IsAlive())
-      objects.push_back(p);
+      _tick_work_objects.push_back(p);
 
-  _collisioncheck_statistics.elapsed_time += deltatime;
-  _collisioncheck_statistics.elapsed_frames++;
-  for(auto o : objects)
+  for(auto o : _tick_work_objects)
     if(o->IsAlive())
       {
         if(o != GetPlayer() && warpspeed)
@@ -238,41 +255,26 @@ void Scene::Tick(double deltatime)
 
             if(!warpspeed && o->GetCollidesWithChannels())
               CollisionsForObject(o);
-            
-            if(!o->IsAlive())
-              {
-                _garbage.push_back(o);
-                auto ClearReferences = [this](Object * obj)
-                { // todo: Use smart pointers instead of manually fixing references.
-                  for(auto proj : _projectiles)
-                    if(proj && proj->IsAlive())
-                      if(proj->GetOwner() == obj)
-                        proj->SetOwner(nullptr);
-                };
-                
-                ClearReferences(o);
-              }
           }
       }
-    else
-      _garbage.push_back(o);
 
-  for(auto e : _explosions)
-    if(e && e->IsAlive())
-      {
-        e->Tick(deltatime);
-        if(warpspeed)
-          e->Translate(warpspeedmove);
-      }
+  fxjob.get();
+}
 
-  if(_particles)
-    _particles->Tick(deltatime * (1.0 + 5.0 * static_cast<double>(_warp_throttle)));
+
+            
+void Scene::ClearReferences(Object * obj)
+{ // todo: Use smart pointers instead of manually fixing references.
+  for(auto proj : _projectiles)
+    if(proj && proj->IsAlive())
+      if(proj->GetOwner() == obj)
+        proj->SetOwner(nullptr);
 }
 
 
 void Scene::CollisionsForObject(Object * o)
 {
-  auto objects = _quadtree->GetNearby(o->GetPosition());
+  auto & objects = _quadtree->GetNearby(o->GetPosition());
   auto oo = objects.Next();
   while(o->IsAlive() && oo)
     {
@@ -287,17 +289,6 @@ void Scene::CollisionsForObject(Object * o)
                 {
                   _collisioncheck_statistics.pass_narrow_check++;
                   o->OnCollision(*oo, -hitdir);
-                  if(!oo->IsAlive())
-                    {
-                      auto ClearReferences = [this](Object * obj)
-                      { // todo: Use smart pointers instead of manually fixing references.
-                        for(auto proj : _projectiles)
-                          if(proj && proj->IsAlive())
-                            if(proj->GetOwner() == obj)
-                              proj->SetOwner(nullptr);
-                      };
-                      ClearReferences(oo);
-                    }
                 }
             }
         }
@@ -492,7 +483,7 @@ void Scene::ResetCollisionCheckStatistics()
 glm::vec3 Scene::GetClosestGroundSurface(const glm::vec3 & position) const
 {
   auto pos = position;
-  auto objs = _quadtree->GetNearby(position);
+  auto & objs = _quadtree->GetNearby(position);
   auto radius = GetPlayAreaSize().z;
   bool retry = true;
   while(retry)
@@ -539,7 +530,7 @@ void Scene::RemoveObject(Object * object)
 
 ObjectBuilding * Scene::GetClosestSpaceport(const glm::vec3 & position) const
 {
-  auto objs = _quadtree->GetNearby(position); // todo: Add distance parameter. Because currently, from this point of view, we don't know what the "nearby" means.
+  auto & objs = _quadtree->GetNearby(position); // todo: Add distance parameter. Because currently, from this point of view, we don't know what the "nearby" means.
 
   auto o = objs.Next();
   while(o)
@@ -587,7 +578,7 @@ void Scene::DumpStats() const
 
 void Scene::DestroyAllEnemies()
 {
-  auto objs = _quadtree->GetNearby2(_player->GetPosition());
+  auto & objs = _quadtree->GetNearby2(_player->GetPosition());
   while(auto o = objs.Next())
     if(o->IsAlive())
       {

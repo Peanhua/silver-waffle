@@ -103,6 +103,7 @@ public:
   QuadTree * GetQuadTree() const;
 
   void DestroyAllEnemies();
+  void ClearReferences(Object * obj);
 
   void DumpStats() const;
 
@@ -130,7 +131,6 @@ private:
   std::vector<bool>              _tutorialmessages;
   CollisionCheckStatistics       _collisioncheck_statistics;
   std::vector<Object *>          _tick_work_objects;
-  std::vector<Object *>          _garbage;
   
   void CollisionsForObject(Object * o);
 };

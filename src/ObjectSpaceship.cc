@@ -715,3 +715,13 @@ bool ObjectSpaceship::IsLanded() const
 {
   return _landed;
 }
+
+
+void ObjectSpaceship::OnDestroyed(Object * destroyer)
+{
+  auto scene = GetScene();
+  if(scene)
+    scene->ClearReferences(this);
+  
+  ObjectMovable::OnDestroyed(destroyer);
+}
