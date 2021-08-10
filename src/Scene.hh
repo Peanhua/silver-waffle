@@ -74,6 +74,7 @@ public:
   ObjectSpaceship * GetPlayer() const;
 
   void              AddPlanet(Object * planet);
+  void              AddCloud(Object * cloud);
   Object *          GetClosestPlanet(const glm::vec3 & position) const;
   ObjectBuilding *  GetClosestSpaceport(const glm::vec3 & position) const;
 
@@ -124,6 +125,7 @@ private:
   RingBuffer<ObjectProjectile *> _projectiles;
   RingBuffer<Explosion *>        _explosions;
   RingBuffer<Object *>           _planets;
+  RingBuffer<Object *>           _clouds;
   double                         _time;
   bool                           _warp_engine_starting;
   float                          _warp_throttle;

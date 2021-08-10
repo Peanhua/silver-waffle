@@ -77,6 +77,9 @@ void Scene::Draw(const Camera & camera) const
 
   glClear(GL_DEPTH_BUFFER_BIT);
 
+  for(auto c : _clouds)
+    c->Draw(camera);
+
   if(_particles)
     _particles->Draw(camera);
 
@@ -353,6 +356,14 @@ void Scene::AddPlanet(Object * object)
 {
   assert(object);
   _planets.Add(object);
+  SetupSceneObject(object, true);
+}
+
+
+void Scene::AddCloud(Object * object)
+{
+  assert(object);
+  _clouds.Add(object);
   SetupSceneObject(object, true);
 }
 

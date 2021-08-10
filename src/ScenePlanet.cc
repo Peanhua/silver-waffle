@@ -47,7 +47,7 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
   for(int i = 0; i < 100; i++)
     {
       auto cloud = new ObjectCloud(this, static_cast<unsigned int>(_random_generator()));
-      AddPlanet(cloud);
+      AddCloud(cloud);
       cloud->SetPosition({
           GetPlayAreaSize().x * GetRand(),
           GetPlayAreaSize().y * GetRand(),
