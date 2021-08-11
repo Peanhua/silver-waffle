@@ -46,7 +46,7 @@ SpaceParticles::SpaceParticles(double radius_min, double radius_max, unsigned lo
     }
   Graphics->QueueUpdateGPU(_mesh);
 
-  for(int i = 0; i < 60 * 30; i++)
+  for(int i = 0; i < 60 * 10; i++)
     Tick(1.0 / 60.0);
 }
 

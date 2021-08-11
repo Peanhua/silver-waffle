@@ -55,8 +55,7 @@ void UniformBufferObject::Set(unsigned int pos, unsigned int bytes, const float 
 
 void UniformBufferObject::Flush()
 {
-  if(_flushmax == 0)
-    return;
+  assert(_flushmax > 0);
   
   glBindBuffer(GL_UNIFORM_BUFFER, _ubo);
   glBufferSubData(GL_UNIFORM_BUFFER, _flushmin, _flushmax - _flushmin, _buf.data() + _flushmin / sizeof(float));

@@ -33,6 +33,8 @@ bool SubsystemSettings::Start()
 
   _bool_values["tutorial"] = true;
 
+  _int_values["texture_quality"] = 0; // Quality values go from low to high [0,1].
+
   _bool_values["draw_collision"] = false;
 
   _bool_values["demo"] = false;

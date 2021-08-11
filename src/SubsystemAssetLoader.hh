@@ -18,6 +18,7 @@
 #include <json11.hpp>
 #include <map>
 #include <vector>
+#include <deque>
 
 class Font;
 class Image;
@@ -33,6 +34,7 @@ public:
   ~SubsystemAssetLoader();
   
   bool Start() override;
+  void Tick(double deltatime) override;
   void Stop() override;
 
   void LoadCache();
@@ -48,6 +50,7 @@ public:
   ObjectCollectible * LoadObjectCollectible(int type);
 
 private:
+  int _texture_quality;
   std::map<std::string, std::string>     _text_assets;
   std::map<std::string, json11::Json *>  _jsons;
   std::map<std::string, ShaderProgram *> _shader_programs;
@@ -56,6 +59,19 @@ private:
   std::map<SolarSystemObject::Type, std::vector<SolarSystemObject *> *> _solar_system_objects;
   std::map<ObjectCollectible::Type, Mesh *> _collectibles_meshes;
   std::map<float, Font *>                _fonts;
+
+  bool LoadImage(Image * image, const std::string & name, unsigned int quality);
+  void ScheduleLoadImageHighQuality(const std::string & name);
+  void LoadNextImage();
+
+
+  class Request
+  {
+  public:
+    Request(const std::string & name);
+    std::string _name;
+  };
+  std::deque<Request> _image_requests;
 };
 
 extern SubsystemAssetLoader * AssetLoader;

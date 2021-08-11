@@ -30,7 +30,8 @@ SubsystemAssetLoader * AssetLoader = nullptr;
 
 
 SubsystemAssetLoader::SubsystemAssetLoader()
-  : Subsystem("AssetLoader")
+  : Subsystem("AssetLoader"),
+    _texture_quality(0)
 {
 }
 
@@ -67,6 +68,9 @@ bool SubsystemAssetLoader::Start()
   assert(!AssetLoader);
   AssetLoader = this;
 
+  _texture_quality = Settings->GetInt("texture_quality");
+  assert(_texture_quality >= 0 && _texture_quality <= 1);
+  
   return true;
 }
 
@@ -244,8 +248,64 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
   if(it != _images.end())
     return (*it).second;
 
-  auto rv = new Image(true);
+  auto image = new Image(true);
+  if(LoadImage(image, name, 0))
+    {
+      _images[name] = image;
+      if(_texture_quality > 0)
+        ScheduleLoadImageHighQuality(name);
+    }
+  else
+    {
+      if(LoadImage(image, name, 1))
+        _images[name] = image;
+      else
+        {
+          delete image;
+          image = nullptr;
+        }
+    }
 
+  assert(image);
+  return image;
+}
+
+
+void SubsystemAssetLoader::ScheduleLoadImageHighQuality(const std::string & name)
+{
+  _image_requests.emplace_back(name);
+}
+
+SubsystemAssetLoader::Request::Request(const std::string & name)
+  : _name(name)
+{
+}
+
+void SubsystemAssetLoader::Tick(double deltatime)
+{
+  assert(deltatime == deltatime);
+  LoadNextImage();
+}
+
+
+void SubsystemAssetLoader::LoadNextImage()
+{
+  if(_image_requests.size() == 0)
+    return;
+
+  auto & request = _image_requests.front();
+
+  assert(_images.find(request._name) != _images.end());
+  auto low = _images[request._name];
+  assert(low);
+  LoadImage(low, request._name, 1);
+
+  _image_requests.pop_front();
+}
+
+
+bool SubsystemAssetLoader::LoadImage(Image * image, const std::string & name, unsigned int quality)
+{
   auto start = name.find_last_of('/');
   if(start == name.npos)
     start = 0;
@@ -259,27 +319,19 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
     end = dotpos - start;
 
   std::string stripped_name = name.substr(start, end);
-  std::string quality = "";
-  if(true)
-    quality = "-low";
+  std::string qualityname = "";
+  if(quality == 0)
+    qualityname = "-low";
 
-  if(rv->Load(std::string(DATADIR) + "/Images/" + stripped_name + quality + ".png") ||
-     rv->Load(std::string(DATADIR) + "/Images/" + stripped_name + quality + ".jpg") ||
-     rv->Load(std::string(DATADIR) + "/Images/" + stripped_name +           ".png") ||
-     rv->Load(std::string(DATADIR) + "/Images/" + stripped_name +           ".jpg"))
+  bool rv = false;
+  if(image->Load(std::string(DATADIR) + "/Images/" + stripped_name + qualityname + ".png") ||
+     image->Load(std::string(DATADIR) + "/Images/" + stripped_name + qualityname + ".jpg")    )
     {
-      std::cout << "Loaded image '" << name << "'.\n";
-      Graphics->QueueUpdateGPU(rv);
-      _images[name] = rv;
-    }
-  else
-    {
-      std::cout << "Failed to load '" << name << "'.\n";
-      delete rv;
-      rv = nullptr;
+      std::cout << "Loaded image '" << name << "':" << quality << ".\n";
+      Graphics->QueueUpdateGPU(image);
+      rv = true;
     }
   
-  assert(rv);
   return rv;
 }
 

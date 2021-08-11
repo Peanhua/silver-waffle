@@ -51,8 +51,8 @@ int main(int argc, char *argv[])
         SubsystemGfx         gfx;
         SubsystemScreen      screen;
         SubsystemInput       inp;
-        ssh.Add(&ass);
         ssh.Add(&settings);
+        ssh.Add(&ass);
         ssh.Add(&highscores);
         ssh.Add(&inp);
         ssh.Add(&gfx);
