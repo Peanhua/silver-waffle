@@ -165,8 +165,6 @@ void SubsystemGfx::Main(SubsystemGfx * gfx)
 
       if(gfx->_draw_frame)
         {
-          std::lock_guard lock(gfx->_queue_mutex);
-          std::atomic_thread_fence(std::memory_order_acquire);
           gfx->Draw();
           gfx->_draw_frame = false;
           current_buffer ^= 1;
@@ -182,31 +180,39 @@ void SubsystemGfx::Main(SubsystemGfx * gfx)
 
 void SubsystemGfx::FlushQueues()
 {
+  if(_image_queue.size() > 0 || _mesh_vertex_queue.size() > 0)
+    {
+      std::lock_guard lock(_queue_mutex);
+    
 #ifdef WITH_GPU_THREAD
-  for(auto shader : _shader_program_queue)
-    shader->UpdateGPU();
-  _shader_program_queue.clear();
+      for(auto shader : _shader_program_queue)
+        shader->UpdateGPU();
+      _shader_program_queue.clear();
 #endif
-  for(auto i : _image_queue)
-    i->UpdateGPU();
-  _image_queue.clear();
+
+      for(auto i : _image_queue)
+        i->UpdateGPU();
+      _image_queue.clear();
+
+      for(auto p : _mesh_vertex_queue)
+        p.first->UpdateGPU(Mesh::OPTION_VERTEX, p.second, 1);
+      _mesh_vertex_queue.clear();
+  
 #ifdef WITH_GPU_THREAD
-  for(auto m : _mesh_queue)
-    if(m)
-      m->UpdateGPU();
-  _mesh_queue.clear();
+      for(auto m : _mesh_queue)
+        if(m)
+          m->UpdateGPU();
+      _mesh_queue.clear();
   
-  for(auto p : _mesh_vertex_queue)
-    p.first->UpdateGPU(Mesh::OPTION_VERTEX, p.second, 1);
+      for(auto o : _object_queue)
+        o->UpdateGPU();
+      _object_queue.clear();
   
-  for(auto o : _object_queue)
-    o->UpdateGPU();
-  _object_queue.clear();
-  
-  for(auto w : _widget_queue)
-    w->Render();
-  _widget_queue.clear();
+      for(auto w : _widget_queue)
+        w->Render();
+      _widget_queue.clear();
 #endif
+    }
 }
 
 
@@ -285,12 +291,8 @@ void SubsystemGfx::QueueUpdateGPU(Mesh * mesh)
 
 void SubsystemGfx::QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index)
 {
-#ifdef WITH_GPU_THREAD
   std::lock_guard lock(_queue_mutex);
   _mesh_vertex_queue.push_back({mesh, vertex_index});
-#else
-  mesh->UpdateGPU(Mesh::OPTION_VERTEX, vertex_index, 1);
-#endif
 }
 
 

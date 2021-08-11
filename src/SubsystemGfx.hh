@@ -55,7 +55,8 @@ private:
   SDL_GLContext _opengl_context;
 
   std::mutex    _queue_mutex;
-  std::vector<Image *>         _image_queue;
+  std::vector<Image *>                         _image_queue;
+  std::vector<std::pair<Mesh *, unsigned int>> _mesh_vertex_queue;
 #ifdef WITH_GPU_THREAD
   std::thread * _thread;
   std::atomic<bool> _exit_thread;
@@ -65,7 +66,6 @@ private:
   std::vector<ShaderProgram *> _shader_program_queue;
   std::vector<Widget *>        _widget_queue;
   std::vector<Mesh *>          _mesh_queue;
-  std::vector<std::pair<Mesh *, unsigned int>> _mesh_vertex_queue;
 #endif
 
   void Draw();
