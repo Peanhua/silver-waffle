@@ -14,6 +14,7 @@
 #include "HighscoreEntry.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemHighscores.hh"
+#include "WidgetButton.hh"
 
 
 WidgetHighscores::WidgetHighscores(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, bool is_dialog)
@@ -119,7 +120,7 @@ void WidgetHighscores::Refresh()
       y += 10;
       std::string t = "Close";
       auto ww = 10 + font->GetWidth(t) + 10;
-      auto w = new Widget(panel, glm::ivec2((panelwidth - ww) / 2, y), glm::ivec2(ww, 30));
+      auto w = new WidgetButton(panel, glm::ivec2((panelwidth - ww) / 2, y), glm::ivec2(ww, 30));
       y += w->GetSize().y;
       w->SetText(t);
       w->SetTextFont(font);
