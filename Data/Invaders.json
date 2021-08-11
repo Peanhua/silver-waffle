@@ -49,6 +49,17 @@
       "hit_impulse":     true,
       "loot":            [ "WarpFuel"
                          ]
+    },
+    {
+      "mesh":            "Saucer1",
+      "collision_shape": "sphere",
+      "weapons":         1,
+      "health":          600,
+      "shield_chance":   0.3,
+      "hit_impulse":     false,
+      "loot":            [ "Invader1",
+                           "Invader1"
+                         ]
     }
   ]
 }

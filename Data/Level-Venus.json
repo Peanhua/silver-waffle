@@ -126,10 +126,19 @@
     },
     {
       "start":  150.0,
-      "stop":  600.0,
+      "stop":  550.0,
       "interval": 1,
       "invader_type": 0,
-      "control_program": "erratic-forward"
+      "control_program": "erratic-forward",
+      "next":
+      {
+        "start": 0.0,
+        "stop":  10.0,
+        "interval": 0.3,
+        "max": 20,
+        "invader_type": 4,
+        "control_program": "waithoriz5-shoot"
+      }
     },
     {
       "start":  200.0,

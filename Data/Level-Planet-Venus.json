@@ -25,6 +25,14 @@
       "max":        100,
       "invader_type": 0,
       "control_program": "face-player-shoot"
+    },
+    {
+      "start":        0.0,
+      "stop":         5.0,
+      "interval":     0.01,
+      "max":         50,
+      "invader_type": 4,
+      "control_program": "face-player-shoot"
     }
   ],
   "enemies": [
