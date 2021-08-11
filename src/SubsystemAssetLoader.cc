@@ -355,6 +355,7 @@ bool SubsystemAssetLoader::LoadImage(Image * image, const std::string & name, un
   if(image->Load(std::string(DATADIR) + "/Images/" + stripped_name + qualityname + ".png") ||
      image->Load(std::string(DATADIR) + "/Images/" + stripped_name + qualityname + ".jpg")    )
     {
+      std::cout << "Loaded image '" << name << "':" << quality << ".\n";
       Graphics->QueueUpdateGPU(image);
       rv = true;
     }
