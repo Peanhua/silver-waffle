@@ -70,8 +70,21 @@ bool SubsystemAssetLoader::Start()
 
   _texture_quality = Settings->GetInt("texture_quality");
   assert(_texture_quality >= 0 && _texture_quality <= 1);
+
+  _exit_thread = false;
+  _thread = new std::thread([this]()
+  {
+    while(!_exit_thread)
+      {
+        std::unique_lock<std::mutex> lock(_thread_wakeup_mutex);
+        _thread_wakeup.wait(lock);
+
+        while(LoadNextImage())
+          std::this_thread::yield();
+      }
+  });
   
-  return true;
+  return _thread;
 }
 
 
@@ -79,6 +92,14 @@ void SubsystemAssetLoader::Stop()
 {
   if(AssetLoader == this)
     AssetLoader = nullptr;
+
+  if(_thread)
+    {
+      _exit_thread = true;
+      _thread_wakeup.notify_all();
+      _thread->join();
+      delete _thread;
+    }
 }
 
 
@@ -273,7 +294,9 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
 
 void SubsystemAssetLoader::ScheduleLoadImageHighQuality(const std::string & name)
 {
+  std::lock_guard lock(_image_requests_mutex);
   _image_requests.emplace_back(name);
+  _thread_wakeup.notify_all();
 }
 
 SubsystemAssetLoader::Request::Request(const std::string & name)
@@ -281,26 +304,31 @@ SubsystemAssetLoader::Request::Request(const std::string & name)
 {
 }
 
-void SubsystemAssetLoader::Tick(double deltatime)
+SubsystemAssetLoader::Request::Request()
 {
-  assert(deltatime == deltatime);
-  LoadNextImage();
 }
 
 
-void SubsystemAssetLoader::LoadNextImage()
-{
-  if(_image_requests.size() == 0)
-    return;
 
-  auto & request = _image_requests.front();
+bool SubsystemAssetLoader::LoadNextImage()
+{
+  Request request;
+  {
+    std::lock_guard lock(_image_requests_mutex);
+    
+    if(_image_requests.size() == 0)
+      return false;
+    
+    request = _image_requests.front();
+    _image_requests.pop_front();
+  }
 
   assert(_images.find(request._name) != _images.end());
   auto low = _images[request._name];
   assert(low);
   LoadImage(low, request._name, 1);
 
-  _image_requests.pop_front();
+  return true;
 }
 
 
@@ -327,7 +355,6 @@ bool SubsystemAssetLoader::LoadImage(Image * image, const std::string & name, un
   if(image->Load(std::string(DATADIR) + "/Images/" + stripped_name + qualityname + ".png") ||
      image->Load(std::string(DATADIR) + "/Images/" + stripped_name + qualityname + ".jpg")    )
     {
-      std::cout << "Loaded image '" << name << "':" << quality << ".\n";
       Graphics->QueueUpdateGPU(image);
       rv = true;
     }

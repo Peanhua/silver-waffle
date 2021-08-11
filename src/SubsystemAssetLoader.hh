@@ -16,9 +16,13 @@
 #include "ObjectCollectible.hh"
 #include "SolarSystemObject.hh"
 #include <json11.hpp>
-#include <map>
-#include <vector>
+#include <atomic>
+#include <condition_variable>
 #include <deque>
+#include <map>
+#include <mutex>
+#include <thread>
+#include <vector>
 
 class Font;
 class Image;
@@ -34,7 +38,6 @@ public:
   ~SubsystemAssetLoader();
   
   bool Start() override;
-  void Tick(double deltatime) override;
   void Stop() override;
 
   void LoadCache();
@@ -50,7 +53,12 @@ public:
   ObjectCollectible * LoadObjectCollectible(int type);
 
 private:
-  int _texture_quality;
+  int               _texture_quality;
+  std::thread *     _thread;
+  std::atomic<bool> _exit_thread;
+  std::mutex        _thread_wakeup_mutex;
+  std::condition_variable _thread_wakeup;
+  
   std::map<std::string, std::string>     _text_assets;
   std::map<std::string, json11::Json *>  _jsons;
   std::map<std::string, ShaderProgram *> _shader_programs;
@@ -62,16 +70,18 @@ private:
 
   bool LoadImage(Image * image, const std::string & name, unsigned int quality);
   void ScheduleLoadImageHighQuality(const std::string & name);
-  void LoadNextImage();
+  bool LoadNextImage();
 
 
   class Request
   {
   public:
+    Request();
     Request(const std::string & name);
     std::string _name;
   };
   std::deque<Request> _image_requests;
+  std::mutex          _image_requests_mutex;
 };
 
 extern SubsystemAssetLoader * AssetLoader;

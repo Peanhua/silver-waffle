@@ -165,7 +165,7 @@ void SubsystemGfx::Main(SubsystemGfx * gfx)
 
       if(gfx->_draw_frame)
         {
-          std::lock_guard lock(gfx->_gpu);
+          std::lock_guard lock(gfx->_queue_mutex);
           std::atomic_thread_fence(std::memory_order_acquire);
           gfx->Draw();
           gfx->_draw_frame = false;
@@ -177,18 +177,20 @@ void SubsystemGfx::Main(SubsystemGfx * gfx)
   
   SDL_GL_MakeCurrent(gfx->_window, nullptr);
 }
+#endif
 
 
 void SubsystemGfx::FlushQueues()
 {
+#ifdef WITH_GPU_THREAD
   for(auto shader : _shader_program_queue)
     shader->UpdateGPU();
   _shader_program_queue.clear();
-  
+#endif
   for(auto i : _image_queue)
     i->UpdateGPU();
   _image_queue.clear();
-  
+#ifdef WITH_GPU_THREAD
   for(auto m : _mesh_queue)
     if(m)
       m->UpdateGPU();
@@ -204,17 +206,15 @@ void SubsystemGfx::FlushQueues()
   for(auto w : _widget_queue)
     w->Render();
   _widget_queue.clear();
+#endif
 }
-#endif  
 
 
 void SubsystemGfx::Draw()
 {
   glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-#ifdef WITH_GPU_THREAD
   FlushQueues();
-#endif
   
   auto screen = ScreenManager->GetScreen();
   if(screen)
@@ -246,7 +246,7 @@ static void GLAPIENTRY MessageCallback(GLenum source,
 void SubsystemGfx::QueueUpdateGPU(ShaderProgram * shader_program)
 {
 #ifdef WITH_GPU_THREAD
-  std::lock_guard lock(_gpu);
+  std::lock_guard lock(_queue_mutex);
   _shader_program_queue.push_back(shader_program);
 #else
   shader_program->UpdateGPU();
@@ -257,7 +257,7 @@ void SubsystemGfx::QueueUpdateGPU(ShaderProgram * shader_program)
 void SubsystemGfx::QueueUpdateGPU(Widget * widget)
 {
 #ifdef WITH_GPU_THREAD
-  std::lock_guard lock(_gpu);
+  std::lock_guard lock(_queue_mutex);
   _widget_queue.push_back(widget);
 #else
   widget->Render();
@@ -267,19 +267,15 @@ void SubsystemGfx::QueueUpdateGPU(Widget * widget)
 
 void SubsystemGfx::QueueUpdateGPU(Image * image)
 {
-#ifdef WITH_GPU_THREAD
-  std::lock_guard lock(_gpu);
+  std::lock_guard lock(_queue_mutex);
   _image_queue.push_back(image);
-#else
-  image->UpdateGPU();
-#endif
 }
 
 
 void SubsystemGfx::QueueUpdateGPU(Mesh * mesh)
 {
 #ifdef WITH_GPU_THREAD
-  std::lock_guard lock(_gpu);
+  std::lock_guard lock(_queue_mutex);
   _mesh_queue.push_back(mesh);
 #else
   mesh->UpdateGPU();
@@ -290,7 +286,7 @@ void SubsystemGfx::QueueUpdateGPU(Mesh * mesh)
 void SubsystemGfx::QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index)
 {
 #ifdef WITH_GPU_THREAD
-  std::lock_guard lock(_gpu);
+  std::lock_guard lock(_queue_mutex);
   _mesh_vertex_queue.push_back({mesh, vertex_index});
 #else
   mesh->UpdateGPU(Mesh::OPTION_VERTEX, vertex_index, 1);
@@ -301,7 +297,7 @@ void SubsystemGfx::QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index)
 void SubsystemGfx::QueueUpdateGPU(GPUObject * object)
 {
 #ifdef WITH_GPU_THREAD
-  std::lock_guard lock(_gpu);
+  std::lock_guard lock(_queue_mutex);
   _object_queue.push_back(object);
 #else
   object->UpdateGPU();
@@ -311,6 +307,7 @@ void SubsystemGfx::QueueUpdateGPU(GPUObject * object)
 void SubsystemGfx::CancelUpdateGPU(Mesh * mesh)
 {
 #ifdef WITH_GPU_THREAD
+  std::lock_guard lock(_queue_mutex);
   for(unsigned int i = 0; i < _mesh_queue.size(); i++)
     if(_mesh_queue[i] == mesh)
       _mesh_queue[i] = nullptr;
