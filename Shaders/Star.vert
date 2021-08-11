@@ -3,8 +3,6 @@
 #include "Include/Uniforms.glsl"
 uniform float in_junktime;
 
-const float PI = radians(180.0f);
-
 
 void main()
 {

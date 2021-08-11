@@ -1,4 +1,5 @@
-const float PI = radians(180.0f);
+#include "Include/Constants.glsl"
+
 const float maxtime = 2.0f;
 
 uniform mat4  in_mvp;

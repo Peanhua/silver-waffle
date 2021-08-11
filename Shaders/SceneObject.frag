@@ -1,6 +1,7 @@
 #include "Include/Input.frag"
 #include "Include/Output.frag"
 #include "Include/Uniforms.glsl"
+#include "Include/Constants.glsl"
 
 #include "Include/DirectionalLight.frag"
 
@@ -34,7 +35,6 @@ void main()
     }
 
 #ifdef USE_ALPHA_DISTANCE20_FADE
-  const float PI = 4.0 * atan(1.0);
   float point = (1.0 - fract(in_time * 0.5)) * PI * 2.0;
   float d = fin.distance_to_center - point;
   alpha *= 0.9 + 0.1 * sin(d);
