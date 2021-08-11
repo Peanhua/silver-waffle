@@ -1,21 +1,5 @@
 {
   "shaders": [
-    { "name": "GaussianBlur-Horizontal.vert",
-      "src":  "GaussianBlur.vert",
-      "flags": [ "HORIZONTAL" ]
-    },
-    { "name": "GaussianBlur-Horizontal.frag",
-      "src":  "GaussianBlur.frag",
-      "flags": [ "HORIZONTAL" ]
-    },
-    { "name": "GaussianBlur-Vertical.vert",
-      "src":  "GaussianBlur.vert",
-      "flags": [ "VERTICAL" ]
-    },
-    { "name": "GaussianBlur-Vertical.frag",
-      "src":  "GaussianBlur.frag",
-      "flags": [ "VERTICAL" ]
-    },
     { "name": "SceneObject-Color.vert",
       "src":  "SceneObject.vert",
       "flags": [ ]

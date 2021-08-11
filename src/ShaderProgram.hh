@@ -53,7 +53,7 @@ private:
 
   constexpr unsigned int GetUniformIndex(const std::string_view & name) const
   { // This list needs to be kept in sync with the one in ShaderProgram::ShaderProgram().
-    std::array<std::string_view, 11> names {
+    std::array<std::string_view, 12> names {
       "in_time",
       "in_velocity",
       "texture0",
@@ -64,7 +64,8 @@ private:
       "in_particle_length",
       "in_font_color",
       "in_font_weight",
-      "in_junktime"
+      "in_junktime",
+      "in_horizontal"
     };
     for(unsigned int i = 0; i < names.size(); i++)
       if(name == names[i])

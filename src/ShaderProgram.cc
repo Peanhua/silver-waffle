@@ -118,7 +118,8 @@ void ShaderProgram::UpdateGPU()
     "in_particle_length",
     "in_font_color",
     "in_font_weight",
-    "in_junktime"
+    "in_junktime",
+    "in_horizontal"
   };
   _uniform_locations.push_back(-1);
   for(auto u : uniforms)

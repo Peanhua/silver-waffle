@@ -20,15 +20,10 @@
 
 GaussianBlur::GaussianBlur()
 {
-  std::vector<std::string> names
-    {
-      "Horizontal",
-      "Vertical"
-    };
-  for(auto name : names)
+  for(int i = 0; i < 2; i++)
     {
       auto mesh = new MeshOverlay();
-      mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("GaussianBlur-" + name));
+      mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("GaussianBlur"));
       _meshes.push_back(mesh);
     }
   Graphics->QueueUpdateGPU(this);
@@ -37,12 +32,7 @@ GaussianBlur::GaussianBlur()
 
 void GaussianBlur::UpdateGPU()
 {
-  std::vector<std::string> names
-    {
-      "Horizontal",
-      "Vertical"
-    };
-  for(auto name : names)
+  for(int i = 0; i < 2; i++)
     {
       GLuint fbo;
       glGenFramebuffers(1, &fbo);
@@ -73,13 +63,15 @@ GaussianBlur::~GaussianBlur()
 
 GLuint GaussianBlur::Blur(unsigned int count, GLuint source_texture_id)
 {
+  auto shader = _meshes[0]->GetShaderProgram();
+  shader->Use();
   for(unsigned int i = 0; i < count * _fbos.size(); i++)
     {
       unsigned int ind = i % static_cast<unsigned int>(_fbos.size());
-
+      shader->SetInt("in_horizontal", static_cast<int>(ind));
       glBindFramebuffer(GL_FRAMEBUFFER, _fbos[ind]);
       _meshes[ind]->GetTexture()->SetTextureId(source_texture_id);
-      _meshes[ind]->Draw(glm::mat4(1), glm::mat4(1));
+      _meshes[ind]->DrawSameShader(glm::mat4(1), glm::mat4(1));
 
       source_texture_id = _texture_ids[ind];
     }
