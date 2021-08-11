@@ -2,9 +2,10 @@ AC_INIT([silver-waffle], [0.1])
 AC_PREREQ([2.69])
 AM_INIT_AUTOMAKE([foreign dist-xz subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
+AC_CONFIG_MACRO_DIRS([m4])
 
 AC_PROG_CXX
-AX_CXX_COMPILE_STDCXX([17], [noext], [mandatory])
+AX_CXX_COMPILE_STDCXX([20], [noext], [mandatory])
 
 AX_PTHREAD
 

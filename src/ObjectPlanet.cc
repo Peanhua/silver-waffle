@@ -14,6 +14,7 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemGfx.hh"
 #include <cassert>
+#include <numbers>
 
 
 ObjectPlanet::ObjectPlanet(Scene * scene, SolarSystemObject * solar_system_object, Image * planet_texture, double planet_radius)
@@ -42,18 +43,17 @@ ObjectPlanet::~ObjectPlanet()
 }
 
 
-void ObjectPlanet::AddPlanetRing(float start, float end)
+void ObjectPlanet::AddPlanetRing(double start, double end)
 {
-  _ring_max = std::max(_ring_max, static_cast<double>(end));
+  _ring_max = std::max(_ring_max, end);
   Mesh * ring = new Mesh(Mesh::OPTION_ELEMENT | Mesh::OPTION_TEXTURE | Mesh::OPTION_BLEND);
   ring->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
   ring->SetTexture(0, AssetLoader->LoadImage("8k_saturn_ring_alpha"));
 
-  const auto PI = 4.0f * std::atan(1.0f);
-  const auto step = 2.0f * PI / 128.0f;
+  const auto step = 2.0 * std::numbers::pi / 128.0;
   
   unsigned int ind = 0;
-  for(auto arc = -PI; arc < PI - step; arc += step)
+  for(auto arc = -std::numbers::pi; arc < std::numbers::pi - step; arc += step)
     {
       std::vector<glm::vec3> vertices
         {

@@ -46,6 +46,6 @@ if [ ${USE_SANITIZERS} -ne 0 ]; then
 fi
 
 
-autoreconf -i
+autoreconf --include=m4 --install
 ./configure --prefix=$(pwd) --with-valgrind
 #--with-gpu-thread

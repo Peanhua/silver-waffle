@@ -26,7 +26,7 @@ public:
 
   double GetVisualBoundingSphereRadius() const override;
 
-  void AddPlanetRing(float start, float end);
+  void AddPlanetRing(double start, double end);
   SolarSystemObject * GetSolarSystemObject() const;
   
 private:
