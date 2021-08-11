@@ -37,8 +37,9 @@ public:
   SubsystemAssetLoader();
   ~SubsystemAssetLoader();
   
-  bool Start() override;
-  void Stop() override;
+  bool Start()       override;
+  void StopThreads() override;
+  void Stop()        override;
 
   void LoadCache();
 

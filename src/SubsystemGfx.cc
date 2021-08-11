@@ -118,7 +118,7 @@ bool SubsystemGfx::Start()
 }
 
 
-void SubsystemGfx::Stop()
+void SubsystemGfx::StopThreads()
 {
 #ifdef WITH_GPU_THREAD
   if(_thread)
@@ -127,7 +127,13 @@ void SubsystemGfx::Stop()
       _thread->join();
     }
   delete _thread;
-  
+#endif  
+}
+
+
+void SubsystemGfx::Stop()
+{
+#ifdef WITH_GPU_THREAD
   SDL_GL_MakeCurrent(_window, _opengl_context);
 #endif
 

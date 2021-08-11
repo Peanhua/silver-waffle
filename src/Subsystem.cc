@@ -23,6 +23,11 @@ Subsystem::~Subsystem()
 }
 
 
+void Subsystem::StopThreads()
+{
+}
+
+
 const std::string & Subsystem::GetName() const
 {
   return _name;

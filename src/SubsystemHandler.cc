@@ -34,6 +34,8 @@ bool SubsystemHandler::StartAll()
 void SubsystemHandler::StopAll()
 {
   for(auto it = _subsystems.rbegin(); it != _subsystems.rend(); it++)
+    (*it)->StopThreads();
+  for(auto it = _subsystems.rbegin(); it != _subsystems.rend(); it++)
     (*it)->Stop();
 }
 

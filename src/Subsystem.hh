@@ -23,6 +23,7 @@ public:
   const std::string & GetName() const;
   
   virtual bool Start() = 0;
+  virtual void StopThreads();
   virtual void Stop()  = 0;
   virtual void PreTick();
   virtual void Tick(double deltatime);

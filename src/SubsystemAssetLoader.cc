@@ -79,8 +79,8 @@ bool SubsystemAssetLoader::Start()
         std::unique_lock<std::mutex> lock(_thread_wakeup_mutex);
         _thread_wakeup.wait(lock);
 
-        while(LoadNextImage())
-          std::this_thread::yield();
+        LoadNextImage();
+        std::this_thread::yield();
       }
   });
   
@@ -88,11 +88,8 @@ bool SubsystemAssetLoader::Start()
 }
 
 
-void SubsystemAssetLoader::Stop()
+void SubsystemAssetLoader::StopThreads()
 {
-  if(AssetLoader == this)
-    AssetLoader = nullptr;
-
   if(_thread)
     {
       _exit_thread = true;
@@ -100,6 +97,13 @@ void SubsystemAssetLoader::Stop()
       _thread->join();
       delete _thread;
     }
+}  
+
+
+void SubsystemAssetLoader::Stop()
+{
+  if(AssetLoader == this)
+    AssetLoader = nullptr;
 }
 
 

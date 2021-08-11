@@ -34,8 +34,9 @@ class SubsystemGfx : public Subsystem
 public:
   SubsystemGfx();
   
-  bool Start()    override;
-  void Stop()     override;
+  bool Start()       override;
+  void StopThreads() override;
+  void Stop()        override;
 
   void NextFrame();
 
