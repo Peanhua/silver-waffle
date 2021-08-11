@@ -14,6 +14,7 @@
 
 #include "GLM.hh"
 #include <GL/glew.h>
+#include <array>
 #include <map>
 #include <string>
 #include <string_view>
@@ -52,17 +53,22 @@ private:
 
   constexpr unsigned int GetUniformIndex(const std::string_view & name) const
   { // This list needs to be kept in sync with the one in ShaderProgram::ShaderProgram().
-    if(name == "in_time")                 return 1;
-    else if(name == "in_velocity")        return 2;
-    else if(name == "texture0")           return 3;
-    else if(name == "texture1")           return 4;
-    else if(name == "in_model")           return 5;
-    else if(name == "in_mvp")             return 6;
-    else if(name == "in_color")           return 7;
-    else if(name == "in_particle_length") return 8;
-    else if(name == "in_font_color")      return 9;
-    else if(name == "in_font_weight")     return 10;
-    else if(name == "in_junktime")        return 11;
+    std::array<std::string_view, 11> names {
+      "in_time",
+      "in_velocity",
+      "texture0",
+      "texture1",
+      "in_model",
+      "in_mvp",
+      "in_color",
+      "in_particle_length",
+      "in_font_color",
+      "in_font_weight",
+      "in_junktime"
+    };
+    for(unsigned int i = 0; i < names.size(); i++)
+      if(name == names[i])
+        return 1 + i;
     return 0;
   }
 
