@@ -298,8 +298,10 @@ Image * SubsystemAssetLoader::LoadImage(const std::string & name)
 
 void SubsystemAssetLoader::ScheduleLoadImageHighQuality(const std::string & name)
 {
-  std::lock_guard lock(_image_requests_mutex);
-  _image_requests.emplace_back(name);
+  {
+    std::lock_guard lock(_image_requests_mutex);
+    _image_requests.emplace_back(name);
+  }
   _thread_wakeup.notify_all();
 }
 

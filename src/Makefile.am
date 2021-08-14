@@ -149,6 +149,8 @@ silverwaffle_SOURCES =				\
 	SubsystemHighscores.hh			\
 	SubsystemInput.cc			\
 	SubsystemInput.hh			\
+	SubsystemJobs.cc			\
+	SubsystemJobs.hh			\
 	SubsystemScreen.cc			\
 	SubsystemScreen.hh			\
 	SubsystemSettings.cc			\
