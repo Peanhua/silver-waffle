@@ -12,6 +12,7 @@
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "Mesh.hh"
+#include "NavigationMap.hh"
 #include "ObjectLevelEntrance.hh"
 #include "ObjectBuilding.hh"
 #include "ObjectCollectible.hh"
@@ -566,6 +567,15 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
       
       auto pp = new SCP_MoveTowards(this, {0, -1, 0}, 999);
       p->SetNext(pp);
+    }
+  else if(name == "pathfind-to-somewhere")
+    {
+      auto destination = glm::vec3(GetScene()->GetNavigationMap()->NavigationToWorld(glm::ivec2(56, 17)), 0);
+      destination.z = destination.y;
+      destination.y = 0;
+
+      auto p = new SCP_PathMoveTo(this, destination);
+      AddControlProgram(p);
     }
   else
     assert(false);

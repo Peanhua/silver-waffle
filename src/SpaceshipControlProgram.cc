@@ -10,10 +10,13 @@
   Complete license can be found in the LICENSE file.
 */
 #include "SpaceshipControlProgram.hh"
+#include "AStar.hh"
 #include "Level.hh"
+#include "NavigationMap.hh"
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "ScreenLevel.hh"
+#include "SubsystemJobs.hh"
 #include "SubsystemScreen.hh"
 
 
@@ -393,3 +396,86 @@ bool SCP_ExitCurrentLevel::IsFinished() const
   return _done;
 }
 
+
+
+SCP_PathMoveTo::SCP_PathMoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destination)
+  : SpaceshipControlProgram(spaceship),
+    _destination(destination),
+    _job_id(0),
+    _path(nullptr),
+    _pathpos(0)
+{
+}
+
+SCP_PathMoveTo::~SCP_PathMoveTo()
+{
+  delete _path;
+}
+
+void SCP_PathMoveTo::PTick(double deltatime)
+{
+  if(!_job_id)
+    {
+      _job_id = Jobs->AddJob([this]()
+      {
+        auto map = _spaceship->GetScene()->GetNavigationMap();
+        assert(map);
+
+        auto from = map->WorldToNavigation(_spaceship->GetPosition());
+        auto to   = map->WorldToNavigation(_destination);
+
+        AStar astar(map);
+        _path = astar.FindPath(from, to);
+        _pathpos = 0;
+
+        return false;
+      });
+
+      return;
+    }
+  
+  if(!_path)
+    return;
+
+  auto GetNextDestination = [this](const glm::vec3 for_position)
+  {
+    glm::vec2 rv;
+    
+    auto map = _spaceship->GetScene()->GetNavigationMap();
+    assert(map);
+    auto pos = map->WorldToNavigation(for_position);
+    
+    std::vector<glm::ivec2> & path = (*_path);
+    auto cur = path[_pathpos];
+    auto curdist = glm::distance(for_position.xz(), map->NavigationToWorld(cur));
+
+    if(curdist > 0.5f)
+      rv = map->NavigationToWorld(cur);
+    else
+      {
+        if(_pathpos + 1 < path.size())
+          {
+            _pathpos++;
+            rv = map->NavigationToWorld(path[_pathpos]);
+          }
+        else
+          rv = map->NavigationToWorld(cur);
+      }
+
+    return glm::vec3(rv.x, 0, rv.y);
+  };
+  
+  auto pos = GetNextDestination(_spaceship->GetPosition());
+  auto movement = pos - _spaceship->GetPosition();
+  auto distance = glm::length(movement);
+  if(distance > 1.0f)
+    movement = glm::normalize(movement);
+  movement *= static_cast<float>(deltatime * 5.0);
+  _spaceship->Translate(movement);
+}
+
+
+bool SCP_PathMoveTo::IsFinished() const
+{
+  return glm::length(_spaceship->GetPosition() - _destination) < 0.1f;
+}  

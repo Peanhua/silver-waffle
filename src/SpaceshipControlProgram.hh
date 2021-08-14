@@ -13,8 +13,11 @@
 */
 
 #include "GLM.hh"
+#include <atomic>
+#include <vector>
 
 class ObjectSpaceship;
+class Path;
 
 
 class SpaceshipControlProgram
@@ -196,6 +199,21 @@ public:
   bool IsFinished() const override;
 private:
   bool _done;
+};
+
+
+class SCP_PathMoveTo : public SpaceshipControlProgram
+{
+public:
+  SCP_PathMoveTo(ObjectSpaceship * spaceship, const glm::vec3 & destination);
+  ~SCP_PathMoveTo();
+  void PTick(double deltatime) override;
+  bool IsFinished() const override;
+private:
+  glm::vec3           _destination;
+  unsigned int        _job_id;
+  std::atomic<std::vector<glm::ivec2> *> _path;
+  unsigned int                           _pathpos;
 };
 
 

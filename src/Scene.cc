@@ -16,6 +16,7 @@
 #include "Component.hh"
 #include "Explosion.hh"
 #include "Mesh.hh"
+#include "NavigationMap.hh"
 #include "ObjectBuilding.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectInvader.hh"
@@ -45,7 +46,8 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
     _time(0),
     _warp_engine_starting(false),
     _warp_throttle(0),
-    _tutorialmessages_enabled(true)
+    _tutorialmessages_enabled(true),
+    _navigation_map(nullptr)
 {
   auto ratioy = _play_area_size.y / _play_area_size.x;
   auto ratioz = _play_area_size.z / _play_area_size.x;
@@ -599,3 +601,16 @@ void Scene::DestroyAllEnemies()
           o->Destroy(nullptr);
       }
 }
+
+
+void Scene::SetNavigationMap(NavigationMap * navigation_map)
+{
+  _navigation_map = navigation_map;
+}
+
+
+NavigationMap * Scene::GetNavigationMap() const
+{
+  return _navigation_map;
+}
+

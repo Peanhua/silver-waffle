@@ -21,6 +21,7 @@
 class Camera;
 class Explosion;
 class Mesh;
+class NavigationMap;
 class Object;
 class ObjectBuilding;
 class ObjectCollectible;
@@ -108,6 +109,9 @@ public:
 
   void DumpStats() const;
 
+  void            SetNavigationMap(NavigationMap * navigation_map);
+  NavigationMap * GetNavigationMap() const;
+
 protected:
   glm::vec3           _gravity;
   SpaceParticles *    _particles;
@@ -133,6 +137,7 @@ private:
   std::vector<bool>              _tutorialmessages;
   CollisionCheckStatistics       _collisioncheck_statistics;
   std::vector<Object *>          _tick_work_objects;
+  NavigationMap *                _navigation_map;
   
   void CollisionsForObject(Object * o);
 };

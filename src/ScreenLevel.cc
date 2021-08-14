@@ -249,9 +249,9 @@ void ScreenLevel::Tick(double deltatime)
             player->DescendToPlanet(planet->GetSolarSystemObject());
             _demo_lander_activated = true;
           }
+      auto t = GetGameStats()->GetTime();
       if(_parent)
         {
-          auto t = GetGameStats()->GetTime();
           if(t > 12 && t < 13)
             {
               player->GetController()->SteerBackward(true);
@@ -269,7 +269,7 @@ void ScreenLevel::Tick(double deltatime)
           else if(t > 24 && t < 25)
             player->SetUseHealth(false);
         }
-      if(GetGameStats()->GetTime() > 40.0)
+      if(t > 40.0)
         {
           SDL_Event e;
           e.quit.type = SDL_QUIT;
@@ -549,6 +549,10 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
           if(lander->CanActivate())
             lander->Activate();
         }
+      break;
+
+    case SDLK_q:
+      std::cout << player->GetPosition() << std::endl;
       break;
 
     case SDLK_1:

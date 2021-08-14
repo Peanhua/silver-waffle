@@ -13,6 +13,7 @@
 #include "Camera.hh"
 #include "Image.hh"
 #include "Mesh.hh"
+#include "NavigationMap.hh"
 #include "ObjectBuilding.hh"
 #include "ObjectInvader.hh"
 #include "Scene.hh"
@@ -78,11 +79,13 @@ void Level::Start()
   if(_destructible_terrain_config)
     { // For each pixel with alpha > 0, generate object(s).
       auto img = _destructible_terrain_config;
+
+      uint8_t * navigationmap = new uint8_t[img->GetWidth() * img->GetHeight()];
+      
       glm::vec3 blocksize;
       blocksize.x = _scene->GetPlayAreaSize().x / static_cast<float>(img->GetWidth());
       blocksize.y = 4;
-      const float emptytop = _scene->GetPlayAreaSize().z * 0.5f;
-      blocksize.z = (_scene->GetPlayAreaSize().z - emptytop)  / static_cast<float>(img->GetHeight());
+      blocksize.z = _scene->GetPlayAreaSize().z  / static_cast<float>(img->GetHeight());
 
       std::array<Mesh *, 6> meshes;
       meshes.fill(nullptr);
@@ -90,6 +93,8 @@ void Level::Start()
       for(unsigned int y = 0; y < img->GetHeight(); y++)
         for(unsigned int x = 0; x < img->GetWidth(); x++)
           {
+            uint8_t navigation = ' ';
+            
             auto rgba = img->GetRGBA(x, y);
             if(rgba.a > 0)
               {
@@ -106,6 +111,7 @@ void Level::Start()
                     pos.z -= blocksize.z * 0.5f;
                     pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
                     _scene->AddObject(building, pos);
+                    navigation = 'B';
                   }
                 else if(rgba.r >= 1 && rgba.g <= 0 && rgba.b >= 1)
                   { // Pink pixel is boss building.
@@ -119,6 +125,7 @@ void Level::Start()
                     pos.z -= blocksize.z * 0.5f;
                     pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
                     _scene->AddObject(building, pos);
+                    navigation = 'B';
                   }
                 else if(rgba.r >= 1 && rgba.g <= 0 && rgba.b <= 0)
                   { // Full red pixel is a random enemy spawn.
@@ -134,6 +141,7 @@ void Level::Start()
                     assert(enemy);
                     if(conf["control_program"].is_string())
                       enemy->AddNamedControlProgram(conf["control_program"].string_value());
+                    navigation = ' ';
                   }
                 else if(rgba.r <= 0 && rgba.g >= 1 && rgba.b <= 0)
                   { // Full green pixel is a human survivor.
@@ -146,6 +154,7 @@ void Level::Start()
                     pos.z -= blocksize.z * 0.5f;
                     pos.z += human->GetMesh()->GetBoundingBoxHalfSize().z;
                     _scene->AddCollectible(human, pos);
+                    navigation = ' ';
                   }
                 else
                   { // Terrain block.
@@ -194,9 +203,36 @@ void Level::Start()
                     block->SetHealth(block->GetMaxHealth());
                     block->SetUseHealth(rgba.a < 1.0f);
                     block->CreateCollisionShape(block->GetCollisionShape()->GetType());
+
+                    navigation = '#';
                   }
               }
+            navigationmap[x + y * img->GetWidth()] = navigation;
           }
+      {
+        for(int y = 0; y < img->GetHeight(); y++)
+          for(int x = 0; x < img->GetWidth(); x++)
+            if(navigationmap[x + y * img->GetWidth()] == ' ')
+              {
+                auto Check = [navigationmap, x, y, img](int xx, int yy) -> bool
+                {
+                  auto ax = x + xx;
+                  auto ay = y + yy;
+                  if(ax >= 0 && ax < img->GetWidth() && ay >= 0 && ay < img->GetHeight())
+                    {
+                      auto d = navigationmap[ax + ay * img->GetWidth()];
+                      return d == '#' || d == 'B';
+                    }
+                  else
+                    return true;
+                };
+                auto pos = x + y * img->GetWidth();
+                if(Check(-1, 0) || Check(1, 0) || Check(0, -1) || Check(0, 1))
+                  navigationmap[x + y * img->GetWidth()] = '.';
+              }
+      }
+      
+      _scene->SetNavigationMap(new NavigationMap({img->GetWidth(), img->GetHeight()}, navigationmap, {_scene->GetPlayAreaSize().x, _scene->GetPlayAreaSize().z}));
     }
   
   if(_buildings_config.is_array())

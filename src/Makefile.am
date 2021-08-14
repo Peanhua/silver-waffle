@@ -28,6 +28,8 @@ silverwaffle_LDADD =       \
 silverwaffle_SOURCES =				\
 	AdditiveBlending.cc			\
 	AdditiveBlending.hh			\
+	AStar.cc				\
+	AStar.hh				\
 	Camera.cc				\
 	Camera.hh				\
 	Component.cc				\
@@ -76,6 +78,8 @@ silverwaffle_SOURCES =				\
 	Mesh_LoadFromFile.cc			\
 	Milkyway.cc				\
 	Milkyway.hh				\
+	NavigationMap.cc			\
+	NavigationMap.hh			\
 	Object.cc				\
 	Object.hh				\
 	ObjectLevelEntrance.cc			\
