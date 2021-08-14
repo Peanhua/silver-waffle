@@ -9,6 +9,9 @@
 
   Complete license can be found in the LICENSE file.
 */
+#ifdef HAVE_CONFIG_H
+# include "../config.h"
+#endif
 #include "SubsystemSettings.hh"
 #include <cassert>
 
@@ -33,8 +36,9 @@ bool SubsystemSettings::Start()
 
   _bool_values["tutorial"] = true;
 
+  
   _int_values["texture_quality"] = 1; // Quality values go from low to high [0,1].
-
+  
   _bool_values["draw_collision"] = false;
 
   _bool_values["demo"] = false;
@@ -45,6 +49,11 @@ bool SubsystemSettings::Start()
   _bool_values["cheat_disable_planet_entering_impulse"] = false;
   
   _string_values["font"] = "Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf";
+
+
+#ifdef WITH_VALGRIND
+  _int_values["texture_quality"] = 0;
+#endif
   
   return true;
 }

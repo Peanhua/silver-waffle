@@ -57,12 +57,14 @@ public:
   SubsystemJobs();
 
   bool Start()       override;
+  void Tick(double deltatime) override;
   void StopThreads() override;
   void Stop()        override;
 
   unsigned int AddJob(job_func_t callback);
   bool         IsJobFinished(unsigned int job_id);
   void         ReleaseJob(unsigned int job_id);
+  void         ReleaseJobNoLock(unsigned int job_id);
 
   void  WaitForSignal();
   Job * GetNextJob();
@@ -82,6 +84,8 @@ private:
   std::mutex             _jobs_mutex;
 
   std::atomic<unsigned int> _next_job_id;
+
+  void ReleaseSomeInactiveJobs();
 };
 
 

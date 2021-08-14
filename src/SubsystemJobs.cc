@@ -45,6 +45,41 @@ bool SubsystemJobs::Start()
 }
 
 
+void SubsystemJobs::Tick(double deltatime)
+{
+  assert(deltatime == deltatime);
+  ReleaseSomeInactiveJobs();
+}
+
+
+void SubsystemJobs::ReleaseSomeInactiveJobs()
+{
+  if(_jobs.size() == 0)
+    return;
+
+  auto CanBeReleased = [](const Job * job)
+  {
+    return job && !job->_active;
+  };
+  
+  auto first = _jobs.front();
+  if(!first || CanBeReleased(first))
+    {
+      std::lock_guard lock(_jobs_mutex);
+      while(_jobs.size() > 0)
+        {
+          auto job = _jobs.front();
+          if(job && !CanBeReleased(job))
+            break;
+
+          if(job)
+            ReleaseJobNoLock(job->_id);
+          _jobs.pop_front();
+        }
+    }
+}
+
+
 void SubsystemJobs::StopThreads()
 {
   for(auto p : _processors)
@@ -91,16 +126,7 @@ unsigned int SubsystemJobs::AddJob(job_func_t callback)
     assert(id);
 
     auto job = new Job(id, callback);
-
-    bool done = false;
-    for(unsigned int i = 0; !done && i < _jobs.size(); i++)
-      if(!_jobs[i])
-        {
-          _jobs[i] = job;
-          done = true;
-        }
-    if(!done)
-      _jobs.push_back(job);
+    _jobs.push_back(job);
 
     std::atomic_thread_fence(std::memory_order_release);
     _next_job_id++; // done here for the fence
@@ -127,9 +153,11 @@ Job * SubsystemJobs::GetNextJob()
             _jobs_pos = 0;
 
           auto j = _jobs[_jobs_pos];
-          if(j && !j->_busy && j->_active)
+          if(j && j->_active && !j->_busy)
             job = j;
         }
+      if(job)
+        job->_busy = true;
     }
 
   if(!job)
@@ -152,6 +180,12 @@ bool SubsystemJobs::IsJobFinished(unsigned int job_id)
 void SubsystemJobs::ReleaseJob(unsigned int job_id)
 {
   std::lock_guard lock(_jobs_mutex);
+  ReleaseJobNoLock(job_id);
+}
+
+
+void SubsystemJobs::ReleaseJobNoLock(unsigned int job_id)
+{
   for(unsigned int i = 0; i < _jobs.size(); i++)
     if(_jobs[i] && _jobs[i]->_id == job_id)
       {
@@ -160,6 +194,9 @@ void SubsystemJobs::ReleaseJob(unsigned int job_id)
         return;
       }
 }
+
+
+
 
 
 
@@ -176,11 +213,11 @@ Processor::Processor()
         std::atomic_thread_fence(std::memory_order_acquire);
         auto job = Jobs->GetNextJob();
         exit = _exit_thread.load(std::memory_order_acquire);
-        if(!exit && job && !job->_busy)
+
+        if(!exit && job)
           {
-            job->_busy = true;
             job->_active = job->_callback();
-            job->_busy = false;
+            job->_busy.store(false, std::memory_order_release);
           }
       }
   });

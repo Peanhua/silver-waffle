@@ -51,8 +51,8 @@
 # pragma GCC diagnostic ignored "-Wuseless-cast"
 # include <callgrind.h>
 # pragma GCC diagnostic pop
-# include <iostream>
 #endif
+#include <iostream>
 
 
 ScreenLevel::ScreenLevel(ScreenLevel * parent)

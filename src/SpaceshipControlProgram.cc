@@ -443,7 +443,6 @@ void SCP_PathMoveTo::PTick(double deltatime)
     
     auto map = _spaceship->GetScene()->GetNavigationMap();
     assert(map);
-    auto pos = map->WorldToNavigation(for_position);
     
     std::vector<glm::ivec2> & path = (*_path);
     auto cur = path[_pathpos];

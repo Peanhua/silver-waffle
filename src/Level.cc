@@ -210,8 +210,8 @@ void Level::Start()
             navigationmap[x + y * img->GetWidth()] = navigation;
           }
       {
-        for(int y = 0; y < img->GetHeight(); y++)
-          for(int x = 0; x < img->GetWidth(); x++)
+        for(int y = 0; y < static_cast<int>(img->GetHeight()); y++)
+          for(int x = 0; x < static_cast<int>(img->GetWidth()); x++)
             if(navigationmap[x + y * img->GetWidth()] == ' ')
               {
                 auto Check = [navigationmap, x, y, img](int xx, int yy) -> bool
@@ -226,7 +226,7 @@ void Level::Start()
                   else
                     return true;
                 };
-                auto pos = x + y * img->GetWidth();
+
                 if(Check(-1, 0) || Check(1, 0) || Check(0, -1) || Check(0, 1))
                   navigationmap[x + y * img->GetWidth()] = '.';
               }
