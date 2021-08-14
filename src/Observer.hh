@@ -22,7 +22,7 @@ template<typename T> class Subject;
 template<typename T> class Observer
 {
 public:
-  virtual ~Observer<T>()
+  virtual ~Observer()
   {
     for(auto s : _subjects)
       s->RemoveObserver(this);
