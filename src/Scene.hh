@@ -15,6 +15,7 @@
 #include "GLM.hh"
 #include "RingBuffer.hh"
 #include <array>
+#include <barrier>
 #include <functional>
 #include <random>
 
@@ -137,6 +138,7 @@ private:
   std::vector<bool>              _tutorialmessages;
   CollisionCheckStatistics       _collisioncheck_statistics;
   std::vector<Object *>          _tick_work_objects;
+  std::barrier<std::function<void()>> _tick_finish_sync;
   NavigationMap *                _navigation_map;
   
   void CollisionsForObject(Object * o);

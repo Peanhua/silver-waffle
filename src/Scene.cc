@@ -27,6 +27,7 @@
 #include "ShaderProgram.hh"
 #include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemJobs.hh"
 #include "SubsystemSettings.hh"
 #include "UniformBufferObject.hh"
 #include "Widget.hh"
@@ -47,6 +48,7 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
     _warp_engine_starting(false),
     _warp_throttle(0),
     _tutorialmessages_enabled(true),
+    _tick_finish_sync(2, []() {}),
     _navigation_map(nullptr)
 {
   auto ratioy = _play_area_size.y / _play_area_size.x;
@@ -228,9 +230,13 @@ void Scene::Tick(double deltatime)
     
     if(_particles)
       _particles->Tick(deltatime * (1.0 + 5.0 * static_cast<double>(_warp_throttle)));
+
+    _tick_finish_sync.arrive_and_wait(); // arrive_and_drop() here causes crash, todo: fix it
+    
+    return false;
   };
 
-  auto fxjob = std::async(std::launch::async, ProcessExplosivesAndParticles);
+  Jobs->AddJob(ProcessExplosivesAndParticles);
 
   
   _tick_work_objects.clear();
@@ -263,7 +269,7 @@ void Scene::Tick(double deltatime)
           }
       }
 
-  fxjob.get();
+  _tick_finish_sync.arrive_and_wait();
 }
 
 
