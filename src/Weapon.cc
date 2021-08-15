@@ -39,14 +39,6 @@ bool Weapon::CanFire() const
   if(_heat > 1.0)
     return false;
 
-  auto spaceship = dynamic_cast<ObjectSpaceship *>(_owner);
-  if(spaceship)
-    {
-      auto em = spaceship->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
-      if(em->IsActive())
-        return false;
-    }
-  
   return true;
 }
 

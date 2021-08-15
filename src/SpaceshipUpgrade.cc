@@ -43,7 +43,6 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     case Type::WEAPON_COOLER:    _name = "Weapon cooler";  _always_activated = true;  _uses_timer = false; break;
     case Type::ENGINE_UPGRADE:   _name = "Engine upgrade"; _always_activated = true;  _uses_timer = false; break;
     case Type::HULL_UPGRADE:     _name = "Hull upgrade";   _always_activated = true;  _uses_timer = false; break;
-    case Type::EVASION_MANEUVER: _name = "Evasion CPU";    _always_activated = false; _uses_timer = true;  break;
     case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  _uses_timer = false; break;
     case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; _uses_timer = true;  _cooldown_default = 0; break;
     case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; _uses_timer = false; _cooldown_default = 1; break;
@@ -87,8 +86,6 @@ void SpaceshipUpgrade::Install()
         _spaceship->SetMaxHealth(_spaceship->GetMaxHealth() * 2.0);
         _spaceship->SetHealth(hp * _spaceship->GetMaxHealth());
       }
-      break;
-    case Type::EVASION_MANEUVER:
       break;
     case Type::REPAIR_DROID:
       break;
@@ -139,7 +136,6 @@ int SpaceshipUpgrade::GetMaxInstalls() const
     case Type::WEAPON_COOLER:    return static_cast<int>(_spaceship->GetWeaponCount());
     case Type::ENGINE_UPGRADE:   return 3;
     case Type::HULL_UPGRADE:     return 1;
-    case Type::EVASION_MANEUVER: return 1;
     case Type::REPAIR_DROID:     return 1;
     case Type::WARP_ENGINE:      return 1;
     case Type::PLANET_LANDER:    return 1;
@@ -200,11 +196,6 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::DEFENSE]  = 10;
       costs[UpgradeMaterial::Type::PHYSICAL] = 20;
       break;
-    case Type::EVASION_MANEUVER:
-      costs[UpgradeMaterial::Type::ATTACK]   =  0;
-      costs[UpgradeMaterial::Type::DEFENSE]  =  7;
-      costs[UpgradeMaterial::Type::PHYSICAL] =  5;
-      break;
     case Type::REPAIR_DROID:
       costs[UpgradeMaterial::Type::ATTACK]   = 10;
       costs[UpgradeMaterial::Type::DEFENSE]  = 10;
@@ -259,15 +250,6 @@ void SpaceshipUpgrade::Tick(double deltatime)
           }
           break;
           
-        case Type::EVASION_MANEUVER:
-          if(_timer > 0.0)
-            _spaceship->RotateRoll(1200 * deltatime);
-          else
-            {
-              auto o = glm::angleAxis(0.0f, _spaceship->GetForwardVector());
-              _spaceship->SetOrientation(o);
-            }
-          break;
         }
     }
   else
@@ -316,7 +298,6 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
     case Type::WEAPON_COOLER:
     case Type::ENGINE_UPGRADE:
     case Type::HULL_UPGRADE:
-    case Type::EVASION_MANEUVER:
     case Type::REPAIR_DROID:
     case Type::PLANET_LANDER:
       break;

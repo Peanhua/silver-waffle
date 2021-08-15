@@ -45,7 +45,6 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
       SpaceshipUpgrade::Type::WEAPON_COOLER,
       SpaceshipUpgrade::Type::ENGINE_UPGRADE,
       SpaceshipUpgrade::Type::HULL_UPGRADE,
-      SpaceshipUpgrade::Type::EVASION_MANEUVER,
       SpaceshipUpgrade::Type::REPAIR_DROID,
       SpaceshipUpgrade::Type::WARP_ENGINE,
       SpaceshipUpgrade::Type::PLANET_LANDER,
@@ -362,18 +361,6 @@ void ObjectSpaceship::CopyUpgrades(const ObjectSpaceship & source)
       nu->SetOwner(this);
       _upgrades.push_back(nu);
     }
-}
-
-
-uint64_t ObjectSpaceship::GetCollidesWithChannels() const
-{
-  bool evading = GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER)->GetTimer() > 0.0;
-
-  uint64_t rv = 0;
-  if(!evading)
-    rv = ObjectMovable::GetCollidesWithChannels();
-
-  return rv;
 }
 
 

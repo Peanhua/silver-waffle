@@ -163,13 +163,6 @@ void ScreenLevel::Initialize()
     }
     {
       x -= size.x + 4;
-      auto w = new WidgetSpaceshipUpgradeStatus(root, {x, y}, size, _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER));
-      _player_upgrade_status_widgets.push_back(w);
-      widgets.push_back(w);
-      labels.push_back("E");
-    }
-    {
-      x -= size.x + 4;
       auto w = new WidgetSpaceshipUpgradeStatus(root, {x, y}, size, _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE));
       _player_upgrade_status_widgets.push_back(w);
       widgets.push_back(w);
@@ -535,15 +528,6 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
     case SDLK_SPACE:
       if(!disablecontrols)
         controller->ActivateWeapon(pressed);
-      break;
-
-    case SDLK_c:
-      if(!disablecontrols && pressed)
-        {
-          auto em = player->GetUpgrade(SpaceshipUpgrade::Type::EVASION_MANEUVER);
-          if(em->CanActivate())
-            em->Activate(4.0);
-        }
       break;
 
     case SDLK_w:

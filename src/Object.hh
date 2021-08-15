@@ -82,7 +82,7 @@ public:
   void AddCollidesWithChannel(CollisionChannel channel);
   void RemoveCollidesWithChannel(CollisionChannel channel);
   void SetCollidesWithChannels(uint64_t channels);
-  virtual uint64_t GetCollidesWithChannels() const;
+  uint64_t GetCollidesWithChannels() const;
 
   bool   GetUseHealth() const;
   void   SetUseHealth(bool enable);

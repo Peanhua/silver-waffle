@@ -102,7 +102,6 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
         SpaceshipUpgrade::Type::WEAPON_COOLER,
         SpaceshipUpgrade::Type::ENGINE_UPGRADE,
         SpaceshipUpgrade::Type::HULL_UPGRADE,
-        SpaceshipUpgrade::Type::EVASION_MANEUVER,
         SpaceshipUpgrade::Type::REPAIR_DROID,
         SpaceshipUpgrade::Type::WARP_ENGINE,
         SpaceshipUpgrade::Type::PLANET_LANDER,

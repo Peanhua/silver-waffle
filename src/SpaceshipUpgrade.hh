@@ -29,7 +29,6 @@ public:
       WEAPON_COOLER,
       ENGINE_UPGRADE,
       HULL_UPGRADE,
-      EVASION_MANEUVER,
       REPAIR_DROID,
       WARP_ENGINE,
       PLANET_LANDER,
