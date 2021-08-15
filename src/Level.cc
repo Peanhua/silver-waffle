@@ -210,17 +210,19 @@ void Level::Start()
             navigationmap[x + y * img->GetWidth()] = navigation;
           }
       {
-        for(int y = 0; y < static_cast<int>(img->GetHeight()); y++)
-          for(int x = 0; x < static_cast<int>(img->GetWidth()); x++)
-            if(navigationmap[x + y * img->GetWidth()] == ' ')
+        auto width = static_cast<int>(img->GetWidth());
+        auto height = static_cast<int>(img->GetHeight());
+        for(int y = 0; y < height; y++)
+          for(int x = 0; x < width; x++)
+            if(navigationmap[x + y * width] == ' ')
               {
-                auto Check = [navigationmap, x, y, img](int xx, int yy) -> bool
+                auto Check = [navigationmap, x, y, img, width, height](int xx, int yy) -> bool
                 {
                   auto ax = x + xx;
                   auto ay = y + yy;
-                  if(ax >= 0 && ax < img->GetWidth() && ay >= 0 && ay < img->GetHeight())
+                  if(ax >= 0 && ax < width && ay >= 0 && ay < height)
                     {
-                      auto d = navigationmap[ax + ay * img->GetWidth()];
+                      auto d = navigationmap[ax + ay * width];
                       return d == '#' || d == 'B';
                     }
                   else
@@ -228,7 +230,7 @@ void Level::Start()
                 };
 
                 if(Check(-1, 0) || Check(1, 0) || Check(0, -1) || Check(0, 1))
-                  navigationmap[x + y * img->GetWidth()] = '.';
+                  navigationmap[x + y * width] = '.';
               }
       }
       

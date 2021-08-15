@@ -21,7 +21,6 @@
 class Camera;
 class Image;
 class Mesh;
-class ObjectPlanet;
 class Scene;
 
 

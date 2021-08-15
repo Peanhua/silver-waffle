@@ -454,7 +454,7 @@ double Scene::GetTime() const
 }
 
 
-Object * Scene::GetClosestPlanet(const glm::vec3 & position) const
+Object * Scene::GetNextClosestPlanet(const glm::vec3 & position) const
 {
   Object * rv = nullptr;
   float rvdist = 0.0f;
@@ -462,8 +462,8 @@ Object * Scene::GetClosestPlanet(const glm::vec3 & position) const
   for(auto planet : _planets)
     if(planet && planet->IsAlive())
       {
-        auto dist = glm::distance(position, planet->GetPosition());
-        if(!rv || dist < rvdist)
+        auto dist = planet->GetPosition().y - position.y;
+        if(!rv || (dist > 0 && dist < rvdist))
           {
             rv = planet;
             rvdist = dist;

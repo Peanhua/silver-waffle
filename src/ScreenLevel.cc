@@ -244,7 +244,7 @@ void ScreenLevel::Tick(double deltatime)
       if(!_demo_lander_activated)
         if(!_parent && GetGameStats()->GetTime() > 9.4)
           {
-            auto planet = dynamic_cast<ObjectPlanet *>(_scene->GetClosestPlanet(player->GetPosition()));
+            auto planet = dynamic_cast<ObjectPlanet *>(_scene->GetNextClosestPlanet(player->GetPosition()));
             assert(planet);
             player->DescendToPlanet(planet->GetSolarSystemObject());
             _demo_lander_activated = true;
@@ -378,8 +378,19 @@ void ScreenLevel::Tick(double deltatime)
     auto rv = std::to_string(v);
     return rv.substr(0, rv.find('.') + 2);
   };
-  
-  _levelinfo_widget->SetText(level->GetName() + "   " + fmt(level->GetTime()) + " (" + fmt(_gamestats->GetTime()) + ")");
+
+  {
+    auto player = _scene->GetPlayer();
+    assert(player);
+    auto planet = dynamic_cast<ObjectPlanet *>(_scene->GetNextClosestPlanet(player->GetPosition()));
+    if(planet)
+      _levelinfo_widget->SetText(planet->GetSolarSystemObject()->GetName()
+                                 + " " + fmt(std::abs(player->GetPosition().y - planet->GetPosition().y))
+                                 + " (" + fmt(_gamestats->GetTime()) + ")");
+    else
+      _levelinfo_widget->SetText(level->GetName()
+                                 + " (" + fmt(_gamestats->GetTime()) + ")");
+  }
 
   {
     auto player = _scene->GetPlayer();

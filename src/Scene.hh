@@ -77,7 +77,7 @@ public:
 
   void              AddPlanet(Object * planet);
   void              AddCloud(Object * cloud);
-  Object *          GetClosestPlanet(const glm::vec3 & position) const;
+  Object *          GetNextClosestPlanet(const glm::vec3 & position) const;
   ObjectBuilding *  GetClosestSpaceport(const glm::vec3 & position) const;
 
   ObjectInvader *    AddInvader(unsigned int type, const glm::vec3 & position);
