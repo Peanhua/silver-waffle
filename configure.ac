@@ -20,10 +20,11 @@ PKG_CHECK_MODULES([GLEW], [glew], [],
     [AC_MSG_ERROR([unable to find GLEW library])] )]
 )
 
-AC_LANG_PUSH([C++])
-AC_CHECK_HEADER([glm/glm.hpp], [],
-  [PKG_CHECK_MODULES([GLM], [glm])])
-AC_LANG_POP
+PKG_CHECK_MODULES([GLM], [glm], [], [
+  AC_LANG_PUSH([C++])
+  AC_CHECK_HEADER([glm/glm.hpp])
+  AC_LANG_POP
+])
 
 PKG_CHECK_MODULES([ASSIMP], [assimp >= 3.3.1])
 
