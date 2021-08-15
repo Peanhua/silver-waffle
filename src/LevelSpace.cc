@@ -48,7 +48,6 @@ void LevelSpace::Start()
  
   planet->SetPosition(glm::vec3(0, _planet_position_start, -_planet_size * 0.5 - 3));
   planet->SetVelocity(glm::vec3(0, -1, 0));
-  planet->SetAngularVelocity(glm::angleAxis(glm::radians(1.5f), glm::vec3(0, 0, 1)), 1.0);
   
   _scene->AddPlanet(planet);
 

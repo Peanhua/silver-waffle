@@ -20,6 +20,7 @@ SolarSystemObject::SolarSystemObject(Type type, const json11::Json & config)
 {
   _name = config["name"].string_value();
   _relative_size = config["radius"].number_value() / 6371.0;
+  _rotation_period = config["rotation"].number_value();
   _gravity = config["gravity"].number_value();
   _texture = AssetLoader->LoadImage(config["texture"].string_value());
   assert(_texture);
@@ -50,13 +51,16 @@ double SolarSystemObject::GetRelativeSize() const
   return _relative_size;
 }
 
-  
+
 Object * SolarSystemObject::CreateSceneObject(Scene * scene, double scale)
 {
   auto obj = new ObjectPlanet(scene, this, _texture, scale * _relative_size);
   if(_ring.y > 0.0f && _ring.x < _ring.y)
     obj->AddPlanetRing(_ring.x, _ring.y);
 
+  auto amount = 1.0 + 1.0 / std::sqrt(_rotation_period) * 5.0;
+  obj->SetAngularVelocity(glm::angleAxis(glm::radians(1.0f), glm::vec3(0, 0, 1)), amount);
+  
   return obj;
 }
 

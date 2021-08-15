@@ -45,6 +45,7 @@ private:
   Type        _type;
   std::string _name;
   double      _relative_size;
+  double      _rotation_period;
   double      _gravity;
   glm::vec2   _ring;
   Image *     _texture;
