@@ -1,6 +1,7 @@
 #include "Include/Input.vert"
 #include "Include/Output.vert"
 #include "Include/Uniforms.glsl"
+#include "Include/Constants.glsl"
 
 
 void main()
@@ -12,9 +13,9 @@ void main()
   vout.position = pos.xyz / pos.w;
 
   float distance_to_center = length(in_vertex);
-#ifdef USE_ALPHA_DISTANCE20_FADE
+#ifdef USE_ALPHA_DISTANCE_FADE
   vout.color = vec4(in_color.rgb,
-                    in_color.a * clamp(1.0 - distance_to_center / 20.0, 0.0, 1.0));
+                    in_color.a * clamp(1.0 - distance_to_center / ALPHA_DISTANCE_FADE, 0.0, 1.0));
 #else
   vout.color = in_color;
 #endif

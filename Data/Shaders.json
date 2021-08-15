@@ -26,11 +26,11 @@
     },
     { "name": "LevelEntrance.vert",
       "src":  "SceneObject.vert",
-      "flags": [ "USE_ALPHA_DISTANCE20_FADE", "USE_BLEND" ]
+      "flags": [ "USE_ALPHA_DISTANCE_FADE", "USE_BLEND" ]
     },
     { "name": "LevelEntrance.frag",
       "src":  "SceneObject.frag",
-      "flags": [ "USE_ALPHA_DISTANCE20_FADE", "USE_BLEND" ]
+      "flags": [ "USE_ALPHA_DISTANCE_FADE", "USE_BLEND" ]
     },
     { "name": "SpaceJunk.vert",
       "src":  "Star.vert",
