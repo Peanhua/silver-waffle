@@ -46,6 +46,7 @@ void MusicPlayer::Start()
         {
           _now_playing->FillBackBuffer();
           _now_playing->SwapBuffers();
+
           auto buffer = _now_playing->GetCurrentBuffer();
           alSourceQueueBuffers(_sources[_current_source], 1, &buffer);
           assert(alGetError() == AL_NO_ERROR);
@@ -62,31 +63,40 @@ void MusicPlayer::Start()
         }
         if(newmus)
           {
-            _current_source ^= 1;
-            _now_playing = newmus;
-            QueueNextBuffer();
-            QueueNextBuffer();
-            alSourcePlay(_sources[_current_source]);
-            assert(alGetError() == AL_NO_ERROR);
+            if(newmus == _now_playing)
+              { /* restart?
+                alSourcePlay(_sources[_current_source]);
+                assert(alGetError() == AL_NO_ERROR);*/
+              }
+            else
+              {
+                _current_source ^= 1;
+                _now_playing = newmus;
+                QueueNextBuffer();
+                QueueNextBuffer();
+                alSourcePlay(_sources[_current_source]);
+                assert(alGetError() == AL_NO_ERROR);
             
-            alSourceStop(_sources[_current_source ^ 1]);
-            assert(alGetError() == AL_NO_ERROR);
+                alSourceStop(_sources[_current_source ^ 1]);
+                assert(alGetError() == AL_NO_ERROR);
 
-            alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
-            alSourcef(_sources[_current_source], AL_GAIN, 1);
+                alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
+                alSourcef(_sources[_current_source], AL_GAIN, 1);
+              }
           }
 
         for(auto s : _sources)
           {
             ALint n;
             alGetSourcei(s, AL_BUFFERS_PROCESSED, &n);
-            if(n > 0)
+            while(n > 0)
               {
                 ALuint buffer;
                 alSourceUnqueueBuffers(s, 1, &buffer);
                 assert(alGetError() == AL_NO_ERROR);
                 if(_now_playing && buffer == _now_playing->GetBackBuffer())
                   QueueNextBuffer();
+                n--;
               }
           }
         
@@ -113,6 +123,8 @@ void MusicPlayer::SetMusicCategory(const std::string & category)
   assert(json);
   assert(json->is_object());
   assert((*json)[category].is_array());
+
+  _songs.clear();
   auto catsongs = (*json)[category].array_items();
   for(auto s : catsongs)
     {
@@ -124,6 +136,7 @@ void MusicPlayer::SetMusicCategory(const std::string & category)
         delete song;
     }
   std::cout << "Loaded category " << category << " with " << _songs.size() << " songs.\n";
+
   PlayNextSong();
 }
 
