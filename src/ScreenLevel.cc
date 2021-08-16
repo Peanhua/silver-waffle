@@ -22,6 +22,7 @@
 #include "Image.hh"
 #include "Level.hh"
 #include "MeshOverlay.hh"
+#include "MusicPlayer.hh"
 #include "ObjectPlanet.hh"
 #include "ObjectSpaceship.hh"
 #include "QuickTimeEventLaunchToSpace.hh"
@@ -32,6 +33,7 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemHighscores.hh"
 #include "SubsystemSettings.hh"
+#include "SubsystemSfx.hh"
 #include "TextureRenderer.hh"
 #include "UpgradeMaterial.hh"
 #include "Weapon.hh"
@@ -638,6 +640,7 @@ void ScreenLevel::OnPlayerDies()
       SDL_PushEvent(&e);
     }
   
+  Sounds->GetMusicPlayer()->SetMusicCategory("Death");
   assert(_state == State::RUNNING);
   _teletyper->AppendText("Offline.\n");
   ChangeState(State::DEATH_PAUSE);
@@ -675,6 +678,7 @@ void ScreenLevel::NextLifeOrQuit()
       delete _current_quicktimeevent;
       _current_quicktimeevent = nullptr;
       
+      PlayMusic();
       RefreshUI();
 
       ChangeState(State::RUNNING);
@@ -776,6 +780,8 @@ void ScreenLevel::ChangeState(State new_state)
     case State::SCREEN_TRANSITION:
       {
         assert(!_pausebutton);
+        Sounds->GetMusicPlayer()->FadeOutCurrentSong(1);
+        
         _pausebutton = new Widget(GetRootWidget(), glm::ivec2(0, 0), glm::ivec2(Settings->GetInt("screen_width"), Settings->GetInt("screen_height")));
         _pausebutton->SetImage(AssetLoader->LoadImage("White"));
         _pausebutton->SetImageColor(glm::vec4(0, 0, 0, 0));
@@ -921,6 +927,8 @@ void ScreenLevel::OpenPauseUI()
 
 void ScreenLevel::GameOver(bool game_was_completed)
 {
+  Sounds->GetMusicPlayer()->SetMusicCategory(game_was_completed ? "GameOverVictory" : "GameOverLoss");
+
   auto hs = new HighscoreEntry(_scene, _current_level, game_was_completed);
   Highscores->Add(hs);
   Highscores->SetLast(hs);

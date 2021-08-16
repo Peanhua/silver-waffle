@@ -25,6 +25,7 @@
 MusicPlayer::MusicPlayer()
   : _thread(nullptr),
     _now_playing(nullptr),
+    _fading_out(0),
     _current_source(0),
     _next_music(nullptr),
     _random_generator(static_cast<unsigned long>(std::time(nullptr))),
@@ -99,10 +100,16 @@ void MusicPlayer::Start()
                 n--;
               }
           }
+
+        if(_fading_out > 0 && _now_playing)
+          {
+            _fading_out -= 0.1f;
+            alSourcef(_sources[_current_source], AL_GAIN, std::clamp(_fading_out, 0.0f, 1.0f));
+          }
         
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
-    assert(alGetError() == AL_NO_ERROR);
+
     alDeleteSources(static_cast<ALsizei>(_sources.size()), _sources.data());
     assert(alGetError() == AL_NO_ERROR);
     _sources.fill(0);
@@ -129,15 +136,24 @@ void MusicPlayer::SetMusicCategory(const std::string & category)
   for(auto s : catsongs)
     {
       assert(s.is_object());
+      assert(s["filename"].is_string());
+      assert(s["tune_id"].is_number());
       auto song = new Song(s["filename"].string_value(), static_cast<unsigned int>(s["tune_id"].int_value()));
       if(song->GetWaveform())
         _songs.push_back(song);
       else
         delete song;
     }
-  std::cout << "Loaded category " << category << " with " << _songs.size() << " songs.\n";
+  std::cout << "Loaded music category " << category << " with " << _songs.size() << " songs.\n";
 
   PlayNextSong();
+}
+
+
+void MusicPlayer::FadeOutCurrentSong(float time)
+{
+  std::lock_guard lock(_next_music_mutex);
+  _fading_out = time;
 }
 
 
@@ -156,6 +172,7 @@ void MusicPlayer::SetMusic(Waveform * music)
 {
   std::lock_guard lock(_next_music_mutex);
   _next_music = music;
+  _fading_out = 0;
 }
 
 
@@ -180,4 +197,6 @@ Waveform * MusicPlayer::Song::GetWaveform() const
 {
   return _waveform;
 }
+
+
 

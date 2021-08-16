@@ -1,17 +1,29 @@
 {
   "Title": [
-    { "tune_id": 1, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" }
+    { "tune_id": 1, "filename": "MUSICIANS/G/Galway_Martin/Parallax.sid" },
+    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Spellbound.sid" },
+    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Kentilla.sid" },
+    { "tune_id": 1, "filename": "MUSICIANS/G/Galway_Martin/Wizball.sid" }
   ],
   "LevelSpace": [
-    { "tune_id": 0, "filename": "MUSICIANS/H/Hubbard_Rob/Crazy_Comets.sid" }
+    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Crazy_Comets.sid" },
+    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Star_Paws.sid" },
+    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" },
+    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Auf_Wiedersehen_Monty.sid" },
+    { "tune_id": 8, "filename": "MUSICIANS/G/Galway_Martin/Wizball.sid" }
   ],
   "LevelPlanet": [
-    { "tune_id": 0, "filename": "MUSICIANS/H/Hubbard_Rob/Star_Paws.sid" }
+    { "tune_id": 1, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" },
+    { "tune_id": 2, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" },
+    { "tune_id": 3, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" }
   ],
   "Death": [
+    { "tune_id": 4, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" }
   ],
   "GameOverLoss": [
+    { "tune_id": 8, "filename": "MUSICIANS/G/Galway_Martin/Green_Beret.sid" }
   ],
   "GameOverVictory": [
+    { "tune_id": 3, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" }
   ]
 }

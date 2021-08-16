@@ -59,6 +59,7 @@ void SubsystemScreen::Tick(double deltatime)
     {
       screen->SetChild(nullptr);
       delete child;
+      screen->PlayMusic();
     }
 
   screen->Tick(deltatime);

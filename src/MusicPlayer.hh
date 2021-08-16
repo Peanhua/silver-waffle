@@ -29,11 +29,17 @@ public:
 
   void Start();
   void Stop();
+
   void SetMusicCategory(const std::string & category);
+  void FadeOutCurrentSong(float time);
+  void PlayNextSong();
 
 private:
   std::jthread * _thread;
   Waveform *     _now_playing;
+  float          _fading_out;
+  float          _fading_out_volume;
+  
   std::array<ALuint, 2> _sources;
   unsigned int          _current_source;
 
@@ -55,7 +61,6 @@ private:
   std::mt19937_64                       _random_generator;
   std::uniform_real_distribution<float> _rdist;
   
-  void PlayNextSong();
   void SetMusic(Waveform * music);
 };
 
