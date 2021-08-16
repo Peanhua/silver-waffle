@@ -17,7 +17,7 @@
 
 
 ScreenLevelSpace::ScreenLevelSpace(ScreenLevel * parent)
-  : ScreenLevel(parent)
+  : ScreenLevel("LevelSpace", parent)
 {
   _camera = new Camera();
   _camera->SetFOV(60);

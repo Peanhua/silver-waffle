@@ -1,0 +1,17 @@
+{
+  "Title": [
+    { "tune_id": 1, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" }
+  ],
+  "LevelSpace": [
+    { "tune_id": 0, "filename": "MUSICIANS/H/Hubbard_Rob/Crazy_Comets.sid" }
+  ],
+  "LevelPlanet": [
+    { "tune_id": 0, "filename": "MUSICIANS/H/Hubbard_Rob/Star_Paws.sid" }
+  ],
+  "Death": [
+  ],
+  "GameOverLoss": [
+  ],
+  "GameOverVictory": [
+  ]
+}

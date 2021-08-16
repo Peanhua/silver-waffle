@@ -13,14 +13,11 @@
 #include "Camera.hh"
 #include "ScreenLevelSpace.hh"
 #include "Milkyway.hh"
-#include "MusicPlayer.hh"
 #include "ObjectMovable.hh"
 #include "SolarSystemObject.hh"
 #include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
-#include "SubsystemSfx.hh"
-#include "WaveformSID.hh"
 #include "WidgetButton.hh"
 #include "WidgetHighscores.hh"
 #include "WidgetTeletyper.hh"
@@ -29,7 +26,7 @@
 
 
 ScreenTitle::ScreenTitle()
-  : Screen(),
+  : Screen("Title"),
     _time(0),
     _plot_phase(0),
     _demo_start_button(nullptr)
@@ -139,9 +136,6 @@ ScreenTitle::ScreenTitle()
   
     new WidgetHighscores(root, glm::ivec2(20, height / 2 + (height / 2 - bh) / 2), glm::ivec2(bw, bh), false);
   }
-
-  auto sid = new WaveformSID("MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid", 1);
-  Sounds->GetMusicPlayer()->SetMusic(sid);
 }
 
 

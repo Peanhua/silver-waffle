@@ -38,7 +38,7 @@ class WidgetTeletyper;
 class ScreenLevel : public Screen
 {
 public:
-  ScreenLevel(ScreenLevel * parent);
+  ScreenLevel(const std::string & music_category, ScreenLevel * parent);
   ~ScreenLevel() override;
 
   virtual void SetupLevels();

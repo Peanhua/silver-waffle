@@ -10,13 +10,16 @@
   Complete license can be found in the LICENSE file.
 */
 #include "Screen.hh"
+#include "MusicPlayer.hh"
+#include "SubsystemSfx.hh"
 #include "Widget.hh"
 #include <cassert>
 #include <GL/glew.h>
 
 
-Screen::Screen()
-  : _running(true),
+Screen::Screen(const std::string & music_category)
+  : _music_category(music_category),
+    _running(true),
     _child(nullptr),
     _root_widget(nullptr),
     _modal_widget(nullptr)
@@ -45,6 +48,9 @@ void Screen::SetChild(Screen * screen)
     assert(_child);
   
   _child = screen;
+
+  if(_child)
+    _child->PlayMusic();
 }
 
 
@@ -58,6 +64,12 @@ void Screen::Quit()
 {
   _running = false;
   OnQuit();
+}
+
+
+void Screen::PlayMusic()
+{
+  Sounds->GetMusicPlayer()->SetMusicCategory(_music_category);
 }
 
 

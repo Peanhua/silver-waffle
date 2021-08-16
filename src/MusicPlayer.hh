@@ -13,7 +13,10 @@
 */
 
 #include <array>
+#include <random>
+#include <string>
 #include <thread>
+#include <vector>
 #include <al.h>
 
 class Waveform;
@@ -26,7 +29,7 @@ public:
 
   void Start();
   void Stop();
-  void SetMusic(Waveform * music);
+  void SetMusicCategory(const std::string & category);
 
 private:
   std::jthread * _thread;
@@ -36,6 +39,24 @@ private:
 
   std::atomic<Waveform *> _next_music;
   std::mutex              _next_music_mutex;
+
+  class Song
+  {
+  public:
+    Song(const std::string & filename, unsigned int tune_id);
+    Waveform * GetWaveform() const;
+  private:
+    std::string  _filename;
+    unsigned int _tune_id;
+    Waveform *   _waveform;
+  };
+  std::vector<Song *> _songs;
+
+  std::mt19937_64                       _random_generator;
+  std::uniform_real_distribution<float> _rdist;
+  
+  void PlayNextSong();
+  void SetMusic(Waveform * music);
 };
 
 #endif

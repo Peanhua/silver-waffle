@@ -29,6 +29,8 @@ bool SubsystemScreen::Start()
   ScreenManager = this;
   
   _root_screen = new ScreenTitle();
+  _root_screen->PlayMusic();
+  
   return GetScreen();
 }
 

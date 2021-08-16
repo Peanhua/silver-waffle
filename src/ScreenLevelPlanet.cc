@@ -17,7 +17,7 @@
 
 
 ScreenLevelPlanet::ScreenLevelPlanet(ScreenLevel * parent, SolarSystemObject * planet)
-  : ScreenLevel(parent),
+  : ScreenLevel("LevelPlanet", parent),
     _planet(planet)
 {
   _camera = new Camera();

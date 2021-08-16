@@ -21,7 +21,7 @@ class Widget;
 class Screen
 {
 public:
-  Screen();
+  Screen(const std::string & music_category);
   virtual ~Screen();
 
   Screen * GetChild() const;
@@ -35,14 +35,17 @@ public:
 
   void     SetModalWidget(Widget * widget);
   
+  virtual void PlayMusic();
   virtual void Tick(double deltatime);
   virtual void Draw() const;
   virtual void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod);
   virtual void OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relative_movement);
   virtual void OnMouseButton(bool pressed, unsigned int button, const glm::ivec2 & position);
   virtual void OnQuit();
-  
+
 private:
+  std::string _music_category;
+  
   bool     _running;
   Screen * _child;
 
