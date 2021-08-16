@@ -13,7 +13,6 @@ PKG_CHECK_MODULES([SDL2], [sdl2 >= 2], [], [
   PKG_CHECK_MODULES([SDL2], [sdl >= 2])]
 )
 
-PKG_CHECK_MODULES([SDL2_image], [SDL2_image >= 2])
 
 PKG_CHECK_MODULES([GLEW], [glew], [],
   [AC_CHECK_LIB([GLEW], [glewInit], [],
@@ -26,13 +25,14 @@ PKG_CHECK_MODULES([GLM], [glm], [], [
   AC_LANG_POP
 ])
 
-PKG_CHECK_MODULES([ASSIMP], [assimp >= 3.3.1])
-
-PKG_CHECK_MODULES([JSON11], [json11 >= 1])
-
-PKG_CHECK_MODULES([FREETYPE2], [freetype2])
-
-PKG_CHECK_MODULES([LIBPNG], [libpng])
+PKG_CHECK_MODULES([ALUT],       [freealut])
+PKG_CHECK_MODULES([ASSIMP],     [assimp >= 3.3.1])
+PKG_CHECK_MODULES([FREETYPE2],  [freetype2])
+PKG_CHECK_MODULES([JSON11],     [json11 >= 1])
+PKG_CHECK_MODULES([LIBPNG],     [libpng])
+PKG_CHECK_MODULES([OPENAL],     [openal])
+PKG_CHECK_MODULES([SDL2_IMAGE], [SDL2_image >= 2])
+PKG_CHECK_MODULES([SIDPLAYFP],  [libsidplayfp])
 
 
 AC_ARG_WITH([valgrind], AS_HELP_STRING([--with-valgrind], [Build with support for Valgrind.]))

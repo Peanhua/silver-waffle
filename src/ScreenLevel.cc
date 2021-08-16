@@ -22,6 +22,7 @@
 #include "Image.hh"
 #include "Level.hh"
 #include "MeshOverlay.hh"
+#include "MusicPlayer.hh"
 #include "ObjectPlanet.hh"
 #include "ObjectSpaceship.hh"
 #include "QuickTimeEventLaunchToSpace.hh"
@@ -32,8 +33,10 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemHighscores.hh"
 #include "SubsystemSettings.hh"
+#include "SubsystemSfx.hh"
 #include "TextureRenderer.hh"
 #include "UpgradeMaterial.hh"
+#include "WaveformSID.hh"
 #include "Weapon.hh"
 #include "WidgetButton.hh"
 #include "WidgetHighscores.hh"
@@ -219,6 +222,9 @@ void ScreenLevel::Initialize()
     _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Install();
 
   SetAmmoType(_weapon_ammo_type);
+
+  auto sid = new WaveformSID("MUSICIANS/H/Hubbard_Rob/Crazy_Comets.sid", 0);
+  Sounds->GetMusicPlayer()->SetMusic(sid);
 }
 
 

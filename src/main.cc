@@ -19,6 +19,7 @@
 #include "SubsystemInput.hh"
 #include "SubsystemJobs.hh"
 #include "SubsystemSettings.hh"
+#include "SubsystemSfx.hh"
 #include <SDL.h>
 #include <iostream>
 #include <chrono>
@@ -53,12 +54,14 @@ int main(int argc, char *argv[])
         SubsystemGfx         gfx;
         SubsystemScreen      screen;
         SubsystemInput       inp;
+        SubsystemSfx         sfx;
         ssh.Add(&settings);
         ssh.Add(&ass);
         ssh.Add(&jobs);
         ssh.Add(&highscores);
         ssh.Add(&inp);
         ssh.Add(&gfx);
+        ssh.Add(&sfx);
         ssh.Add(&screen);
 
         if(ssh.StartAll())

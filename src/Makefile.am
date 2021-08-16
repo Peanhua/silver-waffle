@@ -1,47 +1,53 @@
 AM_CXXFLAGS =                \
 	-DDATADIR='"$(datadir)/silver-waffle"' \
+	$(ALUT_CFLAGS)       \
 	$(ASSIMP_CFLAGS)     \
 	$(FREETYPE2_CFLAGS)  \
-        $(GL_CFLAGS)         \
-        $(GLEW_CFLAGS)       \
-        $(GLM_CFLAGS)        \
 	$(JSON11_CFLAGS)     \
 	$(LIBPNG_CFLAGS)     \
+	$(OPENAL_CFLAGS)     \
 	$(PTHREAD_CFLAGS)    \
+        $(GLEW_CFLAGS)       \
+        $(GLM_CFLAGS)        \
+        $(GL_CFLAGS)         \
         $(SDL2_CFLAGS)       \
-        $(SDL2_image_CFLAGS) \
+        $(SDL2_IMAGE_CFLAGS) \
+	$(SIDPLAYFP_CFLAGS)  \
 	$(VALGRIND_CFLAGS)
 
 bin_PROGRAMS = silverwaffle
 
 silverwaffle_LDADD =       \
+	$(ALUT_LIBS)       \
 	$(ASSIMP_LIBS)     \
 	$(FREETYPE2_LIBS)  \
         $(GL_LIBS)         \
         $(GLEW_LIBS)       \
 	$(JSON11_LIBS)     \
 	$(LIBPNG_LIBS)     \
+	$(OPENAL_LIBS)     \
 	$(PTHREAD_LIBS)    \
         $(SDL2_LIBS)       \
-        $(SDL2_image_LIBS)
+        $(SDL2_IMAGE_LIBS) \
+	$(SIDPLAYFP_LIBS)  
 
 silverwaffle_SOURCES =				\
-	AdditiveBlending.cc			\
-	AdditiveBlending.hh			\
 	AStar.cc				\
 	AStar.hh				\
+	AdditiveBlending.cc			\
+	AdditiveBlending.hh			\
 	Camera.cc				\
 	Camera.hh				\
-	Component.cc				\
-	Component.hh				\
-	Controller.cc				\
-	Controller.hh				\
 	CollisionShape.cc			\
 	CollisionShape.hh			\
 	CollisionShapeOBB.cc			\
 	CollisionShapeOBB.hh			\
 	CollisionShapeSphere.cc			\
 	CollisionShapeSphere.hh			\
+	Component.cc				\
+	Component.hh				\
+	Controller.cc				\
+	Controller.hh				\
 	ControllerPlanet.cc			\
 	ControllerPlanet.hh			\
 	ControllerSpace.cc			\
@@ -52,6 +58,8 @@ silverwaffle_SOURCES =				\
 	Font.hh					\
 	Frustum.cc				\
 	Frustum.hh				\
+	GLM.cc					\
+	GLM.hh					\
 	GameStats.cc				\
 	GameStats.hh				\
 	GaussianBlur.cc				\
@@ -78,12 +86,12 @@ silverwaffle_SOURCES =				\
 	Mesh_LoadFromFile.cc			\
 	Milkyway.cc				\
 	Milkyway.hh				\
+	MusicPlayer.cc				\
+	MusicPlayer.hh				\
 	NavigationMap.cc			\
 	NavigationMap.hh			\
 	Object.cc				\
 	Object.hh				\
-	ObjectLevelEntrance.cc			\
-	ObjectLevelEntrance.hh			\
 	ObjectBuilding.cc			\
 	ObjectBuilding.hh			\
 	ObjectCloud.cc				\
@@ -92,6 +100,8 @@ silverwaffle_SOURCES =				\
 	ObjectCollectible.hh			\
 	ObjectInvader.cc			\
 	ObjectInvader.hh			\
+	ObjectLevelEntrance.cc			\
+	ObjectLevelEntrance.hh			\
 	ObjectMovable.cc			\
 	ObjectMovable.hh			\
 	ObjectPlanet.cc				\
@@ -159,12 +169,18 @@ silverwaffle_SOURCES =				\
 	SubsystemScreen.hh			\
 	SubsystemSettings.cc			\
 	SubsystemSettings.hh			\
+	SubsystemSfx.cc				\
+	SubsystemSfx.hh				\
 	TextureRenderer.cc			\
 	TextureRenderer.hh			\
 	UniformBufferObject.cc			\
 	UniformBufferObject.hh			\
 	UpgradeMaterial.cc			\
 	UpgradeMaterial.hh			\
+	Waveform.cc				\
+	Waveform.hh				\
+	WaveformSID.cc				\
+	WaveformSID.hh				\
 	Weapon.cc				\
 	Weapon.hh				\
 	Widget.cc				\
@@ -193,6 +209,4 @@ silverwaffle_SOURCES =				\
 	WidgetWeaponStatus.hh			\
 	WormholeWall.cc				\
 	WormholeWall.hh				\
-	GLM.cc					\
-	GLM.hh					\
 	main.cc
