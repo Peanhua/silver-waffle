@@ -12,6 +12,7 @@
   Complete license can be found in the LICENSE file.
 */
 
+#include <array>
 #include <thread>
 #include <al.h>
 
@@ -30,7 +31,8 @@ public:
 private:
   std::jthread * _thread;
   Waveform *     _now_playing;
-  ALuint         _source;
+  std::array<ALuint, 2> _sources;
+  unsigned int          _current_source;
 
   std::atomic<Waveform *> _next_music;
   std::mutex              _next_music_mutex;

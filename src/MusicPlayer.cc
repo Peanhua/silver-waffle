@@ -20,9 +20,10 @@
 MusicPlayer::MusicPlayer()
   : _thread(nullptr),
     _now_playing(nullptr),
-    _source(0),
+    _current_source(0),
     _next_music(nullptr)
 {
+  _sources.fill(0);
 }
 
 
@@ -30,7 +31,7 @@ void MusicPlayer::Start()
 {
   _thread = new std::jthread([this](std::stop_token st)
   {
-    alGenSources(1, &_source);
+    alGenSources(static_cast<ALsizei>(_sources.size()), _sources.data());
     assert(alGetError() == AL_NO_ERROR);
     while(!st.stop_requested())
       {
@@ -39,7 +40,7 @@ void MusicPlayer::Start()
           _now_playing->FillBackBuffer();
           _now_playing->SwapBuffers();
           auto buffer = _now_playing->GetCurrentBuffer();
-          alSourceQueueBuffers(_source, 1, &buffer);
+          alSourceQueueBuffers(_sources[_current_source], 1, &buffer);
           assert(alGetError() == AL_NO_ERROR);
         };
         
@@ -54,23 +55,30 @@ void MusicPlayer::Start()
         }
         if(newmus)
           {
+            _current_source ^= 1;
             _now_playing = newmus;
             QueueNextBuffer();
             QueueNextBuffer();
-            alSourcePlay(_source);
+            alSourcePlay(_sources[_current_source]);
             assert(alGetError() == AL_NO_ERROR);
+            
+            alSourceStop(_sources[_current_source ^ 1]);
+            assert(alGetError() == AL_NO_ERROR);
+
+            alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
+            alSourcef(_sources[_current_source], AL_GAIN, 1);
           }
 
-        if(_now_playing)
+        for(auto s : _sources)
           {
             ALint n;
-            alGetSourcei(_source, AL_BUFFERS_PROCESSED, &n);
+            alGetSourcei(s, AL_BUFFERS_PROCESSED, &n);
             if(n > 0)
               {
                 ALuint buffer;
-                alSourceUnqueueBuffers(_source, 1, &buffer);
+                alSourceUnqueueBuffers(s, 1, &buffer);
                 assert(alGetError() == AL_NO_ERROR);
-                if(buffer == _now_playing->GetBackBuffer())
+                if(_now_playing && buffer == _now_playing->GetBackBuffer())
                   QueueNextBuffer();
               }
           }
@@ -78,9 +86,9 @@ void MusicPlayer::Start()
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
     assert(alGetError() == AL_NO_ERROR);
-    alDeleteSources(1, &_source);
+    alDeleteSources(static_cast<ALsizei>(_sources.size()), _sources.data());
     assert(alGetError() == AL_NO_ERROR);
-    _source = 0;
+    _sources.fill(0);
   });
 }
 
