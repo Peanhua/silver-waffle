@@ -77,7 +77,8 @@ bool SubsystemAssetLoader::Start()
     std::vector<std::string> subdirs
       {
         "",
-        "Data"
+        "Data",
+        "Images"
       };
     for(auto s : subdirs)
       {
@@ -264,13 +265,22 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
   auto mesh = new Mesh(mesh_options);
   assert(mesh);
 
-  if(mesh->LoadFromFile(std::string(DATADIR) + "/3d-models/" + name + ".dae", shader_prefix))
-    {
-      std::cout << "Loaded mesh '" << name << "'.\n";
-      Graphics->QueueUpdateGPU(mesh);
-      mesh->CalculateBoundingVolumes();
-      _meshes[key] = mesh;
-    }
+  bool loaded = false;
+  for(auto path : _asset_paths)
+    if(mesh->LoadFromFile(path + "/3d-models/" + name + ".dae", shader_prefix))
+      {
+        loaded = true;
+        break;
+      }
+
+  assert(loaded);
+  if(!loaded)
+    return nullptr;
+
+  std::cout << "Loaded mesh '" << name << "'.\n";
+  Graphics->QueueUpdateGPU(mesh);
+  mesh->CalculateBoundingVolumes();
+  _meshes[key] = mesh;
 
   if(config)
     {
@@ -389,14 +399,17 @@ bool SubsystemAssetLoader::LoadImage(Image * image, const std::string & name, un
     qualityname = "-low";
 
   bool rv = false;
-  if(image->Load(std::string(DATADIR) + "/Images/" + stripped_name + qualityname + ".png") ||
-     image->Load(std::string(DATADIR) + "/Images/" + stripped_name + qualityname + ".jpg")    )
+  for(auto path : _asset_paths)
     {
-      std::cout << "Loaded image '" << name << "':" << quality << ".\n";
-      Graphics->QueueUpdateGPU(image);
-      rv = true;
+      if(image->Load(path + "/Images/" + stripped_name + qualityname + ".png") ||
+         image->Load(path + "/Images/" + stripped_name + qualityname + ".jpg")    )
+        {
+          std::cout << "Loaded image '" << name << "':" << quality << ".\n";
+          Graphics->QueueUpdateGPU(image);
+          rv = true;
+          break;
+        }
     }
-  
   return rv;
 }
 

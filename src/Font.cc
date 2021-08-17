@@ -126,28 +126,27 @@ bool Font::Generate()
 
       FT_Done_FreeType(ft);
     }
+  if(!_image)
+    return false;
 
-  assert(_image);
-  if(_image)
+
+  unsigned int ccount = 0;
+  for(int i = '!'; i <= '~'; i++)
+    ccount++;
+
+  _characters.resize(ccount);
+  for(unsigned int i = '!'; i <= '~'; i++)
     {
-      unsigned int ccount = 0;
-      for(int i = '!'; i <= '~'; i++)
-        ccount++;
-
-      _characters.resize(ccount);
-      for(unsigned int i = '!'; i <= '~'; i++)
-        {
-          unsigned int c = i - '!';
+      unsigned int c = i - '!';
                   
-          auto fc = &_characters[c];
+      auto fc = &_characters[c];
                   
-          fc->width = fontdata[c].width;
+      fc->width = fontdata[c].width;
 
-          fc->texture_coordinates[0] = static_cast<float>(fontdata[c].x) / static_cast<float>(_image->GetWidth());
-          fc->texture_coordinates[1] = static_cast<float>((_image->GetHeight() - fontdata[c].y - _height)) / static_cast<float>(_image->GetHeight());
-          fc->texture_coordinates[2] = static_cast<float>(fontdata[c].x + fontdata[c].width) / static_cast<float>(_image->GetWidth());
-          fc->texture_coordinates[3] = static_cast<float>((_image->GetHeight() - fontdata[c].y)) / static_cast<float>(_image->GetHeight());
-        }
+      fc->texture_coordinates[0] = static_cast<float>(fontdata[c].x) / static_cast<float>(_image->GetWidth());
+      fc->texture_coordinates[1] = static_cast<float>((_image->GetHeight() - fontdata[c].y - _height)) / static_cast<float>(_image->GetHeight());
+      fc->texture_coordinates[2] = static_cast<float>(fontdata[c].x + fontdata[c].width) / static_cast<float>(_image->GetWidth());
+      fc->texture_coordinates[3] = static_cast<float>((_image->GetHeight() - fontdata[c].y)) / static_cast<float>(_image->GetHeight());
     }
       
   { /* Make sure the image width*bpp%4==0. */
@@ -302,14 +301,15 @@ void Font::Save() const
   };
 
   std::string filename("Font-" + std::to_string(_font_size));
+  auto root = AssetLoader->GetSaveRoot();
 
-  if(!_image->Save("Images/" + filename))
+  if(!_image->Save(root + "/Images/" + filename))
     {
       std::cerr << "Warning, failed to save font.\n";
       return;
     }
   
-  std::ofstream file("Data/" + filename + ".json");
+  std::ofstream file(root + "/Data/" + filename + ".json");
   if(!file)
     {
       std::cerr << "Warning, failed to save font.\n";

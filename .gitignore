@@ -57,10 +57,8 @@ missing
 stamp-h1
 
 # Generated files
-/Data/Font-*
 /Images/*-low.jpg
 /Images/*-low.png
-/Images/Font-*
 Doxyfile
 vgcore.*
 *.trace
