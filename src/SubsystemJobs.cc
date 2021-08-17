@@ -30,7 +30,9 @@ bool SubsystemJobs::Start()
   assert(!Jobs);
   Jobs = this;
 
-  auto count = std::max(3u, std::thread::hardware_concurrency()) - 1;
+  auto count = std::max(3u, std::thread::hardware_concurrency());
+  count--; // Main thread.
+  count--; // Audio threads (OpenAL, MusicPlayer).
   std::cout << GetName() << ": Using " << count << " job threads.\n";
 
   _processors.clear();

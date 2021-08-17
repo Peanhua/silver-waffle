@@ -15,6 +15,7 @@
 #endif
 #include "MusicPlayer.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSettings.hh"
 #include "WaveformSID.hh"
 #include <cassert>
 #include <chrono>
@@ -26,6 +27,7 @@ MusicPlayer::MusicPlayer()
   : _clock(),
     _thread(nullptr),
     _now_playing(nullptr),
+    _volume(0),
     _fading_out(0),
     _current_source(0),
     _next_music(nullptr),
@@ -38,6 +40,11 @@ MusicPlayer::MusicPlayer()
 
 void MusicPlayer::Start()
 {
+  if(!Settings->GetBool("music"))
+    return;
+
+  _volume = Settings->GetDouble("music_volume") / 100.0;
+  
   _thread = new std::jthread([this](std::stop_token st)
   {
     alGenSources(static_cast<ALsizei>(_sources.size()), _sources.data());
@@ -60,13 +67,19 @@ void MusicPlayer::Start()
 
 void MusicPlayer::Stop()
 {
-  _thread->request_stop();
-  _thread->join();
+  if(_thread)
+    {
+      _thread->request_stop();
+      _thread->join();
+    }
 }
 
 
 void MusicPlayer::SetMusicCategory(const std::string & category)
 {
+  if(!Settings->GetBool("music"))
+    return;
+
   auto json = AssetLoader->LoadJson(std::string(DATADIR) + "/Data/Songs");
   assert(json);
   assert(json->is_object());
@@ -179,7 +192,7 @@ void MusicPlayer::ChangeMusic(Waveform * newmus)
       assert(alGetError() == AL_NO_ERROR);
       
       alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
-      alSourcef(_sources[_current_source], AL_GAIN, 1);
+      alSourcef(_sources[_current_source], AL_GAIN, _volume);
     }
 }
 
@@ -208,7 +221,7 @@ void MusicPlayer::TickFading()
   if(_fading_out > 0 && _now_playing)
     {
       _fading_out -= 0.1;
-      alSourcef(_sources[_current_source], AL_GAIN, static_cast<ALfloat>(std::clamp(_fading_out, 0.0, 1.0)));
+      alSourcef(_sources[_current_source], AL_GAIN, static_cast<ALfloat>(std::clamp(_fading_out, 0.0, _volume)));
     }
 }  
 

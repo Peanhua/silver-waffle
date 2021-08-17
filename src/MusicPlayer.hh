@@ -38,6 +38,7 @@ private:
   std::jthread * _thread;
   Waveform *     _now_playing;
   bool           _now_playing_continuously;
+  double         _volume;
   std::chrono::time_point<std::chrono::steady_clock> _playing_stop_time;
   double         _fading_out;
   double         _fading_out_volume;
