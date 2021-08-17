@@ -109,6 +109,7 @@ void WidgetHighscores::Refresh()
         w->SetTextFont(font);
         w->SetTextColor(font_color * 0.5f);
         w->SetTextFontWeight(font_weight);
+        w->SetTextPaddingCentered(false, true);
         x += w->GetSize().x;
         rowheight = std::max(rowheight, w->GetSize().y);
       }

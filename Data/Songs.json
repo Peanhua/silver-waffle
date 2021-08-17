@@ -1,38 +1,56 @@
 {
-  "Title": [
-    { "tune_id":  1, "filename": "MUSICIANS/G/Galway_Martin/Parallax.sid" },
-    { "tune_id":  1, "filename": "MUSICIANS/H/Hubbard_Rob/Spellbound.sid" },
-    { "tune_id":  1, "filename": "MUSICIANS/H/Hubbard_Rob/Kentilla.sid" },
-    { "tune_id":  4, "filename": "MUSICIANS/G/Galway_Martin/Wizball.sid" },
-    { "tune_id":  9, "filename": "MUSICIANS/D/Daglish_Ben/Last_Ninja.sid" },
-    { "tune_id":  1, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" },
-    { "tune_id": 12, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" }
-  ],
-  "LevelSpace": [
-    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Crazy_Comets.sid" },
-    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Star_Paws.sid" },
-    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" },
-    { "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Auf_Wiedersehen_Monty.sid" },
-    { "tune_id": 5, "filename": "MUSICIANS/H/Hubbard_Rob/Human_Race.sid" },
-    { "tune_id": 2, "filename": "MUSICIANS/G/Galway_Martin/Wizball.sid" },
-    { "tune_id": 7, "filename": "MUSICIANS/D/Daglish_Ben/Last_Ninja.sid" },
-    { "tune_id": 2, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" },
-    { "tune_id": 4, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" }
-  ],
-  "LevelPlanet": [
-    { "tune_id": 1, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" },
-    { "tune_id": 2, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" },
-    { "tune_id": 3, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" },
-    { "tune_id": 6, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" }
-  ],
-  "Death": [
-    { "tune_id": 4, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" }
-  ],
-  "GameOverLoss": [
-    { "tune_id": 8, "filename": "MUSICIANS/G/Galway_Martin/Green_Beret.sid" }
-  ],
-  "GameOverVictory": [
-    { "tune_id":  3, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" },
-    { "tune_id": 13, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" }
-  ]
+  "Title": {
+    "continuous": true,
+    "songs": [
+      { "time": 683, "tune_id":  1, "filename": "MUSICIANS/G/Galway_Martin/Parallax.sid" },
+      { "time": 360, "tune_id":  1, "filename": "MUSICIANS/H/Hubbard_Rob/Spellbound.sid" },
+      { "time": 779, "tune_id":  1, "filename": "MUSICIANS/H/Hubbard_Rob/Kentilla.sid" },
+      { "time": 215, "tune_id":  4, "filename": "MUSICIANS/G/Galway_Martin/Wizball.sid" },
+      { "time": 331, "tune_id":  9, "filename": "MUSICIANS/D/Daglish_Ben/Last_Ninja.sid" },
+      { "time": 267, "tune_id":  1, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" },
+      { "time": 473, "tune_id": 12, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" }
+    ]
+  },
+  "LevelSpace": {
+    "continuous": true,
+    "songs": [
+      { "time": 276, "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Crazy_Comets.sid" },
+      { "time": 370, "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Star_Paws.sid" },
+      { "time": 236, "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" },
+      { "time": 368, "tune_id": 1, "filename": "MUSICIANS/H/Hubbard_Rob/Auf_Wiedersehen_Monty.sid" },
+      { "time":  87, "tune_id": 5, "filename": "MUSICIANS/H/Hubbard_Rob/Human_Race.sid" },
+      { "time":  99, "tune_id": 2, "filename": "MUSICIANS/G/Galway_Martin/Wizball.sid" },
+      { "time": 240, "tune_id": 7, "filename": "MUSICIANS/D/Daglish_Ben/Last_Ninja.sid" },
+      { "time": 338, "tune_id": 2, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" },
+      { "time": 332, "tune_id": 4, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" }
+    ]
+  },
+  "LevelPlanet": {
+    "continuous": true,
+    "songs": [
+      { "time": 77, "tune_id": 1, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" },
+      { "time": 62, "tune_id": 2, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" },
+      { "time": 58, "tune_id": 3, "filename": "MUSICIANS/B/Brennan_Neil/Fist_II-The_Legend_Continues.sid" },
+      { "time": 368, "tune_id": 6, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" }
+    ]
+  },
+  "Death": {
+    "continuous": false,
+    "songs": [
+      { "time": 2, "tune_id": 4, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" }
+    ]
+  },
+  "GameOverLoss": {
+    "continuous": false,
+    "songs": [
+      { "time": 3, "tune_id": 8, "filename": "MUSICIANS/G/Galway_Martin/Green_Beret.sid" }
+    ]
+  },
+  "GameOverVictory": {
+    "continuous": false,
+    "songs": [
+      { "time": 6, "tune_id":  3, "filename": "MUSICIANS/H/Hubbard_Rob/Commando.sid" },
+      { "time": 221, "tune_id": 13, "filename": "MUSICIANS/G/Gray_Matt/Last_Ninja_2.sid" }
+    ]
+  }
 }

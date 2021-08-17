@@ -31,14 +31,16 @@ public:
   void Stop();
 
   void SetMusicCategory(const std::string & category);
-  void FadeOutCurrentSong(float time);
-  void PlayNextSong();
+  void FadeOutCurrentSong(double time);
 
 private:
+  const std::chrono::steady_clock _clock;
   std::jthread * _thread;
   Waveform *     _now_playing;
-  float          _fading_out;
-  float          _fading_out_volume;
+  bool           _now_playing_continuously;
+  std::chrono::time_point<std::chrono::steady_clock> _playing_stop_time;
+  double         _fading_out;
+  double         _fading_out_volume;
   
   std::array<ALuint, 2> _sources;
   unsigned int          _current_source;
@@ -49,7 +51,7 @@ private:
   class Song
   {
   public:
-    Song(const std::string & filename, unsigned int tune_id);
+    Song(const std::string & filename, unsigned int tune_id, double length);
     Waveform * GetWaveform() const;
   private:
     std::string  _filename;
@@ -60,8 +62,17 @@ private:
 
   std::mt19937_64                       _random_generator;
   std::uniform_real_distribution<float> _rdist;
-  
-  void SetMusic(Waveform * music);
+
+  Waveform * GetNextSongInCategory();
+
+  void TickMusicChange();
+  void ChangeMusic(Waveform * music);
+  void SetNextMusic(Waveform * music);
+
+  void TickSourceQueues();
+  void QueueNextBuffer();
+
+  void TickFading();
 };
 
 #endif

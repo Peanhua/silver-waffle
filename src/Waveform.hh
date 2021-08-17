@@ -29,12 +29,16 @@ public:
   void         SwapBuffers();
   virtual void FillBackBuffer() = 0;
 
+  double       GetLength() const;
+  void         SetLength(double length);
+
 protected:
   void UpdateBackBuffer(const std::vector<short> & data);
   
 private:
   unsigned int          _current_buffer;
   std::array<ALuint, 2> _buffers;
+  double                _length;
 };
 
 #endif

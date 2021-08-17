@@ -16,7 +16,8 @@
 
 
 Waveform::Waveform()
-  : _current_buffer(0)
+  : _current_buffer(0),
+    _length(0)
 {
   _buffers.fill(0);
 
@@ -57,4 +58,16 @@ void Waveform::UpdateBackBuffer(const std::vector<short> & data)
 void Waveform::SwapBuffers()
 {
   _current_buffer ^= 1;
+}
+
+
+double Waveform::GetLength() const
+{
+  return _length;
+}
+
+
+void Waveform::SetLength(double length)
+{
+  _length = length;
 }

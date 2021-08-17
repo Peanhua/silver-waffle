@@ -23,7 +23,8 @@
 
 
 MusicPlayer::MusicPlayer()
-  : _thread(nullptr),
+  : _clock(),
+    _thread(nullptr),
     _now_playing(nullptr),
     _fading_out(0),
     _current_source(0),
@@ -43,70 +44,10 @@ void MusicPlayer::Start()
     assert(alGetError() == AL_NO_ERROR);
     while(!st.stop_requested())
       {
-        auto QueueNextBuffer = [this]()
-        {
-          _now_playing->FillBackBuffer();
-          _now_playing->SwapBuffers();
+        TickMusicChange();
+        TickSourceQueues();
+        TickFading();
 
-          auto buffer = _now_playing->GetCurrentBuffer();
-          alSourceQueueBuffers(_sources[_current_source], 1, &buffer);
-          assert(alGetError() == AL_NO_ERROR);
-        };
-        
-        Waveform * newmus = nullptr;
-        {
-          std::lock_guard lock(_next_music_mutex);
-          if(_next_music)
-            {
-              newmus = _next_music;
-              _next_music = nullptr;
-            }
-        }
-        if(newmus)
-          {
-            if(newmus == _now_playing)
-              { /* restart?
-                alSourcePlay(_sources[_current_source]);
-                assert(alGetError() == AL_NO_ERROR);*/
-              }
-            else
-              {
-                _current_source ^= 1;
-                _now_playing = newmus;
-                QueueNextBuffer();
-                QueueNextBuffer();
-                alSourcePlay(_sources[_current_source]);
-                assert(alGetError() == AL_NO_ERROR);
-            
-                alSourceStop(_sources[_current_source ^ 1]);
-                assert(alGetError() == AL_NO_ERROR);
-
-                alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
-                alSourcef(_sources[_current_source], AL_GAIN, 1);
-              }
-          }
-
-        for(auto s : _sources)
-          {
-            ALint n;
-            alGetSourcei(s, AL_BUFFERS_PROCESSED, &n);
-            while(n > 0)
-              {
-                ALuint buffer;
-                alSourceUnqueueBuffers(s, 1, &buffer);
-                assert(alGetError() == AL_NO_ERROR);
-                if(_now_playing && buffer == _now_playing->GetBackBuffer())
-                  QueueNextBuffer();
-                n--;
-              }
-          }
-
-        if(_fading_out > 0 && _now_playing)
-          {
-            _fading_out -= 0.1f;
-            alSourcef(_sources[_current_source], AL_GAIN, std::clamp(_fading_out, 0.0f, 1.0f));
-          }
-        
         std::this_thread::sleep_for(std::chrono::milliseconds(100));
       }
 
@@ -129,16 +70,25 @@ void MusicPlayer::SetMusicCategory(const std::string & category)
   auto json = AssetLoader->LoadJson(std::string(DATADIR) + "/Data/Songs");
   assert(json);
   assert(json->is_object());
-  assert((*json)[category].is_array());
 
+  auto cat = (*json)[category];
+  assert(cat.is_object());
+
+  assert(cat["continuous"].is_bool());
+  _now_playing_continuously = cat["continuous"].bool_value();
+  
+  assert(cat["songs"].is_array());
+  auto catsongs = cat["songs"].array_items();
   _songs.clear();
-  auto catsongs = (*json)[category].array_items();
   for(auto s : catsongs)
     {
       assert(s.is_object());
       assert(s["filename"].is_string());
       assert(s["tune_id"].is_number());
-      auto song = new Song(s["filename"].string_value(), static_cast<unsigned int>(s["tune_id"].int_value()));
+      assert(s["time"].is_number());
+      auto song = new Song(s["filename"].string_value(),
+                           static_cast<unsigned int>(s["tune_id"].int_value()),
+                           s["time"].number_value());
       if(song->GetWaveform())
         _songs.push_back(song);
       else
@@ -146,29 +96,30 @@ void MusicPlayer::SetMusicCategory(const std::string & category)
     }
   std::cout << "Loaded music category " << category << " with " << _songs.size() << " songs.\n";
 
-  PlayNextSong();
+  SetNextMusic(GetNextSongInCategory());
 }
 
 
-void MusicPlayer::FadeOutCurrentSong(float time)
+void MusicPlayer::FadeOutCurrentSong(double time)
 {
+  assert(time <= 1);
   std::lock_guard lock(_next_music_mutex);
   _fading_out = time;
 }
 
 
-void MusicPlayer::PlayNextSong()
+Waveform * MusicPlayer::GetNextSongInCategory()
 {
   if(_songs.size() == 0)
-    return;
+    return nullptr;
    
   auto index = static_cast<unsigned int>(_rdist(_random_generator) * static_cast<float>(_songs.size()));
   index = std::clamp(index, 0u, static_cast<unsigned int>(_songs.size() - 1));
-  SetMusic(_songs[index]->GetWaveform());
+  return _songs[index]->GetWaveform();
 }
 
 
-void MusicPlayer::SetMusic(Waveform * music)
+void MusicPlayer::SetNextMusic(Waveform * music)
 {
   std::lock_guard lock(_next_music_mutex);
   _next_music = music;
@@ -176,9 +127,92 @@ void MusicPlayer::SetMusic(Waveform * music)
 }
 
 
+void MusicPlayer::QueueNextBuffer()
+{
+  _now_playing->FillBackBuffer();
+  _now_playing->SwapBuffers();
+  
+  auto buffer = _now_playing->GetCurrentBuffer();
+  alSourceQueueBuffers(_sources[_current_source], 1, &buffer);
+  assert(alGetError() == AL_NO_ERROR);
+}
 
 
-MusicPlayer::Song::Song(const std::string & filename, unsigned int tune_id)
+void MusicPlayer::TickMusicChange()
+{
+  Waveform * newmus = nullptr;
+  {
+    std::lock_guard lock(_next_music_mutex);
+    if(_next_music)
+      {
+        newmus = _next_music;
+        _next_music = nullptr;
+      }
+  }
+
+  if(!newmus && _now_playing && _now_playing_continuously)
+    if(_playing_stop_time < _clock.now())
+      newmus = GetNextSongInCategory();
+
+  if(newmus)
+    ChangeMusic(newmus);
+}
+
+
+void MusicPlayer::ChangeMusic(Waveform * newmus)
+{
+  assert(newmus);
+  auto newmuslen = static_cast<unsigned int>(std::ceil(newmus->GetLength()));
+  assert(newmuslen > 0);
+  _playing_stop_time = _clock.now() + std::chrono::seconds(newmuslen);
+  
+  if(newmus != _now_playing)
+    {
+      _current_source ^= 1;
+      _now_playing = newmus;
+      QueueNextBuffer();
+      QueueNextBuffer();
+      alSourcePlay(_sources[_current_source]);
+      assert(alGetError() == AL_NO_ERROR);
+      
+      alSourceStop(_sources[_current_source ^ 1]);
+      assert(alGetError() == AL_NO_ERROR);
+      
+      alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
+      alSourcef(_sources[_current_source], AL_GAIN, 1);
+    }
+}
+
+
+void MusicPlayer::TickSourceQueues()
+{
+  for(auto s : _sources)
+    {
+      ALint n;
+      alGetSourcei(s, AL_BUFFERS_PROCESSED, &n);
+      while(n > 0)
+        {
+          ALuint buffer;
+          alSourceUnqueueBuffers(s, 1, &buffer);
+          assert(alGetError() == AL_NO_ERROR);
+          if(_now_playing && buffer == _now_playing->GetBackBuffer())
+            QueueNextBuffer();
+          n--;
+        }
+    }
+}
+
+
+void MusicPlayer::TickFading()
+{
+  if(_fading_out > 0 && _now_playing)
+    {
+      _fading_out -= 0.1;
+      alSourcef(_sources[_current_source], AL_GAIN, static_cast<ALfloat>(std::clamp(_fading_out, 0.0, 1.0)));
+    }
+}  
+
+MusicPlayer::Song::Song(const std::string & filename, unsigned int tune_id, double length)
   : _filename(filename),
     _tune_id(tune_id),
     _waveform(nullptr)
@@ -186,6 +220,7 @@ MusicPlayer::Song::Song(const std::string & filename, unsigned int tune_id)
   try
     {
       _waveform = new WaveformSID(_filename, _tune_id);
+      _waveform->SetLength(length);
     }
   catch([[maybe_unused]] const std::exception & e)
     {
