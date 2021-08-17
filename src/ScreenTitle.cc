@@ -188,7 +188,7 @@ void ScreenTitle::TickPlot()
 {
   if(_teletyper->GetTime() > 5.0)
     {
-      auto plot = AssetLoader->LoadText(std::string(DATADIR) + "/Data/Plot-Title-" + std::to_string(_plot_phase) + ".txt");
+      auto plot = AssetLoader->LoadText("Data/Plot-Title-" + std::to_string(_plot_phase) + ".txt");
       _teletyper->SetText(plot.substr(0, plot.length() - 1));
 
       if(plot.empty())

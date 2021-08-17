@@ -17,7 +17,7 @@
 #include "SubsystemGfx.hh"
 
 
-CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size, const glm::vec3 & debugcolor)
+CollisionShapeOBB::CollisionShapeOBB(Object * owner, const glm::vec3 & size, [[maybe_unused]] const glm::vec3 & debugcolor)
   : CollisionShape(owner, Type::OBB),
     _size(size)
 {

@@ -21,7 +21,7 @@ ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed, unsigned i
   AddCollidesWithChannel(CollisionChannel::PLAYER);
   RotateYaw(180.0);
 
-  auto config = AssetLoader->LoadJson(std::string(DATADIR) + "/Data/Invaders");
+  auto config = AssetLoader->LoadJson("Data/Invaders");
   assert(config->is_object());
   assert((*config)["definitions"].is_array());
   auto defs = (*config)["definitions"].array_items();
@@ -64,7 +64,7 @@ ObjectInvader::ObjectInvader(Scene * scene, unsigned int random_seed, unsigned i
   for(auto loot : loots)
     {
       assert(loot.is_string());
-      auto lootjson = AssetLoader->LoadJson(std::string(DATADIR) + "/Data/Loot-" + loot.string_value());
+      auto lootjson = AssetLoader->LoadJson("Data/Loot-" + loot.string_value());
       AddLoot(new Loot(lootjson));
     }
   assert(d["shield_chance"].is_number());

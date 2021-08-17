@@ -21,6 +21,7 @@
 #include "SubsystemGfx.hh"
 #include "SubsystemSettings.hh"
 #include <cassert>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <regex>
@@ -33,6 +34,10 @@ SubsystemAssetLoader::SubsystemAssetLoader()
   : Subsystem("AssetLoader"),
     _texture_quality(0)
 {
+  std::string home; //(std::getenv("HOME"));
+  if(!home.empty())
+    _save_root = home + "/";
+  _save_root += ".silver_waffle";
 }
 
 
@@ -65,6 +70,27 @@ SubsystemAssetLoader::~SubsystemAssetLoader()
 
 bool SubsystemAssetLoader::Start()
 {
+  _asset_paths.clear();
+  {
+    _asset_paths.push_back(_save_root);
+
+    std::vector<std::string> subdirs
+      {
+        "",
+        "Data"
+      };
+    for(auto s : subdirs)
+      {
+        std::string path(_save_root);
+        if(!s.empty())
+          path += "/" + s;
+
+        std::error_code ec;
+        std::filesystem::create_directory(path, ec);
+      }
+  }
+  _asset_paths.push_back(DATADIR);
+  
   assert(!AssetLoader);
   AssetLoader = this;
 
@@ -140,28 +166,33 @@ const std::string & SubsystemAssetLoader::LoadText(const std::string & filename,
   if(it != _text_assets.end())
     return (*it).second;
 
-  std::ifstream fp(filename);
-  if(fp)
+  bool found = false;
+  for(auto path : _asset_paths)
     {
-      std::string text;
-      std::string tmp;
-      while(std::getline(fp, tmp))
-        text += tmp + '\n';
-
-      if(fp.eof())
+      std::ifstream fp(path + "/" + filename);
+      if(fp)
         {
-          std::cout << "Loaded text '" << filename << "'.\n";
-          _text_assets[filename] = text;
-          return _text_assets[filename];
+          std::string text;
+          std::string tmp;
+          while(std::getline(fp, tmp))
+            text += tmp + '\n';
+          
+          if(fp.eof())
+            {
+              std::cout << "Loaded text '" << filename << "'.\n";
+              _text_assets[filename] = text;
+              return _text_assets[filename];
+            }
+          else
+            std::cerr << "Failed to read '" << filename << "'" << std::endl;
+
+          found = true;
         }
-      else
-        std::cerr << "Failed to read '" << filename << "'" << std::endl;
     }
-  else
-    {
-      if(!ignore_not_found_error)
-        std::cout << "Warning, file '" << filename << "' not found error.\n";
-    }
+
+  if(!found)
+    if(!ignore_not_found_error)
+      std::cout << "Warning, file '" << filename << "' not found error.\n";
 
   static std::string nothing;
   return nothing;
@@ -224,7 +255,7 @@ Mesh * SubsystemAssetLoader::LoadMesh(const std::string & name, const std::strin
   if(it != _meshes.end())
     return (*it).second;
 
-  auto config = LoadJson(std::string(DATADIR) + "/3d-models/" + name);
+  auto config = LoadJson("3d-models/" + name);
 
   unsigned int mesh_options = Mesh::OPTION_COLOR | Mesh::OPTION_ELEMENT | Mesh::OPTION_NORMAL;
   if(config && (*config)["blending"].is_bool() && (*config)["blending"].bool_value())
@@ -375,7 +406,7 @@ SolarSystemObject * SubsystemAssetLoader::LoadSolarSystemObject(SolarSystemObjec
   auto it = _solar_system_objects.find(type);
   if(it == _solar_system_objects.end())
     {
-      auto config = LoadJson(std::string(DATADIR) + "/Data/SolarSystemObjects");
+      auto config = LoadJson("Data/SolarSystemObjects");
       assert(config);
 
       std::string arrname = "unknown";
@@ -483,7 +514,7 @@ std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool is
 {
   std::string input;
 
-  auto configarr = LoadJson(std::string(DATADIR) + "/Data/Shaders");
+  auto configarr = LoadJson("Data/Shaders");
   assert(configarr);
   assert((*configarr)["shaders"].is_array());
 
@@ -500,7 +531,7 @@ std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool is
       }
 
   if(!found)
-    input = LoadText(std::string(DATADIR) + "/Shaders/" + filename, ignore_not_found_error);
+    input = LoadText("Shaders/" + filename, ignore_not_found_error);
   
   if(input.empty())
     return input;
@@ -532,4 +563,10 @@ std::string SubsystemAssetLoader::LoadGLSL(const std::string & filename, bool is
       it++;
     }
   return output + remaining;
+}
+
+
+const std::string & SubsystemAssetLoader::GetSaveRoot() const
+{
+  return _save_root;
 }

@@ -18,5 +18,5 @@ LevelPlanet::LevelPlanet(Scene * scene, SolarSystemObject * planet)
 {
   _name = planet->GetName();
 
-  LoadConfig(std::string(DATADIR) + "/Data/Level-Planet-" + _name);
+  LoadConfig("Data/Level-Planet-" + _name);
 }

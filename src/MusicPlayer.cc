@@ -80,7 +80,7 @@ void MusicPlayer::SetMusicCategory(const std::string & category)
   if(!Settings->GetBool("music"))
     return;
 
-  auto json = AssetLoader->LoadJson(std::string(DATADIR) + "/Data/Songs");
+  auto json = AssetLoader->LoadJson("Data/Songs");
   assert(json);
   assert(json->is_object());
 
@@ -192,7 +192,7 @@ void MusicPlayer::ChangeMusic(Waveform * newmus)
       assert(alGetError() == AL_NO_ERROR);
       
       alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
-      alSourcef(_sources[_current_source], AL_GAIN, _volume);
+      alSourcef(_sources[_current_source], AL_GAIN, static_cast<ALfloat>(_volume));
     }
 }
 

@@ -29,7 +29,7 @@ LevelSpace::LevelSpace(Scene * scene, SolarSystemObject * planet)
   _name = planet->GetName();
   _halt_without_program = true;
   
-  LoadConfig(std::string(DATADIR) + "/Data/Level-" + _name);
+  LoadConfig("Data/Level-" + _name);
 
   double len = 0.0;
   for(auto p : _program)

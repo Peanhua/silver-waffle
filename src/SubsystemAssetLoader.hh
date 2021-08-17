@@ -53,12 +53,16 @@ public:
   SolarSystemObject * LoadSolarSystemObject(SolarSystemObject::Type type, unsigned int index);
   ObjectCollectible * LoadObjectCollectible(int type);
 
+  const std::string & GetSaveRoot() const;
+  
 private:
   int               _texture_quality;
   std::thread *     _thread;
   std::atomic<bool> _exit_thread;
   std::mutex        _thread_wakeup_mutex;
   std::condition_variable _thread_wakeup;
+  std::vector<std::string> _asset_paths;
+  std::string       _save_root;
   
   std::map<std::string, std::string>     _text_assets;
   std::map<std::string, json11::Json *>  _jsons;

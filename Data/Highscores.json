@@ -1,0 +1,34 @@
+{ "entries": [
+  { "game_completed": true,
+    "humans_collected": 0,
+    "humans_saved": 0,
+    "level": 0,
+    "level_time": 0,
+    "score": 9999,
+    "total_time": 0
+  },
+  { "game_completed": false,
+    "humans_collected": 0,
+    "humans_saved": 0,
+    "level": 0,
+    "level_time": 0,
+    "score": 999,
+    "total_time": 0
+  },
+  { "game_completed": false,
+    "humans_collected": 0,
+    "humans_saved": 0,
+    "level": 0,
+    "level_time": 0,
+    "score": 99,
+    "total_time": 0
+  },
+  { "game_completed": false,
+    "humans_collected": 0,
+    "humans_saved": 0,
+    "level": 0,
+    "level_time": 0,
+    "score": 9,
+    "total_time": 0
+  }
+]}

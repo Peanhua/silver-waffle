@@ -2,6 +2,7 @@ datafilesdir = $(pkgdatadir)/Data
 
 datafiles_DATA = 				\
 	Buildings.json				\
+	Highscores.json				\
 	Invaders.json				\
 	Level-Earth.json			\
 	Level-Jupiter.json			\

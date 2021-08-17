@@ -69,3 +69,4 @@ callgrind.out.*
 # Other
 .bash_history
 *.assxml
+.silver_waffle

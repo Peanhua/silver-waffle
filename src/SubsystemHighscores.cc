@@ -65,7 +65,7 @@ const std::vector<HighscoreEntry *> & SubsystemHighscores::Get() const
 
 void SubsystemHighscores::Read()
 {
-  auto data = AssetLoader->LoadJson("Highscores");
+  auto data = AssetLoader->LoadJson("Data/Highscores");
   if(!(*data)["entries"].is_array())
     return;
 
@@ -85,7 +85,7 @@ void SubsystemHighscores::Write()
       { "entries", json11::Json(entries) }
     };
   
-  std::ofstream file("Highscores.json");
+  std::ofstream file(AssetLoader->GetSaveRoot() + "/Data/Highscores.json");
   file << data.dump();
 }
 
