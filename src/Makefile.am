@@ -64,6 +64,7 @@ silverwaffle_SOURCES =				\
 	GameStats.hh				\
 	GaussianBlur.cc				\
 	GaussianBlur.hh				\
+	GPUObject.hh				\
 	HighscoreEntry.cc			\
 	HighscoreEntry.hh			\
 	Image.cc				\
