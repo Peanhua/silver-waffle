@@ -14,6 +14,7 @@
 
 #include "GLM.hh"
 #include "Widget.hh"
+#include <vector>
 
 class Mesh;
 class TextureRenderer;
@@ -26,12 +27,15 @@ public:
   ~WidgetMeshRenderer();
 
   void Render() override;
+  void Draw() const override;
+  void SetMultiRender(const std::vector<glm::ivec2> & offsets);
   
 private:
   Mesh *            _mesh;
   glm::mat4         _model;
   glm::mat4         _view;
   TextureRenderer * _texture_renderer;
+  std::vector<glm::ivec2> _multioffsets;
 };
 
 #endif

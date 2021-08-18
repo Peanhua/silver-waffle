@@ -101,7 +101,8 @@ private:
   Widget *              _pausebutton;
   Widget *              _levelinfo_widget;
   WidgetTeletyper *     _teletyper;
-  std::vector<Widget *> _human_widgets;
+  WidgetMeshRenderer *  _human_widget;
+  std::vector<glm::ivec2> _human_offsets;
   Widget *              _weapon_type_widget;
   
   bool _demo_lander_activated;

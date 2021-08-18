@@ -490,3 +490,9 @@ void Widget::DestroyChildren()
 void Widget::Render()
 {
 }
+
+
+Mesh * Widget::GetImageMesh() const
+{
+  return _imagemesh;
+}

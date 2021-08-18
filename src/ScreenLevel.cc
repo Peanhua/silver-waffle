@@ -67,6 +67,7 @@ ScreenLevel::ScreenLevel(const std::string & music_category, ScreenLevel * paren
     _current_level(0),
     _gamestats(nullptr),
     _pausebutton(nullptr),
+    _human_widget(nullptr),
     _weapon_type_widget(nullptr),
     _demo_lander_activated(false),
     _demo_ending_activated(false),
@@ -139,6 +140,13 @@ void ScreenLevel::Initialize()
     OnLivesUpdated();
   }
 
+  {
+    glm::mat4 model(1);
+    model = glm::translate(model, {0, 0, -0.25f});
+    glm::mat4 view = glm::lookAt(glm::vec3(0, -1.4f, 0.2f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
+    auto mesh = AssetLoader->LoadMesh("Human");
+    _human_widget = new WidgetMeshRenderer(root, {0, 0}, glm::ivec2(100, 100), mesh, model, view);
+  }
   OnHumanCountUpdated();
 
   {
@@ -603,30 +611,26 @@ void ScreenLevel::OnHumanCountUpdated()
   auto player = _scene->GetPlayer();
   auto count = static_cast<unsigned int>(player->GetHumanCount());
 
-  while(count < _human_widgets.size())
-    {
-      _human_widgets[_human_widgets.size() - 1]->Destroy();
-      _human_widgets.pop_back();
-    }
+  _human_widget->SetIsVisible(count > 0);
+  if(count == 0)
+    return;
+  
+  while(count < _human_offsets.size())
+    _human_offsets.pop_back();
 
   auto screen_width = Settings->GetInt("screen_width");
-  int height = 100;
-  auto mesh = AssetLoader->LoadMesh("Human");
-  glm::mat4 model(1);
-  model = glm::translate(model, {0, 0, -0.25f});
-  glm::mat4 view = glm::lookAt(glm::vec3(0, -1.4f, 0.2f), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
-  while(count > _human_widgets.size())
+  while(count > _human_offsets.size())
     {
-      auto distance = 10.0f * static_cast<float>(_human_widgets.size());
+      auto distance = 10.0f * static_cast<float>(_human_offsets.size());
       glm::vec2 off(_rdist(_random) - 0.5f, _rdist(_random));
       off = glm::normalize(off) * distance;
 
       glm::ivec2 pos(screen_width / 2, 10);
       pos += off;
       
-      auto w = new WidgetMeshRenderer(GetRootWidget(), pos, glm::ivec2(height, height), mesh, model, view);
-      _human_widgets.push_back(w);
+      _human_offsets.push_back(pos);
     }
+  _human_widget->SetMultiRender(_human_offsets);
 }
 
 

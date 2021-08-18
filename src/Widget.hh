@@ -77,6 +77,8 @@ protected:
   const glm::mat4 & GetProjection() const;
   const glm::mat4 & GetView()       const;
   const glm::mat4 & GetModel()      const;
+
+  Mesh *            GetImageMesh() const;
   
 private:
   Widget *              _parent;

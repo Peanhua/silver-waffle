@@ -56,3 +56,29 @@ void WidgetMeshRenderer::Render()
   _texture_renderer->EndRender();
   GetImage()->SetTextureId(_texture_renderer->GetTextureId());
 }
+
+
+void WidgetMeshRenderer::SetMultiRender(const std::vector<glm::ivec2> & offsets)
+{
+  _multioffsets = offsets;
+}
+
+
+void WidgetMeshRenderer::Draw() const
+{
+  if(!GetIsVisible())
+    return;
+
+  auto image = GetImageMesh();
+  if(image)
+    {
+      if(_multioffsets.size() == 0)
+        image->Draw(glm::mat4(1), GetMVP());
+      else
+        for(auto offset : _multioffsets)
+          {
+            auto model = glm::translate(glm::mat4(1), glm::vec3(offset, 0));
+            image->Draw(model, GetMVP() * model);
+          }
+    }
+}
