@@ -94,7 +94,10 @@ void Screen::Draw() const
 void Screen::InjectKeyboardEvent(bool pressed, SDL_Keycode key, SDL_Keymod mod)
 {
   if(key == SDLK_F8)
-    Sounds->GetMusicPlayer()->PlayNextSongInCategory();
+    {
+      if(pressed)
+        Sounds->GetMusicPlayer()->PlayNextSongInCategory();
+    }
   else
     OnKeyboard(pressed, key, mod);
 }
