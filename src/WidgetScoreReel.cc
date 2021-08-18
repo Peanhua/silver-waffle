@@ -12,6 +12,7 @@
 #include "WidgetScoreReel.hh"
 #include "Image.hh"
 #include "ScoreReel.hh"
+#include "SubsystemGfx.hh"
 #include "TextureRenderer.hh"
 
 
@@ -36,19 +37,16 @@ void WidgetScoreReel::Tick(double deltatime)
 {
   Widget::Tick(deltatime);
   
-  _should_redraw = _score_reel->Tick(deltatime);
+  if(_score_reel->Tick(deltatime))
+    Graphics->QueueUpdateGPU(this);
 }
 
 
-void WidgetScoreReel::Draw() const
+void WidgetScoreReel::Render()
 {
-  if(_should_redraw)
-    {
-      glEnable(GL_DEPTH_TEST);
-      _texture_renderer->BeginRender();
-      _score_reel->Draw();
-      _texture_renderer->EndRender();
-      GetImage()->SetTextureId(_texture_renderer->GetTextureId());
-    }
-  Widget::Draw();
-}
+  glEnable(GL_DEPTH_TEST);
+  _texture_renderer->BeginRender();
+  _score_reel->Draw();
+  _texture_renderer->EndRender();
+  GetImage()->SetTextureId(_texture_renderer->GetTextureId());
+}  

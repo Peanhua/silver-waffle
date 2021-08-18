@@ -25,7 +25,7 @@ public:
   ~WidgetScoreReel();
   
   void Tick(double deltatime) override;
-  void Draw()           const override;
+  void Render()               override;
   
 private:
   ScoreReel *       _score_reel;
