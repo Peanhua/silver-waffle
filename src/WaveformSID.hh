@@ -26,6 +26,7 @@ public:
 private:
   std::vector<short> _data;
   sidplayfp          _sid;
+  SidTune *          _tune;
 };
 
 

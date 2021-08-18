@@ -28,17 +28,17 @@ WaveformSID::WaveformSID(const std::string & filename, unsigned int tune_id)
   if(!rs->getStatus())
     throw std::runtime_error(rs->error());
 
-  auto tune = new SidTune(filename.c_str());
-  if(!tune->getStatus())
+  _tune = new SidTune(filename.c_str());
+  if(!_tune->getStatus())
     {
       auto path = std::getenv("HVSC_BASE");
       if(path)
-        tune = new SidTune((std::string(path) + "/" + filename).c_str());
+        _tune = new SidTune((std::string(path) + "/" + filename).c_str());
     }
-  if(!tune->getStatus())
-    throw std::runtime_error(tune->statusString());
+  if(!_tune->getStatus())
+    throw std::runtime_error(_tune->statusString());
  
-  tune->selectSong(tune_id);
+  _tune->selectSong(tune_id);
  
   static SidConfig cfg;
   cfg.frequency      = 44100;
@@ -49,7 +49,7 @@ WaveformSID::WaveformSID(const std::string & filename, unsigned int tune_id)
   if(!_sid.config(cfg))
     throw std::runtime_error(_sid.error());
  
-  if(!_sid.load(tune))
+  if(!_sid.load(_tune))
     throw std::runtime_error(_sid.error());
 
   _data.resize(cfg.frequency);
@@ -59,6 +59,10 @@ WaveformSID::WaveformSID(const std::string & filename, unsigned int tune_id)
 void WaveformSID::Restart()
 {
   _sid.stop();
+  
+  // Re-loading the tune fixes an issue where part of the previous play is played at the start of new play.
+  if(!_sid.load(_tune))
+    std::cout << "WaveformSID::Restart(): Failed to re-load tune:" << _sid.error() << std::endl;
 }
 
 
