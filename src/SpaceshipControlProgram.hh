@@ -210,10 +210,25 @@ public:
   void PTick(double deltatime) override;
   bool IsFinished() const override;
 private:
-  glm::vec3           _destination;
-  unsigned int        _job_id;
+  glm::vec3    _destination;
+  unsigned int _job_id;
+  unsigned int _pathpos;
+  bool         _no_path;
   std::atomic<std::vector<glm::ivec2> *> _path;
-  unsigned int                           _pathpos;
+
+  glm::vec3 GetNextDestination(const glm::vec3 for_position);
+};
+
+
+class SCP_FollowPlayer : public SpaceshipControlProgram
+{
+public:
+  SCP_FollowPlayer(ObjectSpaceship * spaceship);
+  ~SCP_FollowPlayer();
+  void PTick(double deltatime) override;
+  bool IsFinished() const override;
+private:
+  SpaceshipControlProgram * _moveto;
 };
 
 

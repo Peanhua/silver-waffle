@@ -28,11 +28,95 @@
     },
     {
       "start":        0.0,
-      "stop":         5.0,
-      "interval":     0.01,
-      "max":         30,
+      "stop":        30.0,
+      "interval":     3.0,
+      "max":         10,
       "invader_type": 4,
-      "control_program": "face-player-shoot"
+      "control_program": "follow-player",
+      "next": {
+        "start": 0,
+        "stop":  200,
+        "next": {
+          "start":        0.0,
+          "stop":        30.0,
+          "interval":     3.0,
+          "max":         10,
+          "invader_type": 4,
+          "control_program": "follow-player",
+          "next": {
+            "start": 0,
+            "stop":  200,
+            "next": {
+              "start":        0.0,
+              "stop":        30.0,
+              "interval":     3.0,
+              "max":         10,
+              "invader_type": 4,
+              "control_program": "follow-player",
+              "next": {
+                "start": 0,
+                "stop":  200,
+                "next": {
+                  "start":        0.0,
+                  "stop":        30.0,
+                  "interval":     3.0,
+                  "max":         10,
+                  "invader_type": 4,
+                  "control_program": "follow-player",
+                  "next": {
+                    "start": 0,
+                    "stop":  200,
+                    "next": {
+                      "start":        0.0,
+                      "stop":        30.0,
+                      "interval":     3.0,
+                      "max":         10,
+                      "invader_type": 4,
+                      "control_program": "follow-player",
+                      "next": {
+                        "start": 0,
+                        "stop":  200,
+                        "next": {
+                          "start":        0.0,
+                          "stop":        30.0,
+                          "interval":     3.0,
+                          "max":         10,
+                          "invader_type": 4,
+                          "control_program": "follow-player",
+                          "next": {
+                            "start": 0,
+                            "stop":  200,
+                            "next": {
+                              "start":        0.0,
+                              "stop":        30.0,
+                              "interval":     3.0,
+                              "max":         10,
+                              "invader_type": 4,
+                              "control_program": "follow-player",
+                              "next": {
+                                "start": 0,
+                                "stop":  200,
+                                "next": {
+                                  "start":        0.0,
+                                  "stop":        30.0,
+                                  "interval":     3.0,
+                                  "max":         10,
+                                  "invader_type": 4,
+                                  "control_program": "follow-player"
+                                }
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   ],
   "enemies": [

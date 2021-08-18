@@ -564,6 +564,24 @@ void ObjectSpaceship::AddNamedControlProgram(const std::string & name)
       auto p = new SCP_PathMoveTo(this, destination);
       AddControlProgram(p);
     }
+  else if(name == "follow-player")
+    {
+      SpaceshipControlProgram * p, * pp;
+      
+      p = new SCP_FollowPlayer(this);
+      AddControlProgram(p);
+
+      p = new SCP_Infinitely(this);
+      AddControlProgram(p);
+      pp = new SCP_WaitForPlayerDistanceMin(this, 15);
+      p->SetNext(pp);
+      p = pp;
+      pp = new SCP_FacePlayer(this);
+      p->SetNext(pp);
+      p = pp;
+      pp = new SCP_ChanceToFire(this, 0.10, 1);
+      p->SetNext(pp);
+    }
   else
     assert(false);
 }
