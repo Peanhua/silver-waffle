@@ -100,9 +100,8 @@ void ScreenLevel::Initialize()
   
   _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
 
-  _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
+  _scene->GetPlayer()->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
   {
-    assert(destroyer == destroyer);
     OnPlayerDies();
   });
 
@@ -438,10 +437,8 @@ void ScreenLevel::Draw() const
 }
 
 
-void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
+void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL_Keymod mod)
 {
-  assert(mod == mod);
-
   if(_state == State::GAMEOVER_PAUSE)
     {
       if(pressed)
@@ -665,9 +662,8 @@ void ScreenLevel::NextLifeOrQuit()
       _scene->CreatePlayer();
       _scene->SetupPlayer();
       _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
-      _scene->GetPlayer()->SetOnDestroyed([this](Object * destroyer)
+      _scene->GetPlayer()->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
       {
-        assert(destroyer == destroyer);
         OnPlayerDies();
       });
       
@@ -763,11 +759,8 @@ void ScreenLevel::ChangeState(State new_state)
         assert(!_pausebutton);
         _pausebutton = new Widget(GetRootWidget(), glm::ivec2((width - static_cast<int>(tlen)) / 2, height / 2), glm::ivec2(tlen, 27));
         _pausebutton->SetText(t);
-        _pausebutton->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+        _pausebutton->SetOnClicked([this](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & position)
         {
-          assert(button == button);
-          assert(position == position);
-          
           if(!pressed)
             NextLifeOrQuit();
         });
@@ -885,10 +878,8 @@ void ScreenLevel::OpenPauseUI()
   auto bcont = new WidgetButton(panel, pos, siz);
   bcont->SetText("Continue");
   bcont->SetTextPaddingCentered(true, true);
-  bcont->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+  bcont->SetOnClicked([this](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & position)
   {
-    assert(button == button);
-    assert(position == position);
     if(!pressed)
       ChangeState(State::RUNNING);
   });
@@ -897,10 +888,8 @@ void ScreenLevel::OpenPauseUI()
   auto bquit = new WidgetButton(panel, pos, siz);
   bquit->SetText("Quit game");
   bquit->SetTextPaddingCentered(true, true);
-  bquit->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+  bquit->SetOnClicked([this](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & position)
   {
-    assert(button == button);
-    assert(position == position);
     if(!pressed)
       GameOver(false);
   });
@@ -909,10 +898,8 @@ void ScreenLevel::OpenPauseUI()
   auto bexit = new WidgetButton(panel, pos, siz);
   bexit->SetText("Exit to desktop");
   bexit->SetTextPaddingCentered(true, true);
-  bexit->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+  bexit->SetOnClicked([this](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & position)
   {
-    assert(button == button);
-    assert(position == position);
     if(!pressed)
       {
         SDL_Event e;
@@ -964,9 +951,8 @@ void ScreenLevel::GameOver(bool game_was_completed)
   }
   {
     auto wht = new WidgetHighscores(result, glm::ivec2(0, 0), glm::ivec2(w, h), true);
-    wht->SetOnDestroy([this, result](Widget * destroyed_widget)
+    wht->SetOnDestroy([this, result]([[maybe_unused]] Widget * destroyed_widget)
     {
-      assert(destroyed_widget == destroyed_widget);
       Quit();
       auto parent = _parent;
       while(parent)

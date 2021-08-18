@@ -10,7 +10,6 @@
   Complete license can be found in the LICENSE file.
 */
 #include "Subsystem.hh"
-#include <cassert>
 
 Subsystem::Subsystem(const std::string & name)
   : _name(name)
@@ -39,9 +38,8 @@ void Subsystem::PreTick()
 }
 
 
-void Subsystem::Tick(double deltatime)
+void Subsystem::Tick([[maybe_unused]] double deltatime)
 {
-  assert(deltatime == deltatime);
 }
 
 

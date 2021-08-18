@@ -52,9 +52,8 @@ void SpaceshipControlProgram::SetNext(SpaceshipControlProgram * next)
 }
 
 
-void SpaceshipControlProgram::PTick(double deltatime)
+void SpaceshipControlProgram::PTick([[maybe_unused]] double deltatime)
 {
-  assert(deltatime == deltatime);
 }
 
 
@@ -381,9 +380,8 @@ SCP_ExitCurrentLevel::SCP_ExitCurrentLevel(ObjectSpaceship * spaceship)
 }
 
 
-void SCP_ExitCurrentLevel::PTick(double deltatime)
+void SCP_ExitCurrentLevel::PTick([[maybe_unused]] double deltatime)
 {
-  assert(deltatime == deltatime);
   auto screen = dynamic_cast<ScreenLevel *>(ScreenManager->GetScreen());
   assert(screen);
   screen->GetCurrentLevel()->Stop();

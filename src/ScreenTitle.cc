@@ -103,10 +103,8 @@ ScreenTitle::ScreenTitle()
     w->SetTextColor(glm::vec3(0.5, 1.0, 0.5));
     w->SetTextPaddingCentered(true, true);
     w->SetTextFontWeight(0.5f);
-    w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+    w->SetOnClicked([this](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & position)
     {
-      assert(button == button);
-      assert(position == position);
       if(!pressed)
         {
           auto s = new ScreenLevelSpace(nullptr);
@@ -121,10 +119,8 @@ ScreenTitle::ScreenTitle()
     w->SetTextColor(glm::vec3(1.0, 0.5, 0.5));
     w->SetTextPaddingCentered(true, true);
     w->SetTextFontWeight(0.5f);
-    w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & position)
+    w->SetOnClicked([this](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & position)
     {
-      assert(button == button);
-      assert(position == position);
       if(!pressed)
         Quit();
     });

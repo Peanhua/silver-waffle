@@ -90,19 +90,15 @@ void Screen::Draw() const
 }
 
 
-void Screen::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
+void Screen::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL_Keymod mod)
 {
-  assert(mod == mod);
-
   if(pressed && key == SDLK_ESCAPE)
     Quit();
 }
 
 
-void Screen::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relative_movement)
+void Screen::OnMouseMove(const glm::ivec2 & position, [[maybe_unused]] const glm::ivec2 & relative_movement)
 {
-  assert(relative_movement == relative_movement);
-  
   if(!_root_widget)
     return;
 
@@ -130,10 +126,8 @@ void Screen::OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relativ
 }
 
 
-void Screen::OnMouseButton(bool pressed, unsigned int button, const glm::ivec2 & position)
+void Screen::OnMouseButton(bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & position)
 {
-  assert(button == button);
-  
   if(_root_widget)
     {
       auto start = _root_widget;

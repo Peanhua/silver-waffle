@@ -77,10 +77,8 @@ QuickTimeEventLaunchToSpace::QuickTimeEventLaunchToSpace(ObjectSpaceship * playe
 }
 
 
-bool QuickTimeEventLaunchToSpace::OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod)
+bool QuickTimeEventLaunchToSpace::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL_Keymod mod)
 {
-  assert(mod == mod);
-
   if(_quit)
     return false;
   

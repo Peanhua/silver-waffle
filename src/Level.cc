@@ -117,9 +117,8 @@ void Level::Start()
                   { // Pink pixel is boss building.
                     auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 4);
                     _boss_buildings_alive++;
-                    building->SetOnDestroyed([this](Object * destroyer)
+                    building->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
                     {
-                      assert(destroyer == destroyer);
                       _boss_buildings_alive--;
                     });
                     pos.z -= blocksize.z * 0.5f;
@@ -395,9 +394,8 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, double deltatime,
                 if(_boss)
                   {
                     _bosses_alive++;
-                    invader->SetOnDestroyed([this](Object * destroyer)
+                    invader->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
                     {
-                      assert(destroyer == destroyer);
                       _bosses_alive--;
                     });
                   }

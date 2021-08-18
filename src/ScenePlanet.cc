@@ -83,10 +83,8 @@ void ScenePlanet::SetupPlayer()
 }
 
 
-void ScenePlanet::SetupSceneObject(Object * object, bool destroy_on_block)
+void ScenePlanet::SetupSceneObject(Object * object, [[maybe_unused]] bool destroy_on_block)
 {
-  assert(destroy_on_block == destroy_on_block);
-  
   const auto m = GetPlayAreaSize();
   const auto low  = glm::vec3(-m.x * 0.5f, 1, -m.z * 0.5f);
   const auto high = glm::vec3( m.x * 0.5f, 0,  m.z * 0.5f);

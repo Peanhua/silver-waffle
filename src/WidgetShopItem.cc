@@ -67,11 +67,8 @@ WidgetShopItem::WidgetShopItem(Widget * parent, const glm::ivec2 & position, con
         buybutton->SetTextFont(font);
         buybutton->SetText(bt);
         buybutton->SetTextFontWeight(font_weight);
-        buybutton->SetOnClicked([this, w, buybutton](bool pressed, unsigned int button, const glm::ivec2 & pos)
+        buybutton->SetOnClicked([this, w, buybutton](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & pos)
         {
-          assert(button == button);
-          assert(pos == pos);
-
           if(!pressed && CanBuy())
             {
               for(auto m : _available_materials)

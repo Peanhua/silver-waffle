@@ -112,9 +112,8 @@ Mesh::Mesh(const Mesh & other)
 }
 
 
-void Mesh::PreDrawSetupShader(ShaderProgram * shader_program) const
+void Mesh::PreDrawSetupShader([[maybe_unused]] ShaderProgram * shader_program) const
 {
-  assert(shader_program == shader_program);
 }
 
 

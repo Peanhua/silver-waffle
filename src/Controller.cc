@@ -24,27 +24,23 @@ Controller::~Controller()
 }
 
 
-void Controller::SteerForward(bool pressed)
+void Controller::SteerForward([[maybe_unused]] bool pressed)
 {
-  assert(pressed == pressed);
 }
 
 
-void Controller::SteerBackward(bool pressed)
+void Controller::SteerBackward([[maybe_unused]] bool pressed)
 {
-  assert(pressed == pressed);
 }
 
 
-void Controller::SteerLeft(bool pressed)
+void Controller::SteerLeft([[maybe_unused]] bool pressed)
 {
-  assert(pressed == pressed);
 }
 
 
-void Controller::SteerRight(bool pressed)
+void Controller::SteerRight([[maybe_unused]] bool pressed)
 {
-  assert(pressed == pressed);
 }
 
 

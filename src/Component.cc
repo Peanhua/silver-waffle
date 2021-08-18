@@ -74,9 +74,8 @@ void Component::SetVisible(bool visible)
 }
 
 
-void Component::Tick(double deltatime)
+void Component::Tick([[maybe_unused]] double deltatime)
 {
-  assert(deltatime == deltatime);
 }
 
 
@@ -92,10 +91,8 @@ ComponentEngineExhaustFX::ComponentEngineExhaustFX(ObjectSpaceship * spaceship, 
   SetPosition({0, -0.7, 0});
 }
 
-void ComponentEngineExhaustFX::Tick(double deltatime)
+void ComponentEngineExhaustFX::Tick([[maybe_unused]] double deltatime)
 {
-  assert(deltatime == deltatime);
-
   double engine = _spaceship->GetEngineThrottle(_engine_id);
   if(engine > 0.99)
     _current = 0.7 * _current + 0.3 * engine;

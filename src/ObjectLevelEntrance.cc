@@ -34,10 +34,8 @@ ObjectLevelEntrance::ObjectLevelEntrance(Scene * scene, SolarSystemObject * plan
 }
 
 
-void ObjectLevelEntrance::OnCollision(Object & other, const glm::vec3 & hit_direction)
+void ObjectLevelEntrance::OnCollision(Object & other, [[maybe_unused]] const glm::vec3 & hit_direction)
 {
-  assert(&hit_direction == &hit_direction);
-
   if(_used)
     return;
 

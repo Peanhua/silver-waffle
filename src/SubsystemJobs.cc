@@ -47,9 +47,8 @@ bool SubsystemJobs::Start()
 }
 
 
-void SubsystemJobs::Tick(double deltatime)
+void SubsystemJobs::Tick([[maybe_unused]] double deltatime)
 {
-  assert(deltatime == deltatime);
   ReleaseSomeInactiveJobs();
 }
 

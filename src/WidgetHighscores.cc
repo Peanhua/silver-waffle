@@ -128,10 +128,8 @@ void WidgetHighscores::Refresh()
       w->SetTextFontWeight(font_weight * 1.1f);
       w->SetTextColor(font_color);
       w->SetTextPaddingCentered(true, true);
-      w->SetOnClicked([this](bool pressed, unsigned int button, const glm::ivec2 & pos)
+      w->SetOnClicked([this](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & pos)
       {
-        assert(button == button);
-        assert(pos == pos);
         if(pressed)
           Destroy();
       });

@@ -13,7 +13,6 @@
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemGfx.hh"
-#include <cassert>
 
 
 WormholeWall::WormholeWall(double length, double height)
@@ -50,9 +49,8 @@ WormholeWall::WormholeWall(double length, double height)
 }
 
 
-void WormholeWall::Tick(double deltatime)
+void WormholeWall::Tick([[maybe_unused]] double deltatime)
 {
-  assert(deltatime == deltatime);
 }
 
 

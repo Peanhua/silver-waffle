@@ -13,7 +13,6 @@
 #include "Screen.hh"
 #include "SubsystemScreen.hh"
 #include <SDL.h>
-#include <cassert>
 
 
 SubsystemInput::SubsystemInput()
@@ -33,10 +32,8 @@ void SubsystemInput::Stop()
 }
 
 
-void SubsystemInput::Tick(double deltatime)
+void SubsystemInput::Tick([[maybe_unused]] double deltatime)
 {
-  assert(deltatime == deltatime);
-
   auto screen = ScreenManager->GetScreen();
   if(!screen)
     return;

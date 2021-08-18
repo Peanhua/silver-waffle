@@ -236,19 +236,14 @@ void SubsystemGfx::Draw()
 }  
 
 
-static void GLAPIENTRY MessageCallback(GLenum source,
+static void GLAPIENTRY MessageCallback([[maybe_unused]] GLenum source,
                                        GLenum type,
-                                       GLuint id,
+                                       [[maybe_unused]] GLuint id,
                                        GLenum severity,
-                                       GLsizei length,
+                                       [[maybe_unused]] GLsizei length,
                                        const GLchar* message,
-                                       const void* userParam)
+                                       [[maybe_unused]] const void* userParam)
 {
-  assert(source == source);
-  assert(id == id);
-  assert(length == length);
-  assert(userParam == userParam);
-  
   std::cerr << "OpenGL: " << ( type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : "" ) << " type = " << type << ", severity = " << severity << ", message = " << message << std::endl;
   
   assert(type != GL_DEBUG_TYPE_ERROR);
@@ -312,14 +307,12 @@ void SubsystemGfx::QueueUpdateGPU(GPUObject * object)
 #endif
 }
 
-void SubsystemGfx::CancelUpdateGPU(Mesh * mesh)
+void SubsystemGfx::CancelUpdateGPU([[maybe_unused]] Mesh * mesh)
 {
 #ifdef WITH_GPU_THREAD
   std::lock_guard lock(_queue_mutex);
   for(unsigned int i = 0; i < _mesh_queue.size(); i++)
     if(_mesh_queue[i] == mesh)
       _mesh_queue[i] = nullptr;
-#else
-  assert(mesh == mesh);
 #endif
 }
