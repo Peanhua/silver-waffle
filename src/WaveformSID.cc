@@ -56,6 +56,12 @@ WaveformSID::WaveformSID(const std::string & filename, unsigned int tune_id)
 }
 
 
+void WaveformSID::Restart()
+{
+  _sid.stop();
+}
+
+
 void WaveformSID::FillBackBuffer()
 {
   _sid.play(_data.data(), 44100);

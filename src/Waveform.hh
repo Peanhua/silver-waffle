@@ -23,10 +23,11 @@ class Waveform
 public:
   Waveform();
   virtual ~Waveform();
-  
+
   ALuint       GetCurrentBuffer() const;
   ALuint       GetBackBuffer() const;
   void         SwapBuffers();
+  virtual void Restart() = 0;
   virtual void FillBackBuffer() = 0;
 
   double       GetLength() const;

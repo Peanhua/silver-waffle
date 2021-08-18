@@ -128,13 +128,26 @@ Waveform * MusicPlayer::GetNextSongInCategory()
    
   auto index = static_cast<unsigned int>(_rdist(_random_generator) * static_cast<float>(_songs.size()));
   index = std::clamp(index, 0u, static_cast<unsigned int>(_songs.size() - 1));
-  return _songs[index]->GetWaveform();
+
+  auto rv = _songs[index]->GetWaveform();
+  if(rv == _now_playing)
+    {
+      if(index > 0)
+        rv = _songs[index - 1]->GetWaveform();
+      else if(index + 1 < _songs.size())
+        rv = _songs[index + 1]->GetWaveform();
+      else
+        rv = nullptr;
+    }
+
+  return rv;
 }
 
 
 void MusicPlayer::SetNextMusic(Waveform * music)
 {
   std::lock_guard lock(_next_music_mutex);
+  assert(music != _now_playing);
   _next_music = music;
   _fading_out = 0;
 }
@@ -159,6 +172,7 @@ void MusicPlayer::TickMusicChange()
     if(_next_music)
       {
         newmus = _next_music;
+        assert(newmus != _now_playing);
         _next_music = nullptr;
       }
   }
@@ -166,7 +180,7 @@ void MusicPlayer::TickMusicChange()
   if(!newmus && _now_playing && _now_playing_continuously)
     if(_playing_stop_time < _clock.now())
       newmus = GetNextSongInCategory();
-
+  
   if(newmus)
     ChangeMusic(newmus);
 }
@@ -175,25 +189,25 @@ void MusicPlayer::TickMusicChange()
 void MusicPlayer::ChangeMusic(Waveform * newmus)
 {
   assert(newmus);
+  assert(newmus != _now_playing);
+  newmus->Restart();
+
   auto newmuslen = static_cast<unsigned int>(std::ceil(newmus->GetLength()));
   assert(newmuslen > 0);
   _playing_stop_time = _clock.now() + std::chrono::seconds(newmuslen);
   
-  if(newmus != _now_playing)
-    {
-      _current_source ^= 1;
-      _now_playing = newmus;
-      QueueNextBuffer();
-      QueueNextBuffer();
-      alSourcePlay(_sources[_current_source]);
-      assert(alGetError() == AL_NO_ERROR);
+  _current_source ^= 1;
+  _now_playing = newmus;
+  QueueNextBuffer();
+  QueueNextBuffer();
+  alSourcePlay(_sources[_current_source]);
+  assert(alGetError() == AL_NO_ERROR);
       
-      alSourceStop(_sources[_current_source ^ 1]);
-      assert(alGetError() == AL_NO_ERROR);
+  alSourceStop(_sources[_current_source ^ 1]);
+  assert(alGetError() == AL_NO_ERROR);
       
-      alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
-      alSourcef(_sources[_current_source], AL_GAIN, static_cast<ALfloat>(_volume));
-    }
+  alSourcef(_sources[_current_source ^ 1], AL_GAIN, 0);
+  alSourcef(_sources[_current_source], AL_GAIN, static_cast<ALfloat>(_volume));
 }
 
 

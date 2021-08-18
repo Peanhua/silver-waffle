@@ -20,6 +20,7 @@ class WaveformSID : public Waveform
 public:
   WaveformSID(const std::string & filename, unsigned int tune_id);
 
+  void Restart()        override;
   void FillBackBuffer() override;
 
 private:
