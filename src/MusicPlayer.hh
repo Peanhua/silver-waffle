@@ -32,6 +32,7 @@ public:
 
   void SetMusicCategory(const std::string & category);
   void FadeOutCurrentSong(double time);
+  void PlayNextSongInCategory();
 
 private:
   const std::chrono::steady_clock _clock;

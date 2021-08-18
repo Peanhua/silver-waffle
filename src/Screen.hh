@@ -38,10 +38,15 @@ public:
   virtual void PlayMusic();
   virtual void Tick(double deltatime);
   virtual void Draw() const;
-  virtual void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod);
+
+  void InjectKeyboardEvent(bool pressed, SDL_Keycode key, SDL_Keymod mod);
+  
   virtual void OnMouseMove(const glm::ivec2 & position, const glm::ivec2 & relative_movement);
   virtual void OnMouseButton(bool pressed, unsigned int button, const glm::ivec2 & position);
   virtual void OnQuit();
+
+protected:
+  virtual void OnKeyboard(bool pressed, SDL_Keycode key, SDL_Keymod mod);
 
 private:
   std::string _music_category;

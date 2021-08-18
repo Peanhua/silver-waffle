@@ -109,8 +109,14 @@ void MusicPlayer::SetMusicCategory(const std::string & category)
     }
   std::cout << "Loaded music category " << category << " with " << _songs.size() << " songs.\n";
 
-  SetNextMusic(GetNextSongInCategory());
+  PlayNextSongInCategory();
 }
+
+
+void MusicPlayer::PlayNextSongInCategory()
+{
+  SetNextMusic(GetNextSongInCategory());
+}  
 
 
 void MusicPlayer::FadeOutCurrentSong(double time)

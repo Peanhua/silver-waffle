@@ -62,7 +62,7 @@ void SubsystemInput::Tick([[maybe_unused]] double deltatime)
         case SDL_KEYDOWN:
         case SDL_KEYUP:
           if(!event.key.repeat)
-            screen->OnKeyboard(event.type == SDL_KEYDOWN, event.key.keysym.sym, static_cast<SDL_Keymod>(event.key.keysym.mod));
+            screen->InjectKeyboardEvent(event.type == SDL_KEYDOWN, event.key.keysym.sym, static_cast<SDL_Keymod>(event.key.keysym.mod));
           break;
 
         case SDL_MOUSEMOTION:
