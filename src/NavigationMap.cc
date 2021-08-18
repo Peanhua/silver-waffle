@@ -17,7 +17,7 @@ NavigationMap::NavigationMap(const glm::ivec2 & data_dimensions, uint8_t * data,
     _data(data),
     _scale(scale)
 {
-  _tile_offset = _scale / glm::vec2(_data_dimensions); // Tile origin is offset by 0.5*blocksize.
+  _tile_offset = 0.5f * _scale / glm::vec2(_data_dimensions); // Tile origin is offset by 0.5*blocksize.
 }
 
 const glm::ivec2 & NavigationMap::GetDataDimensions() const
@@ -63,10 +63,9 @@ glm::ivec2 NavigationMap::WorldToNavigation(const glm::vec2 & position)
   pos -= _tile_offset;
   pos /= _scale;
   pos += glm::vec2(0.5f, 0.5f); // Move to origin, navigation map origin is at the bottom-left.
-  assert(pos.x >= 0);
-  assert(pos.x <= 1);
-  assert(pos.y >= 0);
-  assert(pos.y <= 1);
+
+  pos.x = std::clamp(pos.x, 0.0f, 1.0f);
+  pos.y = std::clamp(pos.y, 0.0f, 1.0f);
   pos *= glm::vec2(_data_dimensions);
   return glm::ivec2(pos);
 }
