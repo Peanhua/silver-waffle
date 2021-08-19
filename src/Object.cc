@@ -350,19 +350,19 @@ uint64_t Object::GetCollidesWithChannels() const
 }
 
 
-void Object::Hit(Object * perpetrator, double damage, const glm::vec3 & impulse)
+void Object::Hit(Object * perpetrator, Object * hitter, double damage, const glm::vec3 & hit_position, const glm::vec3 & impulse)
 {
   if(!IsAlive())
     return;
 
-  OnHit(perpetrator, damage, impulse);
+  OnHit(perpetrator, hitter, damage, hit_position, impulse);
 }
 
 
-void Object::OnHit(Object * perpetrator, double damage, const glm::vec3 & impulse)
+void Object::OnHit(Object * perpetrator, [[maybe_unused]] Object * hitter, double damage, const glm::vec3 & hit_position, const glm::vec3 & impulse)
 {
   if(_scene)
-    _scene->AddExplosion(GetPosition(), impulse * 0.5f);
+    _scene->AddExplosion(hit_position, impulse * 0.5f);
 
   if(!_use_health)
     return;
@@ -540,7 +540,7 @@ void Object::SetScene(Scene * scene)
 
 void Object::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
-  Hit(&other, 10, hit_direction);
+  Hit(&other, &other, 10, GetPosition(), hit_direction);
 }
 
 

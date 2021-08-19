@@ -54,9 +54,9 @@ public:
 
   void         Draw(const Camera & camera) const;
   void         Draw(const glm::mat4 & vp) const;
-  void         Hit(Object * perpetrator, double damage, const glm::vec3 & impulse);
+  void         Hit(Object * perpetrator, Object * hitter, double damage, const glm::vec3 & hit_position, const glm::vec3 & impulse);
   virtual void Tick(double deltatime);
-  virtual void OnHit(Object * perpetrator, double damage, const glm::vec3 & impulse);
+  virtual void OnHit(Object * perpetrator, Object * hitter, double damage, const glm::vec3 & hit_position, const glm::vec3 & impulse);
   virtual void OnDestroyed(Object * destroyer);
   void         SetOnDestroyed(on_destroyed_t callback);
   void         Destroy(Object * destroyer);

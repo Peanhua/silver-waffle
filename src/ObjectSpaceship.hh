@@ -31,7 +31,7 @@ public:
   ObjectSpaceship(Scene * scene, unsigned int random_seed);
 
   void     Tick(double deltatime) override;
-  void     OnHit(Object * perpetrator, double damage, const glm::vec3 & impulse) override;
+  void     OnHit(Object * perpetrator, Object * hitter, double damage, const glm::vec3 & hit_position, const glm::vec3 & impulse) override;
   double   GetGlow() const override;
   void     OnDestroyed(Object * destroyer) override;
   

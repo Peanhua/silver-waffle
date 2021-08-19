@@ -75,6 +75,6 @@ double ObjectProjectile::GetDamage() const
 
 void ObjectProjectile::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
-  other.Hit(_owner, GetDamage(), -hit_direction);
+  other.Hit(_owner, this, GetDamage(), GetPosition(), -hit_direction);
   Destroy(nullptr);
 }
