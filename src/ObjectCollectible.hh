@@ -32,6 +32,7 @@ public:
       UPGRADEMATERIAL_PHYSICAL,
       WARP_FUEL,
       HUMAN,
+      SPACESHIP_UPGRADE_BLUEPRINT,
       SIZEOF_,
       NONE = SIZEOF_
     };

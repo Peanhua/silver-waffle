@@ -107,11 +107,12 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
         SpaceshipUpgrade::Type::PLANET_LANDER,
       };
     for(auto t : types)
-      {
-        auto w = new WidgetShopItem(this, glm::ivec2(x + 20, y), glm::ivec2(200, 30),
-                                    _spaceship, gamestats->GetUpgradeMaterials(), _spaceship->GetUpgrade(t));
-        y += w->GetSize().y;
-      }
+      if(gamestats->IsSpaceshipUpgradeAvailable(t))
+        {
+          auto w = new WidgetShopItem(this, glm::ivec2(x + 20, y), glm::ivec2(200, 30),
+                                      _spaceship, gamestats->GetUpgradeMaterials(), _spaceship->GetUpgrade(t));
+          y += w->GetSize().y;
+        }
   }
   
   y += 20;

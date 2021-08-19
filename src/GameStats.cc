@@ -127,3 +127,47 @@ unsigned int GameStats::GetHumansSaved() const
 {
   return _total_humans_saved;
 }
+
+
+std::pair<bool, SpaceshipUpgrade::Type> GameStats::UnlockRandomSpaceshipUpgrade(float random)
+{
+  std::vector<SpaceshipUpgrade::Type> all
+    {
+      SpaceshipUpgrade::Type::WEAPON,
+      SpaceshipUpgrade::Type::WEAPON_COOLER,
+      SpaceshipUpgrade::Type::ENGINE_UPGRADE,
+      SpaceshipUpgrade::Type::HULL_UPGRADE,
+      SpaceshipUpgrade::Type::REPAIR_DROID,
+      SpaceshipUpgrade::Type::WARP_ENGINE,
+      SpaceshipUpgrade::Type::PLANET_LANDER,
+    };
+  std::vector<SpaceshipUpgrade::Type> possible;
+  for(auto u : all)
+    if(!IsSpaceshipUpgradeAvailable(u))
+      possible.push_back(u);
+  if(possible.size() == 0)
+    return std::make_pair(false, SpaceshipUpgrade::Type::BONUS_DAMAGE);
+
+  if(possible.size() == all.size())
+    return std::make_pair(true, SpaceshipUpgrade::Type::PLANET_LANDER);
+  
+  auto r = static_cast<unsigned int>(random * static_cast<float>(possible.size()));
+  r = std::clamp(r, 0u, static_cast<unsigned int>(possible.size() - 1));
+  UnlockSpaceshipUpgrade(possible[r]);
+  return std::make_pair(true, possible[r]);
+}
+
+void GameStats::UnlockSpaceshipUpgrade(SpaceshipUpgrade::Type type)
+{
+  _spaceship_upgrade_blueprints[type] = true;
+}
+
+
+bool GameStats::IsSpaceshipUpgradeAvailable(SpaceshipUpgrade::Type type)
+{
+  auto it = _spaceship_upgrade_blueprints.find(type);
+  if(it != _spaceship_upgrade_blueprints.end())
+    return (*it).second;
+  else
+    return false;
+}

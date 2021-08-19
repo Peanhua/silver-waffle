@@ -647,8 +647,8 @@ void Object::SpawnLoot()
             case ObjectCollectible::Type::UPGRADEMATERIAL_DEFENSE:
             case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
             case ObjectCollectible::Type::WARP_FUEL:
-            case ObjectCollectible::Type::HUMAN:
             case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
+            case ObjectCollectible::Type::SPACESHIP_UPGRADE_BLUEPRINT:
               {
                 auto rotangle = glm::normalize(glm::vec3(GetRand() * 2.0f - 1.0f,
                                                          GetRand() * 2.0f - 1.0f,
@@ -660,6 +660,7 @@ void Object::SpawnLoot()
             case ObjectCollectible::Type::SHIELD:
               coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0)), 1.0f);
               break;
+            case ObjectCollectible::Type::HUMAN:
             case ObjectCollectible::Type::NONE:
               break;
             }

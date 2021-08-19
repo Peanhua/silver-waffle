@@ -1,0 +1,11 @@
+{
+  "definitions":
+  [
+    {
+      "type":          "SPACESHIP_UPGRADE_BLUEPRINT",
+      "random_chance": 1.0,
+      "bonus_min":     1.0,
+      "bonus_max":     1.0
+    }
+  ]
+}

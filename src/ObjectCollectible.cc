@@ -109,4 +109,15 @@ void ObjectCollectible::CollectBy(ObjectSpaceship * spaceship)
           GetScene()->TutorialMessage(1, "Press TAB to open the upgrade menu.\n");
         }
   }
+  if(HasBonus(Type::SPACESHIP_UPGRADE_BLUEPRINT))
+    {
+      auto [success, u] = gamestats->UnlockRandomSpaceshipUpgrade(spaceship->GetRand());
+      if(success)
+        {
+          auto ssu = spaceship->GetUpgrade(u);
+          spaceship->SystemlogAppend(std::string("You found spaceship upgrade blueprints for ") + ssu->GetName() + std::string("!\n"));
+        }
+      else
+        spaceship->SystemlogAppend("You found spaceship upgrade blueprints,\nbut are unable to further upgrade.\n");
+    }
 }

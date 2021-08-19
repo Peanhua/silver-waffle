@@ -486,6 +486,9 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
     case ObjectCollectible::Type::HUMAN:
       assert(false);
       break;
+    case ObjectCollectible::Type::SPACESHIP_UPGRADE_BLUEPRINT:
+      collectible->SetMesh(LoadMesh("SpaceshipUpgradeBlueprint"));
+      break;
     }
   collectible->SetCollisionShape(new CollisionShapeOBB(collectible, collectible->GetMesh()->GetBoundingBoxHalfSize()));
 

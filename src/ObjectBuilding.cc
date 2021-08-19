@@ -10,6 +10,7 @@
   Complete license can be found in the LICENSE file.
 */
 #include "ObjectBuilding.hh"
+#include "Loot.hh"
 #include "Mesh.hh"
 #include "ObjectInvader.hh"
 #include "Scene.hh"
@@ -72,6 +73,17 @@ ObjectBuilding::ObjectBuilding(Scene * scene, unsigned int random_seed, unsigned
 
   if(d["spaceport"].is_bool() && d["spaceport"].bool_value())
     _is_spaceport = true;
+
+  if(d["loot"].is_array())
+    {
+      auto loots = d["loot"].array_items();
+      for(auto loot : loots)
+        {
+          assert(loot.is_string());
+          auto lootjson = AssetLoader->LoadJson("Data/Loot-" + loot.string_value());
+          AddLoot(new Loot(lootjson));
+        }
+    }
 }
 
 

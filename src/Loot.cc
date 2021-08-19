@@ -42,6 +42,8 @@ Loot::Loot(json11::Json * config)
         d->_type = ObjectCollectible::Type::WARP_FUEL;
       else if(stype == "HUMAN")
         d->_type = ObjectCollectible::Type::HUMAN;
+      else if(stype == "SPACESHIP_UPGRADE_BLUEPRINT")
+        d->_type = ObjectCollectible::Type::SPACESHIP_UPGRADE_BLUEPRINT;
       else
         assert(false);
 
