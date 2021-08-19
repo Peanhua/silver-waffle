@@ -216,12 +216,10 @@ void Scene::Tick(double deltatime)
   _collisioncheck_statistics.elapsed_frames++;
 
 
-  auto explos(_explosions); // Copy the list for the thread.
-
-  auto ProcessExplosivesAndParticles = [this, deltatime, warpspeed, warpspeedmove, &explos]()
+  auto ProcessExplosivesAndParticles = [this, deltatime, warpspeed, warpspeedmove]()
   {
-    for(auto e : explos)
-      if(e && e->IsAlive())
+    for(auto e : _explosions)
+      if(e->IsAlive())
         {
           e->Tick(deltatime);
           if(warpspeed)
@@ -230,13 +228,13 @@ void Scene::Tick(double deltatime)
     
     if(_particles)
       _particles->Tick(deltatime * (1.0 + 5.0 * static_cast<double>(_warp_throttle)));
-
+    
     _tick_finish_sync.arrive_and_wait(); // arrive_and_drop() here causes crash, todo: fix it
     
     return false;
   };
 
-  Jobs->AddJob(ProcessExplosivesAndParticles);
+  Jobs->AddJob(true, ProcessExplosivesAndParticles);
 
   
   _tick_work_objects.clear();
@@ -255,21 +253,20 @@ void Scene::Tick(double deltatime)
       _tick_work_objects.push_back(p);
 
   for(auto o : _tick_work_objects)
-    if(o->IsAlive())
-      {
-        if(o != GetPlayer() && warpspeed)
-          o->Translate(warpspeedmove);
+    if(o != GetPlayer() && warpspeed)
+      o->Translate(warpspeedmove);
         
-        if(o->ShouldTick())
-          {
-            o->Tick(deltatime);
-
-            if(!warpspeed && o->GetCollidesWithChannels())
-              CollisionsForObject(o);
-          }
-      }
-
   _tick_finish_sync.arrive_and_wait();
+
+  for(auto o : _tick_work_objects)
+    if(o->IsAlive())
+      if(o->ShouldTick())
+        {
+          o->Tick(deltatime);
+          
+          if(!warpspeed && o->GetCollidesWithChannels())
+            CollisionsForObject(o);
+        }
 }
 
 
