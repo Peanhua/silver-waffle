@@ -283,8 +283,8 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
           _value = collectible->GetBonus(ObjectCollectible::Type::DAMAGE_MULTIPLIER);
           _timer = 10;
           _spaceship->SystemlogAppend("Damage boost liquid.\n");
-          if(GetOwnerGameStats())
-            GetScene()->TutorialMessage(3, "Press F to activate.\n");
+          if(_spaceship->GetOwnerGameStats())
+            _spaceship->GetScene()->TutorialMessage(3, "Press F to activate.\n");
         }
       break;
     case Type::SHIELD:
