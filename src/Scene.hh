@@ -73,7 +73,7 @@ public:
 
   void              CreatePlayer();
   virtual void      SetupPlayer();
-  ObjectSpaceship * GetPlayer() const;
+  ObjectMovable * GetPlayer() const;
 
   void              AddPlanet(Object * planet);
   void              AddCloud(Object * cloud);

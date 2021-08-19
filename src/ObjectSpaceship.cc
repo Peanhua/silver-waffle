@@ -28,7 +28,6 @@
 
 ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
   : ObjectMovable(scene, random_seed),
-    _gamestats(nullptr),
     _landed(false),
     _human_count(0),
     _on_human_count_changed(nullptr),
@@ -330,18 +329,6 @@ void ObjectSpaceship::UpgradeFromCollectible(ObjectCollectible * collectible)
 
 
 
-void ObjectSpaceship::SetOwnerGameStats(GameStats * gamestats)
-{
-  _gamestats = gamestats;
-}
-
-
-GameStats * ObjectSpaceship::GetOwnerGameStats() const
-{
-  return _gamestats;
-}
-
-
 void ObjectSpaceship::CopyUpgrades(const ObjectSpaceship & source)
 {
   _engines.clear();
@@ -621,8 +608,10 @@ void ObjectSpaceship::AddHuman()
   _human_count++;
   if(_on_human_count_changed)
     _on_human_count_changed();
-  if(_gamestats)
-    _gamestats->OnHumanCollected();
+
+  auto gs = GetOwnerGameStats();
+  if(gs)
+    gs->OnHumanCollected();
 }
 
 
@@ -646,10 +635,11 @@ void ObjectSpaceship::SaveHuman(double deltatime)
   _human_saving_timer -= 1;
   
   SystemlogAppend("You rescued another human individual!\n");
-  if(_gamestats)
+  auto gs = GetOwnerGameStats();
+  if(gs)
     {
-      _gamestats->AddScore(10);
-      _gamestats->OnHumansSaved(1);
+      gs->AddScore(10);
+      gs->OnHumansSaved(1);
     }
   
   _human_count--;

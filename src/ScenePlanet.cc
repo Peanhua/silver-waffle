@@ -63,22 +63,25 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
 void ScenePlanet::SetupPlayer()
 {
   Scene::SetupPlayer();
-  auto player = GetPlayer();
-  player->EnableVelocity(true, false, true);
-  player->SetPosition({0, 0, GetPlayAreaSize().z * 0.5f - player->GetMesh()->GetBoundingBoxHalfSize().z});
-  player->SetOrientation(glm::quat(1, 0, 0, 0));
-  player->RotateYaw(-90.0);
-  for(unsigned int i = 0; i < 4; i++)
+  auto player = dynamic_cast<ObjectSpaceship *>(GetPlayer());
+  if(player)
     {
-      player->EnableEngine(i,     false);
-      player->EnableEngine(i + 4, true);
-    }
-  player->SetController(new ControllerPlanet(player));
-  if(_landing_sequence)
-    {
-      _landing_sequence = false;
-      if(!Settings->GetBool("cheat_disable_planet_entering_impulse"))
-        player->AddImpulse({300, 0, -10});
+      player->EnableVelocity(true, false, true);
+      player->SetPosition({0, 0, GetPlayAreaSize().z * 0.5f - player->GetMesh()->GetBoundingBoxHalfSize().z});
+      player->SetOrientation(glm::quat(1, 0, 0, 0));
+      player->RotateYaw(-90.0);
+      for(unsigned int i = 0; i < 4; i++)
+        {
+          player->EnableEngine(i,     false);
+          player->EnableEngine(i + 4, true);
+        }
+      player->SetController(new ControllerPlanet(player));
+      if(_landing_sequence)
+        {
+          _landing_sequence = false;
+          if(!Settings->GetBool("cheat_disable_planet_entering_impulse"))
+            player->AddImpulse({300, 0, -10});
+        }
     }
 }
 

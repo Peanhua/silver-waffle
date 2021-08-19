@@ -16,7 +16,6 @@
 #include "SpaceshipUpgrade.hh"
 #include <vector>
 
-class GameStats;
 class ObjectBuilding;
 class ObjectCollectible;
 class SolarSystemObject;
@@ -57,9 +56,6 @@ public:
   void               UpgradeFromCollectible(ObjectCollectible * collectible);
   SpaceshipUpgrade * GetUpgrade(SpaceshipUpgrade::Type type) const;
 
-  void        SetOwnerGameStats(GameStats * gamestats);
-  GameStats * GetOwnerGameStats() const;
-
   void CopyUpgrades(const ObjectSpaceship & source);
 
   void         ClearControlPrograms();
@@ -97,7 +93,6 @@ private:
   private:
   };
 
-  GameStats *            _gamestats;
   bool                   _landed;
   std::vector<Engine *>  _engines;
   std::vector<Weapon *>  _weapons;

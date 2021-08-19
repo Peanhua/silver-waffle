@@ -105,10 +105,12 @@ void ScreenLevel::Initialize()
     OnPlayerDies();
   });
 
-  _scene->GetPlayer()->SetOnHumanCountChanged([this]()
-  {
-    OnHumanCountUpdated();
-  });
+  auto splayer = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+  if(splayer)
+    splayer->SetOnHumanCountChanged([this]()
+    {
+      OnHumanCountUpdated();
+    });
 
  
   // UI:
@@ -148,48 +150,49 @@ void ScreenLevel::Initialize()
   }
   OnHumanCountUpdated();
 
-  {
-    int x = static_cast<int>(width) - 8;
-    int y = 70;
-    int wtw_x;
-    const glm::ivec2 size(20, 100);
-    std::vector<Widget *>    widgets;
-    std::vector<std::string> labels;
+  if(splayer)
     {
-      x -= size.x + 4;
-      auto w = new WidgetSpaceshipStatus(root, {x, y}, size, _scene->GetPlayer());
-      _player_status_widgets.push_back(w);
-      widgets.push_back(w);
-      labels.push_back("H");
-    }
-    {
-      x -= size.x + 4;
-      auto w = new WidgetWeaponStatus(root, {x, y}, size, _scene->GetPlayer());
-      _player_status_widgets.push_back(w);
-      widgets.push_back(w);
-      labels.push_back("W");
-      wtw_x = x;
-    }
-    {
-      x -= size.x + 4;
-      auto w = new WidgetSpaceshipUpgradeStatus(root, {x, y}, size, _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE));
-      _player_upgrade_status_widgets.push_back(w);
-      widgets.push_back(w);
-      labels.push_back("Z");
-    }
-    for(unsigned int i = 0; i < labels.size(); i++)
+      int x = static_cast<int>(width) - 8;
+      int y = 70;
+      int wtw_x;
+      const glm::ivec2 size(20, 100);
+      std::vector<Widget *>    widgets;
+      std::vector<std::string> labels;
       {
-        auto l = new Widget(root, widgets[i]->GetPosition() + glm::ivec2(0, size.y), glm::ivec2(size.x, size.x));
-        l->SetText(labels[i]);
-        l->SetTextFont(AssetLoader->LoadFont(12));
-        l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
-        l->SetTextPaddingCentered(true, true);
+        x -= size.x + 4;
+        auto w = new WidgetSpaceshipStatus(root, {x, y}, size, splayer);
+        _player_status_widgets.push_back(w);
+        widgets.push_back(w);
+        labels.push_back("H");
       }
+      {
+        x -= size.x + 4;
+        auto w = new WidgetWeaponStatus(root, {x, y}, size, splayer);
+        _player_status_widgets.push_back(w);
+        widgets.push_back(w);
+        labels.push_back("W");
+        wtw_x = x;
+      }
+      {
+        x -= size.x + 4;
+        auto w = new WidgetSpaceshipUpgradeStatus(root, {x, y}, size, splayer->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE));
+        _player_upgrade_status_widgets.push_back(w);
+        widgets.push_back(w);
+        labels.push_back("Z");
+      }
+      for(unsigned int i = 0; i < labels.size(); i++)
+        {
+          auto l = new Widget(root, widgets[i]->GetPosition() + glm::ivec2(0, size.y), glm::ivec2(size.x, size.x));
+          l->SetText(labels[i]);
+          l->SetTextFont(AssetLoader->LoadFont(12));
+          l->SetTextColor(glm::vec3(0.0, 0.5, 0.0));
+          l->SetTextPaddingCentered(true, true);
+        }
 
-    y += size.y + 20;
+      y += size.y + 20;
 
-    _weapon_type_widget = new Widget(root, {wtw_x, y}, {size.x, size.x});
-  }
+      _weapon_type_widget = new Widget(root, {wtw_x, y}, {size.x, size.x});
+    }
   
   {
     std::vector<std::string> imagenames
@@ -224,9 +227,6 @@ void ScreenLevel::Initialize()
 
   _scene->DumpStats();
   
-  if(Settings->GetBool("demo"))
-    _scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER)->Install();
-
   SetAmmoType(_weapon_ammo_type);
 }
 
@@ -242,7 +242,8 @@ void ScreenLevel::Tick(double deltatime)
 {
   if(Settings->GetBool("demo"))
     {
-      auto player = _scene->GetPlayer();
+      auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+      assert(player);
       if(!_demo_lander_activated)
         if(!_parent && GetGameStats()->GetTime() > 9.4)
           {
@@ -282,6 +283,8 @@ void ScreenLevel::Tick(double deltatime)
       
   
   auto level = _levels[_current_level];
+  auto player = _scene->GetPlayer();
+  auto splayer = dynamic_cast<ObjectSpaceship *>(player);
   
   _score_reel->SetScore(_gamestats->GetScore());
 
@@ -316,7 +319,7 @@ void ScreenLevel::Tick(double deltatime)
     }
   else if(_state == State::SCREEN_TRANSITION)
     {
-      _scene->GetPlayer()->Tick(deltatime);
+      player->Tick(deltatime);
       _screentransition_timer += deltatime;
 
       if(_screentransition_new_screen)
@@ -332,17 +335,15 @@ void ScreenLevel::Tick(double deltatime)
             _pausebutton->SetTextPaddingCentered(true, true);
           }
           
-          if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
+          if(splayer && splayer->GetActiveControlProgramCount() == 0)
             { // Enter the new screen.
               SetChild(_screentransition_new_screen);
               _screentransition_new_screen = nullptr;
               _pausebutton->SetText("");
               _screentransition_timer = 0;
               { // Set resume animation here.
-                auto player = _scene->GetPlayer();
-                
-                auto p = new SCP_Pitch(player, 180, 0.5);
-                player->AddControlProgram(p);
+                auto p = new SCP_Pitch(splayer, 180, 0.5);
+                splayer->AddControlProgram(p);
               }
             }
         }
@@ -358,10 +359,10 @@ void ScreenLevel::Tick(double deltatime)
                   auto amount = std::clamp(1.0 - _screentransition_timer / 0.5, 0.0, 1.0);
                   _pausebutton->SetImageColor(glm::vec4(0, 0, 0, amount));
                 }
-              if(_scene->GetPlayer()->GetActiveControlProgramCount() == 0)
+              if(splayer && splayer->GetActiveControlProgramCount() == 0)
                 {
-                  _scene->GetPlayer()->SetPosition(glm::vec3(_scene->GetPlayer()->GetPosition().x, 40 - 53, 0));
-                  _scene->GetPlayer()->SetOrientation(glm::quat(1, 0, 0, 0));
+                  player->SetPosition(glm::vec3(player->GetPosition().x, 40 - 53, 0));
+                  player->SetOrientation(glm::quat(1, 0, 0, 0));
                   RefreshUI();
                   OnLivesUpdated();
                   OnHumanCountUpdated();
@@ -371,9 +372,9 @@ void ScreenLevel::Tick(double deltatime)
         }
     }
   
-  _active_bonus_widgets[0]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
+  _active_bonus_widgets[0]->SetIsVisible(splayer->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
   _active_bonus_widgets[1]->SetIsVisible(_gamestats->GetScoreMultiplier() > 1);
-  _active_bonus_widgets[2]->SetIsVisible(_scene->GetPlayer()->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->GetValue() > 0);
+  _active_bonus_widgets[2]->SetIsVisible(splayer->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->GetValue() > 0);
 
   auto fmt = [](double v)
   {
@@ -382,7 +383,6 @@ void ScreenLevel::Tick(double deltatime)
   };
 
   {
-    auto player = _scene->GetPlayer();
     assert(player);
     auto planet = dynamic_cast<ObjectPlanet *>(_scene->GetNextClosestPlanet(player->GetPosition()));
     if(planet)
@@ -395,12 +395,11 @@ void ScreenLevel::Tick(double deltatime)
   }
 
   {
-    auto player = _scene->GetPlayer();
-    if(player && player->IsAlive())
-      if(player->SystemlogGet().length() > 0)
+    if(splayer && splayer->IsAlive())
+      if(splayer->SystemlogGet().length() > 0)
         {
-          _teletyper->AppendText(player->SystemlogGet());
-          player->SystemlogClear();
+          _teletyper->AppendText(splayer->SystemlogGet());
+          splayer->SystemlogClear();
         }
   }
 
@@ -479,18 +478,19 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL
   assert(_state == State::RUNNING);
 
   auto player = _scene->GetPlayer();
+  auto splayer = dynamic_cast<ObjectSpaceship *>(player);
   auto controller = player->GetController();
 
   bool disablecontrols = false;
-  if(player && player->IsAlive())
+  if(splayer && splayer->IsAlive())
     {
       if(_scene->IsWarpEngineStarting())
         disablecontrols = true;
     
-      auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
+      auto u = splayer->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);
       if(u->IsActive())
         disablecontrols = true;
-      else if(player->GetActiveControlProgramCount() > 0)
+      else if(splayer->GetActiveControlProgramCount() > 0)
         disablecontrols = true;
     }
   else
@@ -546,11 +546,12 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL
 
     case SDLK_s:
       if(!disablecontrols && pressed)
-        {
-          auto lander = player->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER);
-          if(lander->CanActivate())
-            lander->Activate();
-        }
+        if(splayer)
+          {
+            auto lander = splayer->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER);
+            if(lander->CanActivate())
+              lander->Activate();
+          }
       break;
 
     case SDLK_q:
@@ -569,13 +570,13 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL
       
     case SDLK_l:
       if(!disablecontrols && pressed)
-        if(player->IsLanded())
+        if(splayer && splayer->IsLanded())
           {
             auto level = _levels[_current_level];
             if(!level->AreBossBuildingsAlive())
-              _current_quicktimeevent = new QuickTimeEventLaunchToSpace(player, GetRootWidget(), 3);
+              _current_quicktimeevent = new QuickTimeEventLaunchToSpace(splayer, GetRootWidget(), 3);
             else
-              player->SystemlogAppend("A disturbance in time-space continuity is preventing the launch!\n");
+              splayer->SystemlogAppend("A disturbance in time-space continuity is preventing the launch!\n");
           }
       break;
 
@@ -605,7 +606,8 @@ void ScreenLevel::OnLivesUpdated()
 
 void ScreenLevel::OnHumanCountUpdated()
 {
-  auto player = _scene->GetPlayer();
+  auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+  assert(player);
   auto count = static_cast<unsigned int>(player->GetHumanCount());
 
   _human_widget->SetIsVisible(count > 0);
@@ -666,11 +668,13 @@ void ScreenLevel::NextLifeOrQuit()
       {
         OnPlayerDies();
       });
-      
-      _scene->GetPlayer()->SetOnHumanCountChanged([this]()
-      {
-        OnHumanCountUpdated();
-      });
+
+      auto splayer = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+      if(splayer)
+        splayer->SetOnHumanCountChanged([this]()
+        {
+          OnHumanCountUpdated();
+        });
       OnHumanCountUpdated();
 
       SetAmmoType(_weapon_ammo_type);
@@ -690,12 +694,16 @@ void ScreenLevel::NextLifeOrQuit()
 
 void ScreenLevel::RefreshUI()
 { // Todo: Fix the widgets to listen for changes and get rid of this.
+  auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+  if(!player)
+    return;
+  
   for(auto w : _player_status_widgets)
-    w->SetSpaceship(_scene->GetPlayer());
+    w->SetSpaceship(player);
   for(auto w : _player_upgrade_status_widgets)
-    w->SetUpgrade(_scene->GetPlayer()->GetUpgrade(w->GetUpgrade()->GetType()));
+    w->SetUpgrade(player->GetUpgrade(w->GetUpgrade()->GetType()));
 
-  switch(_scene->GetPlayer()->GetWeapon(0)->GetAmmo())
+  switch(player->GetWeapon(0)->GetAmmo())
     {
     case Weapon::AmmoType::KINETIC:
       _weapon_type_widget->SetImage("Projectile");
@@ -788,17 +796,17 @@ void ScreenLevel::ChangeState(State new_state)
 
         _teletyper->AppendText(_screentransition_text + '\n');
 
-        {
-          auto player = _scene->GetPlayer();
-
-          player->ClearControlPrograms();
-
-          SpaceshipControlProgram * p = new SCP_MoveForward(player, 4, 2.5);
-          player->AddControlProgram(p);
-          
-          p = new SCP_Pitch(_scene->GetPlayer(), -90, 1);
-          player->AddControlProgram(p);
-        }
+        auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+        if(player)
+          {
+            player->ClearControlPrograms();
+            
+            SpaceshipControlProgram * p = new SCP_MoveForward(player, 4, 2.5);
+            player->AddControlProgram(p);
+            
+            p = new SCP_Pitch(player, -90, 1);
+            player->AddControlProgram(p);
+          }
         
         _screentransition_timer = 0.0;
       }
@@ -838,6 +846,10 @@ void ScreenLevel::TransitionToScreen(Screen * new_screen, const std::string & me
 
 void ScreenLevel::OpenSpaceshipMaintenanceUI()
 {
+  auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+  if(!player)
+    return;
+  
   ChangeState(State::FULL_PAUSE);
 
   const auto width = Settings->GetInt("screen_width");
@@ -848,7 +860,7 @@ void ScreenLevel::OpenSpaceshipMaintenanceUI()
   panelbackground->SetImage("White");
   panelbackground->SetImageColor(glm::vec4(0, 0, 0, 0.5));
   
-  new WidgetSpaceshipMaintenance(panelbackground, glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, _scene->GetPlayer(), _gamestats);
+  new WidgetSpaceshipMaintenance(panelbackground, glm::ivec2((width - panelsize.x) / 2, (height - panelsize.y) / 2), panelsize, player, _gamestats);
   
   assert(!_pausebutton);
   _pausebutton = panelbackground;
@@ -982,17 +994,20 @@ void ScreenLevel::OnQuit()
 
 void ScreenLevel::CopyPlayerData(ScreenLevel * src)
 {
-  auto myplr = _scene->GetPlayer();
-  auto srcplr = src->GetScene()->GetPlayer();
-  assert(myplr != srcplr);
+  auto myplr = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+  auto srcplr = dynamic_cast<ObjectSpaceship *>(src->GetScene()->GetPlayer());
+  if(myplr && srcplr)
+    {
+      assert(myplr != srcplr);
 
-  for(unsigned int i = 0; i < srcplr->GetEngineCount(); i++)
-    srcplr->SetEngineThrottle(i, 0.0);
-  for(unsigned int i = 0; i < srcplr->GetWeaponCount(); i++)
-    srcplr->SetWeaponAutofire(i, false);
+      for(unsigned int i = 0; i < srcplr->GetEngineCount(); i++)
+        srcplr->SetEngineThrottle(i, 0.0);
+      for(unsigned int i = 0; i < srcplr->GetWeaponCount(); i++)
+        srcplr->SetWeaponAutofire(i, false);
 
-  myplr->CopyUpgrades(*srcplr);
-  myplr->SetHealth(srcplr->GetHealth());
+      myplr->CopyUpgrades(*srcplr);
+      myplr->SetHealth(srcplr->GetHealth());
+    }
   _scene->SetupPlayer();
 }
 
@@ -1007,11 +1022,13 @@ void ScreenLevel::SetAmmoType(Weapon::AmmoType type)
 {
   _weapon_ammo_type = type;
 
-  auto player = _scene->GetPlayer();
-  
-  auto count = player->GetWeaponCount();
-  for(unsigned int i = 0; i < count; i++)
-    player->GetWeapon(i)->SetAmmo(type);
+  auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+  if(player)
+    {
+      auto count = player->GetWeaponCount();
+      for(unsigned int i = 0; i < count; i++)
+        player->GetWeapon(i)->SetAmmo(type);
+    }
   
   if(_weapon_type_widget)
     switch(_weapon_ammo_type)

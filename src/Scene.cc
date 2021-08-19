@@ -140,7 +140,7 @@ void Scene::CreatePlayer()
 }
 
 
-ObjectSpaceship * Scene::GetPlayer() const
+ObjectMovable * Scene::GetPlayer() const
 {
   return _player;
 }

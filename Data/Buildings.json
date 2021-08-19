@@ -12,7 +12,7 @@
     },
     {
       "mesh":            "AlienStructureSpawnerVertical",
-      "collision_shape": "sphere",
+      "collision_shape": "obb",
       "health":          10000,
       "spawn": {
         "type":      0,

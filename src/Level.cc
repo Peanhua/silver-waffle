@@ -42,7 +42,7 @@ void Level::Tick(double deltatime)
 {
   bool warpspeed = false;
   double dtime = deltatime;
-  auto player = _scene->GetPlayer();
+  auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
   if(player && player->IsAlive())
     {
       auto u = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE);

@@ -20,6 +20,7 @@
 class Camera;
 class Component;
 class Controller;
+class GameStats;
 class Loot;
 class Mesh;
 class Scene;
@@ -47,6 +48,9 @@ public:
   Object(Object &&)                  = delete; // todo: move constructor
   Object & operator=(const Object &) = delete; // todo: copy assignment
   Object & operator=(Object &&)      = delete; // todo: move assignment
+
+  void        SetOwnerGameStats(GameStats * gamestats);
+  GameStats * GetOwnerGameStats() const;
 
   void         Draw(const Camera & camera) const;
   void         Draw(const glm::mat4 & vp) const;
@@ -142,6 +146,7 @@ private:
   std::mt19937_64                       _random_generator;
   std::uniform_real_distribution<float> _rdist;
   Scene *      _scene;
+  GameStats *  _gamestats;
   Controller * _controller;
   CollisionShape * _collision_shape;
   glm::vec3    _position;

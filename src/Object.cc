@@ -31,6 +31,7 @@
 Object::Object(Scene * scene, unsigned int random_seed)
   : _random_generator(random_seed),
     _scene(scene),
+    _gamestats(nullptr),
     _controller(nullptr),
     _collision_shape(nullptr),
     _position(0, 0, 0),
@@ -725,4 +726,16 @@ bool Object::GetUseGarbageCollection() const
 void Object::SetUseGarbageCollection(bool enabled)
 {
   _use_garbagecollection = enabled;
+}
+
+
+void Object::SetOwnerGameStats(GameStats * gamestats)
+{
+  _gamestats = gamestats;
+}
+
+
+GameStats * Object::GetOwnerGameStats() const
+{
+  return _gamestats;
 }

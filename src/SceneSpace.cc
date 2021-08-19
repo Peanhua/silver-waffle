@@ -64,16 +64,18 @@ void SceneSpace::Tick(double deltatime)
 void SceneSpace::SetupPlayer()
 {
   Scene::SetupPlayer();
-  auto player = GetPlayer();
-  assert(player);
-  player->EnableVelocity(true, false, false);
-  player->SetPosition(glm::vec3(0, 40 - 53 + 0.5, 0));
-  for(unsigned int i = 0; i < 4; i++)
+  auto player = dynamic_cast<ObjectSpaceship *>(GetPlayer());
+  if(player)
     {
-      player->EnableEngine(i,     true);
-      player->EnableEngine(i + 4, false);
+      player->EnableVelocity(true, false, false);
+      player->SetPosition(glm::vec3(0, 40 - 53 + 0.5, 0));
+      for(unsigned int i = 0; i < 4; i++)
+        {
+          player->EnableEngine(i,     true);
+          player->EnableEngine(i + 4, false);
+        }
+      player->SetController(new ControllerSpace(player));
     }
-  player->SetController(new ControllerSpace(player));
 }
 
 
