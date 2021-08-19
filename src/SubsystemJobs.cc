@@ -30,15 +30,17 @@ bool SubsystemJobs::Start()
   assert(!Jobs);
   Jobs = this;
 
-  auto count = std::max(3u, std::thread::hardware_concurrency());
+  auto count = std::max(4u, std::thread::hardware_concurrency());
   count--; // Main thread.
   count--; // Audio threads (OpenAL, MusicPlayer).
+  count += 2; // One or more threads are usually not 100% busy with CPU.
   std::cout << GetName() << ": Using " << count << " job threads.\n";
 
   _processors.clear();
-  
+
+  // Dedicate the first 2 for quick jobs:
   for(unsigned int i = 0; i < count; i++)
-    _processors.push_back(new Processor());
+    _processors.push_back(new Processor(i < 2));
 
   std::atomic_thread_fence(std::memory_order_release);
   _next_job_id++; // done for the fence
@@ -117,7 +119,7 @@ void SubsystemJobs::SignalAllProcessors()
 }
 
 
-unsigned int SubsystemJobs::AddJob(job_func_t callback)
+unsigned int SubsystemJobs::AddJob(bool is_quick, job_func_t callback)
 {
   unsigned int id;
   {
@@ -126,7 +128,7 @@ unsigned int SubsystemJobs::AddJob(job_func_t callback)
     id = _next_job_id;
     assert(id);
 
-    auto job = new Job(id, callback);
+    auto job = new Job(id, is_quick, callback);
     _jobs.push_back(job);
 
     std::atomic_thread_fence(std::memory_order_release);
@@ -141,7 +143,7 @@ unsigned int SubsystemJobs::AddJob(job_func_t callback)
 }
 
 
-Job * SubsystemJobs::GetNextJob()
+Job * SubsystemJobs::GetNextJob(bool only_quick)
 {
   Job * job = nullptr;
   if(_jobs.size() > 0)
@@ -154,8 +156,9 @@ Job * SubsystemJobs::GetNextJob()
             _jobs_pos = 0;
 
           auto j = _jobs[_jobs_pos];
-          if(j && j->_active && !j->_busy)
-            job = j;
+          if(j && j->_active && !j->_busy.load(std::memory_order_acquire))
+            if(!only_quick || j->_is_quick)
+              job = j;
         }
       if(job)
         job->_busy = true;
@@ -202,17 +205,19 @@ void SubsystemJobs::ReleaseJobNoLock(unsigned int job_id)
 
 
 
-Processor::Processor()
-  : _exit_thread(false),
+Processor::Processor(bool quick_jobs_only)
+  : _quick_jobs_only(quick_jobs_only),
+    _exit_thread(false),
     _job(nullptr)
 {
+  std::cout << "Starting job thread for " << (quick_jobs_only ? "quick" : "slow") << " jobs.\n";
   _thread = std::thread([this]()
   {
     bool exit = _exit_thread;
     while(!exit)
       {
         std::atomic_thread_fence(std::memory_order_acquire);
-        auto job = Jobs->GetNextJob();
+        auto job = Jobs->GetNextJob(_quick_jobs_only);
         exit = _exit_thread.load(std::memory_order_acquire);
 
         if(!exit && job)
@@ -241,8 +246,9 @@ Job * Processor::GetJob() const
 }
 
 
-Job::Job(unsigned int id, job_func_t callback)
+Job::Job(unsigned int id, bool is_quick, job_func_t callback)
   : _id(id),
+    _is_quick(is_quick),
     _callback(callback),
     _active(true),
     _busy(false)

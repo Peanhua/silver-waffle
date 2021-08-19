@@ -25,6 +25,7 @@ SpaceshipControlProgram::SpaceshipControlProgram(ObjectSpaceship * spaceship)
     _next(nullptr),
     _time(0)
 {
+  assert(spaceship);
 }
 
   
@@ -403,8 +404,11 @@ SCP_PathMoveTo::SCP_PathMoveTo(ObjectSpaceship * spaceship, const glm::vec3 & de
     _no_path(false),
     _path(nullptr)
 {
-  Jobs->AddJob([this]()
+  Jobs->AddJob(false, [this]()
   {
+    if(!_spaceship)
+      return false;
+    
     auto scene = _spaceship->GetScene();
     if(!scene)
       return false;

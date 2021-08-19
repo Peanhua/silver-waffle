@@ -25,9 +25,10 @@ typedef std::function<bool()> job_func_t;
 class Job
 {
 public:
-  Job(unsigned int id, job_func_t callback);
+  Job(unsigned int id, bool is_quick, job_func_t callback);
   
   unsigned int      _id;
+  bool              _is_quick;
   job_func_t        _callback;
   std::atomic<bool> _active;
   std::atomic<bool> _busy;
@@ -38,10 +39,11 @@ public:
 class Processor
 {
 public:
-  Processor();
+  Processor(bool quick_jobs_only);
   void  Stop();
   Job * GetJob() const;
 private:
+  bool               _quick_jobs_only;
   std::atomic<bool>  _exit_thread;
   std::thread        _thread;
   std::atomic<Job *> _job;
@@ -61,13 +63,13 @@ public:
   void StopThreads() override;
   void Stop()        override;
 
-  unsigned int AddJob(job_func_t callback);
+  unsigned int AddJob(bool is_quick, job_func_t callback);
   bool         IsJobFinished(unsigned int job_id);
   void         ReleaseJob(unsigned int job_id);
   void         ReleaseJobNoLock(unsigned int job_id);
 
   void  WaitForSignal();
-  Job * GetNextJob();
+  Job * GetNextJob(bool only_quick);
   
   void SignalOneProcessor();
   void SignalAllProcessors();
