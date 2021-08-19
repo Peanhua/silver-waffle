@@ -42,6 +42,11 @@ public:
   void    SetImage(const std::string & name);
   void    SetImageColor(const glm::vec4 & color);
   Image * GetImage() const;
+  void    ClearImages();
+  void    AddImage(Image * image);
+  void    AddImage(const std::string & name);
+  void    SetCurrentImage(unsigned int index);
+  void    NextImage();
 
   Font * GetFont() const;
   virtual void SetText(const std::string & text);
@@ -95,6 +100,8 @@ private:
 
   Mesh *    _imagemesh;
   glm::vec4 _image_color;
+  std::vector<Image *> _images;
+  unsigned int         _images_current;
   
   Mesh * _focused_borders_mesh;
 

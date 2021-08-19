@@ -33,6 +33,7 @@ tdmodels_DATA = \
 	Sphere.dae				\
 	UpgradeMaterial.dae			\
 	WarpFuel.dae				\
-	WarpFuel.json				
+	WarpFuel.json				\
+	WeaponBoostLiquid.dae			
 
 EXTRA_DIST = $(tdmodels_DATA)

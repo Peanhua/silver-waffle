@@ -115,6 +115,10 @@ double SpaceshipUpgrade::GetValue() const
   return _value;
 }
 
+double SpaceshipUpgrade::GetRawValue() const
+{
+  return _value;
+}
 
 int SpaceshipUpgrade::GetInstallCount() const
 {
@@ -275,7 +279,13 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
     {
     case Type::BONUS_DAMAGE:
       if(collectible->HasBonus(ObjectCollectible::Type::DAMAGE_MULTIPLIER))
-        Activate(collectible->GetBonus(ObjectCollectible::Type::DAMAGE_MULTIPLIER), 30.0);
+        {
+          _value = collectible->GetBonus(ObjectCollectible::Type::DAMAGE_MULTIPLIER);
+          _timer = 10;
+          _spaceship->SystemlogAppend("Damage boost liquid.\n");
+          if(GetOwnerGameStats())
+            GetScene()->TutorialMessage(3, "Press F to activate.\n");
+        }
       break;
     case Type::SHIELD:
       if(collectible->HasBonus(ObjectCollectible::Type::SHIELD))
@@ -433,8 +443,12 @@ double SpaceshipUpgrade::GetCooldownMax() const
 void SpaceshipUpgrade::Deactivate()
 {
   if(_activated)
-    if(_type == Type::WARP_ENGINE)
-      _spaceship->SystemlogAppend("Warp engine: off\n");
+    {
+      if(_type == Type::WARP_ENGINE)
+        _spaceship->SystemlogAppend("Warp engine: off\n");
+      else if(_type == Type::BONUS_DAMAGE)
+        _value = 0;
+    }
   _activated = false;
 }
 

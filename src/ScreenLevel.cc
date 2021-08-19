@@ -69,6 +69,7 @@ ScreenLevel::ScreenLevel(const std::string & music_category, ScreenLevel * paren
     _pausebutton(nullptr),
     _human_widget(nullptr),
     _weapon_type_widget(nullptr),
+    _weapon_boost_widget(nullptr),
     _demo_lander_activated(false),
     _demo_ending_activated(false),
     _weapon_ammo_type(Weapon::AmmoType::KINETIC)
@@ -192,12 +193,17 @@ void ScreenLevel::Initialize()
       y += size.y + 20;
 
       _weapon_type_widget = new Widget(root, {wtw_x, y}, {size.x, size.x});
+      y += size.x;
+      _weapon_boost_widget = new Widget(root, {wtw_x, y}, {size.x, size.x});
+      _weapon_boost_widget->AddImage("WeaponBoostLiquid");
+      _weapon_boost_widget->AddImage("WeaponBoostLiquidActive");
+      _weapon_boost_widget->SetCurrentImage(0);
+      _weapon_boost_widget->SetIsVisible(false);
     }
   
   {
     std::vector<std::string> imagenames
       {
-        "BonusIcon-2xDamage",
         "BonusIcon-2xScore",
         "BonusIcon-Shield",
       };
@@ -371,10 +377,14 @@ void ScreenLevel::Tick(double deltatime)
             }
         }
     }
-  
-  _active_bonus_widgets[0]->SetIsVisible(splayer->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE)->IsActive());
-  _active_bonus_widgets[1]->SetIsVisible(_gamestats->GetScoreMultiplier() > 1);
-  _active_bonus_widgets[2]->SetIsVisible(splayer->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->GetValue() > 0);
+
+  {
+    auto bd = splayer->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE);
+    _weapon_boost_widget->SetIsVisible(bd->GetRawValue() > 0);
+    _weapon_boost_widget->SetCurrentImage(bd->IsActive() ? 1 : 0);
+  }
+  _active_bonus_widgets[0]->SetIsVisible(_gamestats->GetScoreMultiplier() > 1);
+  _active_bonus_widgets[1]->SetIsVisible(splayer->GetUpgrade(SpaceshipUpgrade::Type::SHIELD)->GetValue() > 0);
 
   auto fmt = [](double v)
   {
@@ -551,6 +561,16 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL
             auto lander = splayer->GetUpgrade(SpaceshipUpgrade::Type::PLANET_LANDER);
             if(lander->CanActivate())
               lander->Activate();
+          }
+      break;
+
+    case SDLK_f:
+      if(!disablecontrols && pressed)
+        if(splayer)
+          {
+            auto dboost = splayer->GetUpgrade(SpaceshipUpgrade::Type::BONUS_DAMAGE);
+            if(dboost->CanActivate())
+              dboost->Activate();
           }
       break;
 

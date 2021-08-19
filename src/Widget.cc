@@ -26,6 +26,7 @@ Widget::Widget(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & 
     _scale(1, 1),
     _imagemesh(nullptr),
     _image_color(1, 1, 1, 1),
+    _images_current(0),
     _focused_borders_mesh(nullptr),
     _font(nullptr),
     _textmesh(nullptr),
@@ -496,3 +497,48 @@ Mesh * Widget::GetImageMesh() const
 {
   return _imagemesh;
 }
+
+
+void Widget::ClearImages()
+{
+  _images.clear();
+}
+
+
+void Widget::AddImage(Image * image)
+{
+  assert(image);
+  _images_current = static_cast<unsigned int>(_images.size());
+  _images.push_back(image);
+  SetImage(image);
+}
+
+
+void Widget::AddImage(const std::string & name)
+{
+  AddImage(AssetLoader->LoadImage(name));
+}
+
+void Widget::SetCurrentImage(unsigned int index)
+{
+  assert(index < _images.size());
+  if(_images_current == index)
+    return;
+
+  _images_current = index;
+  SetImage(_images[_images_current]);
+}
+
+
+void Widget::NextImage()
+{
+  if(_images.size() == 0)
+    return;
+  
+  _images_current++;
+  if(_images_current >= _images.size())
+    _images_current = 0;
+
+  SetImage(_images[_images_current]);
+}
+

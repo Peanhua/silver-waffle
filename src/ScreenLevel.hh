@@ -104,6 +104,7 @@ private:
   WidgetMeshRenderer *  _human_widget;
   std::vector<glm::ivec2> _human_offsets;
   Widget *              _weapon_type_widget;
+  Widget *              _weapon_boost_widget;
   
   bool _demo_lander_activated;
   bool _demo_ending_activated;

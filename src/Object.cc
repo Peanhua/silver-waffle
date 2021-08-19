@@ -641,6 +641,7 @@ void Object::SpawnLoot()
             case ObjectCollectible::Type::UPGRADEMATERIAL_PHYSICAL:
             case ObjectCollectible::Type::WARP_FUEL:
             case ObjectCollectible::Type::HUMAN:
+            case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
               {
                 auto rotangle = glm::normalize(glm::vec3(GetRand() * 2.0f - 1.0f,
                                                          GetRand() * 2.0f - 1.0f,
@@ -648,7 +649,6 @@ void Object::SpawnLoot()
                 coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), rotangle), 0.1f + GetRand() * 10.0f);
               }
               break;
-            case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
             case ObjectCollectible::Type::SCORE_MULTIPLIER:
             case ObjectCollectible::Type::SHIELD:
               coll->SetAngularVelocity(glm::angleAxis(glm::radians(90.0f), glm::vec3(1, 0, 0)), 1.0f);

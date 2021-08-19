@@ -56,7 +56,6 @@ images_DATA = \
 	8k_stars_milky_way-low.jpg	\
 	8k_sun.jpg			\
 	8k_sun-low.jpg			\
-	BonusIcon-2xDamage.png		\
 	BonusIcon-2xScore.png		\
 	BonusIcon-Shield.png		\
 	Checkmark-Green.png		\
@@ -100,7 +99,6 @@ EXTRA_DIST = \
 	8k_saturn_ring_alpha.png	\
 	8k_stars_milky_way.jpg		\
 	8k_sun.jpg			\
-	BonusIcon-2xDamage.png		\
 	BonusIcon-2xScore.png		\
 	BonusIcon-Shield.png		\
 	Checkmark-Green.png		\

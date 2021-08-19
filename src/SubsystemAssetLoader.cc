@@ -136,14 +136,6 @@ void SubsystemAssetLoader::Stop()
 
 void SubsystemAssetLoader::LoadCache()
 {
-  _collectibles_meshes[ObjectCollectible::Type::SCORE_BONUS] = LoadMesh("ScoreBonus");
-  {
-    auto m = new Mesh(*LoadMesh("BonusCylinder"));
-    m->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
-    m->SetTexture(0, LoadImage("BonusIcon-2xDamage"), true);
-    Graphics->QueueUpdateGPU(m);
-    _collectibles_meshes[ObjectCollectible::Type::DAMAGE_MULTIPLIER] = m;
-  }
   {
     auto m = new Mesh(*LoadMesh("BonusCylinder"));
     m->SetShaderProgram(AssetLoader->LoadShaderProgram("SceneObject-Texture"));
@@ -465,11 +457,16 @@ ObjectCollectible * SubsystemAssetLoader::LoadObjectCollectible(int type)
     case ObjectCollectible::Type::NONE:
       assert(false);
       break;
-    case ObjectCollectible::Type::SCORE_BONUS:
-    case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
     case ObjectCollectible::Type::SCORE_MULTIPLIER:
     case ObjectCollectible::Type::SHIELD:
       collectible->SetMesh(_collectibles_meshes[typ]);
+      break;
+    case ObjectCollectible::Type::SCORE_BONUS:
+      collectible->SetMesh(LoadMesh("ScoreBonus"));
+      break;
+    case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
+      collectible->SetMesh(LoadMesh("WeaponBoostLiquid"));
+      collectible->SetColor(glm::vec3(0.80f, 0.52f, 0.14f));
       break;
     case ObjectCollectible::Type::UPGRADEMATERIAL_ATTACK:
       collectible->SetMesh(LoadMesh("UpgradeMaterial"));

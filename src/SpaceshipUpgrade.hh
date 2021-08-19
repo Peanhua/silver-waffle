@@ -47,6 +47,7 @@ public:
 
   Type   GetType()         const;
   double GetValue()        const;
+  double GetRawValue()     const;
   void   AdjustValue(double amount);
   double GetTimer()        const;
   double GetTimerMax()     const;
