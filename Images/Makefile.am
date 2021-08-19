@@ -71,6 +71,8 @@ images_DATA = \
 	Plasma.png			\
 	Projectile.png			\
 	UpgradeMaterial.png		\
+	WeaponBoostLiquid.png		\
+	WeaponBoostLiquidActive.png	\
 	White.png			
 
 
@@ -114,4 +116,6 @@ EXTRA_DIST = \
 	Plasma.png			\
 	Projectile.png			\
 	UpgradeMaterial.png		\
+	WeaponBoostLiquid.png		\
+	WeaponBoostLiquidActive.png	\
 	White.png			
