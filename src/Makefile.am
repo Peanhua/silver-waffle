@@ -99,6 +99,8 @@ silverwaffle_SOURCES =				\
 	ObjectCloud.hh				\
 	ObjectCollectible.cc			\
 	ObjectCollectible.hh			\
+	ObjectCollectibleHuman.cc		\
+	ObjectCollectibleHuman.hh		\
 	ObjectInvader.cc			\
 	ObjectInvader.hh			\
 	ObjectLevelEntrance.cc			\

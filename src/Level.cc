@@ -15,6 +15,7 @@
 #include "Mesh.hh"
 #include "NavigationMap.hh"
 #include "ObjectBuilding.hh"
+#include "ObjectCollectibleHuman.hh"
 #include "ObjectInvader.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
@@ -144,12 +145,7 @@ void Level::Start()
                   }
                 else if(rgba.r <= 0 && rgba.g >= 1 && rgba.b <= 0)
                   { // Full green pixel is a human survivor.
-                    auto t = ObjectCollectible::Type::HUMAN;
-                    auto c = AssetLoader->LoadObjectCollectible(static_cast<int>(t));
-                    assert(c);
-                    auto human = new ObjectCollectible(*c);
-                    human->SetBonus(t, 1);
-
+                    auto human = new ObjectCollectibleHuman();
                     pos.z -= blocksize.z * 0.5f;
                     pos.z += human->GetMesh()->GetBoundingBoxHalfSize().z;
                     _scene->AddCollectible(human, pos);

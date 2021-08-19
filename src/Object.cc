@@ -18,7 +18,7 @@
 #include "GameStats.hh"
 #include "Loot.hh"
 #include "Mesh.hh"
-#include "ObjectCollectible.hh"
+#include "ObjectCollectibleHuman.hh"
 #include "ObjectSpaceship.hh"
 #include "QuadTree.hh"
 #include "Scene.hh"
@@ -627,9 +627,16 @@ void Object::SpawnLoot()
       auto item = loot->CreateLootItem(GetRand(), GetRand());
       if(item)
         {
-          auto c = AssetLoader->LoadObjectCollectible(static_cast<int>(item->_type));
-          assert(c);
-          auto coll = new ObjectCollectible(*c);
+          ObjectCollectible * coll = nullptr;
+          
+          if(item->_type == ObjectCollectible::Type::HUMAN)
+            coll = new ObjectCollectibleHuman();
+          else
+            {
+              auto c = AssetLoader->LoadObjectCollectible(static_cast<int>(item->_type));
+              assert(c);
+              coll = new ObjectCollectible(*c);
+            }
           coll->SetBonus(item->_type, item->_bonus);
           GetScene()->AddCollectible(coll, GetPosition() + glm::vec3(GetRand() - 0.5f, GetRand() - 0.5f, 0.0));
 
