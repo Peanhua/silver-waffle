@@ -2,6 +2,7 @@ AM_CXXFLAGS =                \
 	-DDATADIR='"$(datadir)/silver-waffle"' \
 	$(ALUT_CFLAGS)       \
 	$(ASSIMP_CFLAGS)     \
+	$(FMT_CFLAGS)        \
 	$(FREETYPE2_CFLAGS)  \
 	$(JSON11_CFLAGS)     \
 	$(LIBPNG_CFLAGS)     \
@@ -20,6 +21,7 @@ bin_PROGRAMS = silverwaffle
 silverwaffle_LDADD =       \
 	$(ALUT_LIBS)       \
 	$(ASSIMP_LIBS)     \
+	$(FMT_LIBS)        \
 	$(FREETYPE2_LIBS)  \
         $(GL_LIBS)         \
         $(GLEW_LIBS)       \

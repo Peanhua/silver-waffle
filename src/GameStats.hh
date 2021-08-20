@@ -46,11 +46,14 @@ public:
   std::pair<bool, SpaceshipUpgrade::Type> GetRandomUnlockableSpaceshipUpgrade(float random);
   void         UnlockSpaceshipUpgrade(SpaceshipUpgrade::Type type);
   bool         IsSpaceshipUpgradeAvailable(SpaceshipUpgrade::Type type);
+
+  void         AddBlueprintPoints(unsigned int amount);
+  unsigned int GetBlueprintPoints() const;
   
 private:
-  int _lives;
-
-  double _time;
+  int          _lives;
+  unsigned int _blueprint_points;
+  double       _time;
   
   unsigned int _score;
   unsigned int _score_multiplier;

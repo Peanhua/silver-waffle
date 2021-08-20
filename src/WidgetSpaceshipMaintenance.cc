@@ -9,6 +9,7 @@
 
   Complete license can be found in the LICENSE file.
 */
+#include "../config.h"
 #include "WidgetSpaceshipMaintenance.hh"
 #include "Font.hh"
 #include "GameStats.hh"
@@ -19,6 +20,13 @@
 #include "WidgetButton.hh"
 #include "WidgetShopItem.hh"
 #include "WidgetUpgradeMaterial.hh"
+#if HAVE_FMT
+# include <fmt/core.h>
+using fmt::format;
+#else
+# include <format>
+using std::format;
+#endif
 #include <iostream>
 
 
@@ -86,6 +94,15 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
 
   y += 20;
   {
+    auto w = new Widget(this, glm::ivec2(x, y), glm::ivec2(350, 30));
+    w->SetTextFont(font);
+    w->SetTextColor(font_color);
+    w->SetText(format("Blueprint points: {}", gamestats->GetBlueprintPoints()));
+    w->SetTextFontWeight(font_weight);
+    w->SetIsFocusable(false);
+    y += w->GetSize().y;
+  }
+  {
     {
       auto label = new Widget(this, glm::ivec2(x, y), glm::ivec2(350, 30));
       std::string labeltext("Upgrade modules:");
@@ -112,6 +129,26 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
           auto w = new WidgetShopItem(this, glm::ivec2(x + 20, y), glm::ivec2(200, 30),
                                       _spaceship, gamestats->GetUpgradeMaterials(), _spaceship->GetUpgrade(t));
           y += w->GetSize().y;
+        }
+      else
+        {
+          auto w = new WidgetButton(this, {x + 20, y}, {500, 30});
+          w->SetTextFont(font);
+          w->SetTextColor(font_color);
+          w->SetText(format("Unlock {}", _spaceship->GetUpgrade(t)->GetName()));
+          w->SetTextFontWeight(font_weight);
+          w->SetTextPaddingCentered(true, true);
+          y += w->GetSize().y;
+          w->SetOnClicked([w, gamestats, t](bool pressed, [[maybe_unused]] unsigned int button, [[maybe_unused]] const glm::ivec2 & pos)
+          {
+            if(!pressed)
+              return;
+            if(gamestats->GetBlueprintPoints() > 0)
+              {
+                gamestats->UnlockSpaceshipUpgrade(t);
+                w->Destroy();
+              }
+          });
         }
   }
   

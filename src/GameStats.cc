@@ -16,6 +16,7 @@
 
 GameStats::GameStats()
   : _lives(3),
+    _blueprint_points(0),
     _time(0),
     _score(0),
     _score_multiplier(1),
@@ -159,8 +160,10 @@ std::pair<bool, SpaceshipUpgrade::Type> GameStats::GetRandomUnlockableSpaceshipU
 
 void GameStats::UnlockSpaceshipUpgrade(SpaceshipUpgrade::Type type)
 {
+  assert(_blueprint_points > 0);
+  _blueprint_points--;
+  
   _spaceship_upgrade_blueprints[type] = true;
-  assert(IsSpaceshipUpgradeAvailable(type));
 }
 
 
@@ -172,3 +175,16 @@ bool GameStats::IsSpaceshipUpgradeAvailable(SpaceshipUpgrade::Type type)
   else
     return false;
 }
+
+
+void GameStats::AddBlueprintPoints(unsigned int amount)
+{
+  _blueprint_points += amount;
+}
+
+
+unsigned int GameStats::GetBlueprintPoints() const
+{
+  return _blueprint_points;
+}
+

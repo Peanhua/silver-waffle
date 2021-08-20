@@ -25,6 +25,14 @@ PKG_CHECK_MODULES([GLM], [glm], [], [
   AC_LANG_POP
 ])
 
+AC_LANG_PUSH([C++])
+AC_CHECK_HEADER([format], [], [
+  PKG_CHECK_MODULES([FMT], [fmt], [AC_DEFINE([HAVE_FMT], [1], [Use fmt])])
+])
+AC_LANG_POP
+
+
+
 PKG_CHECK_MODULES([ALUT],       [freealut])
 PKG_CHECK_MODULES([ASSIMP],     [assimp >= 3.3.1])
 PKG_CHECK_MODULES([FREETYPE2],  [freetype2])
