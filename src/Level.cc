@@ -90,7 +90,8 @@ void Level::Start()
 
       std::array<Mesh *, 6> meshes;
       meshes.fill(nullptr);
-      
+
+      bool research_lab_added = false;
       for(unsigned int y = 0; y < img->GetHeight(); y++)
         for(unsigned int x = 0; x < img->GetWidth(); x++)
           {
@@ -116,12 +117,20 @@ void Level::Start()
                   }
                 else if(rgba.r >= 1 && rgba.g <= 0 && rgba.b >= 1)
                   { // Pink pixel is boss building.
-                    auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), 4);
-                    _boss_buildings_alive++;
-                    building->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
-                    {
-                      _boss_buildings_alive--;
-                    });
+                    unsigned int type = 4;
+                    if(!research_lab_added)
+                      type = 5;
+                    auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), type);
+                    if(!research_lab_added)
+                      research_lab_added = true;
+                    else
+                      {
+                        _boss_buildings_alive++;
+                        building->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
+                        {
+                          _boss_buildings_alive--;
+                        });
+                      }
                     pos.z -= blocksize.z * 0.5f;
                     pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
                     _scene->AddObject(building, pos);

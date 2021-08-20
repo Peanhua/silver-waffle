@@ -30,6 +30,11 @@
     {
       "mesh":            "AlienStructureDevice",
       "collision_shape": "obb",
+      "health":          5000
+    },
+    {
+      "mesh":            "AlienStructureResearchLab",
+      "collision_shape": "obb",
       "health":          5000,
       "loot":            [ "SpaceshipUpgradeBlueprints"
                          ]
