@@ -129,7 +129,7 @@ unsigned int GameStats::GetHumansSaved() const
 }
 
 
-std::pair<bool, SpaceshipUpgrade::Type> GameStats::UnlockRandomSpaceshipUpgrade(float random)
+std::pair<bool, SpaceshipUpgrade::Type> GameStats::GetRandomUnlockableSpaceshipUpgrade(float random)
 {
   std::vector<SpaceshipUpgrade::Type> all
     {
@@ -153,13 +153,14 @@ std::pair<bool, SpaceshipUpgrade::Type> GameStats::UnlockRandomSpaceshipUpgrade(
   
   auto r = static_cast<unsigned int>(random * static_cast<float>(possible.size()));
   r = std::clamp(r, 0u, static_cast<unsigned int>(possible.size() - 1));
-  UnlockSpaceshipUpgrade(possible[r]);
+
   return std::make_pair(true, possible[r]);
 }
 
 void GameStats::UnlockSpaceshipUpgrade(SpaceshipUpgrade::Type type)
 {
   _spaceship_upgrade_blueprints[type] = true;
+  assert(IsSpaceshipUpgradeAvailable(type));
 }
 
 

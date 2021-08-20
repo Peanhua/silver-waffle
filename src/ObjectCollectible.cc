@@ -111,11 +111,13 @@ void ObjectCollectible::CollectBy(ObjectSpaceship * spaceship)
   }
   if(HasBonus(Type::SPACESHIP_UPGRADE_BLUEPRINT))
     {
-      auto [success, u] = gamestats->UnlockRandomSpaceshipUpgrade(spaceship->GetRand());
+      auto [success, u] = gamestats->GetRandomUnlockableSpaceshipUpgrade(spaceship->GetRand());
       if(success)
         {
           auto ssu = spaceship->GetUpgrade(u);
           spaceship->SystemlogAppend(std::string("You found spaceship upgrade blueprints for ") + ssu->GetName() + std::string("!\n"));
+          gamestats->UnlockSpaceshipUpgrade(u);
+          assert(gamestats->IsSpaceshipUpgradeAvailable(u));
         }
       else
         spaceship->SystemlogAppend("You found spaceship upgrade blueprints,\nbut are unable to further upgrade.\n");

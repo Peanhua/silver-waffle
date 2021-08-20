@@ -234,6 +234,22 @@ void ScreenLevel::Initialize()
   _scene->DumpStats();
   
   SetAmmoType(_weapon_ammo_type);
+
+  if(Settings->GetBool("cheat_unlock_all_upgrades"))
+    {
+      std::vector<SpaceshipUpgrade::Type> all
+        {
+          SpaceshipUpgrade::Type::WEAPON,
+          SpaceshipUpgrade::Type::WEAPON_COOLER,
+          SpaceshipUpgrade::Type::ENGINE_UPGRADE,
+          SpaceshipUpgrade::Type::HULL_UPGRADE,
+          SpaceshipUpgrade::Type::REPAIR_DROID,
+          SpaceshipUpgrade::Type::WARP_ENGINE,
+          SpaceshipUpgrade::Type::PLANET_LANDER,
+        };
+      for(auto u : all)
+        _gamestats->UnlockSpaceshipUpgrade(u);
+    }
 }
 
 

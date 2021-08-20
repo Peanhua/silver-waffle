@@ -43,7 +43,7 @@ public:
   unsigned int GetHumansCollected() const;
   unsigned int GetHumansSaved() const;
 
-  std::pair<bool, SpaceshipUpgrade::Type> UnlockRandomSpaceshipUpgrade(float random);
+  std::pair<bool, SpaceshipUpgrade::Type> GetRandomUnlockableSpaceshipUpgrade(float random);
   void         UnlockSpaceshipUpgrade(SpaceshipUpgrade::Type type);
   bool         IsSpaceshipUpgradeAvailable(SpaceshipUpgrade::Type type);
   
