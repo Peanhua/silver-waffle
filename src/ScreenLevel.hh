@@ -83,8 +83,10 @@ private:
   std::mt19937_64                       _random;
   std::uniform_real_distribution<float> _rdist;
   TextureRenderer *  _texture_renderer;
+  TextureRenderer *  _texture_renderer_warpspeed;
   Mesh *             _overlay_mesh;
   GaussianBlur *     _blur;
+  GaussianBlur *     _blurcolor;
   AdditiveBlending * _blender;
   ScoreReel *        _score_reel;
   unsigned int       _current_level;

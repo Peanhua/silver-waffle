@@ -56,7 +56,7 @@ void Level::Tick(double deltatime)
 
   for(unsigned int i = 0; i < _program.size(); i++)
     if(_program[i])
-      _program[i] = _program[i]->Tick(_scene, dtime, warpspeed);
+      _program[i] = _program[i]->Tick(_scene, dtime);
 }
 
 
@@ -361,7 +361,7 @@ bool Level::IsFinished() const
 }
 
 
-Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, double deltatime, bool disable_spawning)
+Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, double deltatime)
 {
   if(_invader_spawn_stop_time < 0.0)
     {
@@ -385,26 +385,25 @@ Level::ProgramEntry * Level::ProgramEntry::Tick(Scene * scene, double deltatime,
         {
           _invader_spawn_timer -= _invader_spawn_interval;
 
-          if(!disable_spawning)
-            if(_max_spawn_count == 0 || _spawn_count < _max_spawn_count)
-              {
-                auto pos = scene->GetRandomSpawnPosition();
-                auto invader = scene->AddInvader(_invader_type, pos);
-                assert(invader);
-                _spawn_count++;
+          if(_max_spawn_count == 0 || _spawn_count < _max_spawn_count)
+            {
+              auto pos = scene->GetRandomSpawnPosition();
+              auto invader = scene->AddInvader(_invader_type, pos);
+              assert(invader);
+              _spawn_count++;
 
-                if(!_invader_control_program.empty())
-                  invader->AddNamedControlProgram(_invader_control_program);
+              if(!_invader_control_program.empty())
+                invader->AddNamedControlProgram(_invader_control_program);
 
-                if(_boss)
+              if(_boss)
+                {
+                  _bosses_alive++;
+                  invader->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
                   {
-                    _bosses_alive++;
-                    invader->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
-                    {
-                      _bosses_alive--;
-                    });
-                  }
-              }
+                    _bosses_alive--;
+                  });
+                }
+            }
         }
     }
   return this;

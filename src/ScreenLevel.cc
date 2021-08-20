@@ -82,10 +82,14 @@ void ScreenLevel::Initialize()
   _texture_renderer = new TextureRenderer(static_cast<unsigned int>(Settings->GetInt("screen_width")),
                                           static_cast<unsigned int>(Settings->GetInt("screen_height")),
                                           2);
+  _texture_renderer_warpspeed = new TextureRenderer(static_cast<unsigned int>(Settings->GetInt("screen_width") / 3),
+                                                    static_cast<unsigned int>(Settings->GetInt("screen_height") / 3),
+                                                    2);
   _overlay_mesh = new MeshOverlay();
   _overlay_mesh->SetShaderProgram(AssetLoader->LoadShaderProgram("Generic-Texture"));
 
   _blur = new GaussianBlur();
+  _blurcolor = new GaussianBlur();
   _blender = new AdditiveBlending();
     
   if(_parent)
@@ -248,7 +252,10 @@ void ScreenLevel::Initialize()
           SpaceshipUpgrade::Type::PLANET_LANDER,
         };
       for(auto u : all)
-        _gamestats->UnlockSpaceshipUpgrade(u);
+        {
+          _gamestats->AddBlueprintPoints(1);
+          _gamestats->UnlockSpaceshipUpgrade(u);
+        }
     }
 }
 
@@ -448,15 +455,36 @@ void ScreenLevel::Tick(double deltatime)
 
 void ScreenLevel::Draw() const
 {
-  _texture_renderer->BeginRender();
+  GLuint tid_color, tid_glowsource;
+  
   _camera->Update();
   _camera->stats.elapsed_frames++;
-  _scene->Draw(*_camera);
-  _texture_renderer->EndRender();
-  
+
+  bool warpspeed = false;
+  auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+  if(player && player->IsAlive())
+    warpspeed = player->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->IsActive();
+
+  if(warpspeed)
+    {
+      _texture_renderer_warpspeed->BeginRender();
+      _scene->Draw(*_camera);
+      _texture_renderer_warpspeed->EndRender();
+      tid_color = _blurcolor->Blur(2, _texture_renderer_warpspeed->GetTextureId(0));
+      tid_glowsource = _texture_renderer_warpspeed->GetTextureId(1);
+    }
+  else
+    {
+      _texture_renderer->BeginRender();
+      _scene->Draw(*_camera);
+      _texture_renderer->EndRender();
+      tid_color = _texture_renderer->GetTextureId(0);
+      tid_glowsource = _texture_renderer->GetTextureId(1);
+    }
+
   glDisable(GL_DEPTH_TEST);
-  auto tid_glow = _blur->Blur(3, _texture_renderer->GetTextureId(1));
-  _blender->Blend(_texture_renderer->GetTextureId(0), tid_glow);
+  auto tid_glow = _blur->Blur(3, tid_glowsource);
+  _blender->Blend(tid_color, tid_glow);
 
   Screen::Draw();
 }

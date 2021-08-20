@@ -51,7 +51,7 @@ protected:
     void SetStopTime(double time);
     void SetSpawnInterval(double interval);
     void SetInvaderControlProgram(const std::string & program_name);
-    ProgramEntry * Tick(Scene * scene, double deltatime, bool disable_spawning);
+    ProgramEntry * Tick(Scene * scene, double deltatime);
     void SetNext(ProgramEntry * next);
     double GetRemainingTime() const;
     
