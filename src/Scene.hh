@@ -15,9 +15,9 @@
 #include "GLM.hh"
 #include "RingBuffer.hh"
 #include <array>
-#include <barrier>
 #include <functional>
 #include <random>
+#include <semaphore>
 
 class Camera;
 class Explosion;
@@ -138,8 +138,8 @@ private:
   std::vector<bool>              _tutorialmessages;
   CollisionCheckStatistics       _collisioncheck_statistics;
   std::vector<Object *>          _tick_work_objects;
-  std::barrier<std::function<void()>> _tick_finish_sync;
   NavigationMap *                _navigation_map;
+  std::binary_semaphore          _tick_finish_sync;
   
   void CollisionsForObject(Object * o);
 };

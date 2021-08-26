@@ -48,7 +48,7 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
     _warp_engine_starting(false),
     _warp_throttle(0),
     _tutorialmessages_enabled(true),
-    _tick_finish_sync(2, []() {}),
+    _tick_finish_sync(0),
     _navigation_map(nullptr)
 {
   auto ratioy = _play_area_size.y / _play_area_size.x;
@@ -215,8 +215,11 @@ void Scene::Tick(double deltatime)
   _collisioncheck_statistics.elapsed_time += deltatime;
   _collisioncheck_statistics.elapsed_frames++;
 
-
-  auto ProcessExplosivesAndParticles = [this, deltatime, warpspeed, warpspeedmove]()
+  /*
+  std::promise<void> jobdone_promise;
+  auto jobdone_future = jobdone_promise.get_future();
+  */
+  auto ProcessExplosivesAndParticles = [this, /*&jobdone_promise,*/ deltatime, warpspeed, warpspeedmove]()
   {
     for(auto e : _explosions)
       if(e->IsAlive())
@@ -228,9 +231,10 @@ void Scene::Tick(double deltatime)
     
     if(_particles)
       _particles->Tick(deltatime * (1.0 + 5.0 * static_cast<double>(_warp_throttle)));
-    
-    _tick_finish_sync.arrive_and_wait(); // arrive_and_drop() here causes crash, todo: fix it
-    
+
+    //jobdone_promise.set_value();
+    _tick_finish_sync.release();
+
     return false;
   };
 
@@ -255,8 +259,9 @@ void Scene::Tick(double deltatime)
   for(auto o : _tick_work_objects)
     if(o != GetPlayer() && warpspeed)
       o->Translate(warpspeedmove);
-        
-  _tick_finish_sync.arrive_and_wait();
+
+  //jobdone_future.get();
+  _tick_finish_sync.acquire();
 
   for(auto o : _tick_work_objects)
     if(o->IsAlive())

@@ -453,12 +453,11 @@ void Image::BlackToAlpha()
         for(unsigned int b = 0; b < 3; b++)
           {
             uint8_t c;
+            assert(oldbpp == 1 || oldbpp == 3);
             if(oldbpp == 1)
               c = old[(x + y * _width) * oldbpp];
-            else if(oldbpp == 3)
+            else // if(oldbpp == 3)
               c = old[(x + y * _width) * oldbpp + b];
-            else
-              assert(false);
             
             _data[(x + y * _width) * _bytes_per_pixel + b] = c;
             if(c)
