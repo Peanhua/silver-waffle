@@ -31,10 +31,15 @@ LevelSpace::LevelSpace(Scene * scene, SolarSystemObject * planet)
   
   LoadConfig("Data/Level-" + _name);
 
-  double len = 0.0;
-  for(auto p : _program)
-    if(p)
-      len = std::max(len, p->GetRemainingTime());
+  double len = 0;
+  for(auto & wave : _attack_waves)
+    {
+      double l = 0;
+      for(auto p : wave)
+        if(p)
+          l = std::max(l, p->GetRemainingTime());
+      len += l;
+    }
   _planet_position_start = len;
 }
 

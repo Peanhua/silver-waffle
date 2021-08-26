@@ -21,6 +21,7 @@
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemGfx.hh"
 #include <cassert>
+#include <iostream>
 
 
 Level::Level(Scene * scene)
@@ -28,6 +29,7 @@ Level::Level(Scene * scene)
     _running(false),
     _random_generator(0),
     _time(0),
+    _current_attack_wave(0),
     _halt_without_program(false),
     _destructible_terrain_config(nullptr)
 {
@@ -54,9 +56,19 @@ void Level::Tick(double deltatime)
   
   _time += dtime;
 
-  for(unsigned int i = 0; i < _program.size(); i++)
-    if(_program[i])
-      _program[i] = _program[i]->Tick(_scene, dtime);
+  if(_current_attack_wave < _attack_waves.size())
+    {
+      bool next = true;
+      auto & wave = _attack_waves[_current_attack_wave];
+      for(unsigned int i = 0; i < wave.size(); i++)
+        if(wave[i])
+          {
+            next = false;
+            wave[i] = wave[i]->Tick(_scene, dtime);
+          }
+      if(next)
+        _current_attack_wave++;
+    }
 }
 
 
@@ -71,6 +83,7 @@ void Level::Start()
   _running = true;
   _time = 0;
   _boss_buildings_alive = 0;
+  _current_attack_wave = 0;
 
   auto GetRand = [this]()
   {
@@ -282,15 +295,19 @@ Level::ProgramEntry::ProgramEntry()
 {
 }
 
-Level::ProgramEntry::ProgramEntry(const json11::Json & config)
+Level::ProgramEntry::ProgramEntry(const json11::Json & config, const json11::Json & parameters)
   : ProgramEntry()
 {
+  double time_scale = 1;
+  if(parameters["time_scale"].is_number())
+    time_scale = parameters["time_scale"].number_value();
+  
   if(config["start"].is_number())
-    SetStartTime(config["start"].number_value());
+    SetStartTime(config["start"].number_value() * time_scale);
   if(config["stop"].is_number())
-    SetStopTime(config["stop"].number_value());
+    SetStopTime(config["stop"].number_value() * time_scale);
   if(config["interval"].is_number())
-    SetSpawnInterval(config["interval"].number_value());
+    SetSpawnInterval(config["interval"].number_value() * time_scale);
   if(config["max"].is_number())
      _max_spawn_count = static_cast<unsigned int>(config["max"].number_value());
   _invader_type = static_cast<unsigned int>(config["invader_type"].int_value());
@@ -298,7 +315,7 @@ Level::ProgramEntry::ProgramEntry(const json11::Json & config)
     SetInvaderControlProgram(config["control_program"].string_value());
   _boss = config["boss"].bool_value();
   if(config["next"].is_object())
-    SetNext(new ProgramEntry(config["next"]));
+    SetNext(new ProgramEntry(config["next"], parameters));
 }
 
 
@@ -350,13 +367,8 @@ bool Level::IsFinished() const
     return false;
   
   if(_halt_without_program)
-    {
-      for(auto p : _program)
-        if(p)
-          return false;
-      return true;
-    }
-      
+    return _current_attack_wave >= _attack_waves.size();
+  
   return false;
 }
 
@@ -418,15 +430,34 @@ const std::string & Level::GetName() const
 
 void Level::LoadConfig(const std::string & filename)
 {
+  auto waveconfig = AssetLoader->LoadJson("Data/AttackWaves");
+  assert(waveconfig);
+  auto defs = (*waveconfig)["definitions"];
+  assert(!defs.is_null());
+  assert(defs.is_array());
+  
   auto levelconfig = AssetLoader->LoadJson(filename);
   assert(levelconfig);
   if(levelconfig)
     {
-      auto spawns = (*levelconfig)["spawns"];
-      if(spawns.is_array())
-        for(auto spawn : spawns.array_items())
-          _program.push_back(new ProgramEntry(spawn));
-
+      auto aws = (*levelconfig)["attack_waves"];
+      assert(aws.is_array());
+      for(auto a : aws.array_items())
+        {
+          _attack_waves.emplace_back();
+          auto & wave = _attack_waves[_attack_waves.size() - 1];
+          bool found = false;
+          for(auto d : defs.array_items())
+            if(d["name"].string_value() == a["name"].string_value())
+              {
+                found = true;
+                for(auto spawn : d["spawns"].array_items())
+                  wave.push_back(new ProgramEntry(spawn, a));
+              }
+          if(!found)
+            std::cout << "Error, attack wave \"" << a["name"].string_value() << "\" does not exist.\n";
+          assert(found);
+        }
 
       _buildings_config = (*levelconfig)["buildings"];
 

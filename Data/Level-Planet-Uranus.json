@@ -1,32 +1,5 @@
 {
   "terrain": "Level-Planet-Uranus",
-  "buildings" : [
-    {
-      "type":   1,
-      "boss":   true,
-      "offset": [ 0.50, 0.0, 0.0 ]
-    },
-    {
-      "type":   2,
-      "boss":   false,
-      "offset": [ 0.51, 0.0, 0.0 ]
-    },
-    {
-      "type":   3,
-      "boss":   false,
-      "offset": [ 0.52, 0.0, 0.0 ]
-    }
-  ],
-  "spawns": [
-    {
-      "start":        0.0,
-      "stop":         5.0,
-      "interval":     0.01,
-      "max":        100,
-      "invader_type": 0,
-      "control_program": "face-player-shoot"
-    }
-  ],
   "enemies": [
     {
       "type":            0,
@@ -36,5 +9,18 @@
       "type":            1,
       "control_program": "face-player-shoot"
     }
+  ],
+  "attack_waves": [
+    { "name": "planet-filler" },
+    { "name": "delay", "time_scale": 60 },
+    { "name": "planet-saucers" },
+    { "name": "delay", "time_scale": 600 },
+    { "name": "planet-saucers" },
+    { "name": "delay", "time_scale": 800 },
+    { "name": "planet-saucers" },
+    { "name": "delay", "time_scale": 1000 },
+    { "name": "planet-saucers" },
+    { "name": "delay", "time_scale": 1200 },
+    { "name": "planet-saucers" }
   ]
 }

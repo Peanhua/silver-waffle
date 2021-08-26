@@ -1,0 +1,359 @@
+{
+  "definitions": [
+    { "name": "delay",
+      "spawns": [
+        { "start": 0,
+          "stop":  1
+        }
+      ]
+    },
+    { "name": "planet-saucers",
+      "spawns": [
+        {
+          "start":        0,
+          "stop":        60,
+          "interval":    10,
+          "invader_type": 4,
+          "control_program": "follow-player"
+        }
+      ]
+    },
+    { "name": "planet-filler",
+      "spawns": [
+        {
+          "start":        0.0,
+          "stop":         5.0,
+          "interval":     0.01,
+          "max":        100,
+          "invader_type": 0,
+          "control_program": "face-player-shoot"
+        }
+      ]
+    },
+    { "name": "test",
+      "spawns": [
+        {
+          "start":    0,
+          "stop":    30,
+          "interval": 1,
+          "max":      1,
+          "invader_type": 0,
+          "control_program": "waithoriz5-shoot"
+        }
+      ]
+    },
+    { "name": "easy1",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 2,
+          "max": 3,
+          "invader_type": 0,
+          "control_program": "waithoriz5-shoot"
+        }
+      ]
+    },
+    { "name": "easy2",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.5,
+          "max": 5,
+          "invader_type": 0,
+          "control_program": "waithoriz5-shoot"
+        }
+      ]
+    },
+    { "name": "easy3",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.5,
+          "max": 10,
+          "invader_type": 0,
+          "control_program": "waithoriz5-shoot"
+        }
+      ]
+    },
+    { "name": "medium1",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 1,
+          "max": 10,
+          "invader_type": 0,
+          "control_program": "snake-forward"
+        }
+      ]
+    },
+    { "name": "medium2",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.4,
+          "max": 20,
+          "invader_type": 0,
+          "control_program": "snake-forward"
+        }
+      ]
+    },
+    { "name": "medium3",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.4,
+          "max": 30,
+          "invader_type": 0,
+          "control_program": "snake-forward"
+        }
+      ]
+    },
+    { "name": "hard1",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.5,
+          "max": 15,
+          "invader_type": 0,
+          "control_program": "snake-forward"
+        },
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.5,
+          "max": 5,
+          "invader_type": 1,
+          "control_program": "waithoriz5-shoot"
+        }
+      ]
+    },
+    { "name": "hard2",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.3,
+          "max": 25,
+          "invader_type": 0,
+          "control_program": "snake-forward"
+        },
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.5,
+          "max": 10,
+          "invader_type": 1,
+          "control_program": "waithoriz5-shoot"
+        }
+      ]
+    },
+    { "name": "hard3",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.3,
+          "max": 35,
+          "invader_type": 0,
+          "control_program": "snake-forward"
+        },
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.5,
+          "max": 15,
+          "invader_type": 1,
+          "control_program": "waithoriz5-shoot"
+        }
+      ]
+    },
+    { "name": "bonus1",
+      "spawns": [
+        {
+          "start": 0,
+          "stop":  10,
+          "interval": 0.5,
+          "max": 3,
+          "invader_type": 2,
+          "control_program": "negative-y"
+        }
+      ]
+    },
+    { "name": "simple",
+      "spawns": [
+        {
+          "start":  0.0,
+          "stop":  30.0,
+          "interval": 1,
+          "invader_type": 0,
+          "control_program": "waithoriz5-shoot",
+          "next":
+          {
+            "start": 60.0,
+            "stop":  80.0,
+            "interval": 1.2,
+            "invader_type": 0,
+            "control_program": "snake-forward",
+            "next":
+            {
+              "start": 30.0,
+              "stop":  60.0,
+              "interval": 1.4,
+              "invader_type": 0,
+              "control_program": "stepping-forward",
+              "next":
+              {
+                "start": 40.0,
+                "stop":  60.0,
+                "interval": 1,
+                "invader_type": 0,
+                "control_program": "snake-stepping-forward"
+              }
+            }
+          }
+        }
+      ]
+    },
+    { "name": "something",
+      "spawns": [
+        {
+          "start":  0.0,
+          "stop":  30.0,
+          "interval": 1,
+          "invader_type": 0,
+          "control_program": "waithoriz5-shoot",
+          "next":
+          {
+            "start": 60.0,
+            "stop":  80.0,
+            "interval": 1.2,
+            "invader_type": 0,
+            "control_program": "snake-forward",
+            "next":
+            {
+              "start": 30.0,
+              "stop":  60.0,
+              "interval": 1.4,
+              "invader_type": 0,
+              "control_program": "stepping-forward",
+              "next":
+              {
+                "start": 40.0,
+                "stop":  60.0,
+                "interval": 1,
+                "invader_type": 0,
+                "control_program": "snake-stepping-forward",
+                "next":
+                {
+                  "start": 0.0,
+                  "stop":  60.0
+                }
+              }
+            }
+          }
+        },
+        {
+          "start": 40,
+          "stop":  50,
+          "interval": 0.5,
+          "invader_type": 2,
+          "control_program": "negative-y",
+          "next":
+          {
+            "start": 40,
+            "stop":  45,
+            "interval": 0.5,
+            "invader_type": 2,
+            "control_program": "negative-y",
+            "next":
+            {
+              "start": 40,
+              "stop":  45,
+              "interval": 0.5,
+              "invader_type": 2,
+              "control_program": "negative-y",
+              "next":
+              {
+                "start": 60,
+                "stop":  65,
+                "interval": 0.5,
+                "invader_type": 2,
+                "control_program": "negative-y"
+              }
+            }
+          }
+        },
+        {
+          "start": 60,
+          "stop":  66,
+          "interval": 1,
+          "max": 3,
+          "invader_type": 3,
+          "control_program": "negative-y",
+          "next":
+          {
+            "start": 60,
+            "stop":  66,
+            "interval": 1,
+            "max": 3,
+            "invader_type": 3,
+            "control_program": "negative-y",
+            "next":
+            {
+              "start": 60,
+              "stop":  66,
+              "interval": 1,
+              "max": 3,
+              "invader_type": 3,
+              "control_program": "negative-y",
+              "next":
+              {
+                "start": 60,
+                "stop":  66,
+                "interval": 1,
+                "max": 3,
+                "invader_type": 3,
+                "control_program": "negative-y"
+              }
+            }
+          }
+        },
+        {
+          "start":  150.0,
+          "stop":  250.0,
+          "interval": 2,
+          "invader_type": 0,
+          "control_program": "erratic-forward",
+          "next":
+          {
+            "start": 0.0,
+            "stop":  10.0,
+            "interval": 0.2,
+            "max": 10,
+            "invader_type": 4,
+            "control_program": "waithoriz5-shoot"
+          }
+        },
+        {
+          "start":  200.0,
+          "stop":  250.0,
+          "interval": 2,
+          "invader_type": 0,
+          "control_program": "snake-forward",
+          "next":
+          {
+            "start": 0.0,
+            "stop":  60.0
+          }
+        }
+      ]
+    }
+  ]
+}

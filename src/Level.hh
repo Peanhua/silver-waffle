@@ -45,7 +45,7 @@ protected:
   {
   public:
     ProgramEntry();
-    ProgramEntry(const json11::Json & config);
+    ProgramEntry(const json11::Json & config, const json11::Json & parameters);
 
     void SetStartTime(double time);
     void SetStopTime(double time);
@@ -75,7 +75,8 @@ protected:
   std::uniform_real_distribution<float> _rdist;
   std::string                 _name;
   double                      _time;
-  std::vector<ProgramEntry *> _program;
+  std::vector<std::vector<ProgramEntry *>> _attack_waves;
+  unsigned int                _current_attack_wave;
   bool                        _halt_without_program;
   json11::Json                _buildings_config;
   json11::Json                _enemy_config;
