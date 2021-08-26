@@ -75,7 +75,9 @@ bool Image::Resize(unsigned int width, unsigned int height, unsigned int bytes_p
          _bytes_per_pixel == 3 ||
          _bytes_per_pixel == 4);
 
+  delete [] _data;
   _data = new uint8_t[_width * _height * _bytes_per_pixel];
+  
   return _data;
 }
 
@@ -431,4 +433,39 @@ glm::vec4 Image::GetRGBA(unsigned int x, unsigned int y) const
     rgba.a = glm::length(rgba.rgb()) > 0.0f ? 1 : 0;
   
   return rgba;
+}
+
+
+void Image::BlackToAlpha()
+{
+  assert(!_alpha);
+  _alpha = true;
+
+  auto old = _data;
+  _data = nullptr;
+  auto oldbpp = _bytes_per_pixel;
+  Resize(_width, _height, 4);
+
+  for(unsigned int y = 0; y < _height; y++)
+    for(unsigned int x = 0; x < _width; x++)
+      {
+        uint8_t alpha = 0;
+        for(unsigned int b = 0; b < 3; b++)
+          {
+            uint8_t c;
+            if(oldbpp == 1)
+              c = old[(x + y * _width) * oldbpp];
+            else if(oldbpp == 3)
+              c = old[(x + y * _width) * oldbpp + b];
+            else
+              assert(false);
+            
+            _data[(x + y * _width) * _bytes_per_pixel + b] = c;
+            if(c)
+              alpha = 0xff;
+          }
+        _data[(x + y * _width) * _bytes_per_pixel + 3] = alpha;
+      }
+  
+  delete [] old;
 }

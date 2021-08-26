@@ -22,7 +22,7 @@
 #include <iostream>
 
 
-
+#define USE_DISTFIELD 1
 
 Font::Font(const std::string & name, unsigned int font_size)
   : _name           (name),
@@ -102,7 +102,9 @@ bool Font::Generate()
                 padded_glyph.Clear();
                 padded_glyph.Blit(padding_left, padding_top, glyph);
 
+#ifdef USE_DISTFIELD
                 padded_glyph.ToSignedDistanceField(0.5, 0.0);
+#endif
 
                 /* Expand the image containing all the glyphs. */
                 _image->Expand(x + padded_glyph.GetWidth(),
@@ -154,7 +156,11 @@ bool Font::Generate()
     if(padding > 0)
       _image->Expand(_image->GetWidth() + 4 - padding, _image->GetHeight());
   }
-      
+
+#ifndef USE_DISTFIELD
+  _image->BlackToAlpha();
+#endif
+  
   Graphics->QueueUpdateGPU(_image);
 
   _height = _image->GetHeight();

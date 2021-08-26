@@ -36,6 +36,7 @@ public:
   bool   Expand(unsigned int new_width, unsigned int new_height);
   void   ToSingleChannel(unsigned int channel); // Remove all but the specified channel.
   void   ToSignedDistanceField(double shrink_min, double shrink_max); // Higher shrink value means more distance values are set to zero (min) or to 1 (max).
+  void   BlackToAlpha();
   void   Blit(unsigned int x, unsigned int y, const Image & src);
   void   Blit(unsigned int x, unsigned int y, const Image & src, unsigned int src_x, unsigned int src_y, unsigned int width, unsigned int height);
   void   CopyData(const uint8_t * src);

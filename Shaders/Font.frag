@@ -11,7 +11,13 @@ vec4 FontColor();
 
 void main()
 {
-  final_color = FontColor();
+  if(true)
+    final_color = FontColor();
+  else
+    {
+      vec4 color = vec4(in_font_color, 1);
+      final_color = color * texture2D(texture0, texcoord.st);
+    }
 }
 
 
