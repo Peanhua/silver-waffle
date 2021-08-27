@@ -16,7 +16,8 @@
 
 SolarSystemObject::SolarSystemObject(Type type, const json11::Json & config)
   : _type(type),
-    _ring(0, 0)
+    _ring(0, 0),
+    _cloud_range(-1, 1)
 {
   _name = config["name"].string_value();
   _relative_size = config["radius"].number_value() / 6371.0;
@@ -24,6 +25,15 @@ SolarSystemObject::SolarSystemObject(Type type, const json11::Json & config)
   _gravity = config["gravity"].number_value();
   _texture = AssetLoader->LoadImage(config["texture"].string_value());
   assert(_texture);
+  if(config["cloud_range"].is_array())
+    {
+      auto cloudrange = config["cloud_range"].array_items();
+      _cloud_range.x = static_cast<float>(cloudrange[0].number_value());
+      _cloud_range.y = static_cast<float>(cloudrange[1].number_value());
+      assert(_cloud_range.x <= _cloud_range.y);
+      assert(_cloud_range.x >= 0 && _cloud_range.x <= 1);
+      assert(_cloud_range.y >= 0 && _cloud_range.y <= 1);
+    }
 
   {
     auto colors = config["atmosphere"].array_items();
@@ -85,4 +95,10 @@ Image * SolarSystemObject::GetTexture() const
 const std::vector<glm::vec3> & SolarSystemObject::GetAtmosphereColors() const
 {
   return _atmosphere_colors;
+}
+
+
+const glm::vec2 & SolarSystemObject::GetCloudRange() const
+{
+  return _cloud_range;
 }

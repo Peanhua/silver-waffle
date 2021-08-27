@@ -37,6 +37,7 @@ public:
   Type     GetType() const;
   const std::string & GetName() const;
   const std::vector<glm::vec3> & GetAtmosphereColors() const;
+  const glm::vec2 & GetCloudRange() const;
   
   Object * CreateSceneObject(Scene * scene, double scale);
 
@@ -50,6 +51,7 @@ private:
   glm::vec2   _ring;
   Image *     _texture;
   std::vector<glm::vec3> _atmosphere_colors;
+  glm::vec2   _cloud_range; // The altitude range [0,1] where clouds exist, x=bottom, y=top.
 };
 
 #endif

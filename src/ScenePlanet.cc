@@ -44,6 +44,7 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
   {
     return _rdist(_random_generator);
   };
+  auto cloudrange = planet.GetCloudRange();
   for(int i = 0; i < 100; i++)
     {
       auto cloud = new ObjectCloud(this, static_cast<unsigned int>(_random_generator()));
@@ -52,7 +53,7 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
       cloud->SetPosition({
           GetPlayAreaSize().x * GetRand(),
           GetPlayAreaSize().y * GetRand(),
-          GetPlayAreaSize().z * GetRand() * 0.2f
+          GetPlayAreaSize().z * (cloudrange.x + GetRand() * (cloudrange.y - cloudrange.x)) - GetPlayAreaSize().z * 0.5f
         });
     }
 
