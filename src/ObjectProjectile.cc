@@ -12,6 +12,7 @@
 #include "ObjectProjectile.hh"
 #include "CollisionShapeSphere.hh"
 #include "Mesh.hh"
+#include "ObjectSpaceship.hh"
 #include "QuadTree.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
@@ -77,4 +78,14 @@ void ObjectProjectile::OnCollision(Object & other, const glm::vec3 & hit_directi
 {
   other.Hit(_owner, this, GetDamage(), GetPosition(), -hit_direction);
   Destroy(nullptr);
+}
+
+
+void ObjectProjectile::OnDestroyed(Object * destroyer)
+{
+  auto spaceship = dynamic_cast<ObjectSpaceship *>(_owner);
+  if(spaceship)
+    spaceship->OnFiredProjectileDestroyed(this);
+
+  ObjectMovable::OnDestroyed(destroyer);
 }

@@ -13,11 +13,13 @@
 */
 
 #include "ObjectMovable.hh"
+#include "RingBuffer.hh"
 #include "SpaceshipUpgrade.hh"
 #include <vector>
 
 class ObjectBuilding;
 class ObjectCollectible;
+class ObjectProjectile;
 class SolarSystemObject;
 class SpaceshipControlProgram;
 class Weapon;
@@ -44,6 +46,7 @@ public:
   void         FireWeapon(unsigned int weapon_id);
   void         SetWeaponAutofire(unsigned int weapon_id, bool enabled);
   void         EnableWeapons(bool enabled);
+  void         OnFiredProjectileDestroyed(ObjectProjectile * projectile);
   
   void         AddEngine(const glm::vec3 & thrust_direction, double power);
   unsigned int GetEngineCount() const;
@@ -96,6 +99,7 @@ private:
   bool                   _landed;
   std::vector<Engine *>  _engines;
   std::vector<Weapon *>  _weapons;
+  RingBuffer<ObjectProjectile *> _projectiles_fired;
   std::vector<SpaceshipUpgrade *> _upgrades;
   std::vector<SpaceshipControlProgram *> _control_programs;
   int                    _human_count;

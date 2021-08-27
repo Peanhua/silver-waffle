@@ -17,6 +17,7 @@
 #include "ObjectBuilding.hh"
 #include "ObjectCollectible.hh"
 #include "ObjectPlanet.hh"
+#include "ObjectProjectile.hh"
 #include "ScreenLevelPlanet.hh"
 #include "ShaderProgram.hh"
 #include "SpaceshipControlProgram.hh"
@@ -227,7 +228,9 @@ void ObjectSpaceship::FireWeapon(unsigned int weapon_id)
   if(!weapon->CanFire())
     return;
   
-  weapon->Fire();
+  auto projectile = weapon->Fire();
+  if(projectile)
+    _projectiles_fired.Add(projectile);
 }
 
 
@@ -724,9 +727,21 @@ bool ObjectSpaceship::IsLanded() const
 
 void ObjectSpaceship::OnDestroyed(Object * destroyer)
 {
-  auto scene = GetScene();
-  if(scene)
-    scene->ClearReferences(this);
+  for(auto p : _projectiles_fired)
+    p->SetOwner(nullptr);
+  _projectiles_fired.clear();
   
   ObjectMovable::OnDestroyed(destroyer);
 }
+
+
+void ObjectSpaceship::OnFiredProjectileDestroyed(ObjectProjectile * projectile)
+{
+  for(unsigned int i = 0; i < _projectiles_fired.size(); i++)
+    if(_projectiles_fired[i] == projectile)
+      {
+        _projectiles_fired[i] = nullptr;
+        break;
+      }
+}
+

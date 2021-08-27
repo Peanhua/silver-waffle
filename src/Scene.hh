@@ -106,7 +106,6 @@ public:
   QuadTree * GetQuadTree() const;
 
   void DestroyAllEnemies();
-  void ClearReferences(Object * obj);
 
   void DumpStats() const;
 

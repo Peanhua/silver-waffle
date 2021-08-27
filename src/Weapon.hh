@@ -16,6 +16,7 @@
 
 class Mesh;
 class Object;
+class ObjectProjectile;
 
 
 class Weapon
@@ -37,7 +38,7 @@ public:
   void   SetAutofire(bool on);
 
   bool   CanFire() const;
-  void   Fire();
+  ObjectProjectile * Fire();
 
 protected:
   Object *  _owner;

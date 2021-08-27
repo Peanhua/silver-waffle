@@ -48,8 +48,8 @@ Scene::Scene(const glm::vec3 & play_area_size, const std::array<bool, 3> & play_
     _warp_engine_starting(false),
     _warp_throttle(0),
     _tutorialmessages_enabled(true),
-    _tick_finish_sync(0),
-    _navigation_map(nullptr)
+    _navigation_map(nullptr),
+    _tick_finish_sync(0)
 {
   auto ratioy = _play_area_size.y / _play_area_size.x;
   auto ratioz = _play_area_size.z / _play_area_size.x;
@@ -276,15 +276,6 @@ void Scene::Tick(double deltatime)
 
 
             
-void Scene::ClearReferences(Object * obj)
-{ // todo: Use smart pointers instead of manually fixing references.
-  for(auto proj : _projectiles)
-    if(proj && proj->IsAlive())
-      if(proj->GetOwner() == obj)
-        proj->SetOwner(nullptr);
-}
-
-
 void Scene::CollisionsForObject(Object * o)
 {
   auto & objects = _quadtree->GetNearby(o->GetPosition());

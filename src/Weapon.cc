@@ -43,7 +43,7 @@ bool Weapon::CanFire() const
 }
 
 
-void Weapon::Fire()
+ObjectProjectile * Weapon::Fire()
 {
   auto spaceship = dynamic_cast<ObjectSpaceship *>(_owner);
   assert(spaceship);
@@ -68,6 +68,8 @@ void Weapon::Fire()
   
   _heat += _firing_heat;
   _last_fire_timer = _minimum_firing_interval;
+
+  return projectile;
 }
 
 
