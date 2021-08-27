@@ -12,8 +12,10 @@
 
 #include "SubsystemSfx.hh"
 #include "MusicPlayer.hh"
+#include "SubsystemSettings.hh"
 #include <alut.h>
 #include <cassert>
+#include <iostream>
 
 
 SubsystemSfx * Sounds = nullptr;
@@ -29,8 +31,13 @@ SubsystemSfx::SubsystemSfx()
 bool SubsystemSfx::Start()
 {
   assert(!Sounds);
-  
-  auto success = alutInit(nullptr, nullptr);
+
+  bool enabled = Settings->GetBool("music");
+  std::cout << GetName() << ": Audio is " << (enabled ? "enabled" : "disabled") << ".\n";
+
+  bool success = true;
+  if(enabled)
+    success = alutInit(nullptr, nullptr);
   if(!success)
     return false;
 

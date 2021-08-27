@@ -26,6 +26,7 @@
 MusicPlayer::MusicPlayer()
   : _clock(),
     _thread(nullptr),
+    _enabled(false),
     _now_playing(nullptr),
     _volume(0),
     _fading_out(0),
@@ -40,9 +41,10 @@ MusicPlayer::MusicPlayer()
 
 void MusicPlayer::Start()
 {
-  if(!Settings->GetBool("music"))
+  _enabled = Settings->GetBool("music");
+  if(!_enabled)
     return;
-
+  
   _volume = Settings->GetDouble("music_volume") / 100.0;
   
   _thread = new std::jthread([this](std::stop_token st)
@@ -77,7 +79,7 @@ void MusicPlayer::Stop()
 
 void MusicPlayer::SetMusicCategory(const std::string & category)
 {
-  if(!Settings->GetBool("music"))
+  if(!_enabled)
     return;
 
   auto json = AssetLoader->LoadJson("Data/Songs");
@@ -115,15 +117,19 @@ void MusicPlayer::SetMusicCategory(const std::string & category)
 
 void MusicPlayer::PlayNextSongInCategory()
 {
-  SetNextMusic(GetNextSongInCategory());
+  if(_enabled)
+    SetNextMusic(GetNextSongInCategory());
 }  
 
 
 void MusicPlayer::FadeOutCurrentSong(double time)
 {
   assert(time <= 1);
-  std::lock_guard lock(_next_music_mutex);
-  _fading_out = time;
+  if(_enabled)
+    {
+      std::lock_guard lock(_next_music_mutex);
+      _fading_out = time;
+    }
 }
 
 

@@ -37,6 +37,7 @@ public:
 private:
   const std::chrono::steady_clock _clock;
   std::jthread * _thread;
+  bool           _enabled;
   Waveform *     _now_playing;
   bool           _now_playing_continuously;
   double         _volume;
