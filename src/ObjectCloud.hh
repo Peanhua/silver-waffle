@@ -14,11 +14,15 @@
 
 #include "ObjectMovable.hh"
 
+class Image;
+
 
 class ObjectCloud : public ObjectMovable
 {
 public:
   ObjectCloud(Scene * scene, unsigned int random_seed);
+
+  void SetColorFromImage(Image * image);
 };
 
 #endif

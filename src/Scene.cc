@@ -232,6 +232,10 @@ void Scene::Tick(double deltatime)
     if(_particles)
       _particles->Tick(deltatime * (1.0 + 5.0 * static_cast<double>(_warp_throttle)));
 
+    for(auto c : _clouds)
+      if(c)
+        c->Tick(deltatime);
+
     //jobdone_promise.set_value();
     _tick_finish_sync.release();
 

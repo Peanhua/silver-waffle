@@ -23,16 +23,16 @@ echo "Using profile: ${PROFILE}"
 export MAKEFLAGS="-s -j7"
 case ${PROFILE} in
     dev)
-        export CXXFLAGS="-Wfatal-errors -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always -g"
-        export LDFLAGS="-g -fdiagnostics-color=always -Og -rdynamic"
+        CXXFLAGS="-Wfatal-errors -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always -g"
+        LDFLAGS="-g -fdiagnostics-color=always -Og -rdynamic"
         ;;
     optimized)
-        export CXXFLAGS="-Wfatal-errors -O3 -DNDEBUG -flto -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always"
-        export LDFLAGS="-O3 -DNDEBUG -flto"
+        CXXFLAGS="-Wfatal-errors -O3 -DNDEBUG -flto -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always"
+        LDFLAGS="-O3 -DNDEBUG -flto"
         ;;
     valgrind)
-        export CXXFLAGS="-Wfatal-errors -O3 -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always -g -DNDEBUG -Wno-unused"
-        export LDFLAGS="-g -fdiagnostics-color=always -O3 -rdynamic -DNDEBUG"
+        CXXFLAGS="-Wfatal-errors -O3 -W -Wall -Wextra -Wshadow -Wnon-virtual-dtor -Wold-style-cast -Wcast-align=strict -Woverloaded-virtual -Wpedantic -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat -Wduplicated-branches -Wduplicated-cond -Wlogical-op -Wuseless-cast -fdiagnostics-color=always -g -DNDEBUG -Wno-unused"
+        LDFLAGS="-g -fdiagnostics-color=always -O3 -rdynamic -DNDEBUG"
         ;;
     *)
         echo "Error, unknown profile '${PROFILE}'."
@@ -45,6 +45,11 @@ if [ ${USE_SANITIZERS} -ne 0 ]; then
     LDFLAGS+=" -fsanitize-address"
 fi
 
+CPPFLAGS+=" -I/usr/local/src/color/src"
+
+export CPPFLAGS
+export CXXFLAGS
+export LDFLAGS
 
 autoreconf --include=m4 --install
 ./configure --prefix=$(pwd) --with-valgrind

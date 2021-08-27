@@ -436,6 +436,16 @@ glm::vec4 Image::GetRGBA(unsigned int x, unsigned int y) const
 }
 
 
+glm::vec4 Image::GetRGBA(const glm::vec2 & position) const
+{
+  auto x = static_cast<unsigned int>(position.x * static_cast<float>(_width));
+  auto y = static_cast<unsigned int>(position.y * static_cast<float>(_height));
+  x = std::clamp(x, 0u, _width - 1);
+  y = std::clamp(y, 0u, _height - 1);
+  return GetRGBA(x, y);
+}
+
+
 void Image::BlackToAlpha()
 {
   assert(!_alpha);

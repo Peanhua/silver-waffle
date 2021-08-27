@@ -48,6 +48,7 @@ ScenePlanet::ScenePlanet(const SolarSystemObject & planet)
     {
       auto cloud = new ObjectCloud(this, static_cast<unsigned int>(_random_generator()));
       AddCloud(cloud);
+      cloud->SetColorFromImage(planet.GetTexture());
       cloud->SetPosition({
           GetPlayAreaSize().x * GetRand(),
           GetPlayAreaSize().y * GetRand(),

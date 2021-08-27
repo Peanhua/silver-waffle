@@ -10,8 +10,16 @@
   Complete license can be found in the LICENSE file.
 */
 #include "ObjectCloud.hh"
+#include "Image.hh"
 #include "Mesh.hh"
 #include "SubsystemAssetLoader.hh"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wold-style-cast"
+#pragma GCC diagnostic ignored "-Wuseless-cast"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#pragma GCC diagnostic ignored "-Wfloat-conversion"
+#include <color/color.hpp>
+#pragma GCC diagnostic pop
 
 
 ObjectCloud::ObjectCloud(Scene * scene, unsigned int random_seed)
@@ -40,15 +48,21 @@ ObjectCloud::ObjectCloud(Scene * scene, unsigned int random_seed)
   cursize *= scale;
   GetMesh()->SetBoundingSphereRadius(glm::length(cursize));
 
-  auto c = glm::vec3(0.3f + 0.7f * GetRand(),
-                     0.5f,
-                     0.3f + 0.7f * GetRand());
-  SetColor(c);
-
   SetCollisionChannels(0);
   SetCollidesWithChannels(0);
   SetUseHealth(false);
   AddImpulse({10.0f * GetRand(), 0, 0});
-  
-  SetDrag(0.01);
+}
+
+
+void ObjectCloud::SetColorFromImage(Image * image)
+{
+  assert(image);
+  auto color = image->GetRGBA({GetRand(), GetRand()}).rgb();
+  color::rgb<float> rgb({color.r, color.g, color.b});
+  color::hsv<float> hsv(rgb);
+  hsv[1] = std::clamp(hsv[1] + 50.0f, 0.0f, 100.0f); // saturation
+  hsv[2] = std::clamp(hsv[2] + 25.0f, 0.0f, 100.0f); // value
+  rgb = hsv;
+  SetColor({rgb[0], rgb[1], rgb[2]});
 }

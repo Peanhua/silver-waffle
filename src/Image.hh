@@ -47,6 +47,7 @@ public:
   unsigned int GetBytesPerPixel() const;
   uint8_t *    GetData()          const;
   glm::vec4    GetRGBA(unsigned int x, unsigned int y) const;
+  glm::vec4    GetRGBA(const glm::vec2 & position) const;
   
 private:
   unsigned int         _width;

@@ -29,6 +29,10 @@ AC_LANG_PUSH([C++])
 AC_CHECK_HEADER([format], [], [
   PKG_CHECK_MODULES([FMT], [fmt], [AC_DEFINE([HAVE_FMT], [1], [Use fmt])])
 ])
+
+## https://github.com/dmilos/color
+AC_CHECK_HEADER([color/color.hpp], [], [AC_MSG_ERROR([Unable to find color library (https://github.com/dmilos/color) headers.])])
+
 AC_LANG_POP
 
 

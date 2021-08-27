@@ -728,7 +728,8 @@ bool ObjectSpaceship::IsLanded() const
 void ObjectSpaceship::OnDestroyed(Object * destroyer)
 {
   for(auto p : _projectiles_fired)
-    p->SetOwner(nullptr);
+    if(p)
+      p->SetOwner(nullptr);
   _projectiles_fired.clear();
   
   ObjectMovable::OnDestroyed(destroyer);
@@ -737,6 +738,7 @@ void ObjectSpaceship::OnDestroyed(Object * destroyer)
 
 void ObjectSpaceship::OnFiredProjectileDestroyed(ObjectProjectile * projectile)
 {
+  assert(projectile);
   for(unsigned int i = 0; i < _projectiles_fired.size(); i++)
     if(_projectiles_fired[i] == projectile)
       {
