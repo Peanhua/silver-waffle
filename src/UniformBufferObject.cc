@@ -44,6 +44,7 @@ GLuint UniformBufferObject::GetUBO() const
 
 void UniformBufferObject::Set(unsigned int pos, unsigned int bytes, const float * value)
 {
+  assert(pos < 999);
   assert(bytes % sizeof(float) == 0);
 
   std::memcpy(_buf.data() + pos / sizeof(float), value, bytes);

@@ -188,8 +188,9 @@ void SCP_ChanceToFire::PTick(double deltatime)
     {
       _cooldown += 0.1;
       if(static_cast<double>(_spaceship->GetRand()) < _chance)
-        for(unsigned int i = 0; i < _spaceship->GetWeaponCount(); i++)
-          _spaceship->FireWeapon(i);
+        for(auto weapon : _spaceship->GetWeapons(0))
+          if(weapon->CanFire())
+            weapon->Fire();
     }
 }
 

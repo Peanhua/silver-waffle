@@ -3,19 +3,25 @@
   [
     {
       "type":          "UPGRADEMATERIAL_ATTACK",
-      "random_chance": 0.25,
+      "random_chance": 0.20,
       "bonus_min":     1.0,
       "bonus_max":     1.0
     },
     {
       "type":          "UPGRADEMATERIAL_DEFENSE",
-      "random_chance": 0.25,
+      "random_chance": 0.20,
       "bonus_min":     1.0,
       "bonus_max":     1.0
     },
     {
       "type":          "UPGRADEMATERIAL_PHYSICAL",
-      "random_chance": 0.25,
+      "random_chance": 0.20,
+      "bonus_min":     1.0,
+      "bonus_max":     1.0
+    },
+    {
+      "type":          "BOMB_AMMO",
+      "random_chance": 0.05,
       "bonus_min":     1.0,
       "bonus_max":     1.0
     }

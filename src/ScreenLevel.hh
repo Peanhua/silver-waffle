@@ -33,6 +33,7 @@ class WidgetMeshRenderer;
 class WidgetSpaceshipStatus;
 class WidgetSpaceshipUpgradeStatus;
 class WidgetTeletyper;
+class WidgetWeaponAmmo;
 
 
 class ScreenLevel : public Screen
@@ -107,6 +108,7 @@ private:
   std::vector<glm::ivec2> _human_offsets;
   Widget *              _weapon_type_widget;
   Widget *              _weapon_boost_widget;
+  WidgetWeaponAmmo *    _bomb_ammo_widget;
   
   bool _demo_lander_activated;
   bool _demo_ending_activated;

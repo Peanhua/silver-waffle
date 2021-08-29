@@ -210,6 +210,8 @@ silverwaffle_SOURCES =				\
 	WidgetTeletyper.hh			\
 	WidgetUpgradeMaterial.cc		\
 	WidgetUpgradeMaterial.hh		\
+	WidgetWeaponAmmo.cc			\
+	WidgetWeaponAmmo.hh			\
 	WidgetWeaponStatus.cc			\
 	WidgetWeaponStatus.hh			\
 	WormholeWall.cc				\

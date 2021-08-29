@@ -122,6 +122,7 @@ WidgetSpaceshipMaintenance::WidgetSpaceshipMaintenance(Widget * parent, const gl
         SpaceshipUpgrade::Type::REPAIR_DROID,
         SpaceshipUpgrade::Type::WARP_ENGINE,
         SpaceshipUpgrade::Type::PLANET_LANDER,
+        SpaceshipUpgrade::Type::BOMB_BAY,
       };
     for(auto t : types)
       if(gamestats->IsSpaceshipUpgradeAvailable(t))

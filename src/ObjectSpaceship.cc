@@ -35,6 +35,9 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
     _human_saving_timer(0),
     _systemlog_enabled(false)
 {
+  _weapongroups.emplace_back();
+  _weapongroups.emplace_back();
+  
   SetIsAffectedByGravity(false);
 
   std::vector<SpaceshipUpgrade::Type> types
@@ -48,6 +51,7 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
       SpaceshipUpgrade::Type::REPAIR_DROID,
       SpaceshipUpgrade::Type::WARP_ENGINE,
       SpaceshipUpgrade::Type::PLANET_LANDER,
+      SpaceshipUpgrade::Type::BOMB_BAY,
     };
   for(auto t : types)
     {
@@ -66,9 +70,13 @@ void ObjectSpaceship::Tick(double deltatime)
       _control_programs[i] = _control_programs[i]->Tick(deltatime);
 
   bool firing = false;
-  for(unsigned int i = 0; !firing && i < _weapons.size(); i++)
-    if(_weapons[i]->IsAutofireOn())
-      firing = true;
+  for(unsigned int group = 0; !firing && group < _weapongroups.size(); group++)
+    for(auto weapon : GetWeapons(group))
+      if(weapon->IsAutofireOn())
+        {
+          firing = true;
+          break;
+        }
   
   bool engines_on = false;
   for(auto engine : _engines)
@@ -124,20 +132,23 @@ void ObjectSpaceship::Tick(double deltatime)
         AddImpulse(imp);
     }
 
-  auto weaponcoolercount = static_cast<unsigned int>(GetUpgrade(SpaceshipUpgrade::Type::WEAPON_COOLER)->GetInstallCount());
-  for(unsigned int i = 0; i < _weapons.size(); i++)
-    {
-      auto weapon = _weapons[i];
-      
-      if(weapon->IsAutofireOn())
-        FireWeapon(i);
+  int weaponcoolercount = GetUpgrade(SpaceshipUpgrade::Type::WEAPON_COOLER)->GetInstallCount();
+  for(unsigned int group = 0; group < _weapongroups.size(); group++)
+    for(auto weapon : GetWeapons(group))
+      {
+        if(weapon->IsAutofireOn())
+          if(weapon->CanFire())
+            weapon->Fire();
 
-      double cooling = 1;
-      if(i < weaponcoolercount)
-        cooling += 0.5;
+        double cooling = 1;
+        if(weaponcoolercount > 0)
+          {
+            cooling += 0.5;
+            weaponcoolercount--;
+          }
 
-      weapon->Tick(deltatime, cooling);
-    }
+        weapon->Tick(deltatime, cooling);
+      }
 
   for(auto u : _upgrades)
     u->Tick(deltatime);
@@ -182,71 +193,64 @@ unsigned int ObjectSpaceship::GetEngineCount() const
 
 void ObjectSpaceship::AddWeapon()
 {
-  float id = static_cast<float>((GetWeaponCount() + 1) / 2);
-  float sign = (GetWeaponCount() % 2) == 0 ? 1 : -1;
+  float id = static_cast<float>((GetWeaponCount(0) + 1) / 2);
+  float sign = (GetWeaponCount(0) % 2) == 0 ? 1 : -1;
 
-  AddWeapon(glm::vec3(sign * id * 0.1f, 1, 0),
+  AddWeapon(0,
+            glm::vec3(sign * id * 0.1f, 1, 0),
             glm::normalize(glm::vec3(sign * id * 0.1f, 1, 0)));
 }
 
 
-void ObjectSpaceship::AddWeapon(const glm::vec3 & location, const glm::vec3 & projectile_direction)
+void ObjectSpaceship::AddWeaponBomb()
 {
+  auto weapon = AddWeapon(1, {0, 0, -0.3f}, {0, 0, 0});
+  weapon->SetAmmoType(Weapon::AmmoType::BOMB);
+  weapon->AddAmmoAmount(6);
+}
+
+
+Weapon * ObjectSpaceship::AddWeapon(unsigned int weapon_group, const glm::vec3 & location, const glm::vec3 & projectile_direction)
+{
+  assert(weapon_group < _weapongroups.size());
+  auto & weapons = _weapongroups[weapon_group];
   auto weapon = new Weapon(this, location, projectile_direction);
-  if(_weapons.size() > 0)
-    weapon->SetAmmo(_weapons[0]->GetAmmo());
-  _weapons.push_back(weapon);
+  weapon->SetWeaponGroup(weapon_group);
+  if(weapons.size() > 0)
+    weapon->SetAmmoType(weapons[0]->GetAmmoType());
+  weapons.push_back(weapon);
+  return weapon;
 }
 
 
 void ObjectSpaceship::RemoveWeapons()
 {
-  for(auto w : _weapons)
-    delete w;
-  _weapons.clear();
+  for(auto & group : _weapongroups)
+    {
+      for(auto weapon : group)
+        delete weapon;
+      group.clear();
+    }
 }
 
 
-Weapon * ObjectSpaceship::GetWeapon(unsigned int weapon_id) const
+unsigned int ObjectSpaceship::GetWeaponCount(unsigned int weapon_group) const
 {
-  assert(weapon_id < _weapons.size());
-  return _weapons[weapon_id];
+  assert(weapon_group < _weapongroups.size());
+  return static_cast<unsigned int>(_weapongroups[weapon_group].size());
 }
 
 
-unsigned int ObjectSpaceship::GetWeaponCount() const
+unsigned int ObjectSpaceship::GetWeaponGroupCount() const
 {
-  assert(_weapons.size() < 0xffff);
-  return static_cast<unsigned int>(_weapons.size());
+  return static_cast<unsigned int>(_weapongroups.size());
 }
 
 
-void ObjectSpaceship::FireWeapon(unsigned int weapon_id)
+void ObjectSpaceship::SetWeaponGroupAutofire(unsigned int weapon_group, bool enabled)
 {
-  assert(weapon_id < _weapons.size());
-  auto weapon = _weapons[weapon_id];
-  if(!weapon->CanFire())
-    return;
-  
-  auto projectile = weapon->Fire();
-  if(projectile)
-    _projectiles_fired.Add(projectile);
-}
-
-
-void ObjectSpaceship::SetWeaponAutofire(unsigned int weapon_id, bool enabled)
-{
-  assert(weapon_id < _weapons.size());
-  auto weapon = _weapons[weapon_id];
-  weapon->SetAutofire(enabled);
-}
-
-
-double ObjectSpaceship::GetWeaponHeat(unsigned int weapon_id) const
-{
-  assert(weapon_id < _weapons.size());
-  auto weapon = _weapons[weapon_id];
-  return weapon->GetHeat();
+  for(auto weapon : GetWeapons(weapon_group))
+    weapon->SetAutofire(enabled);
 }
 
 
@@ -338,11 +342,16 @@ void ObjectSpaceship::CopyUpgrades(const ObjectSpaceship & source)
   for(auto e : source._engines)
     _engines.push_back(new Engine(*e));
 
-  _weapons.clear();
-  for(auto w : source._weapons)
-    _weapons.push_back(new Weapon(*w));
-  for(auto w : _weapons)
-    w->SetOwner(this);
+  for(unsigned int group = 0; group < 2; group++)
+    {
+      _weapongroups[group].clear();
+      for(auto w : source._weapongroups[group])
+        {
+          auto nw = new Weapon(*w);
+          _weapongroups[group].push_back(nw);
+          nw->SetOwner(this);
+        }
+    }
 
   _upgrades.clear();
   for(auto u : source._upgrades)
@@ -745,5 +754,12 @@ void ObjectSpaceship::OnFiredProjectileDestroyed(ObjectProjectile * projectile)
         _projectiles_fired[i] = nullptr;
         break;
       }
+}
+
+
+const std::vector<Weapon *> & ObjectSpaceship::GetWeapons(unsigned int weapon_group) const
+{
+  assert(weapon_group < _weapongroups.size());
+  return _weapongroups[weapon_group];
 }
 

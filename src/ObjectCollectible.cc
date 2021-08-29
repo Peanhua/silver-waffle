@@ -9,12 +9,15 @@
 
   Complete license can be found in the LICENSE file.
 */
+
 #include "ObjectCollectible.hh"
 #include "GameStats.hh"
 #include "Mesh.hh"
-#include "Scene.hh"
 #include "ObjectSpaceship.hh"
+#include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
+#include "Weapon.hh"
+
 
 ObjectCollectible::ObjectCollectible(Scene * scene)
   : ObjectMovable(scene, 0)
@@ -114,5 +117,14 @@ void ObjectCollectible::CollectBy(ObjectSpaceship * spaceship)
       spaceship->SystemlogAppend("You found spaceship upgrade blueprints!\n");
       GetScene()->TutorialMessage(4, "Press TAB to open the upgrade menu.\n");
       gamestats->AddBlueprintPoints(1);
+    }
+  if(HasBonus(Type::BOMB_AMMO))
+    {
+      spaceship->SystemlogAppend("Bombs\n");
+      auto weapons = spaceship->GetWeapons(1);
+      if(weapons.size() > 0)
+        weapons[0]->AddAmmoAmount(4);
+      else
+        GetScene()->TutorialMessage(5, "Unable to collect, bombs require Bomb Bay.\n");
     }
 }

@@ -12,6 +12,7 @@
 #include "WidgetWeaponStatus.hh"
 #include "MeshProgressBar.hh"
 #include "ObjectSpaceship.hh"
+#include "Weapon.hh"
 
 
 WidgetWeaponStatus::WidgetWeaponStatus(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, ObjectSpaceship * spaceship)
@@ -31,12 +32,15 @@ void WidgetWeaponStatus::Tick(double deltatime)
 
 void WidgetWeaponStatus::Draw() const
 {
-  const unsigned int count = _spaceship->GetWeaponCount();
-  for(unsigned int i = 0; i < count; i++)
+  float i = 0;
+  float count = static_cast<float>(_spaceship->GetWeaponCount(0));
+  float width = static_cast<float>(GetSize().x);
+  for(auto weapon : _spaceship->GetWeapons(0))
     {
-      _meter->SetValue(static_cast<float>(std::clamp(_spaceship->GetWeaponHeat(i), 0.0, 1.0)));
-      auto model = glm::translate(GetModel(), glm::vec3(static_cast<float>(i) * static_cast<float>(GetSize().x) / static_cast<float>(count), 0, 0));
+      _meter->SetValue(static_cast<float>(std::clamp(weapon->GetHeat(), 0.0, 1.0)));
+      auto model = glm::translate(GetModel(), {i * width / count, 0.0f, 0.0f});
       _meter->Draw(model, GetProjection() * GetView() * model);
+      i += 1.0f;
     }
 
   Widget::Draw();
@@ -52,7 +56,7 @@ void WidgetWeaponStatus::SetSpaceship(ObjectSpaceship * spaceship)
 
 void WidgetWeaponStatus::UpdateMeter(bool force)
 {
-  const auto count = _spaceship->GetWeaponCount();
+  const auto count = _spaceship->GetWeaponCount(0);
   if(_weaponcount == count && !force)
     return;
   _weaponcount = count;

@@ -23,12 +23,20 @@ class TextureRenderer;
 class WidgetMeshRenderer : public Widget
 {
 public:
+  WidgetMeshRenderer(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size);
   WidgetMeshRenderer(Widget * parent, const glm::ivec2 & position, const glm::ivec2 & size, Mesh * mesh, const glm::mat4 & model, const glm::mat4 & view);
   ~WidgetMeshRenderer();
 
   void Render() override;
   void Draw() const override;
   void SetMultiRender(const std::vector<glm::ivec2> & offsets);
+
+  void SetMesh(Mesh * mesh);
+  void SetModel(const glm::mat4 & model);
+  void SetView(const glm::mat4 & view);
+
+protected:
+  bool _draw_empty;
   
 private:
   Mesh *            _mesh;

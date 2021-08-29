@@ -46,6 +46,7 @@
 #include "WidgetSpaceshipUpgradeStatus.hh"
 #include "WidgetTeletyper.hh"
 #include "WidgetUpgradeMaterial.hh"
+#include "WidgetWeaponAmmo.hh"
 #include "WidgetWeaponStatus.hh"
 #ifdef WITH_VALGRIND
 # pragma GCC diagnostic push
@@ -70,6 +71,7 @@ ScreenLevel::ScreenLevel(const std::string & music_category, ScreenLevel * paren
     _human_widget(nullptr),
     _weapon_type_widget(nullptr),
     _weapon_boost_widget(nullptr),
+    _bomb_ammo_widget(nullptr),
     _demo_lander_activated(false),
     _demo_ending_activated(false),
     _weapon_ammo_type(Weapon::AmmoType::KINETIC)
@@ -102,15 +104,17 @@ void ScreenLevel::Initialize()
 
   if(!_gamestats)
     _gamestats = new GameStats();
-  
-  _scene->GetPlayer()->SetOwnerGameStats(_gamestats);
 
-  _scene->GetPlayer()->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
+  auto player = _scene->GetPlayer();
+
+  player->SetOwnerGameStats(_gamestats);
+
+  player->SetOnDestroyed([this]([[maybe_unused]] Object * destroyer)
   {
     OnPlayerDies();
   });
 
-  auto splayer = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
+  auto splayer = dynamic_cast<ObjectSpaceship *>(player);
   if(splayer)
     splayer->SetOnHumanCountChanged([this]()
     {
@@ -196,8 +200,9 @@ void ScreenLevel::Initialize()
 
       y += size.y + 20;
 
+      _bomb_ammo_widget = new WidgetWeaponAmmo(root, {width - 32, y}, {32, 32}, splayer);
+
       _weapon_type_widget = new Widget(root, {wtw_x, y}, {size.x, size.x});
-      y += size.x;
       _weapon_boost_widget = new Widget(root, {wtw_x, y}, {size.x, size.x});
       _weapon_boost_widget->AddImage("WeaponBoostLiquid");
       _weapon_boost_widget->AddImage("WeaponBoostLiquidActive");
@@ -250,6 +255,7 @@ void ScreenLevel::Initialize()
           SpaceshipUpgrade::Type::REPAIR_DROID,
           SpaceshipUpgrade::Type::WARP_ENGINE,
           SpaceshipUpgrade::Type::PLANET_LANDER,
+          SpaceshipUpgrade::Type::BOMB_BAY,
         };
       for(auto u : all)
         {
@@ -588,7 +594,12 @@ void ScreenLevel::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL
 
     case SDLK_SPACE:
       if(!disablecontrols)
-        controller->ActivateWeapon(pressed);
+        controller->ActivateWeaponGroup(0, pressed);
+      break;
+
+    case SDLK_b:
+      if(!disablecontrols)
+        controller->ActivateWeaponGroup(1, pressed);
       break;
 
     case SDLK_w:
@@ -764,16 +775,20 @@ void ScreenLevel::RefreshUI()
   
   for(auto w : _player_status_widgets)
     w->SetSpaceship(player);
+  _bomb_ammo_widget->SetSpaceship(player);
   for(auto w : _player_upgrade_status_widgets)
     w->SetUpgrade(player->GetUpgrade(w->GetUpgrade()->GetType()));
 
-  switch(player->GetWeapon(0)->GetAmmo())
+  switch(player->GetWeapons(0)[0]->GetAmmoType())
     {
     case Weapon::AmmoType::KINETIC:
       _weapon_type_widget->SetImage("Projectile");
       break;
     case Weapon::AmmoType::PLASMA:
       _weapon_type_widget->SetImage("Plasma");
+      break;
+    case Weapon::AmmoType::BOMB:
+      assert(false);
       break;
     }
 }
@@ -1066,8 +1081,9 @@ void ScreenLevel::CopyPlayerData(ScreenLevel * src)
 
       for(unsigned int i = 0; i < srcplr->GetEngineCount(); i++)
         srcplr->SetEngineThrottle(i, 0.0);
-      for(unsigned int i = 0; i < srcplr->GetWeaponCount(); i++)
-        srcplr->SetWeaponAutofire(i, false);
+      for(unsigned int group = 0; group < srcplr->GetWeaponGroupCount(); group++)
+        for(auto weapon : srcplr->GetWeapons(group))
+          weapon->SetAutofire(false);
 
       myplr->CopyUpgrades(*srcplr);
       myplr->SetHealth(srcplr->GetHealth());
@@ -1088,11 +1104,8 @@ void ScreenLevel::SetAmmoType(Weapon::AmmoType type)
 
   auto player = dynamic_cast<ObjectSpaceship *>(_scene->GetPlayer());
   if(player)
-    {
-      auto count = player->GetWeaponCount();
-      for(unsigned int i = 0; i < count; i++)
-        player->GetWeapon(i)->SetAmmo(type);
-    }
+    for(auto weapon : player->GetWeapons(0))
+      weapon->SetAmmoType(type);
   
   if(_weapon_type_widget)
     switch(_weapon_ammo_type)
@@ -1102,6 +1115,9 @@ void ScreenLevel::SetAmmoType(Weapon::AmmoType type)
         break;
       case Weapon::AmmoType::PLASMA:
         _weapon_type_widget->SetImage("Plasma");
+        break;
+      case Weapon::AmmoType::BOMB:
+        assert(false);
         break;
       }
 }

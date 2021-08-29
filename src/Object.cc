@@ -649,6 +649,7 @@ void Object::SpawnLoot()
             case ObjectCollectible::Type::WARP_FUEL:
             case ObjectCollectible::Type::DAMAGE_MULTIPLIER:
             case ObjectCollectible::Type::SPACESHIP_UPGRADE_BLUEPRINT:
+            case ObjectCollectible::Type::BOMB_AMMO:
               {
                 auto rotangle = glm::normalize(glm::vec3(GetRand() * 2.0f - 1.0f,
                                                          GetRand() * 2.0f - 1.0f,

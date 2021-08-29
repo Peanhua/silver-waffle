@@ -46,6 +46,7 @@ SpaceshipUpgrade::SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type)
     case Type::REPAIR_DROID:     _name = "Repair droid";   _always_activated = true;  _uses_timer = false; break;
     case Type::WARP_ENGINE:      _name = "Warp engine";    _always_activated = false; _uses_timer = true;  _cooldown_default = 0; break;
     case Type::PLANET_LANDER:    _name = "Planet lander";  _always_activated = false; _uses_timer = false; _cooldown_default = 1; break;
+    case Type::BOMB_BAY:         _name = "Bomb bay";       _always_activated = false; _uses_timer = false; break;
     }
 }
 
@@ -96,6 +97,9 @@ void SpaceshipUpgrade::Install()
       break;
     case Type::PLANET_LANDER:
       break;
+    case Type::BOMB_BAY:
+      _spaceship->AddWeaponBomb();
+      break;
     }
   _spaceship->SystemlogAppend("Installed: " + _name + "\n");
 }
@@ -123,7 +127,7 @@ double SpaceshipUpgrade::GetRawValue() const
 int SpaceshipUpgrade::GetInstallCount() const
 {
   if(_type == Type::WEAPON)
-    return static_cast<int>(_spaceship->GetWeaponCount());
+    return static_cast<int>(_spaceship->GetWeaponCount(0));
   
   return _install_count;
 }
@@ -137,12 +141,13 @@ int SpaceshipUpgrade::GetMaxInstalls() const
     case Type::BONUS_DAMAGE:     return 1;
     case Type::SHIELD:           return 1;
     case Type::WEAPON:           return 5;
-    case Type::WEAPON_COOLER:    return static_cast<int>(_spaceship->GetWeaponCount());
+    case Type::WEAPON_COOLER:    return static_cast<int>(_spaceship->GetWeaponCount(0));
     case Type::ENGINE_UPGRADE:   return 3;
     case Type::HULL_UPGRADE:     return 1;
     case Type::REPAIR_DROID:     return 1;
     case Type::WARP_ENGINE:      return 1;
     case Type::PLANET_LANDER:    return 1;
+    case Type::BOMB_BAY:         return 1;
     }
   assert(false);
   return 0;
@@ -215,6 +220,11 @@ unsigned int SpaceshipUpgrade::GetNextPurchaseCost(UpgradeMaterial::Type for_mat
       costs[UpgradeMaterial::Type::DEFENSE]  =  1;
       costs[UpgradeMaterial::Type::PHYSICAL] =  3;
       break;
+    case Type::BOMB_BAY:
+      costs[UpgradeMaterial::Type::ATTACK]   =  5;
+      costs[UpgradeMaterial::Type::DEFENSE]  =  0;
+      costs[UpgradeMaterial::Type::PHYSICAL] = 10;
+      break;
     }
   return costs[for_material];
 }
@@ -244,6 +254,7 @@ void SpaceshipUpgrade::Tick(double deltatime)
         case Type::HULL_UPGRADE:
         case Type::WARP_ENGINE:
         case Type::PLANET_LANDER:
+        case Type::BOMB_BAY:
           break;
           
         case Type::REPAIR_DROID:
@@ -310,6 +321,7 @@ void SpaceshipUpgrade::ActivateFromCollectible(ObjectCollectible * collectible)
     case Type::HULL_UPGRADE:
     case Type::REPAIR_DROID:
     case Type::PLANET_LANDER:
+    case Type::BOMB_BAY:
       break;
     }
 }

@@ -347,6 +347,8 @@ bool Widget::GetIsVisible() const
 void Widget::SetIsFocusable(bool is_focusable)
 {
   _focusable = is_focusable;
+  if(_focusable)
+    OnSizeUpdated(); // To create _focused_borders_mesh.
 }
 
 
@@ -360,7 +362,6 @@ void Widget::SetIsFocused(bool is_focused)
 {
   if(is_focused)
     assert(_focusable);
-
   
   _focused = is_focused;
 }

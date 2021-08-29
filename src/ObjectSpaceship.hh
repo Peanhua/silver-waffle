@@ -37,16 +37,15 @@ public:
   double   GetGlow() const override;
   void     OnDestroyed(Object * destroyer) override;
   
-  Weapon *     GetWeapon(unsigned int weapon_id) const;
   void         RemoveWeapons();
   void         AddWeapon();
-  void         AddWeapon(const glm::vec3 & location, const glm::vec3 & projectile_direction);
-  unsigned int GetWeaponCount() const;
-  double       GetWeaponHeat(unsigned int weapon_id) const;
-  void         FireWeapon(unsigned int weapon_id);
-  void         SetWeaponAutofire(unsigned int weapon_id, bool enabled);
+  void         AddWeaponBomb();
+  unsigned int GetWeaponCount(unsigned int weapon_group) const;
+  unsigned int GetWeaponGroupCount() const;
+  void         SetWeaponGroupAutofire(unsigned int weapon_group, bool enabled);
   void         EnableWeapons(bool enabled);
   void         OnFiredProjectileDestroyed(ObjectProjectile * projectile);
+  const std::vector<Weapon *> & GetWeapons(unsigned int weapon_group) const;
   
   void         AddEngine(const glm::vec3 & thrust_direction, double power);
   unsigned int GetEngineCount() const;
@@ -98,7 +97,7 @@ private:
 
   bool                   _landed;
   std::vector<Engine *>  _engines;
-  std::vector<Weapon *>  _weapons;
+  std::vector<std::vector<Weapon *>>  _weapongroups;
   RingBuffer<ObjectProjectile *> _projectiles_fired;
   std::vector<SpaceshipUpgrade *> _upgrades;
   std::vector<SpaceshipControlProgram *> _control_programs;
@@ -107,6 +106,8 @@ private:
   double                 _human_saving_timer;
   bool        _systemlog_enabled;
   std::string _systemlog;
+
+  Weapon *     AddWeapon(unsigned int weapon_group, const glm::vec3 & location, const glm::vec3 & projectile_direction);
 };
 
 #endif

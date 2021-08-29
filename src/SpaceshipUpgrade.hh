@@ -32,6 +32,7 @@ public:
       REPAIR_DROID,
       WARP_ENGINE,
       PLANET_LANDER,
+      BOMB_BAY,
     };
   
   SpaceshipUpgrade(ObjectSpaceship * spaceship, Type type);

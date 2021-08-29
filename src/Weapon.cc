@@ -19,6 +19,10 @@
 
 Weapon::Weapon(Object * owner, const glm::vec3 & location, const glm::vec3 & projectile_direction)
   : _owner(owner),
+    _weapon_group(0),
+    _consumes_ammo(false),
+    _ammo(0),
+    _ammo_max(12),
     _location(location),
     _autofire(false),
     _heat(0),
@@ -27,7 +31,7 @@ Weapon::Weapon(Object * owner, const glm::vec3 & location, const glm::vec3 & pro
     _projectile_glow(0),
     _projectile_direction(projectile_direction)
 {
-  SetAmmo(AmmoType::KINETIC);
+  SetAmmoType(AmmoType::KINETIC);
 }
 
 
@@ -38,6 +42,13 @@ bool Weapon::CanFire() const
   
   if(_heat > 1.0)
     return false;
+
+  if(_consumes_ammo && _ammo == 0)
+    return false;
+
+  if(_ammotype == AmmoType::BOMB)
+    if(glm::length2(_owner->GetScene()->GetGravity()) < 2)
+      return false;
 
   return true;
 }
@@ -68,6 +79,12 @@ ObjectProjectile * Weapon::Fire()
   
   _heat += _firing_heat;
   _last_fire_timer = _minimum_firing_interval;
+
+  if(_consumes_ammo)
+    {
+      assert(_ammo > 0);
+      _ammo--;
+    }
 
   return projectile;
 }
@@ -106,7 +123,7 @@ void Weapon::SetOwner(Object * owner)
 }
 
 
-void Weapon::SetAmmo(AmmoType type)
+void Weapon::SetAmmoType(AmmoType type)
 {
   _ammotype = type;
   switch(type)
@@ -131,12 +148,48 @@ void Weapon::SetAmmo(AmmoType type)
         _projectile_use_gravity = false;
       }
       break;
+    case AmmoType::BOMB:
+      {
+        _projectile_initial_velocity = 0;
+        _projectile_damage           = 1000;
+        _projectile_mesh             = AssetLoader->LoadMesh("Bomb");
+        _minimum_firing_interval     = 0.25;
+        _firing_heat                 = 0.0;
+        _projectile_use_gravity      = true;
+        _consumes_ammo               = true;
+      }
+      break;
     }
 }
 
 
-Weapon::AmmoType Weapon::GetAmmo() const
+Weapon::AmmoType Weapon::GetAmmoType() const
 {
   return _ammotype;
 }
+
+
+unsigned int Weapon::GetWeaponGroup() const
+{
+  return _weapon_group;
+}
+
+
+void Weapon::SetWeaponGroup(unsigned int group)
+{
+  _weapon_group = group;
+}
+
+
+unsigned int Weapon::GetAmmoAmount() const
+{
+  return _ammo;
+}
+
+
+void Weapon::AddAmmoAmount(unsigned int amount)
+{
+  _ammo = std::min(_ammo + amount, _ammo_max);
+}
+
 

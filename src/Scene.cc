@@ -30,6 +30,7 @@
 #include "SubsystemJobs.hh"
 #include "SubsystemSettings.hh"
 #include "UniformBufferObject.hh"
+#include "Weapon.hh"
 #include "Widget.hh"
 #include <future>
 #include <iostream>
@@ -387,8 +388,9 @@ void Scene::StartWarpEngine()
 
       for(unsigned int i = 0; i < _player->GetEngineCount(); i++)
         _player->SetEngineThrottle(i, 0.0);
-      for(unsigned int i = 0; i < _player->GetWeaponCount(); i++)
-        _player->SetWeaponAutofire(i, false);
+      for(unsigned int group = 0; group < _player->GetWeaponGroupCount(); group++)
+        for(auto weapon : _player->GetWeapons(group))
+          weapon->SetAutofire(false);
     }
   else if(u->GetInstallCount() > 0)
     _player->SystemlogAppend("Warp engine: error\n");

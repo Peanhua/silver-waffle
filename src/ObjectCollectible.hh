@@ -33,6 +33,7 @@ public:
       WARP_FUEL,
       HUMAN,
       SPACESHIP_UPGRADE_BLUEPRINT,
+      BOMB_AMMO,
       SIZEOF_,
       NONE = SIZEOF_
     };

@@ -44,10 +44,9 @@ void Controller::SteerRight([[maybe_unused]] bool pressed)
 }
 
 
-void Controller::ActivateWeapon(bool pressed)
+void Controller::ActivateWeaponGroup(unsigned int weapon_group, bool pressed)
 {
-  for(unsigned int i = 0; i < _spaceship->GetWeaponCount(); i++)
-    _spaceship->SetWeaponAutofire(i, pressed);
+  _spaceship->SetWeaponGroupAutofire(weapon_group, pressed);
 }
 
 

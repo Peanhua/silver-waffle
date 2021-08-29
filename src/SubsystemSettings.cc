@@ -44,14 +44,14 @@ bool SubsystemSettings::Start()
   _bool_values["demo"] = false;
   
   _bool_values["cheat_no_enemies"] = false;
-  _bool_values["cheat_cheap_upgrades"] = false;
-  _bool_values["cheat_unlock_all_upgrades"] = false;
+  _bool_values["cheat_cheap_upgrades"] = true;
+  _bool_values["cheat_unlock_all_upgrades"] = true;
   _bool_values["cheat_disable_planet_lander_check"] = true;
   _bool_values["cheat_disable_planet_entering_impulse"] = false;
   
   _string_values["font"] = "Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf";
 
-  _bool_values["music"] = true;
+  _bool_values["music"] = false;
   _int_values["music_volume"] = 50;
 
 #ifdef WITH_VALGRIND
