@@ -12,6 +12,7 @@
 #include "ObjectBuilding.hh"
 #include "Loot.hh"
 #include "Mesh.hh"
+#include "NavigationMap.hh"
 #include "ObjectInvader.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
@@ -131,5 +132,22 @@ void ObjectBuilding::AddSpawn(unsigned int spawn_type, double spawn_interval, un
 bool ObjectBuilding::GetIsSpaceport() const
 {
   return _is_spaceport;
+}
+
+
+void ObjectBuilding::OnDestroyed(Object * destroyer)
+{
+  auto scene = GetScene();
+  if(scene)
+    {
+      auto navmap = scene->GetNavigationMap();
+      if(navmap)
+        {
+          auto pos = navmap->WorldToNavigation(GetPosition());
+          navmap->Set(pos, '.');
+        }
+    }
+  
+  Object::OnDestroyed(destroyer);
 }
 

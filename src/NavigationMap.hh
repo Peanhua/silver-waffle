@@ -13,7 +13,7 @@
 */
 
 #include "GLM.hh"
-#include "Scene.hh"
+
 
 class NavigationMap
 {
@@ -22,8 +22,9 @@ public:
 
   const glm::ivec2 & GetDataDimensions() const;
   const uint8_t *    GetData() const;
-  uint8_t            GetData(const glm::ivec2 & position) const;
-
+  uint8_t            Get(const glm::ivec2 & position) const;
+  void               Set(const glm::ivec2 & position, uint8_t value) const;
+    
   glm::vec2  NavigationToWorld(const glm::ivec2 & position);
   
   glm::ivec2 WorldToNavigation(const glm::vec3 & position);

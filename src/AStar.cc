@@ -97,7 +97,7 @@ std::vector<glm::ivec2> * AStar::FindPath(const glm::ivec2 & start, const glm::i
       for(auto neighbor_pos : neighbors)
         {
           double new_neighbor_cost = current->GetCost() + 1;
-          if(_navigation_map->GetData(current->GetPosition()) == '.')
+          if(_navigation_map->Get(current->GetPosition()) == '.')
             new_neighbor_cost += 1;
           
           auto IsSamePosition = [&neighbor_pos](const PathComponent * pc) { return pc->GetPosition() == neighbor_pos; };
@@ -155,7 +155,7 @@ void AStar::GetNeighbors(const glm::ivec2 & position, std::vector<glm::ivec2> & 
   auto AddPos = [this, &position, &neighbor_positions](int x, int y)
   {
     auto pos = position + glm::ivec2(x, y);
-    auto d = _navigation_map->GetData(pos);
+    auto d = _navigation_map->Get(pos);
     if(d == ' ' || d == '.')
       neighbor_positions.emplace_back(pos);
   };

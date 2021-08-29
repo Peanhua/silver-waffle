@@ -21,6 +21,7 @@ public:
   ObjectBuilding(Scene * scene, unsigned int random_seed, unsigned int type);
 
   void Tick(double deltatime) override;
+  void OnDestroyed(Object * destroyer) override;
 
   void AddSpawn(unsigned int spawn_type, double spawn_interval, unsigned int max_count, const std::string & control_program);
   bool GetIsSpaceport() const;

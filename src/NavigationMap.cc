@@ -12,6 +12,7 @@
 
 #include "NavigationMap.hh"
 
+
 NavigationMap::NavigationMap(const glm::ivec2 & data_dimensions, uint8_t * data, const glm::vec2 scale)
   : _data_dimensions(data_dimensions),
     _data(data),
@@ -30,11 +31,18 @@ const uint8_t * NavigationMap::GetData() const
   return _data;
 }
 
-uint8_t NavigationMap::GetData(const glm::ivec2 & position) const
+uint8_t NavigationMap::Get(const glm::ivec2 & position) const
 {
   if(position.x >= 0 && position.x < _data_dimensions.x && position.y >= 0 && position.y < _data_dimensions.y)
     return _data[position.x + position.y * _data_dimensions.x];
   return 'X';
+}
+
+
+void NavigationMap::Set(const glm::ivec2 & position, uint8_t value) const
+{
+  if(position.x >= 0 && position.x < _data_dimensions.x && position.y >= 0 && position.y < _data_dimensions.y)
+    _data[position.x + position.y * _data_dimensions.x] = value;
 }
 
 glm::vec2 NavigationMap::NavigationToWorld(const glm::ivec2 & position)
