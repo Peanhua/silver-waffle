@@ -4,6 +4,7 @@ Password: **********
 [root@silver-waffle ~]# man controls
   Movement:   LEFT/RIGHT/UP/DOWN
   Shooting:   SPACE           Drop bomb: B
+  Ammo type:  1/2              Launch:     L
   Warpspeed: hold W          Land:        S
   Inventory:  TAB              Next song: F8
 [root@silver-waffle ~]# /etc/init.d/launch start

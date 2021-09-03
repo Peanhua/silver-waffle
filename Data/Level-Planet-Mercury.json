@@ -1,22 +1,5 @@
 {
   "terrain": "Level-Planet-Mercury",
-  "buildings" : [
-    {
-      "type":   1,
-      "boss":   false,
-      "offset": [ 0.50, 0.0, 0.0 ]
-    },
-    {
-      "type":   2,
-      "boss":   false,
-      "offset": [ 0.51, 0.0, 0.0 ]
-    },
-    {
-      "type":   3,
-      "boss":   false,
-      "offset": [ 0.52, 0.0, 0.0 ]
-    }
-  ],
   "enemies": [
     {
       "type":            0,

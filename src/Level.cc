@@ -253,25 +253,6 @@ void Level::Start()
       
       _scene->SetNavigationMap(new NavigationMap({img->GetWidth(), img->GetHeight()}, navigationmap, {_scene->GetPlayAreaSize().x, _scene->GetPlayAreaSize().z}));
     }
-  
-  if(_buildings_config.is_array())
-    for(auto config : _buildings_config.array_items())
-      {
-        auto type = static_cast<unsigned int>(config["type"].int_value());
-        glm::vec3 offset;
-        for(int i = 0; i < 3; i++)
-          offset[i] = static_cast<float>(config["offset"][static_cast<unsigned int>(i)].number_value());
-        
-        {
-          auto building = new ObjectBuilding(_scene, static_cast<unsigned int>(_random_generator()), type);
-          _scene->AddObject(building);
-
-          glm::vec3 pos = -_scene->GetPlayAreaSize() * 0.5f + _scene->GetPlayAreaSize() * offset;
-          pos = _scene->GetClosestGroundSurface(pos);
-          pos.z += building->GetMesh()->GetBoundingBoxHalfSize().z;
-          building->SetPosition(pos);
-        }
-      }
 }
 
 
@@ -458,8 +439,6 @@ void Level::LoadConfig(const std::string & filename)
             std::cout << "Error, attack wave \"" << a["name"].string_value() << "\" does not exist.\n";
           assert(found);
         }
-
-      _buildings_config = (*levelconfig)["buildings"];
 
       if((*levelconfig)["terrain"].is_string())
         _destructible_terrain_config = AssetLoader->LoadImage((*levelconfig)["terrain"].string_value());

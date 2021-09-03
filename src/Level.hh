@@ -78,7 +78,6 @@ protected:
   std::vector<std::vector<ProgramEntry *>> _attack_waves;
   unsigned int                _current_attack_wave;
   bool                        _halt_without_program;
-  json11::Json                _buildings_config;
   json11::Json                _enemy_config;
   Image *                     _destructible_terrain_config;
   unsigned int                _boss_buildings_alive;
