@@ -216,19 +216,33 @@ public:
 };
 
 
+class WaveformSynthHumanJump : public WaveformSynth
+{
+public:
+  WaveformSynthHumanJump()
+    : WaveformSynth()
+  {
+    SetEnvelope(new SoundEnvelopeADHSR(44100, 0.05, 0.05, 0.3, 1.0, 0.1));
+    auto o = AddOscillator(0.5, new OscillatorSawtooth(700));
+    o->SetVibrato(3, 0.2);
+    SetTremolo(2, 1);
+  }
+};
+
+
 class WaveformSynthTest : public WaveformSynth
 {
 public:
   WaveformSynthTest()
     : WaveformSynth()
   {
-    SetEnvelope(new SoundEnvelopeADHSR(44100, 0.01, 0.05, 0.3, 1.0, 0.05));
+    SetEnvelope(new SoundEnvelopeADHSR(44100, 0.05, 0.05, 0.3, 1.0, 0.1));
     //SetEnvelope(new SoundEnvelopeADHSR(44100, 1, 1, 1, 1, 1));
-    auto o = AddOscillator(0.25, new OscillatorNoise(300));
-    o->SetVibrato(10, 0.2);
+    auto o = AddOscillator(0.5, new OscillatorSawtooth(700));
+    o->SetVibrato(3, 0.2);
     //AddOscillator(0.25, new OscillatorSawtooth(1600));
     //AddOscillator(0.25 / 1.75, new OscillatorSine(base_frequency * 3));
-    SetTremolo(20, 1);
+    SetTremolo(2, 1);
   }
 };
 

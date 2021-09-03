@@ -6,6 +6,7 @@
     { "id": "collect.valuable" },
     { "id": "drop_bomb" },
     { "id": "engine" },
+    { "id": "human_jump" },
     { "id": "weapon" },
     { "id": "alien" }
   ]

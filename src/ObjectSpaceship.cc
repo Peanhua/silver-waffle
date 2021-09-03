@@ -660,6 +660,7 @@ void ObjectSpaceship::SaveHuman(double deltatime)
     return;
   _human_saving_timer -= 1;
   
+  Sounds->PlaySoundEffect("human_jump", GetPosition());
   SystemlogAppend("You rescued another human individual!\n");
   auto gs = GetOwnerGameStats();
   if(gs)

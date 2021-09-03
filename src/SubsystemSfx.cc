@@ -104,6 +104,8 @@ bool SubsystemSfx::Start()
               effect = new WaveformSynthDropBomb();
             else if(id == "engine")
               effect = new WaveformSynthEngine();
+            else if(id == "human_jump")
+              effect = new WaveformSynthHumanJump();
             else if(id == "collect.valuable")
               effect = new WaveformSynthCollectValuable();
             else

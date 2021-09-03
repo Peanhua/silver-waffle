@@ -50,7 +50,7 @@ private:
   std::vector<ALuint> _sound_effect_sources;
   unsigned int        _next_sfx_source;
 
-  static constexpr unsigned int _sfx_count = 8;
+  static constexpr unsigned int _sfx_count = 9;
 
 
   constexpr unsigned int GetSoundEffectIndex(const std::string_view & name) const
@@ -63,6 +63,7 @@ private:
         "explosion.small",
         "explosion.tiny",
         "drop_bomb",
+        "human_jump",
         "engine",
         "weapon"
       };
