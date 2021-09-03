@@ -11,6 +11,7 @@
 */
 
 #include "WaveformSID.hh"
+#include "SoundEnvelope.hh"
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -20,7 +21,7 @@
 
 
 WaveformSID::WaveformSID(const std::string & filename, unsigned int tune_id)
-  : Waveform()
+  : Waveform(new SoundEnvelopeADSR(44100, 0.1, 0, 1, 0.1))
 {
   auto rs = new ReSIDfpBuilder("SilverWaffle");
   auto maxsids = _sid.info().maxsids();
@@ -68,6 +69,6 @@ void WaveformSID::Restart()
 
 void WaveformSID::FillBackBuffer()
 {
-  _sid.play(_data.data(), 44100);
+  _sid.play(_data.data(), static_cast<uint_least32_t>(_data.size()));
   UpdateBackBuffer(_data);
 }

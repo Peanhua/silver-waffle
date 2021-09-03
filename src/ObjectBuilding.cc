@@ -16,6 +16,7 @@
 #include "ObjectInvader.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSfx.hh"
 
 
 ObjectBuilding::ObjectBuilding(Scene * scene, unsigned int random_seed, unsigned int type)
@@ -137,6 +138,8 @@ bool ObjectBuilding::GetIsSpaceport() const
 
 void ObjectBuilding::OnDestroyed(Object * destroyer)
 {
+  Sounds->PlaySoundEffect("explosion.big", GetPosition());
+
   auto scene = GetScene();
   if(scene)
     {

@@ -120,6 +120,7 @@ silverwaffle_SOURCES =				\
 	ObjectSpaceship.cc			\
 	ObjectSpaceship.hh			\
 	Observer.hh				\
+	Oscillator.hh				\
 	Plane.cc				\
 	Plane.hh				\
 	QuadTree.hh				\
@@ -150,6 +151,8 @@ silverwaffle_SOURCES =				\
 	ShaderProgram.hh			\
 	SolarSystemObject.cc			\
 	SolarSystemObject.hh			\
+	SoundEnvelope.hh			\
+	SoundEnvelope.cc			\
 	SpaceParticles.cc			\
 	SpaceParticles.hh			\
 	SpaceshipControlProgram.cc		\
@@ -186,6 +189,7 @@ silverwaffle_SOURCES =				\
 	Waveform.hh				\
 	WaveformSID.cc				\
 	WaveformSID.hh				\
+	WaveformSynth.hh			\
 	Weapon.cc				\
 	Weapon.hh				\
 	Widget.cc				\

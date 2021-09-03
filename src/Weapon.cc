@@ -15,6 +15,7 @@
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSfx.hh"
 
 
 Weapon::Weapon(Object * owner, const glm::vec3 & location, const glm::vec3 & projectile_direction)
@@ -56,6 +57,16 @@ bool Weapon::CanFire() const
 
 ObjectProjectile * Weapon::Fire()
 {
+  switch(_ammotype)
+    {
+    case AmmoType::BOMB:
+      Sounds->PlaySoundEffect("drop_bomb", _owner->GetPosition());
+      break;
+    case AmmoType::KINETIC:
+    case AmmoType::PLASMA:
+      Sounds->PlaySoundEffect("weapon", _owner->GetPosition());
+      break;
+    }
   auto spaceship = dynamic_cast<ObjectSpaceship *>(_owner);
   assert(spaceship);
 

@@ -54,7 +54,8 @@ public:
   void         UpgradeEngines(double power_multiplier);
   void         EnableEngine(unsigned int engine_id, bool enabled);
   void         EnableEngines(bool enabled);
-
+  void         SetEngineSound(bool enabled);
+  
   void               UpgradeFromCollectible(ObjectCollectible * collectible);
   SpaceshipUpgrade * GetUpgrade(SpaceshipUpgrade::Type type) const;
 
@@ -106,6 +107,8 @@ private:
   double                 _human_saving_timer;
   bool        _systemlog_enabled;
   std::string _systemlog;
+  bool        _has_engine_sound;
+  double      _engine_sfx_timer;
 
   Weapon *     AddWeapon(unsigned int weapon_group, const glm::vec3 & location, const glm::vec3 & projectile_direction);
 };

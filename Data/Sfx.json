@@ -1,0 +1,12 @@
+{
+  "effects": [
+    { "id": "explosion.big" },
+    { "id": "explosion.small" },
+    { "id": "explosion.tiny" },
+    { "id": "collect.valuable" },
+    { "id": "drop_bomb" },
+    { "id": "engine" },
+    { "id": "weapon" },
+    { "id": "alien" }
+  ]
+}

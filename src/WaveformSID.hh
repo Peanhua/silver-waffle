@@ -24,9 +24,9 @@ public:
   void FillBackBuffer() override;
 
 private:
-  std::vector<short> _data;
-  sidplayfp          _sid;
-  SidTune *          _tune;
+  std::vector<int16_t> _data;
+  sidplayfp            _sid;
+  SidTune *            _tune;
 };
 
 

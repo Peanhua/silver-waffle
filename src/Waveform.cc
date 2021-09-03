@@ -11,12 +11,14 @@
 */
 
 #include "Waveform.hh"
+#include "SoundEnvelope.hh"
 #include <cassert>
 #include <iostream>
 
 
-Waveform::Waveform()
-  : _current_buffer(0),
+Waveform::Waveform(SoundEnvelope * envelope)
+  : _envelope(envelope),
+    _current_buffer(0),
     _length(0)
 {
   _buffers.fill(0);
@@ -24,6 +26,9 @@ Waveform::Waveform()
   assert(alGetError() == AL_NO_ERROR);
   alGenBuffers(static_cast<ALsizei>(_buffers.size()), _buffers.data());
   assert(alGetError() == AL_NO_ERROR);
+
+  if(_envelope)
+    _envelope->Press();
 }
 
 
@@ -44,13 +49,16 @@ ALuint Waveform::GetBackBuffer() const
 }
 
 
-void Waveform::UpdateBackBuffer(const std::vector<short> & data)
+void Waveform::UpdateBackBuffer(std::vector<int16_t> & data)
 {
+  if(_envelope)
+    for(unsigned int i = 0; i < data.size(); i++)
+      data[i] = static_cast<int16_t>(_envelope->GetNextAmplitude() * static_cast<double>(data[i]));
+
   auto buffer = _buffers[_current_buffer ^ 1];
 
-  assert(sizeof(short) == 2);
   assert(alGetError() == AL_NO_ERROR);
-  alBufferData(buffer, AL_FORMAT_MONO16, data.data(), static_cast<ALsizei>(data.size() * sizeof(short)), 44100);
+  alBufferData(buffer, AL_FORMAT_MONO16, data.data(), static_cast<ALsizei>(data.size() * sizeof(int16_t)), 44100);
   assert(alGetError() == AL_NO_ERROR);
 }
 
@@ -70,4 +78,16 @@ double Waveform::GetLength() const
 void Waveform::SetLength(double length)
 {
   _length = length;
+}
+
+
+void Waveform::SetEnvelope(SoundEnvelope * envelope)
+{
+  _envelope = envelope;
+}
+
+
+SoundEnvelope * Waveform::GetEnvelope() const
+{
+  return _envelope;
 }

@@ -16,6 +16,7 @@
 #include "ObjectSpaceship.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSfx.hh"
 #include "Weapon.hh"
 
 
@@ -71,6 +72,8 @@ void ObjectCollectible::CollectBy(ObjectSpaceship * spaceship)
   auto gamestats = spaceship->GetOwnerGameStats();
   if(!gamestats)
     return;
+
+  Sounds->PlaySoundEffect("collect.valuable", GetPosition());
   
   if(HasBonus(Type::SCORE_BONUS))
     {

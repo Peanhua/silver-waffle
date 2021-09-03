@@ -23,6 +23,7 @@
 #include "SpaceshipControlProgram.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemScreen.hh"
+#include "SubsystemSfx.hh"
 #include "Weapon.hh"
 #include <iostream>
 
@@ -33,7 +34,9 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
     _human_count(0),
     _on_human_count_changed(nullptr),
     _human_saving_timer(0),
-    _systemlog_enabled(false)
+    _systemlog_enabled(false),
+    _has_engine_sound(false),
+    _engine_sfx_timer(0)
 {
   _weapongroups.emplace_back();
   _weapongroups.emplace_back();
@@ -96,6 +99,17 @@ void ObjectSpaceship::Tick(double deltatime)
             }
         }
     }
+  if(_has_engine_sound && engines_on)
+    {
+      _engine_sfx_timer -= deltatime;
+      if(_engine_sfx_timer < 0)
+        {
+          _engine_sfx_timer = 0.1;
+          Sounds->PlaySoundEffect("engine", GetPosition());
+        }
+    }
+  else
+    _engine_sfx_timer = 0;
       
   if(_engines.size() > 0 && !engines_on)
     { // todo: separate controls and use the engines to slow down
@@ -736,6 +750,8 @@ bool ObjectSpaceship::IsLanded() const
 
 void ObjectSpaceship::OnDestroyed(Object * destroyer)
 {
+  Sounds->PlaySoundEffect("explosion.small", GetPosition());
+  
   for(auto p : _projectiles_fired)
     if(p)
       p->SetOwner(nullptr);
@@ -763,3 +779,8 @@ const std::vector<Weapon *> & ObjectSpaceship::GetWeapons(unsigned int weapon_gr
   return _weapongroups[weapon_group];
 }
 
+
+void ObjectSpaceship::SetEngineSound(bool enabled)
+{
+  _has_engine_sound = enabled;
+}

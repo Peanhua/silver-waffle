@@ -32,6 +32,7 @@
 #include "UniformBufferObject.hh"
 #include "Weapon.hh"
 #include "Widget.hh"
+#include <al.h>
 #include <future>
 #include <iostream>
 
@@ -133,6 +134,8 @@ void Scene::CreatePlayer()
   _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
   _player->AddEngine(glm::vec3(0, -1,  0), 20.0);
 
+  _player->SetEngineSound(true);
+
   auto ee = new ComponentEngineExhaustFX(_player, 4 + 2);
   _player->AddComponent(ee);
   
@@ -178,6 +181,10 @@ ObjectProjectile * Scene::AddProjectile(Object * owner, const glm::vec3 & positi
 
 void Scene::Tick(double deltatime)
 {
+  if(_player)
+    if(Settings->GetBool("sfx"))
+      alListenerfv(AL_POSITION, glm::value_ptr(_player->GetPosition()));
+  
   if(_warp_engine_starting)
     { // todo: move this warp engine startup code to SpaceshipUpgrade
       // todo:   move _particles to SceneSpace

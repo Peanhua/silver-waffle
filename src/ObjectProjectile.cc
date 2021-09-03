@@ -16,6 +16,7 @@
 #include "QuadTree.hh"
 #include "Scene.hh"
 #include "SubsystemAssetLoader.hh"
+#include "SubsystemSfx.hh"
 #include <array>
 
 
@@ -76,6 +77,7 @@ double ObjectProjectile::GetDamage() const
 
 void ObjectProjectile::OnCollision(Object & other, const glm::vec3 & hit_direction)
 {
+  Sounds->PlaySoundEffect("explosion.tiny", GetPosition());
   other.Hit(_owner, this, GetDamage(), GetPosition(), -hit_direction);
   Destroy(nullptr);
 }

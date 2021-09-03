@@ -35,7 +35,7 @@ MusicPlayer::MusicPlayer()
     _random_generator(static_cast<unsigned long>(std::time(nullptr))),
     _rdist(0, 1)
 {
-  _sources.fill(0);
+  _sources.fill(AL_NONE);
 }
 
 
@@ -51,6 +51,9 @@ void MusicPlayer::Start()
   {
     alGenSources(static_cast<ALsizei>(_sources.size()), _sources.data());
     assert(alGetError() == AL_NO_ERROR);
+    for(auto s : _sources)
+      alSourcei(s, AL_SOURCE_RELATIVE, AL_TRUE);
+
     while(!st.stop_requested())
       {
         TickMusicChange();

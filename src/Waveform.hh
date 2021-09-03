@@ -17,26 +17,32 @@
 #include <vector>
 #include <al.h>
 
+class SoundEnvelope;
+
 
 class Waveform
 {
 public:
-  Waveform();
+  Waveform(SoundEnvelope * envelope);
   virtual ~Waveform();
 
-  ALuint       GetCurrentBuffer() const;
-  ALuint       GetBackBuffer() const;
-  void         SwapBuffers();
-  virtual void Restart() = 0;
-  virtual void FillBackBuffer() = 0;
+  SoundEnvelope * GetEnvelope()      const;
+  void            SetEnvelope(SoundEnvelope * envelope);
 
-  double       GetLength() const;
-  void         SetLength(double length);
+  ALuint          GetCurrentBuffer() const;
+  ALuint          GetBackBuffer()    const;
+  void            SwapBuffers();
+  virtual void    Restart()        = 0;
+  virtual void    FillBackBuffer() = 0;
+
+  double          GetLength()        const;
+  void            SetLength(double length);
 
 protected:
-  void UpdateBackBuffer(const std::vector<short> & data);
+  void            UpdateBackBuffer(std::vector<int16_t> & data);
   
 private:
+  SoundEnvelope *       _envelope;
   unsigned int          _current_buffer;
   std::array<ALuint, 2> _buffers;
   double                _length;
