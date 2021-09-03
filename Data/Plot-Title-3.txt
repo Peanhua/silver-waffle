@@ -1,8 +1,9 @@
-  Urgent personal message from:
-    The high priest Djoudr Stypialin from the HQ of UDOTE
-  
-  "As you very well know, the fate of our beautiful
-   Earth, and within it our precious UD,
-   are in the hands of this mission.
-  
-   You will be generously rewarded if you succeed."
+Login: root
+Password: **********
+
+[root@silver-waffle ~]# man controls
+  Movement:   LEFT/RIGHT/UP/DOWN
+  Shooting:   SPACE           Drop bomb: B
+  Warpspeed: hold W          Land:        S
+  Inventory:  TAB              Next song: F8
+[root@silver-waffle ~]# /etc/init.d/launch start

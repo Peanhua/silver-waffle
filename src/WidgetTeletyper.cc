@@ -89,8 +89,8 @@ void WidgetTeletyper::Tick(double deltatime)
 
           if(_cursor_position > 0)
             {
-              const std::string_view stopchars(".!:");
-              const std::string_view pausechars(",-/#$'\"");
+              const std::string_view stopchars(".!:#");
+              const std::string_view pausechars(",-/$'\"");
               auto c = _teletypertext[_cursor_position - 1];
               
               if(stopchars.find_first_of(c) != stopchars.npos)
