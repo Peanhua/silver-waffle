@@ -51,7 +51,7 @@ bool SubsystemSfx::Start()
   assert(_music_player);
   _music_player->Start();
 
-  _sfx_volume = Settings->GetDouble("sfx_volume") / 100.0;
+  _sfx_volume = static_cast<ALfloat>(Settings->GetDouble("sfx_volume") / 100.0);
   {
     ALfloat orientation[] = {
       0, 1, 0,
@@ -76,17 +76,12 @@ bool SubsystemSfx::Start()
       for(unsigned int i = 0; i < _sfx_count; i++)
         _sound_effects.push_back(AL_NONE);
 
-      auto json = AssetLoader->LoadJson("Data/Sfx");
-      assert(json);
-      assert(json->is_object());
-      auto effects = (*json)["effects"].array_items();
-      auto it = effects.cbegin();
+      auto it = _ids.cbegin();
       std::vector<int16_t> buffer;
         
-      while(!st.stop_requested() && it != effects.cend())
+      while(!st.stop_requested() && it != _ids.cend())
         {
-          assert((*it)["id"].is_string());
-          auto id = (*it)["id"].string_value();
+          auto id = *it;
           {
             WaveformSynth * effect;
             
@@ -134,12 +129,12 @@ bool SubsystemSfx::Start()
             _sound_effects[GetSoundEffectIndex(id)] = alb;
           }
 
-          std::cout << (GetName() + ": Generated sound effect '" + id + "' (" + std::to_string(buffer.size()) + " samples).\n") << std::flush;
+          std::cout << (GetName() + ": Generated sound effect '" + std::string(id) + "' (" + std::to_string(buffer.size()) + " samples).\n") << std::flush;
           
           it++;
         }
         
-      if(it == effects.cend())
+      if(it == _ids.cend())
         _sfx_generator_ready = true;
     });
 

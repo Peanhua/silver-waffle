@@ -52,24 +52,24 @@ private:
 
   static constexpr unsigned int _sfx_count = 9;
 
-
+  static constexpr std::array<std::string_view, _sfx_count> _ids
+    {
+      "alien",
+      "collect.valuable",
+      "explosion.big",
+      "explosion.small",
+      "explosion.tiny",
+      "drop_bomb",
+      "human_jump",
+      "engine",
+      "weapon"
+    };
+  
   constexpr unsigned int GetSoundEffectIndex(const std::string_view & name) const
   {
-    std::array<std::string_view, _sfx_count> names
-      {
-        "alien",
-        "collect.valuable",
-        "explosion.big",
-        "explosion.small",
-        "explosion.tiny",
-        "drop_bomb",
-        "human_jump",
-        "engine",
-        "weapon"
-      };
     
-    for(unsigned int i = 0; i < names.size(); i++)
-      if(name == names[i])
+    for(unsigned int i = 0; i < _ids.size(); i++)
+      if(name == _ids[i])
         return i;
     return 0;
   }
