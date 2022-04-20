@@ -51,6 +51,12 @@ export CPPFLAGS
 export CXXFLAGS
 export LDFLAGS
 
+if [ ! -d share ]; then
+    # Allow running from current directory with './configure --prefix=$(pwd)' without doing 'make install':
+    mkdir share
+    ln -s .. share/silver-waffle
+fi
+
 autoreconf --include=m4 --install
 ./configure --prefix=$(pwd) --with-valgrind
 #--with-gpu-thread

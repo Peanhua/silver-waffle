@@ -18,11 +18,13 @@
 #include "SpaceParticles.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
+#include "SubsystemSfx.hh"
 #include "WidgetButton.hh"
 #include "WidgetHighscores.hh"
 #include "WidgetTeletyper.hh"
 #include <iostream>
 #include <GL/glew.h>
+
 
 
 ScreenTitle::ScreenTitle()
@@ -193,3 +195,18 @@ void ScreenTitle::TickPlot()
         _plot_phase++;
     }
 }
+
+
+
+void ScreenTitle::OnKeyboard(bool pressed, SDL_Keycode key, [[maybe_unused]] SDL_Keymod mod)
+{
+  switch(key)
+    {
+    case SDLK_SPACE:
+      if(pressed)
+        Sounds->PlaySoundEffect("human_jump", {});
+      break;
+    }
+}
+
+  

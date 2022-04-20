@@ -221,6 +221,8 @@ json11::Json * SubsystemAssetLoader::LoadJson(const std::string & filename)
 
   auto json = new json11::Json();
   std::string json_string = LoadText(filename + ".json", true);
+  if(json_string.empty())
+    json_string = LoadText(filename, true);
   if(!json_string.empty())
     {
       std::string err;

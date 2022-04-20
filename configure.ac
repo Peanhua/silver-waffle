@@ -1,5 +1,6 @@
 AC_INIT([silver-waffle], [0.1])
 AC_PREREQ([2.69])
+AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE([foreign dist-xz subdir-objects])
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 AC_CONFIG_MACRO_DIRS([m4])
@@ -21,7 +22,7 @@ PKG_CHECK_MODULES([GLEW], [glew], [],
 
 PKG_CHECK_MODULES([GLM], [glm], [], [
   AC_LANG_PUSH([C++])
-  AC_CHECK_HEADER([glm/glm.hpp])
+  AC_CHECK_HEADER([glm/glm.hpp], [], [AC_MSG_ERROR([Unable to find GLM library (http://glm.g-truc.net) headers.])])
   AC_LANG_POP
 ])
 
@@ -45,6 +46,7 @@ PKG_CHECK_MODULES([LIBPNG],     [libpng])
 PKG_CHECK_MODULES([OPENAL],     [openal])
 PKG_CHECK_MODULES([SDL2_IMAGE], [SDL2_image >= 2])
 PKG_CHECK_MODULES([SIDPLAYFP],  [libsidplayfp])
+PKG_CHECK_MODULES([LIBFMSYNTH], [libfmsynth >= 0.2])
 
 
 AC_ARG_WITH([valgrind], AS_HELP_STRING([--with-valgrind], [Build with support for Valgrind.]))
@@ -71,5 +73,5 @@ DX_PS_FEATURE(OFF)
 DX_INIT_DOXYGEN([SilverWaffle])
 
 AC_CONFIG_HEADERS([config.h])
-AC_CONFIG_FILES([Makefile src/Makefile 3d-models/Makefile Data/Makefile Fonts/bitstream-vera-sans-mono-fonts/Makefile Images/Makefile Shaders/Makefile Shaders/Include/Makefile Doxyfile])
+AC_CONFIG_FILES([Makefile src/Makefile 3d-models/Makefile Data/Makefile Fonts/bitstream-vera-sans-mono-fonts/Makefile Images/Makefile Sounds/Makefile Shaders/Makefile Shaders/Include/Makefile Doxyfile])
 AC_OUTPUT

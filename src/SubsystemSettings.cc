@@ -51,7 +51,7 @@ bool SubsystemSettings::Start()
   
   _string_values["font"] = "Fonts/bitstream-vera-sans-mono-fonts/VeraMono.ttf";
 
-  _bool_values["music"] = true;
+  _bool_values["music"] = false;
   _int_values["music_volume"] = 50;
   _bool_values["sfx"] = true;
   _int_values["sfx_volume"] = 75;

@@ -58,6 +58,7 @@ images_DATA = \
 	8k_sun-low.jpg			\
 	BonusIcon-2xScore.png		\
 	BonusIcon-Shield.png		\
+	Button.png			\
 	Checkmark-Green.png		\
 	Level-Planet-Earth.png		\
 	Level-Planet-Jupiter.png	\

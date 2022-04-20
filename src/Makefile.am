@@ -5,6 +5,7 @@ AM_CXXFLAGS =                \
 	$(FMT_CFLAGS)        \
 	$(FREETYPE2_CFLAGS)  \
 	$(JSON11_CFLAGS)     \
+	$(LIBFMSYNTH_CFLAGS) \
 	$(LIBPNG_CFLAGS)     \
 	$(OPENAL_CFLAGS)     \
 	$(PTHREAD_CFLAGS)    \
@@ -26,6 +27,7 @@ silverwaffle_LDADD =       \
         $(GL_LIBS)         \
         $(GLEW_LIBS)       \
 	$(JSON11_LIBS)     \
+	$(LIBFMSYNTH_LIBS) \
 	$(LIBPNG_LIBS)     \
 	$(OPENAL_LIBS)     \
 	$(PTHREAD_LIBS)    \
@@ -189,7 +191,6 @@ silverwaffle_SOURCES =				\
 	Waveform.hh				\
 	WaveformSID.cc				\
 	WaveformSID.hh				\
-	WaveformSynth.hh			\
 	Weapon.cc				\
 	Weapon.hh				\
 	Widget.cc				\

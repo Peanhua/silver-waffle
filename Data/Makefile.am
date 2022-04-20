@@ -1,6 +1,7 @@
 datafilesdir = $(pkgdatadir)/Data
 
 datafiles_DATA = 				\
+	AttackWaves.json			\
 	Buildings.json				\
 	Highscores.json				\
 	Invaders.json				\

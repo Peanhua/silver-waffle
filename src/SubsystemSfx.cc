@@ -14,10 +14,11 @@
 #include "MusicPlayer.hh"
 #include "SubsystemAssetLoader.hh"
 #include "SubsystemSettings.hh"
-#include "WaveformSynth.hh"
 #include <alut.h>
 #include <cassert>
 #include <iostream>
+#include <libfmsynth/Blueprint.hh>
+#include <libfmsynth/NodeAudioDeviceOutput.hh>
 
 
 SubsystemSfx * Sounds = nullptr;
@@ -73,63 +74,62 @@ bool SubsystemSfx::Start()
     _sfx_generator_thread = new std::jthread([this](std::stop_token st)
     {
       _sound_effects.clear();
-      for(unsigned int i = 0; i < _sfx_count; i++)
+      for(unsigned int i = 0; i < _ids.size(); i++)
         _sound_effects.push_back(AL_NONE);
 
       auto it = _ids.cbegin();
       std::vector<int16_t> buffer;
-        
+
       while(!st.stop_requested() && it != _ids.cend())
         {
+          buffer.clear();
+
           auto id = *it;
           {
-            WaveformSynth * effect;
-            
-            if(id == "explosion.big")
-              effect = new WaveformSynthExplosionBig();
-            else if(id == "explosion.small")
-              effect = new WaveformSynthExplosionSmall();
-            else if(id == "explosion.tiny")
-              effect = new WaveformSynthExplosionTiny();
-            else if(id == "weapon")
-              effect = new WaveformSynthPlasmaWeapon();
-            else if(id == "alien")
-              effect = new WaveformSynthWeoew();
-            else if(id == "drop_bomb")
-              effect = new WaveformSynthDropBomb();
-            else if(id == "engine")
-              effect = new WaveformSynthEngine();
-            else if(id == "human_jump")
-              effect = new WaveformSynthHumanJump();
-            else if(id == "collect.valuable")
-              effect = new WaveformSynthCollectValuable();
-            else
-              assert(false);
-
-            buffer.clear();
-            while(!effect->GetEnvelope()->IsFinished())
+            fmsynth::Blueprint blueprint;
+            auto json = AssetLoader->LoadJson("Sounds/" + std::string(id) + ".sbp");
+            auto loadok = blueprint.Load(*json);
+            if(loadok)
               {
-                auto t = static_cast<double>(buffer.size()) / 44100.0;
-                auto s = effect->GetSample(t);
-                auto a = effect->GetEnvelope()->GetNextAmplitude();
-                auto w = effect->SampleToInt(s * a);
-                buffer.push_back(w);
+                auto ados = blueprint.GetNodesByType("AudioDeviceOutput");
+                if(ados.size() > 0)
+                  {
+                    auto node = dynamic_cast<fmsynth::NodeAudioDeviceOutput *>(ados[0]);
+                    if(node)
+                      {
+                        node->SetOnPlaySample([&buffer, &node](double sample)
+                        {
+                          buffer.push_back(node->SampleToInt(sample));
+                        });
+                        
+                        bool done = false;
+                        while(!done)
+                          {
+                            std::lock_guard lock(blueprint.GetLockMutex());
+                            if(blueprint.IsFinished())
+                              done = true;
+                            else
+                              blueprint.Tick(1);
+                          }
+                      }
+                  }
               }
 
-            delete effect;
+            if(buffer.size() > 0)
+              {
+                ALuint alb;
+                
+                alGenBuffers(1, &alb);
+                alBufferData(alb, AL_FORMAT_MONO16, buffer.data(), static_cast<ALsizei>(buffer.size() * sizeof(int16_t)), 44100);
+                assert(alGetError() == AL_NO_ERROR);
+                
+                _sound_effects[GetSoundEffectIndex(id)] = alb;
+                
+                std::cout << (GetName() + ": Generated sound effect '" + std::string(id) + "' (" + std::to_string(buffer.size()) + " samples).\n") << std::flush;
+              }
+            else
+              std::cerr << GetName() << ": Failed to generate sound effect '" << std::string(id) << "': No data." << std::endl;
           }
-
-          {
-            ALuint alb;
-              
-            alGenBuffers(1, &alb);
-            alBufferData(alb, AL_FORMAT_MONO16, buffer.data(), static_cast<ALsizei>(buffer.size() * sizeof(int16_t)), 44100);
-            assert(alGetError() == AL_NO_ERROR);
-
-            _sound_effects[GetSoundEffectIndex(id)] = alb;
-          }
-
-          std::cout << (GetName() + ": Generated sound effect '" + std::string(id) + "' (" + std::to_string(buffer.size()) + " samples).\n") << std::flush;
           
           it++;
         }

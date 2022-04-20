@@ -50,9 +50,7 @@ private:
   std::vector<ALuint> _sound_effect_sources;
   unsigned int        _next_sfx_source;
 
-  static constexpr unsigned int _sfx_count = 9;
-
-  static constexpr std::array<std::string_view, _sfx_count> _ids
+  static constexpr std::array<std::string_view, 11> _ids // change to std::vector or std::map, and load on demand
     {
       "alien",
       "collect.valuable",
@@ -62,12 +60,13 @@ private:
       "drop_bomb",
       "human_jump",
       "engine",
-      "weapon"
+      "weapon",
+      "Weapon1",
+      "Weapon2"
     };
   
   constexpr unsigned int GetSoundEffectIndex(const std::string_view & name) const
   {
-    
     for(unsigned int i = 0; i < _ids.size(); i++)
       if(name == _ids[i])
         return i;

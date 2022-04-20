@@ -4,6 +4,7 @@ tdmodels_DATA = \
 	AlienStructureDevice.dae		\
 	AlienStructureSpawnerVertical.dae	\
 	AlienStructureTower.dae			\
+	Bomb.dae				\
 	BonusCylinder.dae			\
 	Cloud1.dae				\
 	Cloud1.json				\
