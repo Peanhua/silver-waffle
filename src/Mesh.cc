@@ -45,9 +45,6 @@ Mesh::~Mesh()
 {
   assert(!_destroyed);
 
-  if(Graphics)
-    Graphics->CancelUpdateGPU(this);
-  
   if(_vao != 0)
     glDeleteVertexArrays(1, &_vao);
 

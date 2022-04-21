@@ -47,8 +47,6 @@ public:
   void QueueUpdateGPU(Mesh * mesh);
   void QueueUpdateGPU(Mesh * mesh, unsigned int vertex_index);
 
-  void CancelUpdateGPU(Mesh * mesh);
-
   static thread_local unsigned int current_buffer;
 
 private:
@@ -58,23 +56,10 @@ private:
   std::mutex    _queue_mutex;
   std::vector<Image *>                         _image_queue;
   std::vector<std::pair<Mesh *, unsigned int>> _mesh_vertex_queue;
-#ifdef WITH_GPU_THREAD
-  std::thread * _thread;
-  std::atomic<bool> _exit_thread;
-  std::atomic<bool> _draw_frame;
-
-  std::vector<GPUObject *>     _object_queue;
-  std::vector<ShaderProgram *> _shader_program_queue;
-  std::vector<Widget *>        _widget_queue;
-  std::vector<Mesh *>          _mesh_queue;
-#endif
 
   void Draw();
   void FlushQueues();
   
-#ifdef WITH_GPU_THREAD
-  static void Main(SubsystemGfx * gfx);
-#endif
 };
 
 

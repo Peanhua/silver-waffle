@@ -55,11 +55,6 @@ AS_IF([test "x$with_valgrind" = "xyes"], [
   AC_DEFINE([WITH_VALGRIND], [1], [Define to use Valgrind.])
 ])
 
-AC_ARG_WITH([gpu-thread], AS_HELP_STRING([--with-gpu-thread], [Build with GPU thread.]))
-AS_IF([test "x$with_gpu_thread" = "xyes"], [
-  AC_DEFINE([WITH_GPU_THREAD], [1], [Define to use GPU thread.])
-])
-
 AX_CHECK_GL
 
 AC_ARG_VAR([CONVERT], [Path to the convert program from ImageMagick or alternative.])

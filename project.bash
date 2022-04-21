@@ -5,7 +5,6 @@ MYHISTFILE=$(pwd)/.bash_history
 if [ "${HISTFILE}" != ${MYHISTFILE} ]; then
     export HISTFILE=${MYHISTFILE}
     history -r
-    alias blender='MESA_LOADER_DRIVER_OVERRIDE=i965 /usr/bin/blender'
 fi
     
 
@@ -59,4 +58,3 @@ fi
 
 autoreconf --include=m4 --install
 ./configure --prefix=$(pwd) --with-valgrind
-#--with-gpu-thread
