@@ -144,7 +144,6 @@ void Object::Draw(const glm::mat4 & vp) const
 
 void Object::AddComponent(Component * component)
 {
-  assert(_components.size() == 0);
   _components.push_back(component);
 }
 

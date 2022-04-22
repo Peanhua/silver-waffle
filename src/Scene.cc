@@ -136,7 +136,9 @@ void Scene::CreatePlayer()
 
   _player->SetEngineSound(true);
 
-  auto ee = new ComponentEngineExhaustFX(_player, 4 + 2);
+  auto ee = new ComponentEngineExhaustFX(_player, 2);
+  _player->AddComponent(ee);
+  ee = new ComponentEngineExhaustFX(_player, 4 + 2);
   _player->AddComponent(ee);
   
   _player->SystemlogEnable();

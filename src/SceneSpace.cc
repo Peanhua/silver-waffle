@@ -88,7 +88,7 @@ void SceneSpace::SetupSceneObject(Object * object, bool destroy_on_block)
   auto high = glm::vec3( m.x * 0.5f,           9999999, 0);
   if(object == GetPlayer())
     {
-      low.y  = 40 - 53 - 1;
+      low.y  = 40 - 53;
       high.y = 10;
     }
   object->SetAutoDestroyBox(low, high);
