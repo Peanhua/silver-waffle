@@ -23,3 +23,15 @@ void ControllerSpace::SteerRight(bool pressed)
 {
   _spaceship->SetEngineThrottle(1, pressed ? 1.0 : 0.0);
 }
+
+
+void ControllerSpace::SteerForward(bool pressed)
+{
+  _spaceship->SetEngineThrottle(2, pressed ? 1.0 : 0.0);
+}
+
+
+void ControllerSpace::SteerBackward(bool pressed)
+{
+  _spaceship->SetEngineThrottle(3, pressed ? 1.0 : 0.0);
+}

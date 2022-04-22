@@ -20,8 +20,10 @@ class ControllerSpace : public Controller
 public:
   using Controller::Controller;
 
-  void SteerLeft(bool pressed) override;
-  void SteerRight(bool pressed) override;
+  void SteerLeft(bool pressed)     override;
+  void SteerRight(bool pressed)    override;
+  void SteerForward(bool pressed)  override;
+  void SteerBackward(bool pressed) override;
 };
 
 #endif

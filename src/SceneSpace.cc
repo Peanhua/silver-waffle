@@ -67,7 +67,7 @@ void SceneSpace::SetupPlayer()
   auto player = dynamic_cast<ObjectSpaceship *>(GetPlayer());
   if(player)
     {
-      player->EnableVelocity(true, false, false);
+      player->EnableVelocity(true, true, false);
       player->SetPosition(glm::vec3(0, 40 - 53 + 0.5, 0));
       for(unsigned int i = 0; i < 4; i++)
         {
@@ -83,9 +83,14 @@ void SceneSpace::SetupSceneObject(Object * object, bool destroy_on_block)
 {
   const auto m = GetPlayAreaSize();
   const double bsr = object->GetVisualBoundingSphereRadius();
-  
-  const auto low  = glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - bsr, 1);
-  const auto high = glm::vec3( m.x * 0.5f,           9999999, 0);
+
+  auto low  = glm::vec3(-m.x * 0.5f, 40 - 53 - 2 - bsr, 1);
+  auto high = glm::vec3( m.x * 0.5f,           9999999, 0);
+  if(object == GetPlayer())
+    {
+      low.y  = 40 - 53 - 1;
+      high.y = 10;
+    }
   object->SetAutoDestroyBox(low, high);
   
   Object::ExceedAction blockaction = destroy_on_block ? Object::ExceedAction::DESTROY : Object::ExceedAction::STOP;
