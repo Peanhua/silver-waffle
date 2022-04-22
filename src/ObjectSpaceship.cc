@@ -36,7 +36,8 @@ ObjectSpaceship::ObjectSpaceship(Scene * scene, unsigned int random_seed)
     _human_saving_timer(0),
     _systemlog_enabled(false),
     _has_engine_sound(false),
-    _engine_sfx_timer(0)
+    _engine_sfx_timer(0),
+    _engine_auto_slow_down_axis { true, true, true }
 {
   _weapongroups.emplace_back();
   _weapongroups.emplace_back();
@@ -123,23 +124,24 @@ void ObjectSpaceship::Tick(double deltatime)
       bool addimp = false;
       glm::vec3 imp(0);
       for(int i = 0; i < 3; i++)
-        {
-          if(std::abs(vel[i]) < 0.2f)
-            {
-              vel[i] = 0;
-              setvel = true;
-            }
-          else if(vel[i] < 0.0f)
-            {
-              imp[i] = static_cast<float>(engine_strength *  20.0 * deltatime);
-              addimp = true;
-            }
-          else if(vel[i] > 0.0f)
-            {
-              imp[i] = static_cast<float>(engine_strength * -20.0 * deltatime);
-              addimp = true;
-            }
-        }
+        if(_engine_auto_slow_down_axis[i])
+          {
+            if(std::abs(vel[i]) < 0.2f)
+              {
+                vel[i] = 0;
+                setvel = true;
+              }
+            else if(vel[i] < 0.0f)
+              {
+                imp[i] = static_cast<float>(engine_strength *  20.0 * deltatime);
+                addimp = true;
+              }
+            else if(vel[i] > 0.0f)
+              {
+                imp[i] = static_cast<float>(engine_strength * -20.0 * deltatime);
+                addimp = true;
+              }
+          }
       if(setvel)
         SetVelocity(vel);
       if(addimp)
@@ -785,3 +787,12 @@ void ObjectSpaceship::SetEngineSound(bool enabled)
 {
   _has_engine_sound = enabled;
 }
+
+
+void ObjectSpaceship::SetEngineAutoSlowDownAxis(int axis, bool enabled)
+{
+  assert(axis >= 0);
+  assert(axis <= 2);
+  _engine_auto_slow_down_axis[axis] = enabled;
+}
+

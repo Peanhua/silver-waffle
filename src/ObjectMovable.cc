@@ -128,6 +128,12 @@ void ObjectMovable::SetIsAffectedByGravity(bool is_affected)
 }
 
 
+bool ObjectMovable::IsAffectedByGravity() const
+{
+  return _is_affected_by_gravity;
+}
+
+
 void ObjectMovable::SetBounciness(double bounciness)
 {
   _bounciness = bounciness;

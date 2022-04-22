@@ -126,8 +126,8 @@ void Scene::CreatePlayer()
   // Space engines (only 2 first are used):
   _player->AddEngine(glm::vec3(-1,  0, 0), 20.0);
   _player->AddEngine(glm::vec3( 1,  0, 0), 20.0);
-  _player->AddEngine(glm::vec3( 0,  1, 0), 10.0);
-  _player->AddEngine(glm::vec3( 0, -1, 0), 10.0);
+  _player->AddEngine(glm::vec3( 0,  1, 0),  5.0);
+  _player->AddEngine(glm::vec3( 0, -1, 0),  3.0);
   // Planet engines:
   _player->AddEngine(glm::vec3(0,  0,  1), 20.0);
   _player->AddEngine(glm::vec3(0,  0, -1), 20.0);

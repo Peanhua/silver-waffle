@@ -53,7 +53,7 @@ void SceneSpace::Draw(const Camera & camera) const
     }
 }
 
-  
+
 void SceneSpace::Tick(double deltatime)
 {
   Scene::Tick(deltatime);
@@ -75,6 +75,8 @@ void SceneSpace::SetupPlayer()
           player->EnableEngine(i + 4, false);
         }
       player->SetController(new ControllerSpace(player));
+      player->SetIsAffectedByGravity(true);
+      player->SetEngineAutoSlowDownAxis(1, false);
     }
 }
 

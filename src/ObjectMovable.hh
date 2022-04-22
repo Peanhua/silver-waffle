@@ -33,6 +33,7 @@ public:
   void SetAngularVelocity(const glm::quat & angular_velocity, double magnitude);
 
   void SetIsAffectedByGravity(bool is_affected);
+  bool IsAffectedByGravity() const;
 
   void SetDrag(double drag);
 

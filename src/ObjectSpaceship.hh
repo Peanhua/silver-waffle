@@ -55,6 +55,7 @@ public:
   void         EnableEngine(unsigned int engine_id, bool enabled);
   void         EnableEngines(bool enabled);
   void         SetEngineSound(bool enabled);
+  void         SetEngineAutoSlowDownAxis(int axis, bool enabled);
   
   void               UpgradeFromCollectible(ObjectCollectible * collectible);
   SpaceshipUpgrade * GetUpgrade(SpaceshipUpgrade::Type type) const;
@@ -109,6 +110,7 @@ private:
   std::string _systemlog;
   bool        _has_engine_sound;
   double      _engine_sfx_timer;
+  int         _engine_auto_slow_down_axis[3];
 
   Weapon *     AddWeapon(unsigned int weapon_group, const glm::vec3 & location, const glm::vec3 & projectile_direction);
 };
