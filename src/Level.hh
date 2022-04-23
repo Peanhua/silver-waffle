@@ -18,9 +18,7 @@
 #include <vector>
 #include <json11.hpp>
 
-class Camera;
 class Image;
-class Mesh;
 class Scene;
 
 

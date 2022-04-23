@@ -23,7 +23,7 @@ Camera::Camera()
     _clippingplane_near(0.001),
     _clippingplane_far(2000.0),
     _up(0, 0, 1),
-    _position(0, -20, 14.5),
+    _position(0, -1, 0),
     _target_position(0, 0, 0),
     _view_projection(1),
     _projection_dirty(true),

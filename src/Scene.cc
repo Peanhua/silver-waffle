@@ -225,11 +225,7 @@ void Scene::Tick(double deltatime)
   _collisioncheck_statistics.elapsed_time += deltatime;
   _collisioncheck_statistics.elapsed_frames++;
 
-  /*
-  std::promise<void> jobdone_promise;
-  auto jobdone_future = jobdone_promise.get_future();
-  */
-  auto ProcessExplosivesAndParticles = [this, /*&jobdone_promise,*/ deltatime, warpspeed, warpspeedmove]()
+  auto ProcessExplosivesAndParticles = [this, deltatime, warpspeed, warpspeedmove]()
   {
     for(auto e : _explosions)
       if(e->IsAlive())
@@ -240,13 +236,12 @@ void Scene::Tick(double deltatime)
         }
     
     if(_particles)
-      _particles->Tick(deltatime * (1.0 + 5.0 * static_cast<double>(_warp_throttle)));
+      _particles->Tick(deltatime * (1.0 + 20.0 * static_cast<double>(_warp_throttle)));
 
     for(auto c : _clouds)
       if(c)
         c->Tick(deltatime);
 
-    //jobdone_promise.set_value();
     _tick_finish_sync.release();
 
     return false;
@@ -274,7 +269,6 @@ void Scene::Tick(double deltatime)
     if(o != GetPlayer() && warpspeed)
       o->Translate(warpspeedmove);
 
-  //jobdone_future.get();
   _tick_finish_sync.acquire();
 
   for(auto o : _tick_work_objects)
