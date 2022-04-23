@@ -116,10 +116,14 @@ void ScreenLevel::Initialize()
 
   auto splayer = dynamic_cast<ObjectSpaceship *>(player);
   if(splayer)
-    splayer->SetOnHumanCountChanged([this]()
     {
-      OnHumanCountUpdated();
-    });
+      splayer->SetOnHumanCountChanged([this]()
+      {
+        OnHumanCountUpdated();
+      });
+
+      splayer->GetUpgrade(SpaceshipUpgrade::Type::WARP_ENGINE)->Install();
+    }
 
  
   // UI:
